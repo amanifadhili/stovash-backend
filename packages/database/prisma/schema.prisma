@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  status    String   @default("ACTIVE") // ACTIVE, SUSPENDED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shops     Shop[]
+  users     User[]
+}
+
+model Shop {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  location    String?
+  status      String   @default("ACTIVE") // ACTIVE, CLOSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  workPeriods WorkPeriod[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  tenantId  String
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String   @default("STAFF") // ADMIN, MANAGER, STAFF
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model WorkPeriod {
+  id        String    @id @default(uuid())
+  shopId    String
+  openedBy  String    // userId
+  closedBy  String?   // userId
+  openedAt  DateTime  @default(now())
+  closedAt  DateTime?
+  status    String    @default("OPEN") // OPEN, CLOSED
+
+  shop      Shop      @relation(fields: [shopId], references: [id])
+}

@@ -677,7 +677,23 @@ No module is allowed to bypass the accounting engine.
 
 ---
 
-# 20. Architectural Decisions (Locked)
+---
+
+# 20. Database Architecture
+
+**Shared PostgreSQL with Logical Service Ownership**
+
+We use one PostgreSQL instance/database for development and early production, but maintain **strict service ownership at the schema/table level**.
+
+Each microservice gets access only to its own persistence layer via specific repositories. For example, the Inventory Service uses an Inventory Repository to access only inventory tables. The Accounting Service uses an Accounting Repository to access only accounting tables. A service is strictly forbidden from directly updating another service's tables.
+
+This allows us to leverage simple ACID transactions and easier reconciliation now, while designing the code to easily migrate to physical database-per-service in the future if needed, without rewriting the application layers.
+
+---
+
+# 21. Architectural Decisions (Locked)
+
+✅ Shared PostgreSQL with Logical Service Ownership
 
 ✅ Multi-tenant SaaS
 
