@@ -1,0 +1,729 @@
+# Electronic Shop MS
+# Accounting Foundation Specification v1.0 (Draft)
+
+> **Status:** Draft (Editable)
+>
+> This document summarizes the accounting architecture and business rules agreed during Phase 1. It serves as the foundation for all future system design (database, backend, frontend, APIs, reports, etc.).
+
+---
+
+# 1. Accounting Philosophy
+
+Electronic Shop MS is an **accounting-first business management system**, not just a POS or inventory system.
+
+Every business activity must produce accounting records that can later generate:
+
+- Journals
+- Ledgers
+- Trial Balance
+- Financial Statements
+- Audit History
+
+The accounting flow is:
+
+```text
+Business Event
+      ↓
+Source Record
+      ↓
+Journal Entry
+      ↓
+Double Entry (Debit / Credit)
+      ↓
+Posting
+      ↓
+Ledgers
+      ↓
+Trial Balance
+      ↓
+Financial Statements
+```
+
+The system never updates balances directly. Every balance is calculated from posted accounting entries.
+
+---
+
+# 2. Core Accounting Principles
+
+## Double Entry
+
+Every accounting transaction must satisfy:
+
+```
+Total Debit = Total Credit
+```
+
+No transaction may be posted if debits and credits are not balanced.
+
+---
+
+## Immutable Accounting
+
+Posted accounting entries are never deleted.
+
+Corrections are made using:
+
+```
+Original Entry
+      ↓
+Reversal Entry
+      ↓
+Correct Entry
+```
+
+This preserves a complete audit trail.
+
+---
+
+## Accounting Before Physical Money
+
+The accounting system calculates what **should happen**.
+
+Users later confirm what **actually happened physically**.
+
+Example:
+
+```
+Expected Cash
+1,000,000
+
+Actual Cash
+980,000
+
+Difference
+20,000
+```
+
+Differences require reconciliation before adjustment.
+
+---
+
+# 3. Business Structure
+
+```
+Platform
+    │
+    └── Tenant
+          │
+          ├── Shop A
+          ├── Shop B
+          └── Shop C
+```
+
+Each shop owns completely independent:
+
+- Inventory
+- Customers
+- Suppliers
+- Accounting
+- Operational balances
+- Profit
+- Reports
+
+A real bank account may be shared by multiple shops, but accounting balances remain separated per shop.
+
+---
+
+# 4. Accounting Components
+
+## Journals
+
+The system exposes:
+
+- General Journal
+- Sales Journal
+- Purchase Journal
+- Cash Receipt Journal
+- Cash Disbursement Journal
+- Transfer Journal
+- Closing Journal
+
+Internally they all use one accounting engine.
+
+---
+
+## Ledgers
+
+The accounting engine posts transactions into:
+
+- General Ledger
+- Sales / Receivable Ledger
+- Purchase / Payable Ledger
+- Cash & Bank Book
+- Inventory Ledger
+
+---
+
+## Chart of Accounts
+
+Main account groups:
+
+### Assets
+
+- Cash
+- Bank
+- MoMo
+- Operational Bank
+- Inventory
+- Customer Receivables
+
+### Liabilities
+
+- Supplier Payables
+- Business Loans
+
+### Equity
+
+- Capital
+- Retained Profit
+- Owner Withdrawals
+
+### Revenue
+
+- Computer Sales
+- Printer Sales
+- Accessories Sales
+- Maintenance
+- Commission
+
+### Cost of Goods Sold
+
+- Computer COGS
+- Printer COGS
+- Accessories COGS
+
+### Expenses
+
+- Rent
+- Isuku
+- Electricity
+- Internet
+- Salaries
+- Taxes
+- Field Expenses
+- Others
+
+### Business Costs
+
+- Referral Bonus
+- Upgrade Cost
+
+### Losses
+
+- Damage
+- Lost Inventory
+- Theft
+
+---
+
+# 5. Business Money Sources
+
+## Income
+
+- Computer Sales
+- Printer Sales
+- Accessories Sales
+- Maintenance
+- Commission
+
+## Additional Costs
+
+- Upgrade Cost
+- Referral Bonus
+- Field Expenses
+
+## Expenses
+
+- Rent
+- Isuku
+- Electricity
+- Internet
+- Salaries
+- Taxes
+- Others
+
+## Losses
+
+- Damage
+- Lost
+- Theft
+
+---
+
+# 6. Payment Methods
+
+Money may move through:
+
+- Cash
+- Bank
+- MoMo
+- Loan
+
+Every transaction may use one or many payment methods.
+
+Example:
+
+```
+Cash      300,000
+MoMo      200,000
+Loan      500,000
+-----------------
+Total   1,000,000
+```
+
+Payment methods are **not accounting accounts**.
+
+---
+
+# 7. Sales Rules
+
+The system supports:
+
+- Cash Sales
+- Loan Sales
+- Partial Payments
+- Mixed Payments
+- Installments
+- Referral Bonuses
+- Warranty
+- Returns
+
+Every inventory sale creates two accounting effects:
+
+### Revenue
+
+```
+Debit
+    Cash / Bank / MoMo / Receivable
+
+Credit
+    Sales Revenue
+```
+
+### Cost of Goods Sold
+
+```
+Debit
+    Cost of Goods Sold
+
+Credit
+    Inventory
+```
+
+Revenue recognition and inventory movement are independent accounting events.
+
+---
+
+# 8. Purchase Rules
+
+Supports:
+
+- Cash Purchase
+- Partial Payment
+- Supplier Credit
+- Mixed Payment
+- Purchase Returns
+
+Purchasing inventory increases Inventory, not Expenses.
+
+Supplier balances are tracked through the Purchase Ledger.
+
+---
+
+# 9. Inventory Accounting
+
+Inventory costing method:
+
+**Specific Identification**
+
+Each serialized item keeps its own purchase cost.
+
+Inventory supports:
+
+- Serial Numbers
+- Damage
+- Lost
+- Theft
+- Stock Adjustments
+- Shop Transfers
+- Purchase Returns
+- Sales Returns
+
+Damage, Lost and Theft reduce inventory and create accounting losses.
+
+---
+
+# 10. Loan Accounting
+
+Two completely different loan types exist.
+
+## Customer Loan
+
+Customer owes the business.
+
+Tracked through:
+
+Customer Receivable Ledger
+
+Supports:
+
+- Partial repayment
+- Full repayment
+
+---
+
+## Business Loan
+
+Business owes lender.
+
+Tracked through:
+
+Loan Payable
+
+Supports:
+
+- Borrowing
+- Partial repayment
+- Full repayment
+- Interest
+
+Customer loans and Business loans must never be mixed.
+
+---
+
+# 11. Capital
+
+Capital represents owner equity.
+
+Capital increases from:
+
+- Initial investment
+- Additional investment
+- External investment
+- Retained Profit
+
+Capital does NOT increase directly from sales.
+
+Owner withdrawals reduce equity.
+
+---
+
+# 12. Operational Account
+
+Operational is a **logical accounting account**.
+
+It is NOT:
+
+- Cash
+- MoMo
+- Bank
+
+During the day:
+
+```
+Sales
+
+Expenses
+
+Purchases
+
+Loan Payments
+
+↓
+
+Accounting Entries
+
+↓
+
+Operational Position
+```
+
+Physical money remains in:
+
+- Cash
+- MoMo
+- Bank
+
+Later the money is physically consolidated into the Operational Bank account.
+
+The accounting system calculates the expected movement.
+
+Users confirm the actual movement.
+
+---
+
+# 13. Profit
+
+Profit is calculated from accounting, not cash movement.
+
+```
+Revenue
+
+- Cost of Goods Sold
+
+- Expenses
+
+- Business Costs
+
+- Losses
+
+--------------------
+
+Net Profit
+```
+
+Profit calculation and physical transfer are separate actions.
+
+Workflow:
+
+```
+Calculate
+
+↓
+
+Approve
+
+↓
+
+Physical Transfer
+
+↓
+
+Confirm
+
+↓
+
+Close
+```
+
+---
+
+# 14. Work Period
+
+Lifecycle:
+
+```
+Open
+
+↓
+
+Active
+
+↓
+
+Closing
+
+↓
+
+Pending Confirmation
+
+↓
+
+Reconciled
+
+↓
+
+Closed
+```
+
+Closed periods cannot:
+
+- Add transactions
+- Edit transactions
+- Delete transactions
+
+Unless officially reopened.
+
+---
+
+# 15. Closing Process
+
+At period closing:
+
+```
+Stop Transactions
+
+↓
+
+Calculate Accounting
+
+↓
+
+Calculate Operational
+
+↓
+
+Calculate Profit
+
+↓
+
+Expected Physical Transfers
+
+↓
+
+Physical Confirmation
+
+↓
+
+Reconciliation
+
+↓
+
+Approval
+
+↓
+
+Close Period
+```
+
+---
+
+# 16. Reconciliation
+
+The system compares:
+
+```
+Logical Accounting
+
+VS
+
+Physical Money
+```
+
+Examples:
+
+- Cash
+- MoMo
+- Bank
+- Operational Bank
+
+Differences require:
+
+- Investigation
+- Approval
+- Adjustment
+
+The system never silently adjusts balances.
+
+---
+
+# 17. Transaction Matrix
+
+Every business event defines:
+
+- Journal
+- Debit Accounts
+- Credit Accounts
+- Inventory Effect
+- Receivable / Payable Effect
+- Physical Money Effect
+- Profit Effect
+- Period Effect
+
+The Transaction Matrix becomes the source of truth for the accounting engine.
+
+---
+
+# 18. Business Rules
+
+## Inventory Costing
+
+Specific Identification
+
+---
+
+## Sales Returns
+
+Allowed.
+
+Refunds may be partial according to business policy.
+
+---
+
+## Purchase Returns
+
+Supported.
+
+Inventory and accounting are reversed accordingly.
+
+---
+
+## Multi Currency
+
+System supports multiple currencies.
+
+Accounting stores values in **RWF**.
+
+Foreign currencies are converted using configured exchange rates.
+
+---
+
+# 19. Accounting Engine Rules
+
+The accounting engine must guarantee:
+
+- Double-entry accounting
+- Immutable journals
+- Automatic ledger posting
+- Inventory integration
+- Receivable & payable tracking
+- Operational accounting
+- Profit calculation
+- Work-period locking
+- Reconciliation workflow
+- Complete audit trail
+
+No module is allowed to bypass the accounting engine.
+
+---
+
+# 20. Architectural Decisions (Locked)
+
+✅ Multi-tenant SaaS
+
+✅ Multi-shop per tenant
+
+✅ NestJS + Fastify
+
+✅ Command-based API
+
+✅ Event-driven architecture
+
+✅ Accounting-first design
+
+✅ Double-entry accounting
+
+✅ Journal → Ledger → Trial Balance flow
+
+✅ Specific Identification inventory costing
+
+✅ Mixed payment support
+
+✅ Customer & Business loans
+
+✅ Operational reconciliation
+
+✅ Profit closing workflow
+
+✅ Work period locking
+
+✅ Immutable accounting records
+
+---
+
+# Phase 1 Status
+
+**Status:** LOCKED
+
+This document is the foundation for:
+
+- System Functional Specification
+- Database Design
+- Microservices
+- Backend
+- Frontend
+- Reports
+- APIs
+- Future Enhancements
+
+No future module should violate the principles defined here.

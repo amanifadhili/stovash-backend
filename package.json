@@ -1,0 +1,28 @@
+{
+  "name": "electronic-shop-ms",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "frontend/*",
+    "packages/*",
+    "frameworks/*"
+  ],
+  "scripts": {
+    "start": "node dist/server.js",
+    "build": "npm run build --workspaces --if-present && tsc -p tsconfig.server.json",
+    "dev": "tsx server.ts",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.23.9",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "uuid": "^14.0.1"
+  }
+}
