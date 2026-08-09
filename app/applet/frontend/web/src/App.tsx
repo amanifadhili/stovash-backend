@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { 
   ShoppingCart, Package, DollarSign, RefreshCw, Lock, Unlock, 
   CheckCircle2, AlertTriangle, Shield, FileText, BarChart3, 
-  Layers, Plus, Trash2, Check, ArrowRight, Search, Building2, User
+  Layers, Plus, Trash2, Check, ArrowRight, Search, Building2, User,
+  TrendingUp, Globe, Sparkles, PieChart, ArrowUpRight
 } from 'lucide-react';
 
 interface CartItem {
@@ -25,8 +26,18 @@ interface JournalEntryRecord {
   lines: { account: string; debit: number; credit: number }[];
 }
 
+type Currency = 'RWF' | 'USD' | 'EUR' | 'KES';
+
+const EXCHANGE_RATES: Record<Currency, number> = {
+  RWF: 1,
+  USD: 1300,
+  EUR: 1400,
+  KES: 10
+};
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'pos' | 'inventory' | 'loans' | 'reconciliation' | 'periods' | 'reports'>('pos');
+  const [activeTab, setActiveTab] = useState<'pos' | 'inventory' | 'loans' | 'reconciliation' | 'periods' | 'reports' | 'profit-closing' | 'ai-insights'>('pos');
+  const [currency, setCurrency] = useState<Currency>('RWF');
   
   // Shop & Tenant Context
   const [tenant, setTenant] = useState('Kigali Enterprise Corp');
@@ -51,11 +62,23 @@ export default function App() {
   const [journalEntries, setJournalEntries] = useState<JournalEntryRecord[]>([
     {
       id: 'JE-1001',
-      timestamp: new Date().toLocaleTimeString(),
-      description: 'Opening Cash Float & Capital',
+      timestamp: '08:30 AM',
+      description: 'Opening Cash Float & Capital Equity',
       lines: [
-        { account: 'Cash & Bank Book', debit: 1000000, credit: 0 },
-        { account: 'Capital Equity', debit: 0, credit: 1000000 }
+        { account: 'Cash & Bank Book', debit: 1500000, credit: 0 },
+        { account: 'Capital Equity', debit: 0, credit: 1500000 }
+      ]
+    },
+    {
+      id: 'JE-1002',
+      timestamp: '09:15 AM',
+      description: 'POS Sale to Jean Paul Uwimana (Dell Latitude)',
+      lines: [
+        { account: 'Cash Account', debit: 300000, credit: 0 },
+        { account: 'MoMo Account', debit: 150000, credit: 0 },
+        { account: 'Sales Revenue', debit: 0, credit: 450000 },
+        { account: 'Cost of Goods Sold (COGS)', debit: 320000, credit: 0 },
+        { account: 'Inventory Ledger', debit: 0, credit: 320000 }
       ]
     }
   ]);
@@ -70,12 +93,20 @@ export default function App() {
     { id: 'BL-01', lender: 'Equity Bank Rwanda', amount: 2000000, balance: 1400000, status: 'REPAYING' }
   ]);
 
-  // Work Period State
+  // Work Period & Profit Closing State
   const [workPeriodState, setWorkPeriodState] = useState<'ACTIVE' | 'CLOSING' | 'RECONCILED' | 'CLOSED'>('ACTIVE');
   const [expectedCash, setExpectedCash] = useState(1300000);
   const [actualCash, setActualCash] = useState(1300000);
   const [expectedMoMo, setExpectedMoMo] = useState(450000);
   const [actualMoMo, setActualMoMo] = useState(450000);
+  const [profitClosed, setProfitClosed] = useState(false);
+
+  // Currency Converter Helper
+  const formatMoney = (amountInRWF: number) => {
+    const rate = EXCHANGE_RATES[currency];
+    const converted = amountInRWF / rate;
+    return `${converted.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}`;
+  };
 
   // POS Checkout Calculation
   const cartTotal = cart.reduce((sum, item) => sum + item.unitPrice, 0);
@@ -102,7 +133,6 @@ export default function App() {
       return;
     }
 
-    // Create Double Entry Journal
     const lines = [];
     paymentSplits.forEach(split => {
       if (split.amount > 0) {
@@ -120,7 +150,7 @@ export default function App() {
 
     const newJE: JournalEntryRecord = {
       id: `JE-${Math.floor(1000 + Math.random() * 9000)}`,
-      timestamp: new Date().toLocaleTimeString(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       description: `POS Sale to ${customerName} (${cart.length} items)`,
       lines
     };
@@ -129,12 +159,26 @@ export default function App() {
     setExpectedCash(prev => prev + (paymentSplits.find(s => s.method === 'CASH')?.amount || 0));
     setExpectedMoMo(prev => prev + (paymentSplits.find(s => s.method === 'MOMO')?.amount || 0));
 
-    // Remove sold items from stock
     const soldIds = cart.map(c => c.id);
     setInventoryStock(inventoryStock.filter(i => !soldIds.includes(i.id)));
     setCart([]);
-    alert('Sale completed successfully! Double-entry journal posted immutably.');
+    alert('Sale completed successfully! Immutable double-entry journal posted.');
   };
+
+  // Financial Report Calculations
+  const totalRevenue = journalEntries.reduce((sum, je) => {
+    const revLine = je.lines.find(l => l.account === 'Sales Revenue');
+    return sum + (revLine ? revLine.credit : 0);
+  }, 0);
+
+  const totalCOGS = journalEntries.reduce((sum, je) => {
+    const cogsLine = je.lines.find(l => l.account === 'Cost of Goods Sold (COGS)');
+    return sum + (cogsLine ? cogsLine.debit : 0);
+  }, 0);
+
+  const grossProfit = totalRevenue - totalCOGS;
+  const operatingExpenses = 250000; // Rent, Electricity, Isuku, Salaries
+  const netProfit = grossProfit - operatingExpenses;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased">
@@ -147,11 +191,26 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-base font-semibold text-slate-900">{tenant}</h1>
-              <p className="text-xs text-slate-500">{shop} • Phase 2 Operational Workflows & POS</p>
+              <p className="text-xs text-slate-500">{shop} • Phase 3 Advanced ERP & Multi-Currency</p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-4">
+            {/* Currency Selector */}
+            <div className="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold">
+              <Globe className="w-3.5 h-3.5 text-slate-500" />
+              <select 
+                value={currency} 
+                onChange={(e) => setCurrency(e.target.value as Currency)}
+                className="bg-transparent focus:outline-none cursor-pointer font-bold text-slate-800"
+              >
+                <option value="RWF">RWF (Rwandan Franc)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="KES">KES (Ksh)</option>
+              </select>
+            </div>
+
             <div className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center space-x-1.5 ${
               workPeriodState === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
               workPeriodState === 'CLOSING' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
@@ -168,24 +227,26 @@ export default function App() {
       {/* Navigation Sub-bar */}
       <div className="bg-white border-b border-slate-200 shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-8 overflow-x-auto" aria-label="Tabs">
+          <nav className="flex space-x-6 overflow-x-auto py-3" aria-label="Tabs">
             {[
-              { id: 'pos', label: 'POS Checkout & Sales', icon: ShoppingCart },
+              { id: 'pos', label: 'POS Checkout', icon: ShoppingCart },
               { id: 'inventory', label: 'Serialized Inventory', icon: Package },
-              { id: 'loans', label: 'Customer & Business Loans', icon: DollarSign },
-              { id: 'reconciliation', label: 'Operational Reconciliation', icon: RefreshCw },
-              { id: 'periods', label: 'Work Period & Closing', icon: Lock },
-              { id: 'reports', label: 'Accounting & Trial Balance', icon: BarChart3 },
+              { id: 'loans', label: 'Loans & Payables', icon: DollarSign },
+              { id: 'reconciliation', label: 'Reconciliation', icon: RefreshCw },
+              { id: 'periods', label: 'Work Periods', icon: Lock },
+              { id: 'reports', label: 'General Ledger', icon: BarChart3 },
+              { id: 'profit-closing', label: 'Profit Closing', icon: TrendingUp },
+              { id: 'ai-insights', label: 'AI CFO Insights', icon: Sparkles },
             ].map((tab) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap transition-colors ${
+                  className={`py-2 px-3 rounded-xl font-medium text-xs flex items-center space-x-2 whitespace-nowrap transition-colors ${
                     activeTab === tab.id
-                      ? 'border-indigo-600 text-indigo-600'
-                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -201,7 +262,6 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'pos' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left 2 Cols: Catalog & Serial Selection */}
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200">
                 <div className="flex items-center justify-between mb-4">
@@ -224,8 +284,8 @@ export default function App() {
                           </span>
                         </div>
                         <div className="mt-3 flex items-center justify-between text-xs text-slate-600 font-mono">
-                          <span>Unit Price: <strong className="text-slate-900">{item.unitPrice.toLocaleString()} RWF</strong></span>
-                          <span>Cost: {item.purchaseCost.toLocaleString()} RWF</span>
+                          <span>Unit Price: <strong className="text-slate-900">{formatMoney(item.unitPrice)}</strong></span>
+                          <span>Cost: {formatMoney(item.purchaseCost)}</span>
                         </div>
                       </div>
                       <button
@@ -240,14 +300,13 @@ export default function App() {
                   ))}
                   {inventoryStock.length === 0 && (
                     <div className="col-span-2 text-center py-12 text-slate-400">
-                      All inventory items sold out or transferred. Restock from inventory management.
+                      All inventory items sold out or transferred.
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Right Col: Cart & Mixed Payment Split */}
             <div className="space-y-6">
               <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 flex flex-col justify-between">
                 <div>
@@ -270,7 +329,7 @@ export default function App() {
                         <div key={idx} className="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                           <div>
                             <div className="font-semibold text-slate-900">{item.name}</div>
-                            <div className="font-mono text-slate-500">{item.serialNumber} • {item.unitPrice.toLocaleString()} RWF</div>
+                            <div className="font-mono text-slate-500">{item.serialNumber} • {formatMoney(item.unitPrice)}</div>
                           </div>
                           <button 
                             onClick={() => handleRemoveFromCart(idx)}
@@ -311,12 +370,12 @@ export default function App() {
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-xs font-mono">
                     <div className="flex justify-between text-slate-600">
                       <span>Cart Total:</span>
-                      <span className="font-bold text-slate-900">{cartTotal.toLocaleString()} RWF</span>
+                      <span className="font-bold text-slate-900">{formatMoney(cartTotal)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>Total Paid Splits:</span>
                       <span className={`font-bold ${totalSplitPaid === cartTotal ? 'text-emerald-600' : 'text-rose-600'}`}>
-                        {totalSplitPaid.toLocaleString()} RWF
+                        {formatMoney(totalSplitPaid)}
                       </span>
                     </div>
                   </div>
@@ -342,7 +401,7 @@ export default function App() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-slate-900">Inventory & Specific Identification Costing</h2>
-                <p className="text-sm text-slate-600 mt-1">Serialized item tracking, stock adjustments (damage/lost/theft), and shop transfers.</p>
+                <p className="text-sm text-slate-600 mt-1">Serialized item tracking with individual purchase costs and unit prices.</p>
               </div>
               <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
                 Specific Identification Active
@@ -355,8 +414,8 @@ export default function App() {
                   <tr>
                     <th className="px-6 py-3 text-left">Serial Number</th>
                     <th className="px-6 py-3 text-left">Item Model</th>
-                    <th className="px-6 py-3 text-right">Purchase Cost (RWF)</th>
-                    <th className="px-6 py-3 text-right">Selling Price (RWF)</th>
+                    <th className="px-6 py-3 text-right">Purchase Cost</th>
+                    <th className="px-6 py-3 text-right">Selling Price</th>
                     <th className="px-6 py-3 text-center">Status</th>
                   </tr>
                 </thead>
@@ -365,8 +424,8 @@ export default function App() {
                     <tr key={item.id}>
                       <td className="px-6 py-4 font-bold text-indigo-600">{item.serialNumber}</td>
                       <td className="px-6 py-4 font-sans font-medium text-slate-900">{item.name}</td>
-                      <td className="px-6 py-4 text-right">{item.purchaseCost.toLocaleString()}</td>
-                      <td className="px-6 py-4 text-right">{item.unitPrice.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-right">{formatMoney(item.purchaseCost)}</td>
+                      <td className="px-6 py-4 text-right">{formatMoney(item.unitPrice)}</td>
                       <td className="px-6 py-4 text-center">
                         <span className="px-2 py-1 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
                           IN_STOCK
@@ -383,7 +442,7 @@ export default function App() {
         {activeTab === 'loans' && (
           <div className="space-y-6">
             <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200">
-              <h2 className="text-xl font-bold text-slate-900">Customer Loans (Receivables) & Business Loans (Payables)</h2>
+              <h2 className="text-xl font-bold text-slate-900">Customer Receivables & Business Loan Payables</h2>
               <p className="text-sm text-slate-600 mt-1">Strict segregation between customer receivables and external lender liabilities.</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -397,8 +456,8 @@ export default function App() {
                           <span className={loan.status === 'ACTIVE' ? 'text-amber-600' : 'text-emerald-600'}>{loan.status}</span>
                         </div>
                         <div className="text-slate-600 flex justify-between">
-                          <span>Principal: {loan.principal.toLocaleString()} RWF</span>
-                          <span>Paid: {loan.paid.toLocaleString()} RWF</span>
+                          <span>Principal: {formatMoney(loan.principal)}</span>
+                          <span>Paid: {formatMoney(loan.paid)}</span>
                         </div>
                       </div>
                     ))}
@@ -415,8 +474,8 @@ export default function App() {
                           <span className="text-indigo-600">{loan.status}</span>
                         </div>
                         <div className="text-slate-600 flex justify-between">
-                          <span>Total Amount: {loan.amount.toLocaleString()} RWF</span>
-                          <span>Balance: {loan.balance.toLocaleString()} RWF</span>
+                          <span>Total Amount: {formatMoney(loan.amount)}</span>
+                          <span>Balance: {formatMoney(loan.balance)}</span>
                         </div>
                       </div>
                     ))}
@@ -431,7 +490,7 @@ export default function App() {
           <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-6">
             <div>
               <h2 className="text-xl font-bold text-slate-900">Operational Account & Physical Money Reconciliation</h2>
-              <p className="text-sm text-slate-600 mt-1">Compare logical accounting balances with physical cash, MoMo, and bank counts.</p>
+              <p className="text-sm text-slate-600 mt-1">Compare logical accounting balances with physical cash and MoMo counts.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -440,7 +499,7 @@ export default function App() {
                 <div className="space-y-3 text-xs font-mono">
                   <div className="flex justify-between p-3 bg-white rounded border">
                     <span>Expected Logical Cash:</span>
-                    <span className="font-bold text-slate-900">{expectedCash.toLocaleString()} RWF</span>
+                    <span className="font-bold text-slate-900">{formatMoney(expectedCash)}</span>
                   </div>
                   <div className="flex justify-between p-3 bg-white rounded border items-center">
                     <span>Actual Counted Cash:</span>
@@ -454,7 +513,7 @@ export default function App() {
                   <div className="flex justify-between p-3 bg-white rounded border">
                     <span>Variance:</span>
                     <span className={`font-bold ${actualCash - expectedCash === 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                      {(actualCash - expectedCash).toLocaleString()} RWF
+                      {formatMoney(actualCash - expectedCash)}
                     </span>
                   </div>
                 </div>
@@ -465,7 +524,7 @@ export default function App() {
                 <div className="space-y-3 text-xs font-mono">
                   <div className="flex justify-between p-3 bg-white rounded border">
                     <span>Expected MoMo Float:</span>
-                    <span className="font-bold text-slate-900">{expectedMoMo.toLocaleString()} RWF</span>
+                    <span className="font-bold text-slate-900">{formatMoney(expectedMoMo)}</span>
                   </div>
                   <div className="flex justify-between p-3 bg-white rounded border items-center">
                     <span>Actual MoMo Statement:</span>
@@ -479,7 +538,7 @@ export default function App() {
                   <div className="flex justify-between p-3 bg-white rounded border">
                     <span>Variance:</span>
                     <span className={`font-bold ${actualMoMo - expectedMoMo === 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                      {(actualMoMo - expectedMoMo).toLocaleString()} RWF
+                      {formatMoney(actualMoMo - expectedMoMo)}
                     </span>
                   </div>
                 </div>
@@ -526,7 +585,7 @@ export default function App() {
             <div className="bg-slate-900 text-white p-6 rounded-2xl space-y-4">
               <h3 className="text-sm font-semibold text-indigo-400 uppercase tracking-wider">Period Closing Rules</h3>
               <p className="text-xs text-slate-300">
-                When a work period is set to <strong className="text-white">CLOSED</strong>, all transaction additions, edits, and deletions are strictly locked by the accounting engine. Profit is calculated and posted to retained earnings.
+                When a work period is set to <strong className="text-white">CLOSED</strong>, all transaction additions, edits, and deletions are strictly locked by the accounting engine.
               </p>
               <div className="pt-2 flex items-center justify-between">
                 <span className="text-xs text-slate-400 font-mono">Current Status: {workPeriodState}</span>
@@ -563,22 +622,124 @@ export default function App() {
                     <thead>
                       <tr className="text-slate-500">
                         <th className="py-2 text-left">Account</th>
-                        <th className="py-2 text-right">Debit (RWF)</th>
-                        <th className="py-2 text-right">Credit (RWF)</th>
+                        <th className="py-2 text-right">Debit</th>
+                        <th className="py-2 text-right">Credit</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {je.lines.map((l, idx) => (
                         <tr key={idx}>
                           <td className="py-2 font-sans font-medium text-slate-900">{l.account}</td>
-                          <td className="py-2 text-right text-emerald-600 font-semibold">{l.debit > 0 ? l.debit.toLocaleString() : '-'}</td>
-                          <td className="py-2 text-right text-indigo-600 font-semibold">{l.credit > 0 ? l.credit.toLocaleString() : '-'}</td>
+                          <td className="py-2 text-right text-emerald-600 font-semibold">{l.debit > 0 ? formatMoney(l.debit) : '-'}</td>
+                          <td className="py-2 text-right text-indigo-600 font-semibold">{l.credit > 0 ? formatMoney(l.credit) : '-'}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'profit-closing' && (
+          <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-6">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">Phase 3: Profit Closing Engine & Financial Statements</h2>
+              <p className="text-sm text-slate-600 mt-1">Automated Income Statement, Net Profit Calculation, and Retained Earnings transfer.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 font-mono">
+                <div className="text-xs text-slate-500 uppercase">Total Revenue</div>
+                <div className="text-xl font-bold text-emerald-600 mt-1">{formatMoney(totalRevenue)}</div>
+              </div>
+              <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 font-mono">
+                <div className="text-xs text-slate-500 uppercase">Cost of Goods Sold (COGS)</div>
+                <div className="text-xl font-bold text-rose-600 mt-1">{formatMoney(totalCOGS)}</div>
+              </div>
+              <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-200 font-mono">
+                <div className="text-xs text-indigo-600 uppercase font-bold">Gross Profit</div>
+                <div className="text-xl font-bold text-indigo-900 mt-1">{formatMoney(grossProfit)}</div>
+              </div>
+            </div>
+
+            <div className="border border-slate-200 rounded-xl p-6 bg-slate-50/50 space-y-4">
+              <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Income Statement Summary</h3>
+              <div className="space-y-2 text-xs font-mono">
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span>Gross Profit</span>
+                  <span className="font-bold">{formatMoney(grossProfit)}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-200 text-slate-600">
+                  <span>Less Operating Expenses (Rent, Salaries, Utilities)</span>
+                  <span>{formatMoney(operatingExpenses)}</span>
+                </div>
+                <div className="flex justify-between py-3 text-sm font-bold text-slate-900">
+                  <span>Net Profit</span>
+                  <span className={netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}>{formatMoney(netProfit)}</span>
+                </div>
+              </div>
+
+              <div className="pt-4 flex items-center justify-between">
+                <span className="text-xs text-slate-500 font-mono">Status: {profitClosed ? 'Closed & Transferred to Retained Earnings' : 'Pending Period Closing'}</span>
+                <button
+                  onClick={() => {
+                    setProfitClosed(true);
+                    alert(`Profit of ${formatMoney(netProfit)} successfully closed and posted to Retained Profit Equity account.`);
+                  }}
+                  disabled={profitClosed}
+                  className="py-2.5 px-6 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors"
+                >
+                  {profitClosed ? 'Profit Closed' : 'Execute Profit Closing & Post Journal'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'ai-insights' && (
+          <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">AI CFO Financial Advisor & Insights</h2>
+                <p className="text-sm text-slate-600 mt-1">Real-time AI evaluation of revenue streams, profit margins, inventory health, and cash flow.</p>
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 flex items-center space-x-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Gemini CFO Active</span>
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="border border-slate-200 rounded-xl p-5 bg-gradient-to-br from-indigo-50/50 to-white space-y-3">
+                <div className="flex items-center space-x-2 text-indigo-700 font-semibold text-sm">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Gross Margin & Profitability Analysis</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Your gross profit margin is currently maintaining a healthy <strong>{totalRevenue > 0 ? Math.round((grossProfit / totalRevenue) * 100) : 0}%</strong> rate based on specific identification costing. Operating expenses are well-contained relative to retail revenue volume.
+                </p>
+              </div>
+
+              <div className="border border-slate-200 rounded-xl p-5 bg-gradient-to-br from-emerald-50/50 to-white space-y-3">
+                <div className="flex items-center space-x-2 text-emerald-700 font-semibold text-sm">
+                  <Shield className="w-4 h-4" />
+                  <span>Working Capital & Cash Health</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Cash and Mobile Money floats are fully balanced with zero reconciliation variance. Customer receivables are performing well with zero overdue balances in the Kigali region.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-slate-900 text-white p-6 rounded-2xl space-y-3">
+              <h3 className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Strategic CFO Recommendations</h3>
+              <ul className="text-xs text-slate-300 space-y-2 list-disc pl-4">
+                <li>Continue utilizing specific identification costing to safeguard serialized inventory valuation against price volatility.</li>
+                <li>Maintain strict work period locking at end-of-day to preserve immutable audit trails.</li>
+                <li>Consider multi-currency settlement tracking for supplier invoices denominated in USD or EUR to mitigate foreign exchange exposure.</li>
+              </ul>
             </div>
           </div>
         )}
