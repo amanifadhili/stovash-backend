@@ -1,0 +1,6 @@
+{
+  "name": "Electronic Shop SaaS",
+  "description": "Enterprise-grade multi-tenant ERP platform. Phase 2 Operational Workflows & POS Integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
