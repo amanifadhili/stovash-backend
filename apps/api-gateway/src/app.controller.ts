@@ -1,7 +1,12 @@
-import { Controller, Get, Post, Req, Res, Body } from '@nestjs/common';
+import { Controller, Get, Post, Req, Inject, Body, InternalServerErrorException, UseGuards } from '@nestjs/common';
+import { FirebaseAuthGuard } from './common/auth/firebase-auth.guard.js';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Controller()
 export class AppController {
+  constructor(@Inject('IDENTITY_SERVICE') private readonly identityClient: ClientProxy) {}
+
   @Get('health')
   getHealth(): { status: string; timestamp: string } {
     return { status: 'ok', timestamp: new Date().toISOString() };
@@ -14,6 +19,7 @@ export class AppController {
 
   // Unified Command Endpoint
   @Post('api')
+  @UseGuards(FirebaseAuthGuard)
   async handleCommand(@Req() req: any, @Body() body: any): Promise<any> {
     const { command, payload } = body || {};
     
@@ -28,13 +34,31 @@ export class AppController {
       throw new Error('This is a test error from command execution');
     }
     
-    // Dispatch to internal services...
-    return { 
-      status: 'success', 
-      message: `Command ${cmd} received and dispatched.`,
-      traceId: req.context?.traceId || 'generated-trace-id',
-      context: req.context,
-      payload
-    };
+    const context = req.context;
+    
+    // Command Router
+    try {
+      if (['CreateTenant', 'CreateUser', 'LoginUser'].includes(cmd)) {
+        const result = await firstValueFrom(
+          this.identityClient.send({ cmd }, { payload, context })
+        );
+        return { 
+          status: 'success', 
+          message: `Command ${cmd} processed successfully.`,
+          traceId: context?.traceId,
+          data: result
+        };
+      }
+      
+      return { 
+        status: 'success', 
+        message: `Command ${cmd} received but no handler found.`,
+        traceId: context?.traceId,
+        context,
+        payload
+      };
+    } catch (error: any) {
+      throw new InternalServerErrorException(error.message || 'Service communication error');
+    }
   }
 }

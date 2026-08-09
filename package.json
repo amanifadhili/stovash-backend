@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "start": "node dist/server.js",
-    "build": "npm run build --workspaces --if-present && tsc -p tsconfig.server.json",
+    "build": "npm run build --workspace=packages/types --workspace=packages/database && npm run build --workspaces --if-present && tsc -p tsconfig.server.json",
     "dev": "tsx server.ts",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present"
@@ -23,6 +23,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "lucide-react": "^1.31.0",
+    "recharts": "^3.10.1",
     "uuid": "^14.0.1"
   }
 }

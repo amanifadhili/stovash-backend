@@ -1,12 +1,24 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AppController } from './app.controller.js';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
 import { ContextMiddleware } from './common/middleware/context.middleware.js';
 
 @Module({
-  imports: [],
+  imports: [
+    ClientsModule.register([
+      {
+        name: 'IDENTITY_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: '127.0.0.1',
+          port: 3002,
+        },
+      },
+    ]),
+  ],
   controllers: [AppController],
   providers: [
     {

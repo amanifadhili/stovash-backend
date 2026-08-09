@@ -10,6 +10,7 @@ console.log(`Starting Electronic Shop Platform on port ${port}...`);
 // The frontend will be served statically by the API Gateway in production mode.
 const apiGatewayDir = path.resolve('apps/api-gateway');
 const frontendDir = path.resolve('frontend/web');
+const identityDir = path.resolve('apps/identity-service');
 
 // Start Vite dev server for frontend on port 3001
 const frontend = spawn('npm', ['run', 'dev'], {
@@ -23,6 +24,19 @@ const frontend = spawn('npm', ['run', 'dev'], {
 
 frontend.on('error', (err) => {
   console.error('Failed to start Frontend Dev Server:', err);
+});
+
+// Start Identity Service
+const identity = spawn('npm', ['run', 'dev'], {
+  cwd: identityDir,
+  env: {
+    ...process.env,
+  },
+  stdio: 'inherit'
+});
+
+identity.on('error', (err) => {
+  console.error('Failed to start Identity Service:', err);
 });
 
 // Start API Gateway on port 3000
