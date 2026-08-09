@@ -20,20 +20,42 @@ test('Milestone 2: Double-Entry Accounting Engine - Total Debit = Credit', () =>
   console.log('✓ Double-Entry Accounting Engine test passed successfully.');
 });
 
-test('Milestone 7 & 14: Work Period Lifecycle & Period Locking', () => {
-  let state = 'ACTIVE';
-  assert.strictEqual(state, 'ACTIVE');
-  state = 'CLOSING';
-  assert.strictEqual(state, 'CLOSING');
-  state = 'RECONCILED';
-  assert.strictEqual(state, 'RECONCILED');
-  state = 'CLOSED';
-  assert.strictEqual(state, 'CLOSED');
+test('Milestone 5: Work Period Lifecycle States & Financial Period Lockout', () => {
+  type WorkPeriodState = 'OPEN' | 'PENDING_CLOSING' | 'PENDING_RECONCILIATION' | 'CLOSED';
+  
+  let currentPeriodState: WorkPeriodState = 'OPEN';
+  
+  // Helper simulating transaction authorization check
+  function authorizeAccountingTransaction(state: WorkPeriodState) {
+    if (state !== 'OPEN') {
+      return { success: false, errorCode: 'WORK_PERIOD_CLOSED', message: `Work period is ${state}. Financial period lockout active.` };
+    }
+    return { success: true };
+  }
 
-  const canPost = state !== 'CLOSED';
-  assert.strictEqual(canPost, false, 'Closed period must lock out new transactions');
-  console.log('✓ Work Period Lifecycle & Locking test passed successfully.');
+  // 1. Transaction during OPEN period succeeds
+  let auth = authorizeAccountingTransaction(currentPeriodState);
+  assert.strictEqual(auth.success, true, 'Transactions must be allowed when work period is OPEN');
+
+  // 2. Transition to PENDING_CLOSING
+  currentPeriodState = 'PENDING_CLOSING';
+  auth = authorizeAccountingTransaction(currentPeriodState);
+  assert.strictEqual(auth.success, false, 'Transactions must be blocked during PENDING_CLOSING');
+  assert.strictEqual(auth.errorCode, 'WORK_PERIOD_CLOSED');
+
+  // 3. Transition to PENDING_RECONCILIATION
+  currentPeriodState = 'PENDING_RECONCILIATION';
+  auth = authorizeAccountingTransaction(currentPeriodState);
+  assert.strictEqual(auth.success, false, 'Transactions must be blocked during PENDING_RECONCILIATION');
+
+  // 4. Transition to CLOSED
+  currentPeriodState = 'CLOSED';
+  auth = authorizeAccountingTransaction(currentPeriodState);
+  assert.strictEqual(auth.success, false, 'Transactions must be blocked when work period is CLOSED');
+
+  console.log('✓ Milestone 5 Work Period Lifecycle & Financial Period Lockout tests passed successfully.');
 });
+
 
 test('Milestone 3 & 9: Specific Identification Inventory Costing', () => {
   const items = [

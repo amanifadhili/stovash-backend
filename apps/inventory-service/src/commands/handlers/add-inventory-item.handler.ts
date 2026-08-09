@@ -20,6 +20,35 @@ export class AddInventoryItemHandler extends BaseCommandHandler<AddInventoryItem
         };
       }
 
+      // Work Period lockout check
+      if (context.workPeriodId) {
+        const wp = await prisma.workPeriod.findUnique({ where: { id: context.workPeriodId } });
+        if (wp && wp.status !== 'OPEN') {
+          return {
+            status: 'error',
+            traceId,
+            message: `Work period ${context.workPeriodId} is ${wp.status}. Inventory changes are locked out.`,
+            errorCode: ErrorCode.WORK_PERIOD_CLOSED
+          };
+        }
+      } else {
+        const closedWp = await prisma.workPeriod.findFirst({
+          where: { shopId: context.shopId, status: { in: ['CLOSED', 'PENDING_CLOSING', 'PENDING_RECONCILIATION'] } },
+          orderBy: { openedAt: 'desc' }
+        });
+        const openWp = await prisma.workPeriod.findFirst({
+          where: { shopId: context.shopId, status: 'OPEN' }
+        });
+        if (closedWp && !openWp) {
+          return {
+            status: 'error',
+            traceId,
+            message: `Shop ${context.shopId} work period is ${closedWp.status}. Inventory changes are locked out.`,
+            errorCode: ErrorCode.WORK_PERIOD_CLOSED
+          };
+        }
+      }
+
       if (!payload?.serialNumber) {
         return {
           status: 'error',

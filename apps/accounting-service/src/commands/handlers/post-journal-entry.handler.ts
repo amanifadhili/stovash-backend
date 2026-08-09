@@ -46,6 +46,41 @@ export class PostJournalEntryHandler extends BaseCommandHandler<PostJournalEntry
         };
       }
 
+      // Work Period status check & Financial Period Lockout
+      let activeWorkPeriodId = context.workPeriodId;
+      if (activeWorkPeriodId) {
+        const wp = await prisma.workPeriod.findUnique({ where: { id: activeWorkPeriodId } });
+        if (wp && wp.status !== 'OPEN') {
+          return {
+            status: 'error',
+            traceId,
+            message: `Work period ${activeWorkPeriodId} is ${wp.status}. New journal entries are locked out.`,
+            errorCode: ErrorCode.WORK_PERIOD_CLOSED
+          };
+        }
+      } else {
+        const activeWp = await prisma.workPeriod.findFirst({
+          where: { shopId: context.shopId, status: 'OPEN' },
+          orderBy: { openedAt: 'desc' }
+        });
+        if (!activeWp) {
+          const closedWp = await prisma.workPeriod.findFirst({
+            where: { shopId: context.shopId },
+            orderBy: { openedAt: 'desc' }
+          });
+          if (closedWp) {
+            return {
+              status: 'error',
+              traceId,
+              message: `Shop ${context.shopId} work period is ${closedWp.status}. New journal entries are locked out.`,
+              errorCode: ErrorCode.WORK_PERIOD_CLOSED
+            };
+          }
+        } else {
+          activeWorkPeriodId = activeWp.id;
+        }
+      }
+
       const result = await prisma.$transaction(async (tx) => {
         // Ensure all referenced ledger accounts exist or auto-provision them if missing for demo/test ease
         const resolvedEntries = [];
