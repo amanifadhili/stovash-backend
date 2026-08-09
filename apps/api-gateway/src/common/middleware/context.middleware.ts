@@ -1,9 +1,9 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { ICommandContext } from '@electronic-shop/types';
+import { IRequestContext } from '@electronic-shop/types';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface RequestWithContext extends Request {
-  context: ICommandContext;
+  context: IRequestContext;
 }
 
 @Injectable()

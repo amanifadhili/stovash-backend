@@ -1,5 +1,5 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
-import { IApiResponse } from '@electronic-shop/types';
+import { ICommandResponse } from '@electronic-shop/types';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -24,7 +24,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const req = ctx.getRequest();
     const traceId = req.context?.traceId || req.headers['x-trace-id'] || 'generated-trace-id';
 
-    const errorResponse: IApiResponse = {
+    const errorResponse: ICommandResponse = {
       status: 'error',
       message,
       errorCode,

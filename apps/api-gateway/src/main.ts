@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 async function bootstrap() {
   process.setMaxListeners(50);
@@ -11,8 +13,19 @@ async function bootstrap() {
     httpServer.setMaxListeners(50);
   }
 
-  // CORS and other gateway configurations
+  // Security and Gateway configurations
+  app.use(helmet({
+    contentSecurityPolicy: false, // disable CSP for Vite dev server proxy
+    crossOriginEmbedderPolicy: false
+  }));
   app.enableCors();
+  
+  app.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 1000, // limit each IP to 1000 requests per windowMs
+    }),
+  );
   
   // Proxy non-API requests to the Vite dev server (port 3001)
   app.use(
