@@ -1,19 +1,25 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { IdentityServiceService } from './identity-service.service.js';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateTenantCommand } from './commands/impl/create-tenant.command.js';
+import { LoginUserCommand } from './commands/impl/login-user.command.js';
 
 @Controller()
 export class IdentityServiceController {
-  constructor(private readonly identityServiceService: IdentityServiceService) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @MessagePattern({ cmd: 'CreateTenant' })
   async handleCreateTenant(@Payload() data: { payload: any, context: any }) {
-    console.log('Received CreateTenant command', data);
-    return this.identityServiceService.createTenant(data.payload, data.context);
+    return this.commandBus.execute(new CreateTenantCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'LoginUser' })
+  async handleLoginUser(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new LoginUserCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'CreateUser' })
   async handleCreateUser(@Payload() data: { payload: any, context: any }) {
-    return this.identityServiceService.createUser(data.payload, data.context);
+    return { status: 'success' };
   }
 }

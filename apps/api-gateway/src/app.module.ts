@@ -12,23 +12,24 @@ import { ContextMiddleware } from './common/middleware/context.middleware.js';
       {
         name: 'IDENTITY_SERVICE',
         transport: Transport.TCP,
-        options: {
-          host: '127.0.0.1',
-          port: 3002,
-        },
+        options: { host: '127.0.0.1', port: 3002 },
+      },
+      {
+        name: 'ACCOUNTING_SERVICE',
+        transport: Transport.TCP,
+        options: { host: '127.0.0.1', port: 3003 },
+      },
+      {
+        name: 'INVENTORY_SERVICE',
+        transport: Transport.TCP,
+        options: { host: '127.0.0.1', port: 3004 },
       },
     ]),
   ],
   controllers: [AppController],
   providers: [
-    {
-      provide: APP_FILTER,
-      useClass: GlobalExceptionFilter,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggingInterceptor,
-    }
+    { provide: APP_FILTER, useClass: GlobalExceptionFilter },
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor }
   ],
 })
 export class AppModule {
@@ -41,4 +42,3 @@ export class AppModule {
       );
   }
 }
-

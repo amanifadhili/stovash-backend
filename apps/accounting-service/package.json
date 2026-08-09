@@ -1,5 +1,5 @@
 {
-  "name": "@electronic-shop/identity-service",
+  "name": "@electronic-shop/accounting-service",
   "version": "1.0.0",
   "private": true,
   "type": "module",

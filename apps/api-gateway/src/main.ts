@@ -38,7 +38,7 @@ async function bootstrap() {
       return createProxyMiddleware({
         target: 'http://localhost:3001',
         changeOrigin: true,
-        ws: true, // proxy websockets
+        ws: false, // disable websocket proxying to prevent HMR reload loops
       })(req, res, next);
     }
   );

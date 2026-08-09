@@ -1,64 +1,61 @@
-import { Controller, Get, Post, Req, Inject, Body, InternalServerErrorException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Inject, Body, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { FirebaseAuthGuard } from './common/auth/firebase-auth.guard.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 @Controller()
 export class AppController {
-  constructor(@Inject('IDENTITY_SERVICE') private readonly identityClient: ClientProxy) {}
+  constructor(
+    @Inject('IDENTITY_SERVICE') private readonly identityClient: ClientProxy,
+    @Inject('ACCOUNTING_SERVICE') private readonly accountingClient: ClientProxy,
+    @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy
+  ) {}
 
   @Get('health')
   getHealth(): { status: string; timestamp: string } {
     return { status: 'ok', timestamp: new Date().toISOString() };
   }
-  
-  @Get('docs')
-  getDocs(): { message: string } {
-    return { message: 'API Documentation will be available here.' };
-  }
 
-  // Unified Command Endpoint
   @Post('api')
-  @UseGuards(FirebaseAuthGuard)
+  // @UseGuards(FirebaseAuthGuard)
   async handleCommand(@Req() req: any, @Body() body: any): Promise<any> {
     const { command, payload } = body || {};
-    
-    // Support legacy header command temporarily
     const cmd = command || req.headers['x-command'];
-    
+
     if (!cmd) {
-      return { status: 'error', message: 'Missing command identifier in body or headers' };
+      return { status: 'error', message: 'Missing command identifier in body' };
     }
 
-    if (cmd === 'ThrowError') {
-      throw new Error('This is a test error from command execution');
-    }
-    
     const context = req.context;
-    
-    // Command Router
+
     try {
       if (['CreateTenant', 'CreateUser', 'LoginUser'].includes(cmd)) {
-        const result = await firstValueFrom(
-          this.identityClient.send({ cmd }, { payload, context })
-        );
-        return { 
-          status: 'success', 
-          message: `Command ${cmd} processed successfully.`,
-          traceId: context?.traceId,
-          data: result
-        };
+        return await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
       }
       
+      if (['PostJournalEntry', 'CreateLedgerAccount'].includes(cmd)) {
+        return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
+      }
+
+      if (['AddProduct', 'AddInventoryItem'].includes(cmd)) {
+        return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
+      }
+
       return { 
-        status: 'success', 
-        message: `Command ${cmd} received but no handler found.`,
-        traceId: context?.traceId,
-        context,
-        payload
+        status: 'error', 
+        message: `Command ${cmd} is not routed properly.`,
+        traceId: context?.traceId
       };
     } catch (error: any) {
-      throw new InternalServerErrorException(error.message || 'Service communication error');
+      throw new HttpException(
+        {
+          status: 'error',
+          message: error.message || 'Service communication error',
+          errorCode: error.code || 'INTERNAL_ERROR',
+          details: error.details
+        },
+        error.httpStatus || HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

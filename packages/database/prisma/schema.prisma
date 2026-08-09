@@ -60,3 +60,65 @@ model WorkPeriod {
 
   shop      Shop      @relation(fields: [shopId], references: [id])
 }
+
+model LedgerAccount {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  code        String
+  name        String
+  type        String   // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
+  balance     Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  entries     LedgerEntry[]
+}
+
+model JournalEntry {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  workPeriodId String
+  description String
+  postedBy    String   // userId
+  createdAt   DateTime @default(now())
+  entries     LedgerEntry[]
+}
+
+model LedgerEntry {
+  id             String   @id @default(uuid())
+  journalEntryId String
+  accountId      String
+  type           String   // DEBIT, CREDIT
+  amount         Float
+  createdAt      DateTime @default(now())
+
+  journalEntry   JournalEntry  @relation(fields: [journalEntryId], references: [id])
+  account        LedgerAccount @relation(fields: [accountId], references: [id])
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  sku         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       InventoryItem[]
+}
+
+model InventoryItem {
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  productId     String
+  serialNumber  String
+  purchaseCost  Float
+  status        String   @default("AVAILABLE") // AVAILABLE, SOLD, DAMAGED, LOST
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  product       Product  @relation(fields: [productId], references: [id])
+}
