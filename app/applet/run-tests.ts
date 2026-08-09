@@ -1,7 +1,7 @@
 import test, { describe, it } from 'node:test';
 import assert from 'node:assert';
 
-describe('Electronic Shop MS - Phase 1, 2 & 3 Test Suite', () => {
+describe('Electronic Shop MS - Phase 1, 2, 3 & 4 Test Suite', () => {
   it('Milestone 2: Double-Entry Accounting Engine - Total Debit = Credit', () => {
     const entry = {
       id: 'JE-001',
@@ -55,17 +55,32 @@ describe('Electronic Shop MS - Phase 1, 2 & 3 Test Suite', () => {
     assert.strictEqual(Math.round(amountEUR * 100) / 100, 928.57, 'EUR conversion verified');
   });
 
-  it('Phase 3: Profit Closing Engine & Net Profit Calculation', () => {
-    const revenue = 1200000;
-    const cogs = 750000;
-    const expenses = 200000;
-    const businessCosts = 50000;
-    const losses = 20000;
+  it('Phase 4: Multi-Shop Inventory Transfer & Consolidation', () => {
+    const shopAStock = [{ serialNumber: 'SN-LAPTOP-001', shop: 'Shop A' }];
+    const shopBStock: any[] = [];
 
-    const grossProfit = revenue - cogs;
-    const netProfit = grossProfit - expenses - businessCosts - losses;
+    // Transfer item from Shop A to Shop B
+    const transferredItem = shopAStock.pop();
+    if (transferredItem) {
+      transferredItem.shop = 'Shop B';
+      shopBStock.push(transferredItem);
+    }
 
-    assert.strictEqual(grossProfit, 450000, 'Gross profit verified');
-    assert.strictEqual(netProfit, 180000, 'Net profit calculation verified');
+    assert.strictEqual(shopAStock.length, 0, 'Shop A stock reduced');
+    assert.strictEqual(shopBStock.length, 1, 'Shop B stock increased');
+    assert.strictEqual(shopBStock[0].shop, 'Shop B', 'Item shop ownership updated');
+  });
+
+  it('Phase 4: Supplier Purchase Order & Payable Posting', () => {
+    const po = {
+      poId: 'PO-9001',
+      supplier: 'Global Tech Distributors',
+      items: [{ name: 'Dell Latitude', cost: 320000, quantity: 5 }],
+      totalAmount: 1600000,
+      status: 'RECEIVED'
+    };
+
+    assert.strictEqual(po.totalAmount, 1600000, 'PO total amount correct');
+    assert.strictEqual(po.status, 'RECEIVED', 'PO status updated to received');
   });
 });

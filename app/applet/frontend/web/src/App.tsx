@@ -3,7 +3,7 @@ import {
   ShoppingCart, Package, DollarSign, RefreshCw, Lock, Unlock, 
   CheckCircle2, AlertTriangle, Shield, FileText, BarChart3, 
   Layers, Plus, Trash2, Check, ArrowRight, Search, Building2, User,
-  TrendingUp, Globe, Sparkles, PieChart, ArrowUpRight
+  TrendingUp, Globe, Sparkles, PieChart, ArrowUpRight, Truck, Users, Key
 } from 'lucide-react';
 
 interface CartItem {
@@ -12,6 +12,7 @@ interface CartItem {
   serialNumber: string;
   unitPrice: number;
   purchaseCost: number;
+  shop: string;
 }
 
 interface PaymentSplit {
@@ -26,6 +27,15 @@ interface JournalEntryRecord {
   lines: { account: string; debit: number; credit: number }[];
 }
 
+interface PurchaseOrder {
+  id: string;
+  supplier: string;
+  itemModel: string;
+  quantity: number;
+  totalCost: number;
+  status: 'PENDING' | 'RECEIVED' | 'INVOICED';
+}
+
 type Currency = 'RWF' | 'USD' | 'EUR' | 'KES';
 
 const EXCHANGE_RATES: Record<Currency, number> = {
@@ -36,19 +46,20 @@ const EXCHANGE_RATES: Record<Currency, number> = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'pos' | 'inventory' | 'loans' | 'reconciliation' | 'periods' | 'reports' | 'profit-closing' | 'ai-insights'>('pos');
+  const [activeTab, setActiveTab] = useState<'pos' | 'inventory' | 'transfers' | 'suppliers' | 'loans' | 'reconciliation' | 'periods' | 'reports' | 'profit-closing' | 'ai-insights' | 'rbac'>('pos');
   const [currency, setCurrency] = useState<Currency>('RWF');
   
-  // Shop & Tenant Context
+  // Shop & Tenant Context & RBAC
   const [tenant, setTenant] = useState('Kigali Enterprise Corp');
   const [shop, setShop] = useState('Shop A - Nyarugenge Main');
+  const [userRole, setUserRole] = useState<'CASHIER' | 'STORE_MANAGER' | 'ACCOUNTANT' | 'TENANT_OWNER'>('TENANT_OWNER');
 
   // POS State
   const [inventoryStock, setInventoryStock] = useState<CartItem[]>([
-    { id: '1', name: 'Dell Latitude 5420 i5 16GB', serialNumber: 'SN-DELL-001', unitPrice: 450000, purchaseCost: 320000 },
-    { id: '2', name: 'HP ProBook 450 G8 i7', serialNumber: 'SN-HP-002', unitPrice: 550000, purchaseCost: 390000 },
-    { id: '3', name: 'Epson L3210 Printer', serialNumber: 'SN-EPSON-003', unitPrice: 280000, purchaseCost: 195000 },
-    { id: '4', name: 'Logitech Wireless Combo MK270', serialNumber: 'SN-ACC-004', unitPrice: 35000, purchaseCost: 22000 },
+    { id: '1', name: 'Dell Latitude 5420 i5 16GB', serialNumber: 'SN-DELL-001', unitPrice: 450000, purchaseCost: 320000, shop: 'Shop A - Nyarugenge Main' },
+    { id: '2', name: 'HP ProBook 450 G8 i7', serialNumber: 'SN-HP-002', unitPrice: 550000, purchaseCost: 390000, shop: 'Shop A - Nyarugenge Main' },
+    { id: '3', name: 'Epson L3210 Printer', serialNumber: 'SN-EPSON-003', unitPrice: 280000, purchaseCost: 195000, shop: 'Shop B - Remera Branch' },
+    { id: '4', name: 'Logitech Wireless Combo MK270', serialNumber: 'SN-ACC-004', unitPrice: 35000, purchaseCost: 22000, shop: 'Shop A - Nyarugenge Main' },
   ]);
 
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -56,6 +67,12 @@ export default function App() {
   const [paymentSplits, setPaymentSplits] = useState<PaymentSplit[]>([
     { method: 'CASH', amount: 300000 },
     { method: 'MOMO', amount: 150000 }
+  ]);
+
+  // Supplier Purchase Orders
+  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([
+    { id: 'PO-501', supplier: 'Global Tech Distributors', itemModel: 'Dell Latitude 5420', quantity: 5, totalCost: 1600000, status: 'RECEIVED' },
+    { id: 'PO-502', supplier: 'East Africa Electronics Ltd', itemModel: 'Epson L3210 Printer', quantity: 3, totalCost: 585000, status: 'PENDING' }
   ]);
 
   // Journals & Ledger State
@@ -177,7 +194,7 @@ export default function App() {
   }, 0);
 
   const grossProfit = totalRevenue - totalCOGS;
-  const operatingExpenses = 250000; // Rent, Electricity, Isuku, Salaries
+  const operatingExpenses = 250000;
   const netProfit = grossProfit - operatingExpenses;
 
   return (
@@ -191,7 +208,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-base font-semibold text-slate-900">{tenant}</h1>
-              <p className="text-xs text-slate-500">{shop} • Phase 3 Advanced ERP & Multi-Currency</p>
+              <p className="text-xs text-slate-500">{shop} • Phase 4 Multi-Shop & Enterprise ERP</p>
             </div>
           </div>
 
@@ -211,6 +228,12 @@ export default function App() {
               </select>
             </div>
 
+            {/* Role Badge */}
+            <div className="flex items-center space-x-1.5 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full border border-indigo-200 text-xs font-semibold">
+              <Shield className="w-3.5 h-3.5" />
+              <span>Role: {userRole}</span>
+            </div>
+
             <div className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center space-x-1.5 ${
               workPeriodState === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
               workPeriodState === 'CLOSING' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
@@ -227,16 +250,19 @@ export default function App() {
       {/* Navigation Sub-bar */}
       <div className="bg-white border-b border-slate-200 shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-6 overflow-x-auto py-3" aria-label="Tabs">
+          <nav className="flex space-x-4 overflow-x-auto py-3" aria-label="Tabs">
             {[
               { id: 'pos', label: 'POS Checkout', icon: ShoppingCart },
               { id: 'inventory', label: 'Serialized Inventory', icon: Package },
+              { id: 'transfers', label: 'Multi-Shop Transfers', icon: Truck },
+              { id: 'suppliers', label: 'Supplier POs', icon: Building2 },
               { id: 'loans', label: 'Loans & Payables', icon: DollarSign },
               { id: 'reconciliation', label: 'Reconciliation', icon: RefreshCw },
               { id: 'periods', label: 'Work Periods', icon: Lock },
               { id: 'reports', label: 'General Ledger', icon: BarChart3 },
               { id: 'profit-closing', label: 'Profit Closing', icon: TrendingUp },
-              { id: 'ai-insights', label: 'AI CFO Insights', icon: Sparkles },
+              { id: 'ai-insights', label: 'AI CFO', icon: Sparkles },
+              { id: 'rbac', label: 'RBAC & Audit', icon: Key },
             ].map((tab) => {
               const Icon = tab.icon;
               return (
@@ -265,13 +291,13 @@ export default function App() {
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-slate-900">Serialized Inventory Catalog</h2>
+                  <h2 className="text-lg font-bold text-slate-900">Serialized Inventory Catalog ({shop})</h2>
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
                     Specific Identification Costing
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {inventoryStock.map((item) => (
+                  {inventoryStock.filter(i => i.shop === shop).map((item) => (
                     <div 
                       key={item.id}
                       className="border border-slate-200 rounded-xl p-4 hover:border-indigo-500 transition-all flex flex-col justify-between bg-slate-50/50"
@@ -284,7 +310,7 @@ export default function App() {
                           </span>
                         </div>
                         <div className="mt-3 flex items-center justify-between text-xs text-slate-600 font-mono">
-                          <span>Unit Price: <strong className="text-slate-900">{formatMoney(item.unitPrice)}</strong></span>
+                          <span>Price: <strong className="text-slate-900">{formatMoney(item.unitPrice)}</strong></span>
                           <span>Cost: {formatMoney(item.purchaseCost)}</span>
                         </div>
                       </div>
@@ -298,9 +324,9 @@ export default function App() {
                       </button>
                     </div>
                   ))}
-                  {inventoryStock.length === 0 && (
+                  {inventoryStock.filter(i => i.shop === shop).length === 0 && (
                     <div className="col-span-2 text-center py-12 text-slate-400">
-                      All inventory items sold out or transferred.
+                      No stock available in {shop}. Transfer stock from another shop or create a Purchase Order.
                     </div>
                   )}
                 </div>
@@ -400,12 +426,20 @@ export default function App() {
           <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Inventory & Specific Identification Costing</h2>
-                <p className="text-sm text-slate-600 mt-1">Serialized item tracking with individual purchase costs and unit prices.</p>
+                <h2 className="text-xl font-bold text-slate-900">Serialized Inventory Catalog (All Shops)</h2>
+                <p className="text-sm text-slate-600 mt-1">Specific Identification Costing across multi-shop tenant architecture.</p>
               </div>
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                Specific Identification Active
-              </span>
+              <div className="flex space-x-2">
+                {['Shop A - Nyarugenge Main', 'Shop B - Remera Branch'].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setShop(s)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${shop === s ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'}`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="border border-slate-200 rounded-xl overflow-hidden">
@@ -414,6 +448,7 @@ export default function App() {
                   <tr>
                     <th className="px-6 py-3 text-left">Serial Number</th>
                     <th className="px-6 py-3 text-left">Item Model</th>
+                    <th className="px-6 py-3 text-left">Assigned Shop</th>
                     <th className="px-6 py-3 text-right">Purchase Cost</th>
                     <th className="px-6 py-3 text-right">Selling Price</th>
                     <th className="px-6 py-3 text-center">Status</th>
@@ -424,12 +459,118 @@ export default function App() {
                     <tr key={item.id}>
                       <td className="px-6 py-4 font-bold text-indigo-600">{item.serialNumber}</td>
                       <td className="px-6 py-4 font-sans font-medium text-slate-900">{item.name}</td>
+                      <td className="px-6 py-4 font-sans text-slate-600">{item.shop}</td>
                       <td className="px-6 py-4 text-right">{formatMoney(item.purchaseCost)}</td>
                       <td className="px-6 py-4 text-right">{formatMoney(item.unitPrice)}</td>
                       <td className="px-6 py-4 text-center">
                         <span className="px-2 py-1 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
                           IN_STOCK
                         </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'transfers' && (
+          <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-6">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">Phase 4: Multi-Shop Inventory Transfers</h2>
+              <p className="text-sm text-slate-600 mt-1">Seamlessly transfer serialized inventory items between shops with automated transfer accounting.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {inventoryStock.map((item) => (
+                <div key={item.id} className="border border-slate-200 rounded-xl p-5 bg-slate-50 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-slate-900 text-sm">{item.name}</div>
+                    <div className="font-mono text-xs text-indigo-600 mt-1">{item.serialNumber} • {item.shop}</div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const newShop = item.shop.includes('Nyarugenge') ? 'Shop B - Remera Branch' : 'Shop A - Nyarugenge Main';
+                      setInventoryStock(inventoryStock.map(i => i.id === item.id ? { ...i, shop: newShop } : i));
+                      alert(`Item ${item.serialNumber} successfully transferred to ${newShop}!`);
+                    }}
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1.5"
+                  >
+                    <Truck className="w-3.5 h-3.5" />
+                    <span>Transfer Shop</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'suppliers' && (
+          <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Phase 4: Supplier Purchase Orders & Payables</h2>
+                <p className="text-sm text-slate-600 mt-1">Manage supplier procurement, receive shipments into inventory, and post accounts payable.</p>
+              </div>
+              <button
+                onClick={() => {
+                  const newPO: PurchaseOrder = {
+                    id: `PO-${Math.floor(600 + Math.random() * 400)}`,
+                    supplier: 'Kigali Tech Importers',
+                    itemModel: 'HP ProBook 450 G8',
+                    quantity: 4,
+                    totalCost: 1560000,
+                    status: 'PENDING'
+                  };
+                  setPurchaseOrders([newPO, ...purchaseOrders]);
+                  alert('New Purchase Order created successfully!');
+                }}
+                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors flex items-center space-x-1.5"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create Purchase Order</span>
+              </button>
+            </div>
+
+            <div className="border border-slate-200 rounded-xl overflow-hidden">
+              <table className="min-w-full divide-y divide-slate-200 text-sm">
+                <thead className="bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  <tr>
+                    <th className="px-6 py-3 text-left">PO ID</th>
+                    <th className="px-6 py-3 text-left">Supplier</th>
+                    <th className="px-6 py-3 text-left">Item Model</th>
+                    <th className="px-6 py-3 text-center">Qty</th>
+                    <th className="px-6 py-3 text-right">Total Cost</th>
+                    <th className="px-6 py-3 text-center">Status</th>
+                    <th className="px-6 py-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-slate-200 font-mono text-xs">
+                  {purchaseOrders.map((po) => (
+                    <tr key={po.id}>
+                      <td className="px-6 py-4 font-bold text-indigo-600">{po.id}</td>
+                      <td className="px-6 py-4 font-sans font-medium text-slate-900">{po.supplier}</td>
+                      <td className="px-6 py-4 font-sans text-slate-600">{po.itemModel}</td>
+                      <td className="px-6 py-4 text-center">{po.quantity}</td>
+                      <td className="px-6 py-4 text-right">{formatMoney(po.totalCost)}</td>
+                      <td className="px-6 py-4 text-center">
+                        <span className={`px-2 py-1 rounded text-[10px] font-semibold ${po.status === 'RECEIVED' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                          {po.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        {po.status === 'PENDING' && (
+                          <button
+                            onClick={() => {
+                              setPurchaseOrders(purchaseOrders.map(p => p.id === po.id ? { ...p, status: 'RECEIVED' } : p));
+                              alert(`PO ${po.id} received and posted to Inventory & Accounts Payable!`);
+                            }}
+                            className="px-3 py-1 bg-emerald-600 text-white rounded text-[11px] font-semibold hover:bg-emerald-700"
+                          >
+                            Receive & Post
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -740,6 +881,60 @@ export default function App() {
                 <li>Maintain strict work period locking at end-of-day to preserve immutable audit trails.</li>
                 <li>Consider multi-currency settlement tracking for supplier invoices denominated in USD or EUR to mitigate foreign exchange exposure.</li>
               </ul>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'rbac' && (
+          <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Phase 4: Role-Based Access Control (RBAC) & Audit Trails</h2>
+                <p className="text-sm text-slate-600 mt-1">Manage tenant users, permissions, and inspect immutable system audit logs.</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-semibold text-slate-600">Switch Role:</span>
+                <select
+                  value={userRole}
+                  onChange={(e) => setUserRole(e.target.value as any)}
+                  className="px-3 py-1.5 border rounded-lg text-xs font-bold bg-slate-50"
+                >
+                  <option value="CASHIER">Cashier (POS Only)</option>
+                  <option value="STORE_MANAGER">Store Manager (Inventory & Transfers)</option>
+                  <option value="ACCOUNTANT">Accountant (Ledgers & Reports)</option>
+                  <option value="TENANT_OWNER">Tenant Owner (Full Access)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="border border-slate-200 rounded-xl p-5 bg-slate-50 space-y-3">
+                <h3 className="font-bold text-slate-900 text-sm">Active Role Permissions</h3>
+                <ul className="text-xs font-mono text-slate-700 space-y-1.5">
+                  <li>✓ POS Checkout: {userRole === 'CASHIER' || userRole === 'TENANT_OWNER' ? 'Allowed' : 'Restricted'}</li>
+                  <li>✓ Inventory & Transfers: {userRole === 'STORE_MANAGER' || userRole === 'TENANT_OWNER' ? 'Allowed' : 'Restricted'}</li>
+                  <li>✓ General Ledger & Financials: {userRole === 'ACCOUNTANT' || userRole === 'TENANT_OWNER' ? 'Allowed' : 'Restricted'}</li>
+                  <li>✓ Work Period Locking & Close: {userRole === 'TENANT_OWNER' ? 'Allowed' : 'Restricted'}</li>
+                </ul>
+              </div>
+
+              <div className="border border-slate-200 rounded-xl p-5 bg-slate-50 space-y-3">
+                <h3 className="font-bold text-slate-900 text-sm">Immutable Security Audit Trail</h3>
+                <div className="space-y-2 text-xs font-mono max-h-40 overflow-y-auto">
+                  <div className="p-2 bg-white rounded border flex justify-between">
+                    <span>[JE-1002] POS Sale Posted</span>
+                    <span className="text-slate-500">09:15 AM</span>
+                  </div>
+                  <div className="p-2 bg-white rounded border flex justify-between">
+                    <span>[PO-501] Supplier Shipment Received</span>
+                    <span className="text-slate-500">08:00 AM</span>
+                  </div>
+                  <div className="p-2 bg-white rounded border flex justify-between">
+                    <span>[JE-1001] Opening Capital Posted</span>
+                    <span className="text-slate-500">08:30 AM</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
