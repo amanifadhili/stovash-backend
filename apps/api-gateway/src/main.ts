@@ -3,8 +3,14 @@ import { AppModule } from './app.module.js';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 async function bootstrap() {
+  process.setMaxListeners(50);
   const app = await NestFactory.create(AppModule);
   
+  const httpServer = app.getHttpServer();
+  if (httpServer) {
+    httpServer.setMaxListeners(50);
+  }
+
   // CORS and other gateway configurations
   app.enableCors();
   
