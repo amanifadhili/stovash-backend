@@ -103,9 +103,13 @@ if (process.env.OPENSEARCH_ENABLED === 'true') {
         this.emit('logged', info);
       });
 
+      const serviceName = info.service || 'default';
+      const date = new Date().toISOString().split('T')[0];
+      const index = `electronic-shop-${serviceName}-logs-${date}`;
+
       openSearchClient
         .index({
-          index: `electronic-shop-logs-${new Date().toISOString().split('T')[0]}`,
+          index,
           body: {
             ...info,
             '@timestamp': new Date().toISOString(),
