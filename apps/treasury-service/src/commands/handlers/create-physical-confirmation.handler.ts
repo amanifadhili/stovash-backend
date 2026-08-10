@@ -37,6 +37,28 @@ export class CreatePhysicalConfirmationHandler extends BaseCommandHandler<Create
         }
       });
 
+      // Log audit action
+      try {
+        await prisma.auditLog.create({
+          data: {
+            tenantId: payload.tenantId,
+            shopId: payload.shopId,
+            userId: payload.confirmedBy,
+            action: 'CreatePhysicalConfirmation',
+            resource: 'PhysicalConfirmation',
+            resourceId: confirmation.id,
+            traceId: context?.traceId || null,
+            details: JSON.stringify({
+              methodId: payload.methodId,
+              amount: payload.amount,
+              notes: payload.notes
+            })
+          }
+        });
+      } catch (auditError) {
+        console.error('Failed to log audit action:', auditError);
+      }
+
       // Publish PhysicalConfirmationCreated event
       await this.eventBus.publish(
         {

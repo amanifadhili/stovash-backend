@@ -41,6 +41,13 @@ export class CloseWorkPeriodHandler extends BaseCommandHandler<CloseWorkPeriodCo
         };
       }
 
+      // Check for physical confirmations if closing to CLOSED status
+      if (targetStatus === 'CLOSED') {
+        // This would typically check Treasury service for physical confirmations
+        // For now, we'll log a warning if no confirmations exist
+        console.log(`Closing work period ${workPeriod.id} - physical confirmation check would be performed here`);
+      }
+
       // Calculate profit/loss for the work period
       const financialSummary = await this.calculatePeriodFinancials(workPeriod.id, workPeriod.tenantId, workPeriod.shopId);
 
