@@ -1,0 +1,138 @@
+// Inventory Service Database Schema
+// Handles: Products, Inventory Items, Serials, Categories, Movements
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("INVENTORY_DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  sku         String?
+  brand       String?
+  model       String?
+  category    String?
+  status      String   @default("ACTIVE") // ACTIVE, DISCONTINUED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       InventoryItem[]
+  attributes  ProductAttribute[]
+
+  @@index([tenantId])
+  @@index([sku])
+  @@index([category])
+  @@index([status])
+  @@map("products")
+}
+
+model ProductAttribute {
+  id        String   @id @default(uuid())
+  productId String
+  name      String
+  value     String
+  createdAt DateTime @default(now())
+
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+  @@map("product_attributes")
+}
+
+model InventoryItem {
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  productId     String
+  serialNumber  String   @unique
+  purchaseCost  Float
+  status        String   @default("AVAILABLE") // AVAILABLE, SOLD, DAMAGED, LOST, RESERVED
+  location      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  product       Product          @relation(fields: [productId], references: [id])
+  movements     InventoryMovement[]
+  adjustments   InventoryAdjustment[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([productId])
+  @@index([serialNumber])
+  @@index([status])
+  @@map("inventory_items")
+}
+
+model InventoryCategory {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  parentId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([parentId])
+  @@map("inventory_categories")
+}
+
+model InventoryBrand {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@map("inventory_brands")
+}
+
+model InventoryMovement {
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  itemId        String
+  type          String   // RECEIPT, TRANSFER, SALE, RETURN, ADJUSTMENT
+  quantity      Float
+  cost          Float
+  referenceId   String?  // PurchaseOrder, SalesOrder, etc.
+  referenceType String?
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  item          InventoryItem @relation(fields: [itemId], references: [id])
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([itemId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("inventory_movements")
+}
+
+model InventoryAdjustment {
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  itemId        String
+  type          String   // DAMAGE, LOSS, THEFT, CORRECTION
+  quantity      Float
+  reason        String?
+  approvedBy    String?  // userId
+  createdAt     DateTime @default(now())
+
+  item          InventoryItem @relation(fields: [itemId], references: [id])
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([itemId])
+  @@index([type])
+  @@map("inventory_adjustments")
+}

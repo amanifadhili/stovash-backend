@@ -1,0 +1,121 @@
+// Customer Service Database Schema
+// Handles: Customers, Profiles, Loans, Statements
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CUSTOMER_DATABASE_URL")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  tenantId  String
+  shopId    String
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  status    String   @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  addresses CustomerAddress[]
+  contacts  CustomerContact[]
+  loans     CustomerLoan[]
+  payments  CustomerPayment[]
+  statements CustomerStatement[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([status])
+  @@map("customers")
+}
+
+model CustomerAddress {
+  id         String   @id @default(uuid())
+  customerId String
+  street     String
+  city       String
+  state      String?
+  postalCode String?
+  country    String?
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@map("customer_addresses")
+}
+
+model CustomerContact {
+  id         String   @id @default(uuid())
+  customerId String
+  type       String   // PHONE, EMAIL, SOCIAL
+  value      String
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@map("customer_contacts")
+}
+
+model CustomerLoan {
+  id           String   @id @default(uuid())
+  customerId   String
+  tenantId     String
+  shopId       String
+  amount       Float
+  interestRate Float    @default(0)
+  dueDate      DateTime?
+  status       String   @default("ACTIVE") // ACTIVE, PAID, OVERDUE
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  payments     CustomerPayment[]
+
+  @@index([customerId])
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([status])
+  @@map("customer_loans")
+}
+
+model CustomerPayment {
+  id         String   @id @default(uuid())
+  customerId String
+  loanId     String?
+  amount     Float
+  method     String   // CASH, CARD, TRANSFER
+  reference  String?
+  createdAt  DateTime @default(now())
+
+  customer   Customer     @relation(fields: [customerId], references: [id])
+  loan       CustomerLoan? @relation(fields: [loanId], references: [id])
+
+  @@index([customerId])
+  @@index([loanId])
+  @@map("customer_payments")
+}
+
+model CustomerStatement {
+  id         String   @id @default(uuid())
+  customerId String
+  period     String   // YYYY-MM
+  balance    Float
+  generatedAt DateTime @default(now())
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@index([period])
+  @@map("customer_statements")
+}

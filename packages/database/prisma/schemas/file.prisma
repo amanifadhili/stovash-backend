@@ -1,0 +1,50 @@
+// File Service Database Schema
+// Handles: Files, Metadata, Attachments
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("FILE_DATABASE_URL")
+}
+
+model File {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  originalName String
+  mimeType    String
+  size        Int
+  path        String   // storage path/key
+  bucket      String   // S3 bucket or storage container
+  url         String?  // public URL
+  metadata    String?  // JSON additional metadata
+  uploadedBy  String?  // userId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  attachments FileAttachment[]
+
+  @@index([tenantId])
+  @@index([bucket])
+  @@index([uploadedBy])
+  @@map("files")
+}
+
+model FileAttachment {
+  id          String   @id @default(uuid())
+  fileId      String
+  entityType  String   // CUSTOMER, SUPPLIER, PRODUCT, SALE, PURCHASE, etc.
+  entityId    String
+  fieldName   String?  // e.g. "profile_image", "document"
+  createdAt   DateTime @default(now())
+
+  file        File     @relation(fields: [fileId], references: [id])
+
+  @@index([fileId])
+  @@index([entityType])
+  @@index([entityId])
+  @@map("file_attachments")
+}

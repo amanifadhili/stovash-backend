@@ -1,0 +1,146 @@
+// Tenant Service Database Schema
+// Handles: Tenants, Shops, Staff, Roles, Permissions
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("TENANT_DATABASE_URL")
+}
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  status    String   @default("ACTIVE") // ACTIVE, SUSPENDED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shops     Shop[]
+  staff     Staff[]
+
+  @@index([status])
+  @@map("tenants")
+}
+
+model Shop {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  location    String?
+  status      String   @default("ACTIVE") // ACTIVE, CLOSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  staff       Staff[]
+  workPeriods WorkPeriod[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("shops")
+}
+
+model Staff {
+  id        String   @id @default(uuid())
+  tenantId  String
+  shopId    String?
+  userId    String   @unique
+  firstName String
+  lastName  String
+  email     String
+  role      String   @default("STAFF") // ADMIN, MANAGER, STAFF
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  shop        Shop?        @relation(fields: [shopId], references: [id])
+  staffRoles  StaffRole[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([userId])
+  @@index([email])
+  @@map("staff")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  permissions RolePermission[]
+  staffRoles  StaffRole[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  resource    String   // e.g. "sales", "inventory", "accounting"
+  action      String   // e.g. "create", "read", "update", "delete"
+  createdAt   DateTime @default(now())
+
+  rolePermissions RolePermission[]
+
+  @@index([resource])
+  @@index([action])
+  @@map("permissions")
+}
+
+model StaffRole {
+  id        String   @id @default(uuid())
+  staffId   String
+  roleId    String
+  createdAt DateTime @default(now())
+
+  staff     Staff    @relation(fields: [staffId], references: [id])
+  role      Role     @relation(fields: [roleId], references: [id])
+
+  @@unique([staffId, roleId])
+  @@index([staffId])
+  @@index([roleId])
+  @@map("staff_roles")
+}
+
+model RolePermission {
+  id           String   @id @default(uuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime @default(now())
+
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model WorkPeriod {
+  id        String    @id @default(uuid())
+  shopId    String
+  openedBy  String    // staffId
+  closedBy  String?   // staffId
+  openedAt  DateTime  @default(now())
+  closedAt  DateTime?
+  status    String    @default("OPEN") // OPEN, CLOSED
+
+  shop      Shop      @relation(fields: [shopId], references: [id])
+
+  @@index([shopId])
+  @@index([status])
+  @@map("work_periods")
+}

@@ -1,0 +1,157 @@
+// Accounting Service Database Schema
+// Handles: Chart of Accounts, Journal Entries, Ledger, Work Periods
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("ACCOUNTING_DATABASE_URL")
+}
+
+model ChartOfAccount {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  version   Int      @default(1)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts  Account[]
+
+  @@index([tenantId])
+  @@map("chart_of_accounts")
+}
+
+model Account {
+  id              String   @id @default(uuid())
+  tenantId        String
+  chartId         String
+  code            String
+  name            String
+  type            String   // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
+  parentAccountId String?
+  balance         Float    @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  chart           ChartOfAccount @relation(fields: [chartId], references: [id])
+  parent          Account?       @relation("AccountHierarchy", fields: [parentAccountId], references: [id])
+  children        Account[]      @relation("AccountHierarchy")
+  journalLines    JournalLine[]
+  accountBalances AccountBalance[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([chartId])
+  @@index([type])
+  @@map("accounts")
+}
+
+model JournalEntry {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  workPeriodId String?
+  description String
+  postedBy    String   // userId
+  postedAt    DateTime @default(now())
+  status      String   @default("POSTED") // DRAFT, POSTED
+
+  lines       JournalLine[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([workPeriodId])
+  @@index([postedAt])
+  @@map("journal_entries")
+}
+
+model JournalLine {
+  id             String   @id @default(uuid())
+  journalEntryId String
+  accountId      String
+  type           String   // DEBIT, CREDIT
+  amount         Float
+  description    String?
+  createdAt      DateTime @default(now())
+
+  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id])
+  account        Account      @relation(fields: [accountId], references: [id])
+
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@map("journal_lines")
+}
+
+model WorkPeriod {
+  id              String   @id @default(uuid())
+  tenantId        String
+  shopId          String
+  openedBy        String   // userId
+  closedBy        String?  // userId
+  openedAt        DateTime @default(now())
+  closedAt        DateTime?
+  status          String   @default("OPEN") // OPEN, CLOSED, PENDING_CLOSING
+  openingBalance  Float    @default(0)
+  closingBalance  Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([status])
+  @@map("work_periods")
+}
+
+model PostingBatch {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  workPeriodId String?
+  entries     String[] // JournalEntry IDs
+  postedBy    String   // userId
+  postedAt    DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([workPeriodId])
+  @@map("posting_batches")
+}
+
+model AccountBalance {
+  id           String   @id @default(uuid())
+  accountId    String
+  tenantId     String
+  shopId       String?
+  workPeriodId String?
+  balance      Float
+  debitTotal   Float    @default(0)
+  creditTotal  Float    @default(0)
+  updatedAt    DateTime @updatedAt
+
+  account      Account @relation(fields: [accountId], references: [id])
+
+  @@unique([accountId, tenantId, shopId, workPeriodId])
+  @@index([accountId])
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([workPeriodId])
+  @@map("account_balances")
+}
+
+model ProfitDistribution {
+  id          String   @id @default(uuid())
+  tenantId    String
+  workPeriodId String
+  amount      Float
+  distributedBy String // userId
+  distributedAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([workPeriodId])
+  @@map("profit_distributions")
+}

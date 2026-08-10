@@ -1,0 +1,92 @@
+// Report Service Database Schema
+// Handles: Reports, Dashboards, Materialized Views, Read Models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("REPORT_DATABASE_URL")
+}
+
+model ReportConfig {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  type        String   // SALES, PURCHASE, INVENTORY, FINANCIAL, CUSTOMER, SUPPLIER
+  description String?
+  parameters  String?  // JSON
+  schedule    String?  // cron expression
+  isActive    Boolean  @default(true)
+  createdBy   String?  // userId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([type])
+  @@map("report_configs")
+}
+
+model DashboardConfig {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String?
+  name        String
+  layout      String   // JSON layout configuration
+  widgets     String   // JSON widget definitions
+  isDefault   Boolean  @default(false)
+  createdBy   String?  // userId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@map("dashboard_configs")
+}
+
+model MaterializedView {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  query       String
+  refreshInterval Int   // seconds
+  lastRefresh DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([name])
+  @@map("materialized_views")
+}
+
+model ReadModel {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String?
+  name        String
+  data        String   // JSON data
+  version     Int      @default(1)
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, shopId, name])
+  @@index([tenantId])
+  @@index([shopId])
+  @@map("read_models")
+}
+
+model Snapshot {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String?
+  type        String   // DAILY, WEEKLY, MONTHLY
+  data        String   // JSON snapshot data
+  capturedAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([type])
+  @@index([capturedAt])
+  @@map("snapshots")
+}

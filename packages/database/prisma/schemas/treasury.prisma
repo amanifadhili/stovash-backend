@@ -1,0 +1,120 @@
+// Treasury Service Database Schema
+// Handles: Payment Methods, Transfers, Physical Confirmations
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("TREASURY_DATABASE_URL")
+}
+
+model PaymentMethod {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  name        String
+  type        String   // CASH, BANK, MOBILE, CARD
+  accountNumber String?
+  bankName    String?
+  balance     Float    @default(0)
+  currency    String   @default("USD")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transfers   Transfer[]
+  confirmations PhysicalConfirmation[]
+  deposits    OperationalDeposit[]
+  reconciliations Reconciliation[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([type])
+  @@map("payment_methods")
+}
+
+model Transfer {
+  id              String   @id @default(uuid())
+  tenantId        String
+  shopId          String
+  fromMethodId    String
+  toMethodId      String
+  amount          Float
+  reference       String?
+  status          String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  approvedBy      String?  // userId
+  approvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  fromMethod      PaymentMethod @relation("FromMethod", fields: [fromMethodId], references: [id])
+  toMethod       PaymentMethod @relation("ToMethod", fields: [toMethodId], references: [id])
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([fromMethodId])
+  @@index([toMethodId])
+  @@index([status])
+  @@map("transfers")
+}
+
+model PhysicalConfirmation {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  methodId    String
+  confirmedBy String   // userId
+  amount      Float
+  notes       String?
+  confirmedAt DateTime @default(now())
+
+  method      PaymentMethod @relation(fields: [methodId], references: [id])
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([methodId])
+  @@index([confirmedAt])
+  @@map("physical_confirmations")
+}
+
+model OperationalDeposit {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  methodId    String
+  amount      Float
+  depositedBy String   // userId
+  notes       String?
+  depositedAt DateTime @default(now())
+
+  method      PaymentMethod @relation(fields: [methodId], references: [id])
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([methodId])
+  @@index([depositedAt])
+  @@map("operational_deposits")
+}
+
+model Reconciliation {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  methodId    String
+  systemBalance Float
+  physicalBalance Float
+  difference  Float
+  reconciledBy String   // userId
+  reconciledAt DateTime @default(now())
+  notes       String?
+
+  method      PaymentMethod @relation(fields: [methodId], references: [id])
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([methodId])
+  @@index([reconciledAt])
+  @@map("reconciliations")
+}

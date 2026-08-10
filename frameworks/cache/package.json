@@ -1,5 +1,5 @@
 {
-  "name": "@electronic-shop/framework-event",
+  "name": "@electronic-shop/framework-cache",
   "version": "1.0.0",
   "private": true,
   "main": "dist/index.js",
@@ -9,12 +9,9 @@
   },
   "dependencies": {
     "@electronic-shop/types": "*",
-    "@electronic-shop/framework-validation": "*",
-    "amqplib": "^0.10.3",
-    "uuid": "^9.0.0"
+    "ioredis": "^5.3.2"
   },
   "devDependencies": {
-    "@types/amqplib": "^0.10.4",
     "typescript": "^5.3.3"
   }
 }

@@ -1,0 +1,108 @@
+// Notification Service Database Schema
+// Handles: Email, SMS, Push, In-App, Webhooks
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("NOTIFICATION_DATABASE_URL")
+}
+
+model NotificationQueue {
+  id          String   @id @default(uuid())
+  tenantId    String
+  recipientId String
+  type        String   // EMAIL, SMS, PUSH, IN_APP, WEBHOOK
+  channel     String
+  subject     String?
+  content     String   // JSON or text
+  status      String   @default("PENDING") // PENDING, SENT, FAILED, RETRYING
+  priority    Int      @default(5)
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(3)
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  error       String?
+  metadata    String?  // JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([recipientId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("notification_queue")
+}
+
+model NotificationTemplate {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  type        String   // EMAIL, SMS, PUSH
+  subject     String?
+  body        String   // template with placeholders
+  variables   String?  // JSON array of variable names
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([type])
+  @@map("notification_templates")
+}
+
+model Webhook {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  url         String
+  events      String[] // array of event types to subscribe to
+  secret      String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  logs        WebhookLog[]
+
+  @@index([tenantId])
+  @@index([isActive])
+  @@map("webhooks")
+}
+
+model WebhookLog {
+  id          String   @id @default(uuid())
+  webhookId   String
+  eventType   String
+  payload     String   // JSON
+  responseCode Int?
+  responseBody String?
+  status      String   // SUCCESS, FAILED
+  attemptedAt DateTime @default(now())
+
+  webhook     Webhook @relation(fields: [webhookId], references: [id])
+
+  @@index([webhookId])
+  @@index([eventType])
+  @@index([attemptedAt])
+  @@map("webhook_logs")
+}
+
+model NotificationHistory {
+  id          String   @id @default(uuid())
+  tenantId    String
+  recipientId String
+  type        String
+  channel     String
+  subject     String?
+  content     String?
+  status      String
+  sentAt      DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([recipientId])
+  @@index([type])
+  @@index([sentAt])
+  @@map("notification_history")
+}

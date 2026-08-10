@@ -1,0 +1,65 @@
+// Search Service Database Schema
+// Handles: Global Search, Indexing, Suggestions
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SEARCH_DATABASE_URL")
+}
+
+model SearchIndex {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String?
+  entityType  String   // CUSTOMER, SUPPLIER, PRODUCT, SALE, PURCHASE
+  entityId    String
+  title       String
+  content     String
+  metadata    String?  // JSON additional fields
+  score       Float    @default(0)
+  indexedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, entityType, entityId])
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([entityType])
+  @@index([title])
+  @@map("search_index")
+}
+
+model SearchDocument {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String?
+  entityType  String
+  entityId    String
+  document    String   // Full text content
+  language    String   @default("en")
+  indexedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, entityType, entityId])
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([entityType])
+  @@map("search_documents")
+}
+
+model SearchSuggestion {
+  id          String   @id @default(uuid())
+  tenantId    String
+  term        String
+  frequency   Int      @default(1)
+  lastUsedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@unique([tenantId, term])
+  @@index([tenantId])
+  @@index([term])
+  @@index([frequency])
+  @@map("search_suggestions")
+}

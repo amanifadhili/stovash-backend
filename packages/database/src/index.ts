@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
+import { MigrationService } from './migration.service.js';
 
 export * from '@prisma/client';
+export { MigrationService };
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
