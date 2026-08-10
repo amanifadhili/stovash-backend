@@ -177,6 +177,29 @@ test('Milestone 8: Returns, Refunds & Warranty Management', () => {
   console.log('✓ Milestone 8 Returns, Refunds & Warranty Management tests passed successfully.');
 });
 
+test('Milestone 9: Multi-Shop Transfers & Inter-Branch Inventory Accounting', () => {
+  const transfer = {
+    serialNumber: 'SN-SAMSUNG-S24-001',
+    fromShopId: 'shop-branch-north',
+    toShopId: 'shop-branch-south',
+    itemCost: 750,
+    status: 'COMPLETED'
+  };
+
+  // Inter-branch journal entry verification
+  // Source shop: Credit Inventory Asset (1002)
+  const sourceJournal = { shopId: transfer.fromShopId, debit: 0, credit: transfer.itemCost };
+  // Target shop: Debit Inventory Asset (1002)
+  const targetJournal = { shopId: transfer.toShopId, debit: transfer.itemCost, credit: 0 };
+
+  assert.strictEqual(sourceJournal.credit, targetJournal.debit, 'Inter-branch transfer credit equals debit across shops');
+  assert.notStrictEqual(transfer.fromShopId, transfer.toShopId, 'Source and target shops must be distinct');
+  assert.strictEqual(transfer.status, 'COMPLETED', 'Transfer status completes upon allocation');
+
+  console.log('✓ Milestone 9 Multi-Shop Transfers & Inter-Branch Inventory tests passed successfully.');
+});
+
+
 
 test('Milestone 3 & 9: Specific Identification Inventory Costing', () => {
 

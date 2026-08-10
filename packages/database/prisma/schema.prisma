@@ -207,3 +207,18 @@ model WarrantyClaim {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
+
+model InventoryTransfer {
+  id             String   @id @default(uuid())
+  tenantId       String
+  fromShopId     String
+  toShopId       String
+  transferNumber String   @unique
+  serialNumber   String
+  status         String   @default("COMPLETED") // IN_TRANSIT, COMPLETED, CANCELLED
+  notes          String?
+  createdById    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+

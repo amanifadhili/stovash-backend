@@ -7,6 +7,7 @@ import { ProcessPosSaleCommand } from './commands/impl/process-pos-sale.command.
 import { ReceiveGoodsCommand } from './commands/impl/receive-goods.command.js';
 import { ProcessSalesReturnCommand } from './commands/impl/process-sales-return.command.js';
 import { CreateWarrantyClaimCommand } from './commands/impl/create-warranty-claim.command.js';
+import { TransferInventoryCommand } from './commands/impl/transfer-inventory.command.js';
 
 @Controller()
 export class InventoryServiceController {
@@ -41,7 +42,13 @@ export class InventoryServiceController {
   async handleCreateWarrantyClaim(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new CreateWarrantyClaimCommand(data.payload, data.context));
   }
+
+  @MessagePattern({ cmd: 'TransferInventory' })
+  async handleTransferInventory(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new TransferInventoryCommand(data.payload, data.context));
+  }
 }
+
 
 
 
