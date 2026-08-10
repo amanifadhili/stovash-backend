@@ -4,8 +4,12 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import { initializeTracing } from '@electronic-shop/tracing';
 
 async function bootstrap() {
+  // Initialize OpenTelemetry tracing
+  initializeTracing('api-gateway');
+
   process.setMaxListeners(50);
   const app = await NestFactory.create(AppModule);
   
