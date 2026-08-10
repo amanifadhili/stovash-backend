@@ -142,8 +142,15 @@ export class ProcessPosSaleHandler extends BaseCommandHandler<ProcessPosSaleComm
           include: { items: true }
         });
 
-        // 2. Mark inventory items as SOLD
+        // 2. Mark inventory items as RESERVED then SOLD per AD-0016 lifecycle
         for (const item of allocatedItems) {
+          // First transition to RESERVED
+          await tx.inventoryItem.update({
+            where: { id: item.invItem.id },
+            data: { status: 'RESERVED' }
+          });
+          
+          // Then transition to SOLD
           await tx.inventoryItem.update({
             where: { id: item.invItem.id },
             data: { status: 'SOLD' }

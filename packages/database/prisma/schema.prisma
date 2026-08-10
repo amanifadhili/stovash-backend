@@ -116,7 +116,7 @@ model InventoryItem {
   productId     String
   serialNumber  String
   purchaseCost  Float
-  status        String   @default("AVAILABLE") // AVAILABLE, SOLD, DAMAGED, LOST
+  status        String   @default("CREATED") // CREATED, RECEIVED, AVAILABLE, RESERVED, SOLD, RETURNED, DAMAGED, LOST, STOLEN, DISPOSED
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

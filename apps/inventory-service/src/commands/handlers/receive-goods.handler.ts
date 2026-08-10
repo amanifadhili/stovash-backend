@@ -132,9 +132,10 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
           include: { items: true }
         });
 
-        // 2. Create serialized InventoryItems
+        // 2. Create serialized InventoryItems with proper lifecycle status
         const createdInventoryItems = [];
         for (const item of payload.items) {
+          // Create item with RECEIVED status per AD-0016 lifecycle
           const invItem = await tx.inventoryItem.create({
             data: {
               tenantId,
@@ -142,10 +143,17 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
               productId: item.productId,
               serialNumber: item.serialNumber,
               purchaseCost: item.purchaseCost,
-              status: 'AVAILABLE'
+              status: 'RECEIVED'
             }
           });
-          createdInventoryItems.push(invItem);
+          
+          // Immediately transition to AVAILABLE after receiving
+          const updatedItem = await tx.inventoryItem.update({
+            where: { id: invItem.id },
+            data: { status: 'AVAILABLE' }
+          });
+          
+          createdInventoryItems.push(updatedItem);
         }
 
         // 3. Post Journal Entry (Debit Inventory Asset, Credit AP/Cash)

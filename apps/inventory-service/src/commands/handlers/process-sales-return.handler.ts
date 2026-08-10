@@ -100,12 +100,21 @@ export class ProcessSalesReturnHandler extends BaseCommandHandler<ProcessSalesRe
           }
         });
 
-        // 2. Update InventoryItem status
-        const newStatus = restock ? 'AVAILABLE' : 'DEFECTIVE';
-        const updatedInvItem = await tx.inventoryItem.update({
+        // 2. Update InventoryItem status per AD-0016 lifecycle
+        // First transition to RETURNED
+        const returnedItem = await tx.inventoryItem.update({
           where: { id: invItem.id },
-          data: { status: newStatus }
+          data: { status: 'RETURNED' }
         });
+        
+        // If restocking, transition to AVAILABLE after return processing
+        let updatedInvItem = returnedItem;
+        if (restock) {
+          updatedInvItem = await tx.inventoryItem.update({
+            where: { id: invItem.id },
+            data: { status: 'AVAILABLE' }
+          });
+        }
 
         // 3. Post Reversal Journal Entries
         const journalEntriesList = [
