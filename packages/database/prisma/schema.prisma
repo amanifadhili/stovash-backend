@@ -177,3 +177,33 @@ model PurchaseOrderItem {
 
   purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
 }
+
+model SalesReturn {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  workPeriodId String?
+  returnNumber String   @unique
+  salesOrderId String?
+  serialNumber String
+  refundAmount Float
+  cogsAmount   Float    @default(0)
+  reason       String?
+  restock      Boolean  @default(true)
+  createdById  String?
+  createdAt    DateTime @default(now())
+}
+
+model WarrantyClaim {
+  id               String   @id @default(uuid())
+  tenantId         String
+  shopId           String
+  serialNumber     String
+  customerName     String?
+  issueDescription String
+  status           String   @default("LOGGED") // LOGGED, IN_REPAIR, REPLACED, CLOSED
+  resolution       String?
+  createdById      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

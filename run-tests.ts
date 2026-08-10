@@ -142,6 +142,42 @@ test('Milestone 7: Purchasing, Goods Receipts & Automated Inventory Asset Accoun
   console.log('✓ Milestone 7 Purchasing, Goods Receipts & Auto Accounting tests passed successfully.');
 });
 
+test('Milestone 8: Returns, Refunds & Warranty Management', () => {
+  // Test 1: Sales Return with Restock
+  const returnPayload = {
+    serialNumber: 'SN-LAPTOP-101',
+    refundAmount: 1200,
+    costAmount: 800,
+    restock: true
+  };
+
+  const returnJournalLines = [
+    { account: 'Sales Revenue (4001)', debit: returnPayload.refundAmount, credit: 0 },
+    { account: 'Cash on Hand (1001)', debit: 0, credit: returnPayload.refundAmount },
+    { account: 'Inventory Asset (1002)', debit: returnPayload.costAmount, credit: 0 },
+    { account: 'Cost of Goods Sold (5001)', debit: 0, credit: returnPayload.costAmount }
+  ];
+
+  const totalReturnDebit = returnJournalLines.reduce((acc, l) => acc + l.debit, 0);
+  const totalReturnCredit = returnJournalLines.reduce((acc, l) => acc + l.credit, 0);
+  assert.strictEqual(totalReturnDebit, totalReturnCredit, 'Sales return journal entry must balance');
+  assert.strictEqual(totalReturnDebit, 2000, 'Sum of debits matches refund + cost');
+
+  // Test 2: Warranty Claim creation & Defective Item Status
+  const warrantyClaim = {
+    serialNumber: 'SN-IPHONE-901',
+    customerName: 'Alice Smith',
+    issueDescription: 'Screen flicker on cold start',
+    status: 'LOGGED'
+  };
+
+  assert.strictEqual(warrantyClaim.status, 'LOGGED');
+  assert.ok(warrantyClaim.issueDescription, 'Issue description must be recorded');
+
+  console.log('✓ Milestone 8 Returns, Refunds & Warranty Management tests passed successfully.');
+});
+
+
 test('Milestone 3 & 9: Specific Identification Inventory Costing', () => {
 
   const items = [

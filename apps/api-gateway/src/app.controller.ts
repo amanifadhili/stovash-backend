@@ -37,7 +37,7 @@ export class AppController {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 
-      if (['AddProduct', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods'].includes(cmd)) {
+      if (['AddProduct', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim'].includes(cmd)) {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
       }
 
