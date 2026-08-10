@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Req, Inject, Body, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
-import { FirebaseAuthGuard } from './common/auth/firebase-auth.guard.js';
+import { JwtAuthGuard } from './common/auth/jwt-auth.guard.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
@@ -17,7 +17,7 @@ export class AppController {
   }
 
   @Post('api')
-  // @UseGuards(FirebaseAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async handleCommand(@Req() req: any, @Body() body: any): Promise<any> {
     const { command, payload } = body || {};
     const cmd = command || req.headers['x-command'];

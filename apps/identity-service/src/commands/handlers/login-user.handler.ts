@@ -58,7 +58,7 @@ export class LoginUserHandler extends BaseCommandHandler<LoginUserCommand> {
           role: user.role,
           tenantId: user.tenantId
         },
-        'dev-secret-key',
+        process.env.JWT_SECRET || 'dev-secret-key',
         { expiresIn: '1d' }
       );
 
