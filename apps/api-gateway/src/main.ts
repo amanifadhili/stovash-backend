@@ -5,10 +5,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { initializeTracing } from '@electronic-shop/tracing';
+import { logger } from '@electronic-shop/logging';
 
 async function bootstrap() {
   // Initialize OpenTelemetry tracing
   initializeTracing('api-gateway');
+
+  // Initialize logging
+  logger.info('Starting API Gateway...');
 
   process.setMaxListeners(50);
   const app = await NestFactory.create(AppModule);
