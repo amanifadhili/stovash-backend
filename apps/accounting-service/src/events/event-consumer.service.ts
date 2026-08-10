@@ -1,16 +1,25 @@
-import { Injectable, OnModuleInit, Inject } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { EventBus } from '@electronic-shop/framework-event';
 import { saleCreatedConsumer } from './consumers/sale-created.consumer.js';
 import { purchaseCreatedConsumer } from './consumers/purchase-created.consumer.js';
 
 @Injectable()
 export class EventConsumerService implements OnModuleInit {
-  constructor(
-    @Inject('EVENT_BUS') private readonly eventBus: EventBus,
-  ) {}
+  private eventBus: EventBus;
+
+  constructor() {
+    this.eventBus = new EventBus({
+      url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
+      exchangeName: 'electronic-shop-events',
+      queuePrefix: 'accounting-service',
+    });
+  }
 
   async onModuleInit() {
     try {
+      // Connect to RabbitMQ
+      await this.eventBus.connect();
+
       // Create consumers
       const saleConsumer = this.eventBus.createConsumer('accounting-sales', 'sale.created');
       const purchaseConsumer = this.eventBus.createConsumer('accounting-purchases', 'purchase.created');
