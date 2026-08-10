@@ -40,6 +40,7 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'ConvertQuotationToSale': ['sales:sale:create'],
   'RecordPartialPayment': ['sales:payment:create'],
   'RecordBonus': ['sales:bonus:create'],
+  'ProcessLoanSale': ['sales:loan:create'],
   
   // Purchase commands
   'ProcessPurchase': ['purchase:purchase:create'],
@@ -87,6 +88,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'ConvertQuotationToSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'RecordPartialPayment': ['ADMIN', 'MANAGER', 'STAFF'],
   'RecordBonus': ['ADMIN', 'MANAGER'],
+  'ProcessLoanSale': ['ADMIN', 'MANAGER'],
   
   // Purchase commands
   'ProcessPurchase': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -172,7 +174,7 @@ export class AppController {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
       }
 
-      if (['ProcessSale', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus'].includes(cmd)) {
+      if (['ProcessSale', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale'].includes(cmd)) {
         return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
       }
 

@@ -5,6 +5,7 @@ import { ProcessSaleHandler } from './process-sale.handler.js';
 import { ConvertQuotationToSaleHandler } from './convert-quotation-to-sale.handler.js';
 import { RecordPartialPaymentHandler } from './record-partial-payment.handler.js';
 import { RecordBonusHandler } from './record-bonus.handler.js';
+import { ProcessLoanSaleHandler } from './process-loan-sale.handler.js';
 
 export const CommandHandlers = [
   CreateSaleHandler,
@@ -13,5 +14,6 @@ export const CommandHandlers = [
   ProcessSaleHandler,
   ConvertQuotationToSaleHandler,
   RecordPartialPaymentHandler,
-  RecordBonusHandler
+  RecordBonusHandler,
+  ProcessLoanSaleHandler
 ];

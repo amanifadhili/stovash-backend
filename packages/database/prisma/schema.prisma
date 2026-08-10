@@ -163,20 +163,30 @@ model InventoryUpgrade {
 }
 
 model SalesOrder {
-  id           String           @id @default(uuid())
-  tenantId     String
-  shopId       String
-  workPeriodId String?
-  orderNumber  String           @unique
-  totalAmount  Float
-  totalCost    Float
-  paymentMethod String         @default("CASH") // CASH, CARD, CREDIT
-  status       String           @default("COMPLETED") // COMPLETED, CANCELLED, REFUNDED
-  createdById  String?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  id                  String           @id @default(uuid())
+  tenantId            String
+  shopId              String
+  customerId          String?
+  workPeriodId        String?
+  orderNumber         String           @unique
+  totalAmount         Float
+  totalCost           Float
+  profit              Float?
+  paymentMethod       String           @default("CASH") // CASH, CARD, CREDIT
+  status              String           @default("COMPLETED") // COMPLETED, CANCELLED, REFUNDED, ACTIVE_LOAN
+  downPayment         Float            @default(0)
+  loanAmount          Float            @default(0)
+  interestRate        Float            @default(0)
+  totalInterest       Float            @default(0)
+  totalRepayment      Float            @default(0)
+  numberOfInstallments Int              @default(0)
+  installmentAmount   Float            @default(0)
+  createdById         String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
-  items        SalesOrderItem[]
+  items               SalesOrderItem[]
+  loanPayments        LoanPayment[]
 }
 
 model SalesOrderItem {
@@ -259,6 +269,18 @@ model Bonus {
   salesOrderId  String?
   recordedBy    String
   createdAt     DateTime @default(now())
+}
+
+model LoanPayment {
+  id           String   @id @default(uuid())
+  salesOrderId String
+  tenantId     String
+  shopId       String
+  dueDate      DateTime
+  amount       Float
+  status       String   @default("PENDING") // PENDING, PAID, OVERDUE
+  paidAt       DateTime?
+  createdAt    DateTime @default(now())
 }
 
 model InventoryTransfer {
