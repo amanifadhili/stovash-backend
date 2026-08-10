@@ -29,6 +29,7 @@
   "dependencies": {
     "@electronic-shop/database": "*",
     "@electronic-shop/types": "*",
+    "@electronic-shop/metrics": "*",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/microservices": "^10.4.22",

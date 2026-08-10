@@ -2,6 +2,7 @@ import { Controller, Get, Post, Req, Inject, Body, UseGuards, HttpException, Htt
 import { JwtAuthGuard } from './common/auth/jwt-auth.guard.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { getMetrics } from '@electronic-shop/metrics';
 
 // Command to permission mapping
 const COMMAND_PERMISSIONS: Record<string, string[]> = {
@@ -202,5 +203,11 @@ export class AppController {
         error.httpStatus || HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  @Get('metrics')
+  async getMetrics() {
+    const metrics = await getMetrics();
+    return metrics;
   }
 }
