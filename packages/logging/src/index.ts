@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { ElasticsearchTransport } from 'winston-elasticsearch';
+import { Client } from '@opensearch-project/opensearch';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
 // Log levels
@@ -75,24 +75,51 @@ if (process.env.LOG_FILE_ENABLED === 'true') {
   );
 }
 
-// Elasticsearch transport for ELK stack
-if (process.env.ELK_ENABLED === 'true') {
-  const esTransport = new ElasticsearchTransport({
-    level: 'info',
-    clientOpts: {
-      node: process.env.ELASTICSEARCH_URL || 'http://localhost:9200',
-      auth: process.env.ELASTICSEARCH_AUTH
-        ? {
-            username: process.env.ELASTICSEARCH_USERNAME || '',
-            password: process.env.ELASTICSEARCH_PASSWORD || '',
-          }
-        : undefined,
-    },
-    index: 'electronic-shop-logs',
-    dataStream: true,
+// OpenSearch transport for logging
+let openSearchClient: Client | null = null;
+
+if (process.env.OPENSEARCH_ENABLED === 'true') {
+  openSearchClient = new Client({
+    node: process.env.OPENSEARCH_URL || 'http://localhost:9200',
+    auth: process.env.OPENSEARCH_AUTH
+      ? {
+          username: process.env.OPENSEARCH_USERNAME || '',
+          password: process.env.OPENSEARCH_PASSWORD || '',
+        }
+      : undefined,
   });
 
-  transports.push(esTransport);
+  // Create a custom Winston transport for OpenSearch
+  class OpenSearchTransport extends winston.Transport {
+    name = 'OpenSearchTransport';
+
+    log(info: any, callback: () => void) {
+      if (!openSearchClient) {
+        callback();
+        return;
+      }
+
+      setImmediate(() => {
+        this.emit('logged', info);
+      });
+
+      openSearchClient
+        .index({
+          index: `electronic-shop-logs-${new Date().toISOString().split('T')[0]}`,
+          body: {
+            ...info,
+            '@timestamp': new Date().toISOString(),
+          },
+        })
+        .then(() => callback())
+        .catch((err) => {
+          console.error('Error sending log to OpenSearch:', err);
+          callback();
+        });
+    });
+  }
+
+  transports.push(new OpenSearchTransport());
 }
 
 // Create logger
