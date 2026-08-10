@@ -1,9 +1,9 @@
 {
-  "name": "@electronic-shop/identity-service",
+  "name": "@electronic-shop/sales-service",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "nest build",
     "start": "node dist/main.js",
     "dev": "nest start --watch",
     "test": "echo 'No tests'",
@@ -24,17 +24,12 @@
     "@nestjs/microservices": "^10.0.0",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.3",
-    "bcryptjs": "^3.0.3",
-    "jsonwebtoken": "^9.0.3",
-    "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "reflect-metadata": "^0.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.3.1",
     "tsx": "^4.7.1",
     "typescript": "^5.1.3"

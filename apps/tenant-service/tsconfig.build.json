@@ -8,10 +8,10 @@
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "declaration": false,
+    "sourceMap": false,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "experimentalDecorators": true,
@@ -19,6 +19,6 @@
     "types": ["node"],
     "noEmit": false
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules/**/*", "dist", "**/*.spec.ts", "**/*.test.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
 }

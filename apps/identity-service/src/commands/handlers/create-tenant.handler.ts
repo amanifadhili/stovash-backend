@@ -34,7 +34,7 @@ export class CreateTenantHandler extends BaseCommandHandler<CreateTenantCommand>
 
       const hashedPassword = await bcrypt.hash(payload.adminPassword, 10);
 
-      const result = await prisma.$transaction(async (tx) => {
+      const result = await prisma.$transaction(async (tx: any) => {
         const tenant = await tx.tenant.create({
           data: {
             name: payload.name,
