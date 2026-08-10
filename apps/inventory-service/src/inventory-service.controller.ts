@@ -4,6 +4,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { AddProductCommand } from './commands/impl/add-product.command.js';
 import { AddInventoryItemCommand } from './commands/impl/add-inventory-item.command.js';
 import { ProcessPosSaleCommand } from './commands/impl/process-pos-sale.command.js';
+import { ReceiveGoodsCommand } from './commands/impl/receive-goods.command.js';
 
 @Controller()
 export class InventoryServiceController {
@@ -23,5 +24,11 @@ export class InventoryServiceController {
   async handleProcessPosSale(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new ProcessPosSaleCommand(data.payload, data.context));
   }
+
+  @MessagePattern({ cmd: 'ReceiveGoods' })
+  async handleReceiveGoods(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ReceiveGoodsCommand(data.payload, data.context));
+  }
 }
+
 

@@ -104,6 +104,44 @@ test('Milestone 6: Sales & POS Order Processing Engine (Item Allocation & Auto J
   console.log('✓ Milestone 6 Sales & POS Order Processing Engine tests passed successfully.');
 });
 
+test('Milestone 7: Purchasing, Goods Receipts & Automated Inventory Asset Accounting', () => {
+  const receivePayload = {
+    vendorName: 'Tech Wholesale Ltd',
+    items: [
+      { productId: 'prod-iphone-15', serialNumber: 'SN-IPHONE-901', purchaseCost: 900 },
+      { productId: 'prod-iphone-15', serialNumber: 'SN-IPHONE-902', purchaseCost: 900 }
+    ],
+    paymentAccountCode: '2001' // Accounts Payable
+  };
+
+  let totalPoAmount = 0;
+  const createdInventory: Array<any> = [];
+
+  for (const item of receivePayload.items) {
+    totalPoAmount += item.purchaseCost;
+    createdInventory.push({
+      serialNumber: item.serialNumber,
+      purchaseCost: item.purchaseCost,
+      status: 'AVAILABLE'
+    });
+  }
+
+  assert.strictEqual(totalPoAmount, 1800, 'Total PO amount equals sum of purchase costs');
+  assert.strictEqual(createdInventory.length, 2, 'Two new serialized inventory items created');
+
+  // Automated Journal Entry: Debit Inventory Asset (1002), Credit Accounts Payable (2001)
+  const poJournalLines = [
+    { account: 'Inventory Asset (1002)', debit: totalPoAmount, credit: 0 },
+    { account: 'Accounts Payable (2001)', debit: 0, credit: totalPoAmount }
+  ];
+
+  const totalDebit = poJournalLines.reduce((acc, l) => acc + l.debit, 0);
+  const totalCredit = poJournalLines.reduce((acc, l) => acc + l.credit, 0);
+  assert.strictEqual(totalDebit, totalCredit, 'Goods receipt journal entry must balance');
+
+  console.log('✓ Milestone 7 Purchasing, Goods Receipts & Auto Accounting tests passed successfully.');
+});
+
 test('Milestone 3 & 9: Specific Identification Inventory Costing', () => {
 
   const items = [

@@ -151,3 +151,29 @@ model SalesOrderItem {
 
   salesOrder      SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
 }
+
+model PurchaseOrder {
+  id           String              @id @default(uuid())
+  tenantId     String
+  shopId       String
+  poNumber     String              @unique
+  vendorName   String
+  totalAmount  Float
+  status       String              @default("RECEIVED") // PENDING, RECEIVED, CANCELLED
+  createdById  String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  items        PurchaseOrderItem[]
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  productId       String
+  serialNumber    String
+  purchaseCost    Float
+  createdAt       DateTime      @default(now())
+
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+}
