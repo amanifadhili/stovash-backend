@@ -4,6 +4,7 @@ import { IRequestContext } from '@electronic-shop/types';
 export class PostJournalEntryPayload {
   description!: string;
   entries!: Array<{ accountId: string; type: 'DEBIT' | 'CREDIT'; amount: number }>;
+  postImmediately?: boolean;
 }
 
 export class PostJournalEntryCommand extends BaseCommand<PostJournalEntryPayload> {

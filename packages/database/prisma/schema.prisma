@@ -88,6 +88,7 @@ model JournalEntry {
   workPeriodId String
   description String
   postedBy    String   // userId
+  status      String   @default("DRAFT") // DRAFT, POSTED
   createdAt   DateTime @default(now())
   entries     LedgerEntry[]
 }

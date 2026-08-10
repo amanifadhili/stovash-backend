@@ -117,6 +117,7 @@ export class PostJournalEntryHandler extends BaseCommandHandler<PostJournalEntry
             workPeriodId: context.workPeriodId || 'default-work-period',
             description: payload.description || 'Journal Entry',
             postedBy: context.userId!,
+            status: payload.postImmediately === true ? 'POSTED' : 'DRAFT',
             entries: {
               create: resolvedEntries.map(({ entry, account }) => ({
                 accountId: account.id,
@@ -127,19 +128,21 @@ export class PostJournalEntryHandler extends BaseCommandHandler<PostJournalEntry
           }
         });
 
-        // Update balances
-        for (const { entry, account } of resolvedEntries) {
-          let multiplier = 1;
-          if (account.type === 'ASSET' || account.type === 'EXPENSE') {
-            multiplier = entry.type === 'DEBIT' ? 1 : -1;
-          } else {
-            multiplier = entry.type === 'CREDIT' ? 1 : -1;
-          }
+        // Only update balances if posting immediately (status is POSTED)
+        if (payload.postImmediately === true) {
+          for (const { entry, account } of resolvedEntries) {
+            let multiplier = 1;
+            if (account.type === 'ASSET' || account.type === 'EXPENSE') {
+              multiplier = entry.type === 'DEBIT' ? 1 : -1;
+            } else {
+              multiplier = entry.type === 'CREDIT' ? 1 : -1;
+            }
 
-          await tx.ledgerAccount.update({
-            where: { id: account.id },
-            data: { balance: { increment: (Number(entry.amount) || 0) * multiplier } }
-          });
+            await tx.ledgerAccount.update({
+              where: { id: account.id },
+              data: { balance: { increment: (Number(entry.amount) || 0) * multiplier } }
+            });
+          }
         }
 
         return journalEntry;
