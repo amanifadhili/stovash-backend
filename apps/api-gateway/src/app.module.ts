@@ -5,6 +5,7 @@ import { AppController } from './app.controller.js';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
 import { ContextMiddleware } from './common/middleware/context.middleware.js';
+import { RateLimitMiddleware } from './middleware/rate-limit.middleware.js';
 
 @Module({
   imports: [
@@ -29,13 +30,14 @@ import { ContextMiddleware } from './common/middleware/context.middleware.js';
   controllers: [AppController],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },
-    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor }
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+    RateLimitMiddleware
   ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(ContextMiddleware)
+      .apply(ContextMiddleware, RateLimitMiddleware)
       .forRoutes(
         { path: '/api', method: RequestMethod.ALL },
         { path: '/api/*', method: RequestMethod.ALL }
