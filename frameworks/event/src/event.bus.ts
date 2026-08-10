@@ -1,6 +1,6 @@
 import { EventPublisher } from './event.publisher.js';
 import { EventConsumer } from './event.consumer.js';
-import { EventBusConfig, EventHandler } from './event.types.js';
+import { EventBusConfig, EventHandler, EventConsumerConfig } from './event.types.js';
 
 /**
  * Event bus for managing event publishing and consuming
@@ -44,7 +44,8 @@ export class EventBus {
    */
   createConsumer(
     queueName: string,
-    routingKey?: string
+    routingKey?: string,
+    consumerConfig?: Partial<EventConsumerConfig>
   ): EventConsumer {
     const consumer = new EventConsumer({
       queueName,
@@ -52,7 +53,11 @@ export class EventBus {
       routingKey,
       durable: true,
       exclusive: false,
-      autoDelete: false
+      autoDelete: false,
+      retryAttempts: this.config.retryAttempts,
+      retryDelay: this.config.retryDelay,
+      idempotencyEnabled: this.config.idempotencyEnabled,
+      ...consumerConfig
     });
 
     this.consumers.set(queueName, consumer);

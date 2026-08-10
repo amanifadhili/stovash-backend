@@ -12,6 +12,10 @@ export class EventConsumerService implements OnModuleInit {
       url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
       exchangeName: 'electronic-shop-events',
       queuePrefix: 'accounting-service',
+      retryAttempts: 3,
+      retryDelay: 1000,
+      deadLetterExchange: 'electronic-shop-dlx',
+      idempotencyEnabled: true,
     });
   }
 
@@ -20,9 +24,13 @@ export class EventConsumerService implements OnModuleInit {
       // Connect to RabbitMQ
       await this.eventBus.connect();
 
-      // Create consumers
-      const saleConsumer = this.eventBus.createConsumer('accounting-sales', 'sale.created');
-      const purchaseConsumer = this.eventBus.createConsumer('accounting-purchases', 'purchase.created');
+      // Create consumers with DLQ configuration
+      const saleConsumer = this.eventBus.createConsumer('accounting-sales', 'sale.created', {
+        deadLetterQueue: 'accounting-sales-dlq'
+      });
+      const purchaseConsumer = this.eventBus.createConsumer('accounting-purchases', 'purchase.created', {
+        deadLetterQueue: 'accounting-purchases-dlq'
+      });
 
       // Register handlers
       this.eventBus.registerHandler('accounting-sales', 'SaleCreated', saleCreatedConsumer);

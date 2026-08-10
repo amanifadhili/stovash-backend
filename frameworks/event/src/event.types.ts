@@ -35,6 +35,10 @@ export interface EventConsumerConfig {
   durable?: boolean;
   exclusive?: boolean;
   autoDelete?: boolean;
+  retryAttempts?: number;
+  retryDelay?: number;
+  deadLetterQueue?: string;
+  idempotencyEnabled?: boolean;
 }
 
 /**
@@ -46,4 +50,8 @@ export interface EventBusConfig {
   queuePrefix: string;
   reconnectInterval?: number;
   heartbeat?: number;
+  retryAttempts?: number;
+  retryDelay?: number;
+  deadLetterExchange?: string;
+  idempotencyEnabled?: boolean;
 }
