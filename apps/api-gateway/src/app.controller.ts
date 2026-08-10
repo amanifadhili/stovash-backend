@@ -31,6 +31,9 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'CreateWarrantyClaim': ['inventory:warranty:create'],
   'TransferInventory': ['inventory:inventory:transfer'],
   
+  // Sales commands
+  'ProcessSale': ['sales:sale:create'],
+  
   // Treasury commands
   'RecordOperationalDeposit': ['treasury:deposit:create'],
   'ReconcilePaymentMethod': ['treasury:reconcile:create'],
@@ -64,6 +67,9 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'CreateWarrantyClaim': ['ADMIN', 'MANAGER', 'STAFF'],
   'TransferInventory': ['ADMIN', 'MANAGER', 'STAFF'],
   
+  // Sales commands
+  'ProcessSale': ['ADMIN', 'MANAGER', 'STAFF'],
+  
   // Treasury commands
   'RecordOperationalDeposit': ['ADMIN', 'MANAGER', 'STAFF'],
   'ReconcilePaymentMethod': ['ADMIN', 'MANAGER'],
@@ -75,7 +81,8 @@ export class AppController {
     @Inject('IDENTITY_SERVICE') private readonly identityClient: ClientProxy,
     @Inject('ACCOUNTING_SERVICE') private readonly accountingClient: ClientProxy,
     @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
-    @Inject('TREASURY_SERVICE') private readonly treasuryClient: ClientProxy
+    @Inject('TREASURY_SERVICE') private readonly treasuryClient: ClientProxy,
+    @Inject('SALES_SERVICE') private readonly salesClient: ClientProxy
   ) {}
 
   @Get('health')
@@ -140,6 +147,10 @@ export class AppController {
 
       if (['AddProduct', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory'].includes(cmd)) {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
+      }
+
+      if (['ProcessSale'].includes(cmd)) {
+        return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
       }
 
       if (['RecordOperationalDeposit', 'ReconcilePaymentMethod'].includes(cmd)) {
