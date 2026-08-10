@@ -1,11 +1,17 @@
 import { CommandHandler } from '@nestjs/cqrs';
+import { Inject } from '@nestjs/common';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { CreateCustomerCommand } from '../impl/create-customer.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(CreateCustomerCommand)
 export class CreateCustomerHandler extends BaseCommandHandler<CreateCustomerCommand> {
+  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+    super();
+  }
+
   async execute(command: CreateCustomerCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
@@ -31,6 +37,19 @@ export class CreateCustomerHandler extends BaseCommandHandler<CreateCustomerComm
           status: payload.status || 'ACTIVE',
         }
       });
+
+      // Publish CustomerCreated event
+      await this.eventBus.publish(
+        {
+          eventType: 'CustomerCreated',
+          aggregateId: customer.id,
+          aggregateType: 'Customer',
+          payload: customer,
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+        },
+        'customer.created'
+      );
 
       return {
         status: 'success',

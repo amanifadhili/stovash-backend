@@ -1,11 +1,17 @@
 import { CommandHandler } from '@nestjs/cqrs';
+import { Inject } from '@nestjs/common';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { CreatePurchaseCommand } from '../impl/create-purchase.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(CreatePurchaseCommand)
 export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseCommand> {
+  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+    super();
+  }
+
   async execute(command: CreatePurchaseCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
@@ -44,6 +50,22 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
             }
           })
         )
+      );
+
+      // Publish PurchaseCreated event
+      await this.eventBus.publish(
+        {
+          eventType: 'PurchaseCreated',
+          aggregateId: purchase.id,
+          aggregateType: 'Purchase',
+          payload: {
+            ...purchase,
+            items: purchaseItems
+          },
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+        },
+        'purchase.created'
       );
 
       return {

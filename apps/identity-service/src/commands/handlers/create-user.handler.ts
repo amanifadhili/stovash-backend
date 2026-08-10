@@ -1,12 +1,18 @@
 import { CommandHandler } from '@nestjs/cqrs';
+import { Inject } from '@nestjs/common';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { CreateUserCommand } from '../impl/create-user.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import bcrypt from 'bcryptjs';
+import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
+  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+    super();
+  }
+
   async execute(command: CreateUserCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
@@ -47,6 +53,27 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
           status: 'ACTIVE',
         }
       });
+
+      // Publish UserCreated event (without password)
+      await this.eventBus.publish(
+        {
+          eventType: 'UserCreated',
+          aggregateId: user.id,
+          aggregateType: 'User',
+          payload: {
+            id: user.id,
+            tenantId: user.tenantId,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+            status: user.status,
+          },
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+        },
+        'user.created'
+      );
 
       return {
         status: 'success',

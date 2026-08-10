@@ -1,11 +1,17 @@
 import { CommandHandler } from '@nestjs/cqrs';
+import { Inject } from '@nestjs/common';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { CreateSupplierCommand } from '../impl/create-supplier.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(CreateSupplierCommand)
 export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierCommand> {
+  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+    super();
+  }
+
   async execute(command: CreateSupplierCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
@@ -31,6 +37,19 @@ export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierComm
           status: payload.status || 'ACTIVE',
         }
       });
+
+      // Publish SupplierCreated event
+      await this.eventBus.publish(
+        {
+          eventType: 'SupplierCreated',
+          aggregateId: supplier.id,
+          aggregateType: 'Supplier',
+          payload: supplier,
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+        },
+        'supplier.created'
+      );
 
       return {
         status: 'success',
