@@ -54,6 +54,24 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
         }
       });
 
+      // Log audit action
+      try {
+        await prisma.auditLog.create({
+          data: {
+            tenantId: payload.tenantId,
+            shopId: null,
+            userId: context?.userId || null,
+            action: 'CreateUser',
+            resource: 'User',
+            resourceId: user.id,
+            traceId: context?.traceId || null,
+            details: JSON.stringify({ email: payload.email, role: payload.role || 'STAFF' })
+          }
+        });
+      } catch (auditError) {
+        console.error('Failed to log audit action:', auditError);
+      }
+
       // Publish UserCreated event (without password)
       await this.eventBus.publish(
         {

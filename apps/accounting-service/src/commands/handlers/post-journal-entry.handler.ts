@@ -145,6 +145,29 @@ export class PostJournalEntryHandler extends BaseCommandHandler<PostJournalEntry
         return journalEntry;
       });
 
+      // Log audit action
+      try {
+        await prisma.auditLog.create({
+          data: {
+            tenantId: context.tenantId!,
+            shopId: context.shopId!,
+            userId: context.userId!,
+            action: 'PostJournalEntry',
+            resource: 'JournalEntry',
+            resourceId: result.id,
+            traceId: context.traceId || null,
+            details: JSON.stringify({ 
+              description: payload.description, 
+              totalDebit, 
+              totalCredit,
+              entryCount: payload.entries.length 
+            })
+          }
+        });
+      } catch (auditError) {
+        console.error('Failed to log audit action:', auditError);
+      }
+
       return {
         status: 'success',
         traceId,

@@ -33,6 +33,24 @@ export class CreateTenantHandler extends BaseCommandHandler<CreateTenantCommand>
         }
       });
 
+      // Log audit action
+      try {
+        await prisma.auditLog.create({
+          data: {
+            tenantId: tenant.id,
+            shopId: null,
+            userId: context?.userId || null,
+            action: 'CreateTenant',
+            resource: 'Tenant',
+            resourceId: tenant.id,
+            traceId: context?.traceId || null,
+            details: JSON.stringify({ tenantName: payload.name, status: payload.status || 'ACTIVE' })
+          }
+        });
+      } catch (auditError) {
+        console.error('Failed to log audit action:', auditError);
+      }
+
       // Publish TenantCreated event
       await this.eventBus.publish(
         {
