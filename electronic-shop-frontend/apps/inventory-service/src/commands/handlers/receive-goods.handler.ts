@@ -122,7 +122,7 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
             status: 'RECEIVED',
             createdById: context.userId || 'system',
             items: {
-              create: payload.items.map((i: any) => ({
+              create: payload.items.map(i => ({
                 productId: i.productId,
                 serialNumber: i.serialNumber,
                 purchaseCost: i.purchaseCost

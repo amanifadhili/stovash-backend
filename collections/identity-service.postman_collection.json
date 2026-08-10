@@ -1,0 +1,76 @@
+{
+  "info": {
+    "_postman_id": "c1000001-id00-4000-8000-identityserv1",
+    "name": "Identity Service API Collection",
+    "description": "Postman collection for identity management, tenant creation, and user authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Tenant",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"command\": \"CreateTenant\",\n  \"payload\": {\n    \"name\": \"Apex Electronics Ltd\",\n    \"currency\": \"USD\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"command\": \"CreateUser\",\n  \"payload\": {\n    \"email\": \"manager@apexelectronics.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"MANAGER\",\n    \"permissions\": [\"VIEW_INVENTORY\", \"PROCESS_POS\", \"CLOSE_WORK_PERIOD\"]\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"command\": \"LoginUser\",\n  \"payload\": {\n    \"email\": \"manager@apexelectronics.com\",\n    \"password\": \"SecurePass123!\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api"
+          ]
+        }
+      }
+    }
+  ]
+}

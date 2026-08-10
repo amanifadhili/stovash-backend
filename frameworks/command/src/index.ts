@@ -1,1 +1,1 @@
-export * from './command.bus.js';
+export * from './base.command.js';

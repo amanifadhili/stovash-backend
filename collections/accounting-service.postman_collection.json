@@ -1,0 +1,169 @@
+{
+  "info": {
+    "_postman_id": "c2000002-ac00-4000-8000-accountserv2",
+    "name": "Accounting Service API Collection",
+    "description": "Postman collection for double-entry bookkeeping, ledger accounts, work periods, trial balance, income statement, and balance sheet financial reports.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Work Periods",
+      "item": [
+        {
+          "name": "Open Work Period",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"OpenWorkPeriod\",\n  \"payload\": {\n    \"shopId\": \"{{shopId}}\",\n    \"openingCash\": 500\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Work Period",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"GetActiveWorkPeriod\",\n  \"payload\": {\n    \"shopId\": \"{{shopId}}\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Close Work Period",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"CloseWorkPeriod\",\n  \"payload\": {\n    \"workPeriodId\": \"wp-1001\",\n    \"closingCash\": 1850\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "General Ledger",
+      "item": [
+        {
+          "name": "Create Ledger Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"CreateLedgerAccount\",\n  \"payload\": {\n    \"accountNumber\": \"1010\",\n    \"name\": \"Petty Cash\",\n    \"type\": \"ASSET\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Post Journal Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"PostJournalEntry\",\n  \"payload\": {\n    \"description\": \"Initial Cash Injection\",\n    \"reference\": \"INV-0001\",\n    \"lines\": [\n      {\n        \"accountNumber\": \"1000\",\n        \"debit\": 5000,\n        \"credit\": 0\n      },\n      {\n        \"accountNumber\": \"3000\",\n        \"debit\": 0,\n        \"credit\": 5000\n      }\n    ]\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Financial Reports",
+      "item": [
+        {
+          "name": "Get Trial Balance",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"GetTrialBalance\",\n  \"payload\": {},\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Get Income Statement",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"GetIncomeStatement\",\n  \"payload\": {},\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Get Balance Sheet",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"GetBalanceSheet\",\n  \"payload\": {},\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

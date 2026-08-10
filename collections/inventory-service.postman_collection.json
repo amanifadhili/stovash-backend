@@ -1,0 +1,156 @@
+{
+  "info": {
+    "_postman_id": "c3000003-in00-4000-8000-inventryserv3",
+    "name": "Inventory Service API Collection",
+    "description": "Postman collection for products, serial/MAC item tracking, POS sales, goods receipts, returns, warranty claims, and inter-branch inventory transfers.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Catalog & Items",
+      "item": [
+        {
+          "name": "Add Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"AddProduct\",\n  \"payload\": {\n    \"sku\": \"LAP-M3-16GB\",\n    \"name\": \"MacBook Pro 14 M3\",\n    \"barcode\": \"194253000011\",\n    \"category\": \"Laptops\",\n    \"price\": 1999,\n    \"costPrice\": 1600\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Add Inventory Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"AddInventoryItem\",\n  \"payload\": {\n    \"productId\": \"prod-1001\",\n    \"serialNumber\": \"SN-MBP-99210\",\n    \"macAddress\": \"00:1A:2B:3C:4D:5E\",\n    \"purchaseCost\": 1600\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Purchasing & Sales",
+      "item": [
+        {
+          "name": "Receive Goods (Goods Receipt)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"ReceiveGoods\",\n  \"payload\": {\n    \"supplierName\": \"Tech Wholesale Corp\",\n    \"invoiceNumber\": \"SUPP-INV-8821\",\n    \"items\": [\n      {\n        \"productId\": \"prod-1001\",\n        \"serialNumber\": \"SN-MBP-9001\",\n        \"purchaseCost\": 1550\n      },\n      {\n        \"productId\": \"prod-1001\",\n        \"serialNumber\": \"SN-MBP-9002\",\n        \"purchaseCost\": 1550\n      }\n    ]\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Process POS Sale",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"ProcessPosSale\",\n  \"payload\": {\n    \"customerName\": \"John Doe\",\n    \"paymentMethod\": \"CASH\",\n    \"items\": [\n      {\n        \"productId\": \"prod-1001\",\n        \"serialNumber\": \"SN-MBP-9001\",\n        \"salePrice\": 1999\n      }\n    ]\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Returns & Warranty",
+      "item": [
+        {
+          "name": "Process Sales Return",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"ProcessSalesReturn\",\n  \"payload\": {\n    \"orderId\": \"ord-5001\",\n    \"serialNumber\": \"SN-MBP-9001\",\n    \"reason\": \"DEFECTIVE\",\n    \"refundAmount\": 1999\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Create Warranty Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"CreateWarrantyClaim\",\n  \"payload\": {\n    \"serialNumber\": \"SN-MBP-9001\",\n    \"issueDescription\": \"Screen flickering\",\n    \"rmaNumber\": \"RMA-APP-2026-01\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inter-Branch Transfer",
+      "item": [
+        {
+          "name": "Transfer Inventory",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"TransferInventory\",\n  \"payload\": {\n    \"fromShopId\": \"shop-main-01\",\n    \"toShopId\": \"shop-branch-02\",\n    \"serialNumbers\": [\"SN-MBP-9002\"]\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

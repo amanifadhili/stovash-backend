@@ -1,0 +1,237 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  status    String   @default("ACTIVE") // ACTIVE, SUSPENDED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shops     Shop[]
+  users     User[]
+}
+
+model Shop {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  location    String?
+  status      String   @default("ACTIVE") // ACTIVE, CLOSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  workPeriods WorkPeriod[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  tenantId  String
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String   @default("STAFF") // ADMIN, MANAGER, STAFF
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model WorkPeriod {
+  id        String    @id @default(uuid())
+  shopId    String
+  openedBy  String    // userId
+  closedBy  String?   // userId
+  openedAt  DateTime  @default(now())
+  closedAt  DateTime?
+  status    String    @default("OPEN") // OPEN, CLOSED
+
+  shop      Shop      @relation(fields: [shopId], references: [id])
+}
+
+model LedgerAccount {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  code        String
+  name        String
+  type        String   // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
+  balance     Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  entries     LedgerEntry[]
+}
+
+model JournalEntry {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  workPeriodId String
+  description String
+  postedBy    String   // userId
+  createdAt   DateTime @default(now())
+  entries     LedgerEntry[]
+}
+
+model LedgerEntry {
+  id             String   @id @default(uuid())
+  journalEntryId String
+  accountId      String
+  type           String   // DEBIT, CREDIT
+  amount         Float
+  createdAt      DateTime @default(now())
+
+  journalEntry   JournalEntry  @relation(fields: [journalEntryId], references: [id])
+  account        LedgerAccount @relation(fields: [accountId], references: [id])
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  sku         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       InventoryItem[]
+}
+
+model InventoryItem {
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  productId     String
+  serialNumber  String
+  purchaseCost  Float
+  status        String   @default("AVAILABLE") // AVAILABLE, SOLD, DAMAGED, LOST
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  product       Product  @relation(fields: [productId], references: [id])
+}
+
+model SalesOrder {
+  id           String           @id @default(uuid())
+  tenantId     String
+  shopId       String
+  workPeriodId String?
+  orderNumber  String           @unique
+  totalAmount  Float
+  totalCost    Float
+  paymentMethod String         @default("CASH") // CASH, CARD, CREDIT
+  status       String           @default("COMPLETED") // COMPLETED, CANCELLED, REFUNDED
+  createdById  String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  items        SalesOrderItem[]
+}
+
+model SalesOrderItem {
+  id              String   @id @default(uuid())
+  salesOrderId    String
+  inventoryItemId String
+  serialNumber    String
+  unitCost        Float
+  unitPrice       Float
+  createdAt       DateTime @default(now())
+
+  salesOrder      SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+}
+
+model PurchaseOrder {
+  id           String              @id @default(uuid())
+  tenantId     String
+  shopId       String
+  poNumber     String              @unique
+  vendorName   String
+  totalAmount  Float
+  status       String              @default("RECEIVED") // PENDING, RECEIVED, CANCELLED
+  createdById  String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  items        PurchaseOrderItem[]
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  productId       String
+  serialNumber    String
+  purchaseCost    Float
+  createdAt       DateTime      @default(now())
+
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+}
+
+model SalesReturn {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  workPeriodId String?
+  returnNumber String   @unique
+  salesOrderId String?
+  serialNumber String
+  refundAmount Float
+  cogsAmount   Float    @default(0)
+  reason       String?
+  restock      Boolean  @default(true)
+  createdById  String?
+  createdAt    DateTime @default(now())
+}
+
+model WarrantyClaim {
+  id               String   @id @default(uuid())
+  tenantId         String
+  shopId           String
+  serialNumber     String
+  customerName     String?
+  issueDescription String
+  status           String   @default("LOGGED") // LOGGED, IN_REPAIR, REPLACED, CLOSED
+  resolution       String?
+  createdById      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model InventoryTransfer {
+  id             String   @id @default(uuid())
+  tenantId       String
+  fromShopId     String
+  toShopId       String
+  transferNumber String   @unique
+  serialNumber   String
+  status         String   @default("COMPLETED") // IN_TRANSIT, COMPLETED, CANCELLED
+  notes          String?
+  createdById    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  shopId     String?
+  userId     String?
+  action     String   // e.g. POST_JOURNAL, RECEIVE_GOODS, CLOSE_WORK_PERIOD
+  resource   String   // e.g. JournalEntry, PurchaseOrder, WorkPeriod
+  resourceId String?
+  traceId    String?
+  details    String?  // JSON or text summary
+  createdAt  DateTime @default(now())
+}
+
