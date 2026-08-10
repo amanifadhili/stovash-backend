@@ -46,6 +46,14 @@ export class CloseWorkPeriodHandler extends BaseCommandHandler<CloseWorkPeriodCo
         // This would typically check Treasury service for physical confirmations
         // For now, we'll log a warning if no confirmations exist
         console.log(`Closing work period ${workPeriod.id} - physical confirmation check would be performed here`);
+        
+        // Check for reconciliation status
+        // In a real implementation, this would query the Treasury service
+        // to ensure all payment methods have been reconciled
+        console.log(`Closing work period ${workPeriod.id} - reconciliation check would be performed here`);
+        
+        // For now, we'll add a flag to indicate reconciliation is required
+        // This can be enforced when Treasury service integration is complete
       }
 
       // Calculate profit/loss for the work period
