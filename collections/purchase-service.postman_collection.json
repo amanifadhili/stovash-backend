@@ -1,0 +1,56 @@
+{
+  "info": {
+    "_postman_id": "c2000004-ac00-4000-8000-purchserv2",
+    "name": "Purchase Service API Collection",
+    "description": "Postman collection for purchase orders, supplier management, and purchase payments.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Purchase Orders",
+      "item": [
+        {
+          "name": "Process Purchase",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"ProcessPurchase\",\n  \"payload\": {\n    \"supplierId\": \"supp-1001\",\n    \"shopId\": \"{{shopId}}\",\n    \"items\": [\n      {\n        \"productId\": \"prod-1001\",\n        \"quantity\": 10,\n        \"unitCost\": 300\n      }\n    ]\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Record Purchase Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"RecordPurchasePayment\",\n  \"payload\": {\n    \"purchaseOrderId\": \"po-1001\",\n    \"amount\": 1500,\n    \"paymentMethod\": \"BANK_TRANSFER\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

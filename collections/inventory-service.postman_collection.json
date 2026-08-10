@@ -130,6 +130,47 @@
       ]
     },
     {
+      "name": "Inventory Operations",
+      "item": [
+        {
+          "name": "Record Inventory Upgrade",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"RecordInventoryUpgrade\",\n  \"payload\": {\n    \"inventoryItemId\": \"inv-1001\",\n    \"upgradeType\": \"SSD\",\n    \"description\": \"Upgraded to 1TB SSD\",\n    \"cost\": 200\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Record Inventory Incident",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"RecordInventoryIncident\",\n  \"payload\": {\n    \"inventoryItemId\": \"inv-1001\",\n    \"incidentType\": \"DAMAGED\",\n    \"description\": \"Screen cracked during handling\",\n    \"lossAmount\": 500\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Inter-Branch Transfer",
       "item": [
         {

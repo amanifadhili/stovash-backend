@@ -1,0 +1,33 @@
+{
+  "info": {
+    "_postman_id": "c2000007-ac00-4000-8000-supplierserv2",
+    "name": "Supplier Service API Collection",
+    "description": "Postman collection for supplier management.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Suppliers",
+      "item": [
+        {
+          "name": "Create Supplier",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"CreateSupplier\",\n  \"payload\": {\n    \"name\": \"Tech Supplies Inc\",\n    \"email\": \"contact@techsupplies.com\",\n    \"phone\": \"+1987654321\",\n    \"address\": \"456 Industrial Ave\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

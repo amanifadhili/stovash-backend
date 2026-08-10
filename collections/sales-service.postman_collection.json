@@ -1,0 +1,120 @@
+{
+  "info": {
+    "_postman_id": "c2000003-ac00-4000-8000-salesserv2",
+    "name": "Sales Service API Collection",
+    "description": "Postman collection for sales orders, quotations, partial payments, bonuses, and loan sales.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Sales Orders",
+      "item": [
+        {
+          "name": "Process Sale",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"ProcessSale\",\n  \"payload\": {\n    \"customerId\": \"cust-1001\",\n    \"shopId\": \"{{shopId}}\",\n    \"items\": [\n      {\n        \"inventoryItemId\": \"inv-1001\",\n        \"quantity\": 1,\n        \"unitPrice\": 500\n      }\n    ],\n    \"paymentMethod\": \"CASH\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        },
+        {
+          "name": "Convert Quotation to Sale",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"ConvertQuotationToSale\",\n  \"payload\": {\n    \"quotationId\": \"quote-1001\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Record Partial Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"RecordPartialPayment\",\n  \"payload\": {\n    \"salesOrderId\": \"so-1001\",\n    \"amount\": 250,\n    \"paymentMethod\": \"CASH\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bonuses",
+      "item": [
+        {
+          "name": "Record Bonus",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"RecordBonus\",\n  \"payload\": {\n    \"customerId\": \"cust-1001\",\n    \"amount\": 50,\n    \"reason\": \"Loyalty bonus\",\n    \"shopId\": \"{{shopId}}\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Loan Sales",
+      "item": [
+        {
+          "name": "Process Loan Sale",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"ProcessLoanSale\",\n  \"payload\": {\n    \"customerId\": \"cust-1001\",\n    \"shopId\": \"{{shopId}}\",\n    \"items\": [\n      {\n        \"inventoryItemId\": \"inv-1001\",\n        \"quantity\": 1,\n        \"unitPrice\": 500\n      }\n    ],\n    \"downPayment\": 100,\n    \"installmentCount\": 6,\n    \"interestRate\": 10\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

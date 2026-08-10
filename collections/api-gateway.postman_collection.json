@@ -1,0 +1,54 @@
+{
+  "info": {
+    "_postman_id": "c2000013-ac00-4000-8000-apigateway2",
+    "name": "API Gateway Collection",
+    "description": "Postman collection for API Gateway endpoints including metrics and health checks.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Gateway Endpoints",
+      "item": [
+        {
+          "name": "Get Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/metrics",
+              "host": ["{{baseUrl}}"],
+              "path": ["metrics"]
+            }
+          },
+          "description": "Get Prometheus metrics from the API Gateway"
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "description": "Health check endpoint for the API Gateway"
+        },
+        {
+          "name": "API Documentation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/docs",
+              "host": ["{{baseUrl}}"],
+              "path": ["docs"]
+            }
+          },
+          "description": "Swagger/OpenAPI documentation"
+        }
+      ]
+    }
+  ]
+}

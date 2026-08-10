@@ -1,0 +1,56 @@
+{
+  "info": {
+    "_postman_id": "c2000005-ac00-4000-8000-treasuryserv2",
+    "name": "Treasury Service API Collection",
+    "description": "Postman collection for payment methods, operational deposits, and payment method reconciliation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Operational Deposits",
+      "item": [
+        {
+          "name": "Record Operational Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"RecordOperationalDeposit\",\n  \"payload\": {\n    \"paymentMethodId\": \"pm-1001\",\n    \"amount\": 500,\n    \"shopId\": \"{{shopId}}\",\n    \"notes\": \"Morning cash deposit\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reconciliation",
+      "item": [
+        {
+          "name": "Reconcile Payment Method",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"ReconcilePaymentMethod\",\n  \"payload\": {\n    \"paymentMethodId\": \"pm-1001\",\n    \"expectedAmount\": 1000,\n    \"actualAmount\": 980,\n    \"shopId\": \"{{shopId}}\"\n  },\n  \"context\": {\n    \"tenantId\": \"{{tenantId}}\",\n    \"shopId\": \"{{shopId}}\",\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

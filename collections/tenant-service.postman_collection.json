@@ -1,0 +1,33 @@
+{
+  "info": {
+    "_postman_id": "c2000012-ac00-4000-8000-tenantserv2",
+    "name": "Tenant Service API Collection",
+    "description": "Postman collection for tenant management.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Tenants",
+      "item": [
+        {
+          "name": "Create Tenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"CreateTenant\",\n  \"payload\": {\n    \"name\": \"Tech Shop Inc\",\n    \"domain\": \"techshop.com\",\n    \"contactEmail\": \"admin@techshop.com\",\n    \"contactPhone\": \"+1234567890\"\n  },\n  \"context\": {\n    \"userId\": \"{{userId}}\",\n    \"traceId\": \"{{$guid}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api",
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
