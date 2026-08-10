@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
@@ -26,6 +27,22 @@ async function bootstrap() {
       max: 1000, // limit each IP to 1000 requests per windowMs
     }),
   );
+
+  // Swagger/OpenAPI documentation
+  const config = new DocumentBuilder()
+    .setTitle('Electronic Shop API')
+    .setDescription('API Gateway for Electronic Shop Management System')
+    .setVersion('1.0')
+    .addTag('Identity', 'User authentication and tenant management')
+    .addTag('Accounting', 'Financial operations and ledger management')
+    .addTag('Inventory', 'Product and inventory management')
+    .addTag('Sales', 'Sales orders and quotations')
+    .addTag('Purchase', 'Purchase orders and supplier management')
+    .addTag('Treasury', 'Payment methods and operational deposits')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
   
   // Proxy non-API requests to the Vite dev server (port 3001)
   app.use(
