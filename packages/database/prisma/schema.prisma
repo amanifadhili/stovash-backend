@@ -122,3 +122,32 @@ model InventoryItem {
 
   product       Product  @relation(fields: [productId], references: [id])
 }
+
+model SalesOrder {
+  id           String           @id @default(uuid())
+  tenantId     String
+  shopId       String
+  workPeriodId String?
+  orderNumber  String           @unique
+  totalAmount  Float
+  totalCost    Float
+  paymentMethod String         @default("CASH") // CASH, CARD, CREDIT
+  status       String           @default("COMPLETED") // COMPLETED, CANCELLED, REFUNDED
+  createdById  String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  items        SalesOrderItem[]
+}
+
+model SalesOrderItem {
+  id              String   @id @default(uuid())
+  salesOrderId    String
+  inventoryItemId String
+  serialNumber    String
+  unitCost        Float
+  unitPrice       Float
+  createdAt       DateTime @default(now())
+
+  salesOrder      SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+}

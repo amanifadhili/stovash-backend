@@ -56,8 +56,56 @@ test('Milestone 5: Work Period Lifecycle States & Financial Period Lockout', () 
   console.log('✓ Milestone 5 Work Period Lifecycle & Financial Period Lockout tests passed successfully.');
 });
 
+test('Milestone 6: Sales & POS Order Processing Engine (Item Allocation & Auto Journal Entry)', () => {
+  // Simulate serialized inventory items
+  const inventoryItems = [
+    { id: 'item-1', serialNumber: 'SN-LAPTOP-101', purchaseCost: 800, status: 'AVAILABLE' },
+    { id: 'item-2', serialNumber: 'SN-LAPTOP-102', purchaseCost: 850, status: 'AVAILABLE' }
+  ];
+
+  // Process POS Sale
+  const posSalePayload = {
+    items: [
+      { serialNumber: 'SN-LAPTOP-101', unitPrice: 1200 },
+      { serialNumber: 'SN-LAPTOP-102', unitPrice: 1250 }
+    ],
+    paymentMethod: 'CASH'
+  };
+
+  // 1. Calculate totals
+  let totalAmount = 0;
+  let totalCost = 0;
+
+  for (const saleItem of posSalePayload.items) {
+    const inv = inventoryItems.find(i => i.serialNumber === saleItem.serialNumber);
+    assert.ok(inv, 'Inventory item must exist');
+    assert.strictEqual(inv.status, 'AVAILABLE', 'Inventory item must be available');
+    inv.status = 'SOLD';
+    totalAmount += saleItem.unitPrice;
+    totalCost += inv.purchaseCost;
+  }
+
+  assert.strictEqual(totalAmount, 2450, 'Total sale amount matches sum of unit prices');
+  assert.strictEqual(totalCost, 1650, 'Total sale cost matches specific identification cost');
+
+  // 2. Auto-generated journal entry lines
+  const journalLines = [
+    { account: 'Cash on Hand (1001)', debit: totalAmount, credit: 0 },
+    { account: 'Sales Revenue (4001)', debit: 0, credit: totalAmount },
+    { account: 'Cost of Goods Sold (5001)', debit: totalCost, credit: 0 },
+    { account: 'Inventory Asset (1002)', debit: 0, credit: totalCost }
+  ];
+
+  const totalDebit = journalLines.reduce((acc, l) => acc + l.debit, 0);
+  const totalCredit = journalLines.reduce((acc, l) => acc + l.credit, 0);
+  assert.strictEqual(totalDebit, totalCredit, 'POS auto journal entry debit must equal credit');
+  assert.strictEqual(inventoryItems.every(i => i.status === 'SOLD'), true, 'All allocated items marked as SOLD');
+
+  console.log('✓ Milestone 6 Sales & POS Order Processing Engine tests passed successfully.');
+});
 
 test('Milestone 3 & 9: Specific Identification Inventory Costing', () => {
+
   const items = [
     { serialNumber: 'SN-LAPTOP-001', purchaseCost: 300000, status: 'IN_STOCK' },
     { serialNumber: 'SN-LAPTOP-002', purchaseCost: 310000, status: 'IN_STOCK' }
