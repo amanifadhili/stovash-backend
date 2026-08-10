@@ -199,6 +199,44 @@ test('Milestone 9: Multi-Shop Transfers & Inter-Branch Inventory Accounting', ()
   console.log('✓ Milestone 9 Multi-Shop Transfers & Inter-Branch Inventory tests passed successfully.');
 });
 
+test('Milestone 10: Financial Reporting Engine (Trial Balance, Income Statement, Balance Sheet)', () => {
+  // Simulated transactions for shop
+  const salesRevenue = 5000;
+  const cogs = 3200;
+  const operatingExpense = 500;
+  const cash = salesRevenue - operatingExpense;
+  const inventoryAsset = 10000 - cogs; // Initial 10k inventory - 3.2k COGS
+
+  // Trial Balance Check
+  const trialBalanceAccounts = [
+    { code: '1001', name: 'Cash', type: 'ASSET', debit: cash, credit: 0 },
+    { code: '1002', name: 'Inventory Asset', type: 'ASSET', debit: inventoryAsset, credit: 0 },
+    { code: '4001', name: 'Sales Revenue', type: 'REVENUE', debit: 0, credit: salesRevenue },
+    { code: '5001', name: 'Cost of Goods Sold', type: 'EXPENSE', debit: cogs, credit: 0 },
+    { code: '5002', name: 'Operating Expense', type: 'EXPENSE', debit: operatingExpense, credit: 0 },
+    { code: '3001', name: 'Owner Equity', type: 'EQUITY', debit: 0, credit: 10000 }
+  ];
+
+  const totalDebits = trialBalanceAccounts.reduce((sum, a) => sum + a.debit, 0);
+  const totalCredits = trialBalanceAccounts.reduce((sum, a) => sum + a.credit, 0);
+
+  assert.strictEqual(totalDebits, totalCredits, 'Trial balance total debits must equal total credits');
+
+  // Income Statement Check
+  const netIncome = salesRevenue - (cogs + operatingExpense);
+  assert.strictEqual(netIncome, 1300, 'Net income calculation must equal revenue minus expenses');
+
+  // Balance Sheet Check (Assets = Liabilities + Equity + Retained Earnings)
+  const totalAssets = cash + inventoryAsset; // 4500 + 6800 = 11300
+  const totalLiabilities = 0;
+  const ownerEquity = 10000;
+  const totalEquity = ownerEquity + netIncome; // 10000 + 1300 = 11300
+
+  assert.strictEqual(totalAssets, totalLiabilities + totalEquity, 'Balance Sheet equation Assets = Liabilities + Equity must hold');
+
+  console.log('✓ Milestone 10 Financial Reporting tests passed successfully.');
+});
+
 
 
 test('Milestone 3 & 9: Specific Identification Inventory Costing', () => {

@@ -33,7 +33,7 @@ export class AppController {
         return await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
       }
       
-      if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod'].includes(cmd)) {
+      if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod', 'GetTrialBalance', 'GetIncomeStatement', 'GetBalanceSheet'].includes(cmd)) {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 
