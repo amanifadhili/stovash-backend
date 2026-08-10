@@ -89,8 +89,24 @@ model JournalEntry {
   description String
   postedBy    String   // userId
   status      String   @default("DRAFT") // DRAFT, POSTED
+  batchId     String?  // Reference to posting batch
   createdAt   DateTime @default(now())
   entries     LedgerEntry[]
+  batch       PostingBatch? @relation(fields: [batchId], references: [id])
+}
+
+model PostingBatch {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  workPeriodId String
+  name        String
+  description String?
+  status      String   @default("DRAFT") // DRAFT, POSTED
+  postedBy    String?  // userId
+  postedAt    DateTime?
+  createdAt   DateTime @default(now())
+  journalEntries JournalEntry[]
 }
 
 model LedgerEntry {
