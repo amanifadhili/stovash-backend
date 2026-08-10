@@ -247,6 +247,20 @@ model WarrantyClaim {
   updatedAt        DateTime @updatedAt
 }
 
+model Bonus {
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  workPeriodId  String
+  recipientType String   // STAFF, CUSTOMER
+  recipientId   String
+  amount        Float
+  reason        String
+  salesOrderId  String?
+  recordedBy    String
+  createdAt     DateTime @default(now())
+}
+
 model InventoryTransfer {
   id             String   @id @default(uuid())
   tenantId       String
