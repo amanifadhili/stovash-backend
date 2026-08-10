@@ -3,6 +3,35 @@ import { JwtAuthGuard } from './common/auth/jwt-auth.guard.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
+// Command to permission mapping
+const COMMAND_PERMISSIONS: Record<string, string[]> = {
+  // Tenant commands
+  'CreateTenant': ['tenant:create'],
+  
+  // User commands
+  'CreateUser': ['user:create'],
+  'LoginUser': [], // Public endpoint
+  
+  // Accounting commands
+  'PostJournalEntry': ['accounting:journal:post'],
+  'CreateLedgerAccount': ['accounting:account:create'],
+  'OpenWorkPeriod': ['accounting:workperiod:open'],
+  'CloseWorkPeriod': ['accounting:workperiod:close'],
+  'GetActiveWorkPeriod': ['accounting:workperiod:read'],
+  'GetTrialBalance': ['accounting:report:read'],
+  'GetIncomeStatement': ['accounting:report:read'],
+  'GetBalanceSheet': ['accounting:report:read'],
+  
+  // Inventory commands
+  'AddProduct': ['inventory:product:create'],
+  'AddInventoryItem': ['inventory:item:create'],
+  'ProcessPosSale': ['inventory:sale:create'],
+  'ReceiveGoods': ['inventory:goods:receive'],
+  'ProcessSalesReturn': ['inventory:return:process'],
+  'CreateWarrantyClaim': ['inventory:warranty:create'],
+  'TransferInventory': ['inventory:inventory:transfer'],
+};
+
 @Controller()
 export class AppController {
   constructor(
@@ -27,6 +56,24 @@ export class AppController {
     }
 
     const context = req.context;
+
+    // Check permissions for the command
+    const requiredPermissions = COMMAND_PERMISSIONS[cmd];
+    if (requiredPermissions && requiredPermissions.length > 0) {
+      const userPermissions = req.user?.permissions || [];
+      const hasPermission = requiredPermissions.some(p => userPermissions.includes(p));
+      
+      if (!hasPermission) {
+        throw new HttpException(
+          {
+            status: 'error',
+            message: `Insufficient permissions. Required: ${requiredPermissions.join(', ')}`,
+            errorCode: 'FORBIDDEN'
+          },
+          HttpStatus.FORBIDDEN
+        );
+      }
+    }
 
     try {
       if (['CreateTenant', 'CreateUser', 'LoginUser'].includes(cmd)) {
