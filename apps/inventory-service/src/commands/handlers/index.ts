@@ -5,6 +5,7 @@ import { ReceiveGoodsHandler } from './receive-goods.handler.js';
 import { ProcessSalesReturnHandler } from './process-sales-return.handler.js';
 import { CreateWarrantyClaimHandler } from './create-warranty-claim.handler.js';
 import { TransferInventoryHandler } from './transfer-inventory.handler.js';
+import { RecordInventoryUpgradeHandler } from './record-inventory-upgrade.handler.js';
 
 export const CommandHandlers = [
   AddProductHandler,
@@ -13,7 +14,8 @@ export const CommandHandlers = [
   ReceiveGoodsHandler,
   ProcessSalesReturnHandler,
   CreateWarrantyClaimHandler,
-  TransferInventoryHandler
+  TransferInventoryHandler,
+  RecordInventoryUpgradeHandler
 ];
 
 

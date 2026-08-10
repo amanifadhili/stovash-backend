@@ -32,6 +32,7 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'ProcessSalesReturn': ['inventory:return:process'],
   'CreateWarrantyClaim': ['inventory:warranty:create'],
   'TransferInventory': ['inventory:inventory:transfer'],
+  'RecordInventoryUpgrade': ['inventory:upgrade:create'],
   
   // Sales commands
   'ProcessSale': ['sales:sale:create'],
@@ -73,6 +74,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'ProcessSalesReturn': ['ADMIN', 'MANAGER', 'STAFF'],
   'CreateWarrantyClaim': ['ADMIN', 'MANAGER', 'STAFF'],
   'TransferInventory': ['ADMIN', 'MANAGER', 'STAFF'],
+  'RecordInventoryUpgrade': ['ADMIN', 'MANAGER'],
   
   // Sales commands
   'ProcessSale': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -156,7 +158,7 @@ export class AppController {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 
-      if (['AddProduct', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory'].includes(cmd)) {
+      if (['AddProduct', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade'].includes(cmd)) {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
       }
 

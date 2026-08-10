@@ -141,10 +141,25 @@ model InventoryItem {
   serialNumber  String
   purchaseCost  Float
   status        String   @default("CREATED") // CREATED, RECEIVED, AVAILABLE, RESERVED, SOLD, RETURNED, DAMAGED, LOST, STOLEN, DISPOSED
+  capitalizedCost Float  @default(0) // Total capitalized upgrade costs
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   product       Product  @relation(fields: [productId], references: [id])
+  upgrades      InventoryUpgrade[]
+}
+
+model InventoryUpgrade {
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  inventoryItemId String
+  upgradeType   String   // SSD, RAM, etc.
+  description   String?
+  cost          Float
+  createdAt     DateTime @default(now())
+
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
 }
 
 model SalesOrder {
