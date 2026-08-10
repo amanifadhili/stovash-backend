@@ -6,6 +6,7 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter.
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
 import { ContextMiddleware } from './common/middleware/context.middleware.js';
 import { RateLimitMiddleware } from './middleware/rate-limit.middleware.js';
+import { CircuitBreakerInterceptor } from './interceptors/circuit-breaker.interceptor.js';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { RateLimitMiddleware } from './middleware/rate-limit.middleware.js';
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: CircuitBreakerInterceptor },
     RateLimitMiddleware
   ],
 })
