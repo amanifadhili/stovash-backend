@@ -1,6 +1,0 @@
-{
-  "name": "Electronic Shop SaaS",
-  "description": "Enterprise-grade multi-tenant ERP platform. Phase 3: Advanced Financial Reports, Profit Closing Engine, Multi-Currency, and AI Financial Insights.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
