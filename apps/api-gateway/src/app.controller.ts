@@ -32,6 +32,35 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'TransferInventory': ['inventory:inventory:transfer'],
 };
 
+// Command to role mapping (role-based access control)
+const COMMAND_ROLES: Record<string, string[]> = {
+  // Tenant commands - only ADMIN can create tenants
+  'CreateTenant': ['ADMIN'],
+  
+  // User commands - ADMIN and MANAGER can create users
+  'CreateUser': ['ADMIN', 'MANAGER'],
+  'LoginUser': [], // Public endpoint
+  
+  // Accounting commands
+  'PostJournalEntry': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'CreateLedgerAccount': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'OpenWorkPeriod': ['ADMIN', 'MANAGER'],
+  'CloseWorkPeriod': ['ADMIN', 'MANAGER'],
+  'GetActiveWorkPeriod': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetTrialBalance': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'GetIncomeStatement': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'GetBalanceSheet': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  
+  // Inventory commands
+  'AddProduct': ['ADMIN', 'MANAGER'],
+  'AddInventoryItem': ['ADMIN', 'MANAGER', 'STAFF'],
+  'ProcessPosSale': ['ADMIN', 'MANAGER', 'STAFF'],
+  'ReceiveGoods': ['ADMIN', 'MANAGER', 'STAFF'],
+  'ProcessSalesReturn': ['ADMIN', 'MANAGER', 'STAFF'],
+  'CreateWarrantyClaim': ['ADMIN', 'MANAGER', 'STAFF'],
+  'TransferInventory': ['ADMIN', 'MANAGER', 'STAFF'],
+};
+
 @Controller()
 export class AppController {
   constructor(
@@ -56,6 +85,22 @@ export class AppController {
     }
 
     const context = req.context;
+
+    // Check role-based access control
+    const requiredRoles = COMMAND_ROLES[cmd];
+    if (requiredRoles && requiredRoles.length > 0) {
+      const userRole = req.user?.role;
+      if (!userRole || !requiredRoles.includes(userRole)) {
+        throw new HttpException(
+          {
+            status: 'error',
+            message: `Insufficient role privileges. Required: ${requiredRoles.join(', ')}`,
+            errorCode: 'FORBIDDEN'
+          },
+          HttpStatus.FORBIDDEN
+        );
+      }
+    }
 
     // Check permissions for the command
     const requiredPermissions = COMMAND_PERMISSIONS[cmd];
