@@ -24,16 +24,30 @@ export class PermissionGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const reqContext = request.context as IRequestContext;
+    const reqContext = (request?.context || request?.body?.context) as IRequestContext;
 
     if (!reqContext) {
       throw new AppError(ErrorCode.UNAUTHORIZED, 'Request context is missing');
     }
 
-    // In a real application, we would fetch user roles and permissions from context
-    // For this prototype, we'll assume the API gateway injects this into the context
-    // or we resolve it here. For simplicity, we are passing if the context exists,
-    // but we can extend this logic to check reqContext roles/permissions if they were added.
+    const userRoles = reqContext.roles || (reqContext.role ? [reqContext.role] : ['STAFF']);
+    const userPermissions = reqContext.permissions || [];
+
+    if (requiredRoles && requiredRoles.length > 0) {
+      const hasRole = requiredRoles.some(r => userRoles.includes(r));
+      if (!hasRole) {
+        throw new AppError(ErrorCode.FORBIDDEN, `Insufficient role privileges. Required: ${requiredRoles.join(', ')}`);
+      }
+    }
+
+    if (requiredPermissions && requiredPermissions.length > 0) {
+      const hasPermission = requiredPermissions.some(p => userPermissions.includes(p));
+      if (!hasPermission) {
+        throw new AppError(ErrorCode.FORBIDDEN, `Insufficient granular permissions. Required: ${requiredPermissions.join(', ')}`);
+      }
+    }
+
     return true;
   }
 }
+

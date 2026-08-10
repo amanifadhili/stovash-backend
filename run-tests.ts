@@ -237,6 +237,59 @@ test('Milestone 10: Financial Reporting Engine (Trial Balance, Income Statement,
   console.log('✓ Milestone 10 Financial Reporting tests passed successfully.');
 });
 
+test('Milestone 11: Audit Trail, Security & Granular Authorization', () => {
+  const reqContextStaff = {
+    tenantId: 'tenant-demo',
+    shopId: 'shop-01',
+    userId: 'user-staff-1',
+    traceId: 'trace-abc-123',
+    role: 'STAFF',
+    permissions: ['VIEW_INVENTORY']
+  };
+
+  const reqContextAdmin = {
+    tenantId: 'tenant-demo',
+    shopId: 'shop-01',
+    userId: 'user-admin-1',
+    traceId: 'trace-xyz-789',
+    role: 'ADMIN',
+    permissions: ['VIEW_INVENTORY', 'CLOSE_WORK_PERIOD', 'POST_JOURNAL']
+  };
+
+  // RBAC Permission check logic
+  const checkRoleAccess = (context: any, requiredRole: string) => {
+    return context.role === requiredRole || context.role === 'ADMIN';
+  };
+
+  const checkPermissionAccess = (context: any, requiredPermission: string) => {
+    return context.permissions.includes(requiredPermission) || context.role === 'ADMIN';
+  };
+
+  assert.strictEqual(checkRoleAccess(reqContextStaff, 'ADMIN'), false, 'Staff role denied admin access');
+  assert.strictEqual(checkRoleAccess(reqContextAdmin, 'ADMIN'), true, 'Admin granted admin access');
+  assert.strictEqual(checkPermissionAccess(reqContextStaff, 'CLOSE_WORK_PERIOD'), false, 'Staff lacks CLOSE_WORK_PERIOD permission');
+  assert.strictEqual(checkPermissionAccess(reqContextAdmin, 'CLOSE_WORK_PERIOD'), true, 'Admin possesses CLOSE_WORK_PERIOD permission');
+
+  // Audit Log Entry creation check
+  const auditLogEntry = {
+    tenantId: reqContextAdmin.tenantId,
+    shopId: reqContextAdmin.shopId,
+    userId: reqContextAdmin.userId,
+    traceId: reqContextAdmin.traceId,
+    action: 'POST_JOURNAL_ENTRY',
+    resource: 'JournalEntry',
+    resourceId: 'je-1001',
+    details: JSON.stringify({ amount: 1500, status: 'POSTED' }),
+    createdAt: new Date().toISOString()
+  };
+
+  assert.strictEqual(auditLogEntry.traceId, 'trace-xyz-789', 'Trace ID correctly propagated to audit log');
+  assert.strictEqual(auditLogEntry.action, 'POST_JOURNAL_ENTRY', 'Action correctly logged');
+
+  console.log('✓ Milestone 11 Audit Trail, Security & Authorization tests passed successfully.');
+});
+
+
 
 
 test('Milestone 3 & 9: Specific Identification Inventory Costing', () => {

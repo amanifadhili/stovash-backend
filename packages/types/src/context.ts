@@ -4,6 +4,9 @@ export interface IRequestContext {
   userId: string;
   workPeriodId: string;
   traceId: string;
+  role?: string;
+  roles?: string[];
+  permissions?: string[];
   ipAddress?: string;
   userAgent?: string;
 }

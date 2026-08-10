@@ -222,3 +222,16 @@ model InventoryTransfer {
   updatedAt      DateTime @updatedAt
 }
 
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  shopId     String?
+  userId     String?
+  action     String   // e.g. POST_JOURNAL, RECEIVE_GOODS, CLOSE_WORK_PERIOD
+  resource   String   // e.g. JournalEntry, PurchaseOrder, WorkPeriod
+  resourceId String?
+  traceId    String?
+  details    String?  // JSON or text summary
+  createdAt  DateTime @default(now())
+}
+
