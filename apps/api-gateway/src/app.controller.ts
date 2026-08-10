@@ -34,6 +34,9 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   // Sales commands
   'ProcessSale': ['sales:sale:create'],
   
+  // Purchase commands
+  'ProcessPurchase': ['purchase:purchase:create'],
+  
   // Treasury commands
   'RecordOperationalDeposit': ['treasury:deposit:create'],
   'ReconcilePaymentMethod': ['treasury:reconcile:create'],
@@ -70,6 +73,9 @@ const COMMAND_ROLES: Record<string, string[]> = {
   // Sales commands
   'ProcessSale': ['ADMIN', 'MANAGER', 'STAFF'],
   
+  // Purchase commands
+  'ProcessPurchase': ['ADMIN', 'MANAGER', 'STAFF'],
+  
   // Treasury commands
   'RecordOperationalDeposit': ['ADMIN', 'MANAGER', 'STAFF'],
   'ReconcilePaymentMethod': ['ADMIN', 'MANAGER'],
@@ -82,7 +88,8 @@ export class AppController {
     @Inject('ACCOUNTING_SERVICE') private readonly accountingClient: ClientProxy,
     @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
     @Inject('TREASURY_SERVICE') private readonly treasuryClient: ClientProxy,
-    @Inject('SALES_SERVICE') private readonly salesClient: ClientProxy
+    @Inject('SALES_SERVICE') private readonly salesClient: ClientProxy,
+    @Inject('PURCHASE_SERVICE') private readonly purchaseClient: ClientProxy
   ) {}
 
   @Get('health')
@@ -151,6 +158,10 @@ export class AppController {
 
       if (['ProcessSale'].includes(cmd)) {
         return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
+      }
+
+      if (['ProcessPurchase'].includes(cmd)) {
+        return await firstValueFrom(this.purchaseClient.send({ cmd }, { payload, context }));
       }
 
       if (['RecordOperationalDeposit', 'ReconcilePaymentMethod'].includes(cmd)) {
