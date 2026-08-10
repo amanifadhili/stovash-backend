@@ -42,6 +42,7 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   
   // Purchase commands
   'ProcessPurchase': ['purchase:purchase:create'],
+  'RecordPurchasePayment': ['purchase:payment:create'],
   
   // Treasury commands
   'RecordOperationalDeposit': ['treasury:deposit:create'],
@@ -87,6 +88,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   
   // Purchase commands
   'ProcessPurchase': ['ADMIN', 'MANAGER', 'STAFF'],
+  'RecordPurchasePayment': ['ADMIN', 'MANAGER', 'STAFF'],
   
   // Treasury commands
   'RecordOperationalDeposit': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -172,7 +174,7 @@ export class AppController {
         return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
       }
 
-      if (['ProcessPurchase'].includes(cmd)) {
+      if (['ProcessPurchase', 'RecordPurchasePayment'].includes(cmd)) {
         return await firstValueFrom(this.purchaseClient.send({ cmd }, { payload, context }));
       }
 
