@@ -41,19 +41,54 @@ export class CloseWorkPeriodHandler extends BaseCommandHandler<CloseWorkPeriodCo
         };
       }
 
+      // Calculate profit/loss for the work period
+      const financialSummary = await this.calculatePeriodFinancials(workPeriod.id, workPeriod.tenantId, workPeriod.shopId);
+
+      // Update work period with financial summary
       const updated = await prisma.workPeriod.update({
         where: { id: workPeriod.id },
         data: {
           status: targetStatus,
           closedBy: targetStatus === 'CLOSED' ? context?.userId || workPeriod.openedBy : workPeriod.closedBy,
-          closedAt: targetStatus === 'CLOSED' ? new Date() : workPeriod.closedAt
+          closedAt: targetStatus === 'CLOSED' ? new Date() : workPeriod.closedAt,
+          totalRevenue: financialSummary.totalRevenue,
+          totalExpense: financialSummary.totalExpense,
+          netProfit: financialSummary.netProfit,
+          grossProfit: financialSummary.grossProfit
         }
       });
+
+      // Log audit action
+      try {
+        await prisma.auditLog.create({
+          data: {
+            tenantId: workPeriod.tenantId,
+            shopId: workPeriod.shopId,
+            userId: context?.userId || null,
+            action: 'CloseWorkPeriod',
+            resource: 'WorkPeriod',
+            resourceId: workPeriod.id,
+            traceId: context?.traceId || null,
+            details: JSON.stringify({
+              status: targetStatus,
+              totalRevenue: financialSummary.totalRevenue,
+              totalExpense: financialSummary.totalExpense,
+              netProfit: financialSummary.netProfit,
+              grossProfit: financialSummary.grossProfit
+            })
+          }
+        });
+      } catch (auditError) {
+        console.error('Failed to log audit action:', auditError);
+      }
 
       return {
         status: 'success',
         traceId,
-        data: updated
+        data: {
+          ...updated,
+          financialSummary
+        }
       };
     } catch (error: any) {
       return {
@@ -63,5 +98,74 @@ export class CloseWorkPeriodHandler extends BaseCommandHandler<CloseWorkPeriodCo
         errorCode: error.code || ErrorCode.INTERNAL_ERROR
       };
     }
+  }
+
+  /**
+   * Calculate financial summary for a work period
+   */
+  private async calculatePeriodFinancials(workPeriodId: string, tenantId: string, shopId: string) {
+    // Get all journal entries for this work period
+    const journalEntries = await prisma.journalEntry.findMany({
+      where: {
+        workPeriodId,
+        tenantId,
+        shopId,
+        status: 'POSTED'
+      },
+      include: {
+        entries: {
+          include: {
+            account: true
+          }
+        }
+      }
+    });
+
+    let totalRevenue = 0;
+    let totalExpense = 0;
+    let costOfGoodsSold = 0;
+
+    // Calculate totals by account type
+    for (const journalEntry of journalEntries) {
+      for (const entry of journalEntry.entries) {
+        const account = entry.account;
+        const amount = Number(entry.amount);
+
+        if (account.type === 'REVENUE') {
+          // Credits increase revenue, debits decrease
+          if (entry.type === 'CREDIT') {
+            totalRevenue += amount;
+          } else {
+            totalRevenue -= amount;
+          }
+        } else if (account.type === 'EXPENSE') {
+          // Debits increase expense, credits decrease
+          if (entry.type === 'DEBIT') {
+            totalExpense += amount;
+          } else {
+            totalExpense -= amount;
+          }
+        } else if (account.type === 'ASSET' && account.name.toLowerCase().includes('inventory') || account.name.toLowerCase().includes('cogs')) {
+          // Track cost of goods sold
+          if (entry.type === 'DEBIT') {
+            costOfGoodsSold += amount;
+          } else {
+            costOfGoodsSold -= amount;
+          }
+        }
+      }
+    }
+
+    const grossProfit = totalRevenue - costOfGoodsSold;
+    const netProfit = totalRevenue - totalExpense;
+
+    return {
+      totalRevenue,
+      totalExpense,
+      costOfGoodsSold,
+      grossProfit,
+      netProfit,
+      journalEntryCount: journalEntries.length
+    };
   }
 }
