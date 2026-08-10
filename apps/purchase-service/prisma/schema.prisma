@@ -1,0 +1,144 @@
+// Purchase Service Database Schema
+// Handles: Purchases, Returns, Supplier Orders
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PURCHASE_DATABASE_URL")
+}
+
+model Purchase {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  poNumber     String   @unique
+  supplierId   String?
+  totalAmount  Float
+  totalCost    Float
+  status       String   @default("RECEIVED") // PENDING, RECEIVED, CANCELLED
+  createdById  String?  // userId
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items        PurchaseItem[]
+  payments     PurchasePayment[]
+  returns      PurchaseReturn[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([supplierId])
+  @@index([status])
+  @@map("purchases")
+}
+
+model PurchaseItem {
+  id           String   @id @default(uuid())
+  purchaseId   String
+  productId    String
+  serialNumber String?
+  quantity     Float
+  purchaseCost Float
+  total        Float
+  createdAt    DateTime @default(now())
+
+  purchase     Purchase @relation(fields: [purchaseId], references: [id])
+
+  @@index([purchaseId])
+  @@index([productId])
+  @@map("purchase_items")
+}
+
+model PurchasePayment {
+  id         String   @id @default(uuid())
+  purchaseId String
+  amount     Float
+  method     String   // CASH, TRANSFER, CHECK
+  reference  String?
+  createdAt  DateTime @default(now())
+
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+
+  @@index([purchaseId])
+  @@map("purchase_payments")
+}
+
+model SupplierOrder {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  supplierId   String
+  orderNumber  String   @unique
+  totalAmount  Float
+  status       String   @default("PENDING") // PENDING, SENT, RECEIVED, CANCELLED
+  createdById  String?  // userId
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items        SupplierOrderItem[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([supplierId])
+  @@index([status])
+  @@map("supplier_orders")
+}
+
+model SupplierOrderItem {
+  id              String   @id @default(uuid())
+  supplierOrderId String
+  productId       String
+  quantity        Float
+  unitPrice       Float
+  total           Float
+  createdAt       DateTime @default(now())
+
+  supplierOrder   SupplierOrder @relation(fields: [supplierOrderId], references: [id])
+
+  @@index([supplierOrderId])
+  @@index([productId])
+  @@map("supplier_order_items")
+}
+
+model PurchaseReturn {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  purchaseId   String?
+  supplierId   String?
+  returnNumber String   @unique
+  totalAmount  Float
+  refundAmount Float
+  reason       String?
+  status       String   @default("PENDING") // PENDING, APPROVED, COMPLETED, REJECTED
+  createdById  String?  // userId
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items        PurchaseReturnItem[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([purchaseId])
+  @@index([supplierId])
+  @@index([status])
+  @@map("purchase_returns")
+}
+
+model PurchaseReturnItem {
+  id               String   @id @default(uuid())
+  purchaseReturnId String
+  productId        String
+  serialNumber     String?
+  quantity         Float
+  refundAmount     Float
+  createdAt       DateTime @default(now())
+
+  purchaseReturn   PurchaseReturn @relation(fields: [purchaseReturnId], references: [id])
+
+  @@index([purchaseReturnId])
+  @@index([productId])
+  @@map("purchase_return_items")
+}
