@@ -69,9 +69,16 @@ model LedgerAccount {
   name        String
   type        String   // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
   balance     Float    @default(0)
+  parentId    String?  // Parent account for hierarchy
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   entries     LedgerEntry[]
+  parent      LedgerAccount? @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children    LedgerAccount[] @relation("AccountHierarchy")
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([parentId])
 }
 
 model JournalEntry {
