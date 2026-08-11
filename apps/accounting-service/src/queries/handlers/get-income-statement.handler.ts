@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetIncomeStatementQuery } from '../impl/get-income-statement.query.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 
 @QueryHandler(GetIncomeStatementQuery)

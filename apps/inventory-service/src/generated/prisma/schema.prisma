@@ -1,0 +1,197 @@
+// Inventory Service Database Schema
+// Handles: Products, Inventory Items, Transfers, Upgrades, Warranty Claims, Movements
+// Owner of: inventory_db
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("INVENTORY_DATABASE_URL")
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  sku         String?
+  createdAt   DateTime  @default(now())
+  createdBy   String?
+  updatedAt   DateTime  @updatedAt
+  updatedBy   String?
+  deletedAt   DateTime?
+  deletedBy   String?
+  version     Int       @default(1)
+
+  items InventoryItem[]
+
+  @@index([tenantId])
+  @@index([sku])
+  @@map("products")
+}
+
+model InventoryItem {
+  id              String    @id @default(uuid())
+  tenantId        String
+  shopId          String
+  productId       String
+  serialNumber    String
+  purchaseCost    Float
+  status          String    @default("CREATED") // CREATED, RECEIVED, AVAILABLE, RESERVED, SOLD, RETURNED, DAMAGED, LOST, STOLEN, DISPOSED
+  capitalizedCost Float     @default(0) // Total capitalized upgrade costs
+  createdAt       DateTime  @default(now())
+  createdBy       String?
+  updatedAt       DateTime  @updatedAt
+  updatedBy       String?
+  deletedAt       DateTime?
+  deletedBy       String?
+  version         Int       @default(1)
+
+  product  Product            @relation(fields: [productId], references: [id])
+  upgrades InventoryUpgrade[]
+
+  @@unique([tenantId, serialNumber])
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([productId])
+  @@index([status])
+  @@map("inventory_items")
+}
+
+model InventoryUpgrade {
+  id              String   @id @default(uuid())
+  tenantId        String
+  shopId          String
+  inventoryItemId String
+  upgradeType     String // SSD, RAM, etc.
+  description     String?
+  cost            Float
+  createdAt       DateTime @default(now())
+
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([inventoryItemId])
+  @@index([upgradeType])
+  @@map("inventory_upgrades")
+}
+
+model InventoryTransfer {
+  id             String   @id @default(uuid())
+  tenantId       String
+  fromShopId     String
+  toShopId       String
+  transferNumber String   @unique
+  serialNumber   String
+  status         String   @default("COMPLETED") // IN_TRANSIT, COMPLETED, CANCELLED
+  notes          String?
+  createdById    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([fromShopId])
+  @@index([toShopId])
+  @@index([status])
+  @@map("inventory_transfers")
+}
+
+model WarrantyClaim {
+  id               String   @id @default(uuid())
+  tenantId         String
+  shopId           String
+  serialNumber     String
+  customerName     String?
+  issueDescription String
+  status           String   @default("LOGGED") // LOGGED, IN_REPAIR, REPLACED, CLOSED
+  resolution       String?
+  createdById      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([serialNumber])
+  @@index([status])
+  @@map("warranty_claims")
+}
+
+model InventoryCategory {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@map("inventory_categories")
+}
+
+model InventoryBrand {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@map("inventory_brands")
+}
+
+model InventoryMovement {
+  id              String   @id @default(uuid())
+  tenantId        String
+  shopId          String
+  inventoryItemId String
+  movementType    String // IN, OUT, TRANSFER_IN, TRANSFER_OUT, ADJUSTMENT
+  quantity        Float    @default(1)
+  referenceId     String?
+  referenceType   String?
+  createdAt       DateTime @default(now())
+  createdBy       String?
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([inventoryItemId])
+  @@index([movementType])
+  @@map("inventory_movements")
+}
+
+model InventoryAdjustment {
+  id              String   @id @default(uuid())
+  tenantId        String
+  shopId          String
+  inventoryItemId String
+  adjustmentType  String // DAMAGE, LOSS, THEFT, DISPOSAL, CORRECTION
+  reason          String?
+  quantity        Float    @default(1)
+  createdAt       DateTime @default(now())
+  createdBy       String?
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([inventoryItemId])
+  @@index([adjustmentType])
+  @@map("inventory_adjustments")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  shopId     String?
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  traceId    String?
+  details    String? // JSON or text summary
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

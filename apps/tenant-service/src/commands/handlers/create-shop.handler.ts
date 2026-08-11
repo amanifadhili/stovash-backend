@@ -24,8 +24,7 @@ export class CreateShopHandler extends BaseCommandHandler<CreateShopCommand> {
         data: {
           tenantId: payload.tenantId,
           name: payload.name,
-          address: payload.address,
-          phone: payload.phone,
+          location: payload.address || null,
           status: payload.status || 'ACTIVE',
         }
       });

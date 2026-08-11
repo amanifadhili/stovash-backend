@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -11,24 +12,24 @@ datasource db {
 }
 
 model Sale {
-  id           String   @id @default(uuid())
-  tenantId     String
-  shopId       String
-  workPeriodId String?
-  orderNumber  String   @unique
-  customerId   String?
-  totalAmount  Float
-  totalCost    Float
-  profit       Float
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  workPeriodId  String?
+  orderNumber   String   @unique
+  customerId    String?
+  totalAmount   Float
+  totalCost     Float
+  profit        Float
   paymentMethod String   @default("CASH") // CASH, CARD, CREDIT, LOAN
-  status       String   @default("COMPLETED") // COMPLETED, CANCELLED, REFUNDED
-  createdById  String?  // userId
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  status        String   @default("COMPLETED") // COMPLETED, CANCELLED, REFUNDED
+  createdById   String? // userId
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  items        SaleItem[]
-  payments     SalePayment[]
-  returns      SaleReturn[]
+  items    SaleItem[]
+  payments SalePayment[]
+  returns  SaleReturn[]
 
   @@index([tenantId])
   @@index([shopId])
@@ -40,19 +41,19 @@ model Sale {
 }
 
 model SaleItem {
-  id              String   @id @default(uuid())
-  saleId          String
-  productId       String
-  serialNumber    String
-  quantity        Float
-  unitCost        Float
-  unitPrice       Float
-  discount        Float    @default(0)
-  tax             Float    @default(0)
-  total           Float
-  createdAt       DateTime @default(now())
+  id           String   @id @default(uuid())
+  saleId       String
+  productId    String
+  serialNumber String
+  quantity     Float
+  unitCost     Float
+  unitPrice    Float
+  discount     Float    @default(0)
+  tax          Float    @default(0)
+  total        Float
+  createdAt    DateTime @default(now())
 
-  sale            Sale     @relation(fields: [saleId], references: [id])
+  sale Sale @relation(fields: [saleId], references: [id])
 
   @@index([saleId])
   @@index([productId])
@@ -60,33 +61,33 @@ model SaleItem {
 }
 
 model SalePayment {
-  id         String   @id @default(uuid())
-  saleId     String
-  amount     Float
-  method     String   // CASH, CARD, TRANSFER
-  reference  String?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(uuid())
+  saleId    String
+  amount    Float
+  method    String // CASH, CARD, TRANSFER
+  reference String?
+  createdAt DateTime @default(now())
 
-  sale       Sale     @relation(fields: [saleId], references: [id])
+  sale Sale @relation(fields: [saleId], references: [id])
 
   @@index([saleId])
   @@map("sale_payments")
 }
 
 model Quotation {
-  id           String   @id @default(uuid())
-  tenantId     String
-  shopId       String
-  quoteNumber  String   @unique
-  customerId   String?
-  totalAmount  Float
-  validUntil   DateTime
-  status       String   @default("DRAFT") // DRAFT, SENT, ACCEPTED, EXPIRED, CONVERTED
-  createdById  String?  // userId
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  quoteNumber String   @unique
+  customerId  String?
+  totalAmount Float
+  validUntil  DateTime
+  status      String   @default("DRAFT") // DRAFT, SENT, ACCEPTED, EXPIRED, CONVERTED
+  createdById String? // userId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  items        QuotationItem[]
+  items QuotationItem[]
 
   @@index([tenantId])
   @@index([shopId])
@@ -96,16 +97,16 @@ model Quotation {
 }
 
 model QuotationItem {
-  id            String   @id @default(uuid())
-  quotationId   String
-  productId     String
-  quantity      Float
-  unitPrice     Float
-  discount      Float    @default(0)
-  total         Float
-  createdAt     DateTime @default(now())
+  id          String   @id @default(uuid())
+  quotationId String
+  productId   String
+  quantity    Float
+  unitPrice   Float
+  discount    Float    @default(0)
+  total       Float
+  createdAt   DateTime @default(now())
 
-  quotation     Quotation @relation(fields: [quotationId], references: [id])
+  quotation Quotation @relation(fields: [quotationId], references: [id])
 
   @@index([quotationId])
   @@index([productId])
@@ -124,11 +125,12 @@ model SaleReturn {
   refundAmount Float
   reason       String?
   status       String   @default("PENDING") // PENDING, APPROVED, COMPLETED, REJECTED
-  createdById  String?  // userId
+  createdById  String? // userId
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  items        SaleReturnItem[]
+  items SaleReturnItem[]
+  Sale  Sale?            @relation(fields: [saleId], references: [id])
 
   @@index([tenantId])
   @@index([shopId])
@@ -139,16 +141,16 @@ model SaleReturn {
 }
 
 model SaleReturnItem {
-  id              String   @id @default(uuid())
-  saleReturnId    String
-  productId       String
-  serialNumber    String
-  quantity        Float
-  unitCost        Float
-  refundAmount    Float
-  createdAt       DateTime @default(now())
+  id           String   @id @default(uuid())
+  saleReturnId String
+  productId    String
+  serialNumber String
+  quantity     Float
+  unitCost     Float
+  refundAmount Float
+  createdAt    DateTime @default(now())
 
-  saleReturn      SaleReturn @relation(fields: [saleReturnId], references: [id])
+  saleReturn SaleReturn @relation(fields: [saleReturnId], references: [id])
 
   @@index([saleReturnId])
   @@index([productId])
@@ -161,7 +163,7 @@ model Bonus {
   shopId      String
   customerId  String?
   amount      Float
-  type        String   // DISCOUNT, LOYALTY, PROMOTION
+  type        String // DISCOUNT, LOYALTY, PROMOTION
   description String?
   createdAt   DateTime @default(now())
 
@@ -169,4 +171,23 @@ model Bonus {
   @@index([shopId])
   @@index([customerId])
   @@map("bonuses")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  shopId     String?
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  traceId    String?
+  details    String?  // JSON or text summary
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

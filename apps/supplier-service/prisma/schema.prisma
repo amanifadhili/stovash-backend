@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -17,6 +18,7 @@ model Supplier {
   email     String?
   phone     String?
   address   String?
+  balance   Float    @default(0)
   status    String   @default("ACTIVE") // ACTIVE, INACTIVE
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -89,6 +91,7 @@ model SupplierStatement {
 
   supplier   Supplier @relation(fields: [supplierId], references: [id])
 
+  @@unique([supplierId, period])
   @@index([supplierId])
   @@index([period])
   @@map("supplier_statements")

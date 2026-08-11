@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { AddProductCommand } from '../impl/add-product.command.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 
 @CommandHandler(AddProductCommand)

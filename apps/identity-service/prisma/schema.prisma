@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -77,4 +78,23 @@ model MfaSecret {
 
   @@index([userId])
   @@map("mfa_secrets")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  shopId     String?
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  traceId    String?
+  details    String?  // JSON or text summary
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

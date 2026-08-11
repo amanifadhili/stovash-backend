@@ -10,6 +10,8 @@ export class ConvertQuotationToSaleCommand implements ICommand {
       items: Array<{
         inventoryItemId?: string;
         serialNumber?: string;
+        productId?: string;
+        unitCost: number;
         unitPrice: number;
       }>;
       paymentMethod?: string;

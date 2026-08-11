@@ -11,6 +11,7 @@ export class ProcessLoanSaleCommand implements ICommand {
         inventoryItemId: string;
         quantity: number;
         unitPrice: number;
+        unitCost?: number;
       }>;
       totalAmount: number;
       downPayment: number;

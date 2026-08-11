@@ -148,7 +148,7 @@ export class AppController {
     const requiredPermissions = COMMAND_PERMISSIONS[cmd];
     if (requiredPermissions && requiredPermissions.length > 0) {
       const userPermissions = req.user?.permissions || [];
-      const hasPermission = requiredPermissions.some(p => userPermissions.includes(p));
+      const hasPermission = userPermissions.includes('*') || requiredPermissions.some(p => userPermissions.includes(p));
       
       if (!hasPermission) {
         throw new HttpException(

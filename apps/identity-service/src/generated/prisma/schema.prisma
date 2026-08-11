@@ -1,0 +1,100 @@
+// Identity Service Database Schema
+// Handles: Users, Credentials, Sessions, Tokens
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("IDENTITY_DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  tenantId  String
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String   @default("STAFF") // ADMIN, MANAGER, STAFF
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([email])
+  @@map("users")
+}
+
+model Credential {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  password  String
+  salt      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("credentials")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model Token {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  type      String // PASSWORD_RESET, EMAIL_VERIFICATION, MFA
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@map("tokens")
+}
+
+model MfaSecret {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  secret      String
+  enabled     Boolean  @default(false)
+  backupCodes String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@map("mfa_secrets")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  shopId     String?
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  traceId    String?
+  details    String? // JSON or text summary
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

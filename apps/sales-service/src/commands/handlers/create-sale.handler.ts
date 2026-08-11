@@ -27,13 +27,17 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
       }
 
       const totalAmount = payload.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+      const orderNumber = `SALE-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
       const sale = await prisma.sale.create({
         data: {
           tenantId: payload.tenantId,
           shopId: payload.shopId,
           customerId: payload.customerId,
+          orderNumber,
           totalAmount,
+          totalCost: 0,
+          profit: totalAmount,
           status: payload.status || 'COMPLETED',
         }
       });
@@ -44,9 +48,11 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
             data: {
               saleId: sale.id,
               productId: item.productId,
+              serialNumber: item.productId,
               quantity: item.quantity,
+              unitCost: 0,
               unitPrice: item.unitPrice,
-              totalPrice: item.quantity * item.unitPrice,
+              total: item.quantity * item.unitPrice,
             }
           })
         )

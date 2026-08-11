@@ -15,11 +15,13 @@ import { EventBus } from '@electronic-shop/framework-event';
     EventConsumerService,
     {
       provide: 'EVENT_BUS',
-      useFactory: () => new EventBus({
-        url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-        exchangeName: 'electronic-shop-events',
-        queuePrefix: 'accounting-service',
-      }),
+      useFactory: () => {
+        return new EventBus({
+          url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
+          exchangeName: 'electronic-shop-events',
+          queuePrefix: 'accounting-service',
+        });
+      },
     },
   ],
 })

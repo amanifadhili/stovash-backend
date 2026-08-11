@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { ProcessPurchaseCommand } from '../impl/process-purchase.command.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { Inject } from '@nestjs/common';
 import { EventBus } from '@electronic-shop/framework-event';
@@ -17,6 +17,7 @@ export class ProcessPurchaseHandler extends BaseCommandHandler<ProcessPurchaseCo
     const traceId = context?.traceId || 'unknown';
     const tenantId = context?.tenantId;
     const shopId = context?.shopId;
+    const workPeriodId = context?.workPeriodId || null;
 
     try {
       if (!tenantId || !shopId) {
@@ -46,23 +47,9 @@ export class ProcessPurchaseHandler extends BaseCommandHandler<ProcessPurchaseCo
         };
       }
 
-      // Check active Work Period and enforce period lockout
-      const workPeriod = await prisma.workPeriod.findFirst({
-        where: { shopId, status: 'OPEN' },
-        orderBy: { openedAt: 'desc' }
-      });
-
-      if (!workPeriod) {
-        return {
-          status: 'error',
-          traceId,
-          message: `Shop ${shopId} work period is CLOSED or missing. Goods receiving is locked out.`,
-          errorCode: ErrorCode.WORK_PERIOD_CLOSED
-        };
-      }
-
-      // Calculate totals and verify unique serial numbers
+      // Validate & normalize items from payload (no cross-service reads)
       let totalAmount = 0;
+      const normalizedItems = [];
       for (const item of payload.items) {
         if (!item.productId || !item.serialNumber || item.purchaseCost === undefined) {
           return {
@@ -72,141 +59,78 @@ export class ProcessPurchaseHandler extends BaseCommandHandler<ProcessPurchaseCo
             errorCode: ErrorCode.VALIDATION_ERROR
           };
         }
-
-        const existingItem = await prisma.inventoryItem.findFirst({
-          where: { tenantId, serialNumber: item.serialNumber }
+        normalizedItems.push({
+          productId: item.productId,
+          serialNumber: item.serialNumber,
+          purchaseCost: item.purchaseCost,
+          quantity: item.quantity || 1
         });
-
-        if (existingItem) {
-          return {
-            status: 'error',
-            traceId,
-            message: `Serial number ${item.serialNumber} already exists in inventory`,
-            errorCode: ErrorCode.BUSINESS_RULE_VIOLATION
-          };
-        }
-
-        totalAmount += item.purchaseCost;
+        totalAmount += item.purchaseCost * (item.quantity || 1);
       }
-
-      // Helper function to resolve or create standard accounting ledger accounts for the shop
-      const getOrCreateAccount = async (code: string, name: string, type: string) => {
-        let acc = await prisma.ledgerAccount.findFirst({
-          where: { tenantId, shopId, code }
-        });
-        if (!acc) {
-          acc = await prisma.ledgerAccount.create({
-            data: {
-              tenantId,
-              shopId,
-              code,
-              name,
-              type
-            }
-          });
-        }
-        return acc;
-      };
-
-      const invAcc = await getOrCreateAccount('1002', 'Inventory Asset', 'ASSET');
-      const creditAccCode = payload.paymentAccountCode || '2001';
-      const creditAccName = creditAccCode === '1001' ? 'Cash on Hand' : 'Accounts Payable';
-      const creditAccType = creditAccCode === '1001' ? 'ASSET' : 'LIABILITY';
-      const creditAcc = await getOrCreateAccount(creditAccCode, creditAccName, creditAccType);
 
       const poNumber = `PO-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
+      // Create Purchase + PurchaseItems (own models only)
       const result = await prisma.$transaction(async (tx) => {
-        // 1. Create PurchaseOrder & PurchaseOrderItems
-        const purchaseOrder = await tx.purchaseOrder.create({
+        const purchase = await tx.purchase.create({
           data: {
             tenantId,
             shopId,
             poNumber,
-            vendorName: payload.vendorName,
             totalAmount,
+            totalCost: totalAmount,
             status: 'RECEIVED',
             createdById: context.userId || 'system',
             items: {
-              create: payload.items.map((i: any) => ({
+              create: normalizedItems.map((i) => ({
                 productId: i.productId,
                 serialNumber: i.serialNumber,
-                purchaseCost: i.purchaseCost
+                quantity: i.quantity,
+                purchaseCost: i.purchaseCost,
+                total: i.purchaseCost * i.quantity
               }))
             }
           },
           include: { items: true }
         });
 
-        // 2. Create serialized InventoryItems with proper lifecycle status
-        const createdInventoryItems = [];
-        for (const item of payload.items) {
-          // Create item with RECEIVED status per AD-0016 lifecycle
-          const invItem = await tx.inventoryItem.create({
-            data: {
-              tenantId,
-              shopId,
-              productId: item.productId,
-              serialNumber: item.serialNumber,
-              purchaseCost: item.purchaseCost,
-              status: 'RECEIVED'
-            }
-          });
-          
-          // Immediately transition to AVAILABLE after receiving
-          const updatedItem = await tx.inventoryItem.update({
-            where: { id: invItem.id },
-            data: { status: 'AVAILABLE' }
-          });
-          
-          createdInventoryItems.push(updatedItem);
-        }
-
-        // 3. Post Journal Entry (Debit Inventory Asset, Credit AP/Cash)
-        const journalEntry = await tx.journalEntry.create({
-          data: {
-            tenantId,
-            shopId,
-            workPeriodId: workPeriod.id,
-            description: `Goods Receipt PO #${poNumber} - Vendor: ${payload.vendorName}`,
-            postedBy: context.userId || 'system',
-            entries: {
-              create: [
-                { accountId: invAcc.id, type: 'DEBIT', amount: totalAmount },
-                { accountId: creditAcc.id, type: 'CREDIT', amount: totalAmount }
-              ]
-            }
-          },
-          include: { entries: true }
-        });
-
-        // Update ledger balances
-        await tx.ledgerAccount.update({
-          where: { id: invAcc.id },
-          data: { balance: { increment: totalAmount } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: creditAcc.id },
-          data: { balance: { increment: totalAmount } }
-        });
-
-        return { purchaseOrder, createdInventoryItems, journalEntry };
+        return { purchase };
       });
 
-      // Publish PurchaseCreated event
+      // Publish PurchaseCreated event (consumed by inventory + accounting services)
       await this.eventBus.publish(
         {
           eventType: 'PurchaseCreated',
-          aggregateId: result.purchaseOrder.id,
-          aggregateType: 'PurchaseOrder',
-          payload: result.purchaseOrder,
+          aggregateId: result.purchase.id,
+          aggregateType: 'Purchase',
+          tenantId,
+          shopId,
+          workPeriodId,
+          payload: {
+            purchaseId: result.purchase.id,
+            tenantId,
+            shopId,
+            workPeriodId,
+            poNumber,
+            vendorName: payload.vendorName,
+            totalAmount,
+            totalCost: totalAmount,
+            paymentAccountCode: payload.paymentAccountCode || '2001',
+            items: normalizedItems.map(i => ({
+              productId: i.productId,
+              serialNumber: i.serialNumber,
+              quantity: i.quantity,
+              purchaseCost: i.purchaseCost
+            }))
+          },
           timestamp: new Date().toISOString(),
           correlationId: traceId,
+          createdBy: context.userId,
         },
         'purchase.created'
       );
 
-      // Log audit action
+      // Log audit action (own audit log)
       try {
         await prisma.auditLog.create({
           data: {
@@ -214,8 +138,8 @@ export class ProcessPurchaseHandler extends BaseCommandHandler<ProcessPurchaseCo
             shopId,
             userId: context?.userId || null,
             action: 'ProcessPurchase',
-            resource: 'PurchaseOrder',
-            resourceId: result.purchaseOrder.id,
+            resource: 'Purchase',
+            resourceId: result.purchase.id,
             traceId: context?.traceId || null,
             details: JSON.stringify({
               poNumber,

@@ -30,8 +30,7 @@ export class CreateCustomerHandler extends BaseCommandHandler<CreateCustomerComm
         data: {
           tenantId: payload.tenantId,
           shopId: payload.shopId,
-          firstName: payload.firstName,
-          lastName: payload.lastName,
+          name: `${payload.firstName} ${payload.lastName}`,
           email: payload.email,
           phone: payload.phone,
           status: payload.status || 'ACTIVE',

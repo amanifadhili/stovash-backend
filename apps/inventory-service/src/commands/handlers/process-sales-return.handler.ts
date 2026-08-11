@@ -1,16 +1,23 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { ProcessSalesReturnCommand } from '../impl/process-sales-return.command.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { Inject } from '@nestjs/common';
+import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(ProcessSalesReturnCommand)
 export class ProcessSalesReturnHandler extends BaseCommandHandler<ProcessSalesReturnCommand> {
+  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+    super();
+  }
+
   async execute(command: ProcessSalesReturnCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
     const tenantId = context?.tenantId;
     const shopId = context?.shopId;
+    const workPeriodId = context?.workPeriodId || null;
 
     try {
       if (!tenantId || !shopId) {
@@ -31,21 +38,6 @@ export class ProcessSalesReturnHandler extends BaseCommandHandler<ProcessSalesRe
         };
       }
 
-      // Check active Work Period and enforce period lockout
-      const workPeriod = await prisma.workPeriod.findFirst({
-        where: { shopId, status: 'OPEN' },
-        orderBy: { openedAt: 'desc' }
-      });
-
-      if (!workPeriod) {
-        return {
-          status: 'error',
-          traceId,
-          message: `Shop ${shopId} work period is CLOSED or missing. Returns processing is locked out.`,
-          errorCode: ErrorCode.WORK_PERIOD_CLOSED
-        };
-      }
-
       const invItem = await prisma.inventoryItem.findFirst({
         where: { tenantId, shopId, serialNumber: payload.serialNumber }
       });
@@ -60,113 +52,65 @@ export class ProcessSalesReturnHandler extends BaseCommandHandler<ProcessSalesRe
       }
 
       const restock = payload.restock !== undefined ? payload.restock : true;
-      const cogsAmount = invItem.purchaseCost || 0;
 
-      // Helper function to resolve or create standard accounting ledger accounts for the shop
-      const getOrCreateAccount = async (code: string, name: string, type: string) => {
-        let acc = await prisma.ledgerAccount.findFirst({
-          where: { tenantId, shopId, code }
+      // Update InventoryItem status per AD-0016 lifecycle (own model only)
+      let updatedInvItem = await prisma.inventoryItem.update({
+        where: { id: invItem.id },
+        data: { status: 'RETURNED' }
+      });
+
+      // If restocking, transition to AVAILABLE after return processing
+      if (restock) {
+        updatedInvItem = await prisma.inventoryItem.update({
+          where: { id: invItem.id },
+          data: { status: 'AVAILABLE' }
         });
-        if (!acc) {
-          acc = await prisma.ledgerAccount.create({
-            data: { tenantId, shopId, code, name, type }
-          });
+      }
+
+      // Record movement
+      await prisma.inventoryMovement.create({
+        data: {
+          tenantId,
+          shopId,
+          inventoryItemId: invItem.id,
+          movementType: 'IN',
+          quantity: 1,
+          referenceId: payload.salesOrderId || null,
+          referenceType: 'SALE_RETURN',
+          createdBy: context.userId || 'system'
         }
-        return acc;
-      };
+      });
 
-      const cashAcc = await getOrCreateAccount('1001', 'Cash on Hand', 'ASSET');
-      const revAcc = await getOrCreateAccount('4001', 'Sales Revenue', 'REVENUE');
-      const cogsAcc = await getOrCreateAccount('5001', 'Cost of Goods Sold', 'EXPENSE');
-      const invAcc = await getOrCreateAccount('1002', 'Inventory Asset', 'ASSET');
-
-      const returnNumber = `RET-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-      const result = await prisma.$transaction(async (tx) => {
-        // 1. Create SalesReturn
-        const salesReturn = await tx.salesReturn.create({
-          data: {
+      // Publish SaleReturnCreated event (consumed by accounting service)
+      await this.eventBus.publish(
+        {
+          eventType: 'SaleReturnCreated',
+          aggregateId: invItem.id,
+          aggregateType: 'InventoryItem',
+          tenantId,
+          shopId,
+          workPeriodId,
+          payload: {
             tenantId,
             shopId,
-            workPeriodId: workPeriod.id,
-            returnNumber,
+            workPeriodId,
             salesOrderId: payload.salesOrderId || null,
             serialNumber: payload.serialNumber,
             refundAmount: payload.refundAmount,
-            cogsAmount: restock ? cogsAmount : 0,
             reason: payload.reason || 'Customer Return',
-            restock,
-            createdById: context.userId || 'system'
-          }
-        });
-
-        // 2. Update InventoryItem status per AD-0016 lifecycle
-        // First transition to RETURNED
-        const returnedItem = await tx.inventoryItem.update({
-          where: { id: invItem.id },
-          data: { status: 'RETURNED' }
-        });
-        
-        // If restocking, transition to AVAILABLE after return processing
-        let updatedInvItem = returnedItem;
-        if (restock) {
-          updatedInvItem = await tx.inventoryItem.update({
-            where: { id: invItem.id },
-            data: { status: 'AVAILABLE' }
-          });
-        }
-
-        // 3. Post Reversal Journal Entries
-        const journalEntriesList = [
-          { accountId: revAcc.id, type: 'DEBIT', amount: payload.refundAmount },
-          { accountId: cashAcc.id, type: 'CREDIT', amount: payload.refundAmount }
-        ];
-
-        if (restock && cogsAmount > 0) {
-          journalEntriesList.push({ accountId: invAcc.id, type: 'DEBIT', amount: cogsAmount });
-          journalEntriesList.push({ accountId: cogsAcc.id, type: 'CREDIT', amount: cogsAmount });
-        }
-
-        const journalEntry = await tx.journalEntry.create({
-          data: {
-            tenantId,
-            shopId,
-            workPeriodId: workPeriod.id,
-            description: `Sales Return #${returnNumber} for item ${payload.serialNumber}`,
-            postedBy: context.userId || 'system',
-            entries: { create: journalEntriesList }
+            restock
           },
-          include: { entries: true }
-        });
-
-        // Update balances
-        await tx.ledgerAccount.update({
-          where: { id: revAcc.id },
-          data: { balance: { decrement: payload.refundAmount } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: cashAcc.id },
-          data: { balance: { decrement: payload.refundAmount } }
-        });
-
-        if (restock && cogsAmount > 0) {
-          await tx.ledgerAccount.update({
-            where: { id: invAcc.id },
-            data: { balance: { increment: cogsAmount } }
-          });
-          await tx.ledgerAccount.update({
-            where: { id: cogsAcc.id },
-            data: { balance: { decrement: cogsAmount } }
-          });
-        }
-
-        return { salesReturn, updatedInvItem, journalEntry };
-      });
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+          createdBy: context.userId,
+        },
+        'sale-return.created'
+      );
 
       return {
         status: 'success',
         traceId,
-        data: result
+        data: { updatedInvItem, restock }
       };
     } catch (error: any) {
       return {

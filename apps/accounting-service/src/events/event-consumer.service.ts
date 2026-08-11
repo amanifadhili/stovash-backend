@@ -1,44 +1,29 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
 import { EventBus } from '@electronic-shop/framework-event';
 import { saleCreatedConsumer } from './consumers/sale-created.consumer.js';
 import { purchaseCreatedConsumer } from './consumers/purchase-created.consumer.js';
+import { salePaymentRecordedConsumer } from './consumers/sale-payment-recorded.consumer.js';
+import { purchasePaymentRecordedConsumer } from './consumers/purchase-payment-recorded.consumer.js';
 
 @Injectable()
 export class EventConsumerService implements OnModuleInit {
-  private eventBus: EventBus;
-
-  constructor() {
-    this.eventBus = new EventBus({
-      url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-      exchangeName: 'electronic-shop-events',
-      queuePrefix: 'accounting-service',
-      retryAttempts: 3,
-      retryDelay: 1000,
-      deadLetterExchange: 'electronic-shop-dlx',
-      idempotencyEnabled: true,
-    });
-  }
+  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {}
 
   async onModuleInit() {
     try {
-      // Connect to RabbitMQ
       await this.eventBus.connect();
 
-      // Create consumers with DLQ configuration
-      const saleConsumer = this.eventBus.createConsumer('accounting-sales', 'sale.created', {
-        deadLetterQueue: 'accounting-sales-dlq'
-      });
-      const purchaseConsumer = this.eventBus.createConsumer('accounting-purchases', 'purchase.created', {
-        deadLetterQueue: 'accounting-purchases-dlq'
-      });
+      this.eventBus.createConsumer('accounting-sales', 'sale.created');
+      this.eventBus.createConsumer('accounting-purchases', 'purchase.created');
+      this.eventBus.createConsumer('accounting-sale-payments', 'sale-payment.recorded');
+      this.eventBus.createConsumer('accounting-purchase-payments', 'purchase-payment.recorded');
 
-      // Register handlers
       this.eventBus.registerHandler('accounting-sales', 'SaleCreated', saleCreatedConsumer);
       this.eventBus.registerHandler('accounting-purchases', 'PurchaseCreated', purchaseCreatedConsumer);
+      this.eventBus.registerHandler('accounting-sale-payments', 'SalePaymentRecorded', salePaymentRecordedConsumer);
+      this.eventBus.registerHandler('accounting-purchase-payments', 'PurchasePaymentRecorded', purchasePaymentRecordedConsumer);
 
-      // Start consuming
       await this.eventBus.startAllConsumers();
-
       console.log('Event consumers registered and started for Accounting Service');
     } catch (error) {
       console.error('Failed to initialize event consumers:', error);

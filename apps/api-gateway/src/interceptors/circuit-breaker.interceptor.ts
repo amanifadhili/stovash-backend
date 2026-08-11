@@ -30,6 +30,7 @@ export class CircuitBreakerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       timeout(this.requestTimeout),
       catchError(error => {
+        console.error('[CIRCUIT-DEBUG] original error:', error.name, '-', error.message, '\n', error.stack?.split('\n').slice(0, 4).join('\n'));
         this.recordFailure(serviceName);
         return throwError(() => error);
       }),

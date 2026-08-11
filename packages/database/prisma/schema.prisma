@@ -26,6 +26,8 @@ model Shop {
   tenantId    String
   name        String
   location    String?
+  address     String?
+  phone       String?
   status      String   @default("ACTIVE") // ACTIVE, CLOSED
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -50,15 +52,20 @@ model User {
 }
 
 model WorkPeriod {
-  id        String    @id @default(uuid())
-  shopId    String
-  openedBy  String    // userId
-  closedBy  String?   // userId
-  openedAt  DateTime  @default(now())
-  closedAt  DateTime?
-  status    String    @default("OPEN") // OPEN, CLOSED
+  id            String    @id @default(uuid())
+  tenantId      String?
+  shopId        String
+  openedBy      String    // userId
+  closedBy      String?   // userId
+  openedAt      DateTime  @default(now())
+  closedAt      DateTime?
+  status        String    @default("OPEN") // OPEN, CLOSED
+  totalRevenue  Float     @default(0)
+  totalExpense  Float     @default(0)
+  netProfit     Float     @default(0)
+  grossProfit   Float     @default(0)
 
-  shop      Shop      @relation(fields: [shopId], references: [id])
+  shop          Shop      @relation(fields: [shopId], references: [id])
 }
 
 model LedgerAccount {
@@ -187,6 +194,7 @@ model SalesOrder {
 
   items               SalesOrderItem[]
   loanPayments        LoanPayment[]
+  customer            Customer?       @relation(fields: [customerId], references: [id])
 }
 
 model SalesOrderItem {
@@ -281,6 +289,7 @@ model LoanPayment {
   status       String   @default("PENDING") // PENDING, PAID, OVERDUE
   paidAt       DateTime?
   createdAt    DateTime @default(now())
+  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id])
 }
 
 model InventoryTransfer {
@@ -295,6 +304,426 @@ model InventoryTransfer {
   createdById    String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  tenantId  String
+  shopId    String?
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  status    String   @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ledger CustomerLedger?
+  sales  SalesOrder[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model CustomerLedger {
+  id         String        @id @default(uuid())
+  tenantId   String
+  shopId     String
+  customerId String        @unique
+  balance    Float         @default(0)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  entries  CustomerLedgerEntry[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model CustomerLedgerEntry {
+  id               String   @id @default(uuid())
+  customerLedgerId String
+  referenceId      String?
+  referenceType    String?
+  debit            Float    @default(0)
+  credit           Float    @default(0)
+  description      String?
+  balance          Float    @default(0)
+  createdAt        DateTime @default(now())
+
+  ledger CustomerLedger @relation(fields: [customerLedgerId], references: [id], onDelete: Cascade)
+}
+
+model Supplier {
+  id        String   @id @default(uuid())
+  tenantId  String
+  shopId    String?
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  status    String   @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ledger SupplierLedger?
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model SupplierLedger {
+  id         String        @id @default(uuid())
+  tenantId   String
+  shopId     String
+  supplierId String        @unique
+  balance    Float         @default(0)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  supplier Supplier @relation(fields: [supplierId], references: [id])
+  entries  SupplierLedgerEntry[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model SupplierLedgerEntry {
+  id               String   @id @default(uuid())
+  supplierLedgerId String
+  referenceId      String?
+  referenceType    String?
+  debit            Float    @default(0)
+  credit           Float    @default(0)
+  description      String?
+  balance          Float    @default(0)
+  createdAt        DateTime @default(now())
+
+  ledger SupplierLedger @relation(fields: [supplierLedgerId], references: [id], onDelete: Cascade)
+}
+
+model Staff {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  firstName    String
+  lastName     String
+  email        String   @unique
+  phone        String?
+  role         String   @default("STAFF") // ADMIN, MANAGER, STAFF
+  status       String   @default("ACTIVE")
+  totalBonuses Float    @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  staffRoles StaffRole[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions RolePermission[]
+  staffRoles  StaffRole[]
+  @@index([tenantId])
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime   @default(now())
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model StaffRole {
+  id      String   @id @default(uuid())
+  staffId String
+  roleId  String
+  createdAt DateTime @default(now())
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  role  Role  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([staffId, roleId])
+}
+
+model Quotation {
+  id          String           @id @default(uuid())
+  tenantId    String
+  shopId      String
+  customerId  String?
+  quoteNumber String           @unique
+  totalAmount Float
+  validUntil  DateTime?
+  status      String           @default("DRAFT") // DRAFT, SENT, ACCEPTED, CONVERTED, EXPIRED, CANCELLED
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  items QuotationItem[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model QuotationItem {
+  id          String    @id @default(uuid())
+  quotationId String
+  productId   String
+  quantity    Int
+  unitPrice   Float
+  discount    Float     @default(0)
+  total       Float
+  createdAt   DateTime  @default(now())
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+}
+
+model Sale {
+  id          String      @id @default(uuid())
+  tenantId    String
+  shopId      String
+  customerId  String?
+  totalAmount Float
+  status      String      @default("COMPLETED") // COMPLETED, REFUNDED
+  createdAt   DateTime    @default(now())
+
+  items SaleItem[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model SaleItem {
+  id         String   @id @default(uuid())
+  saleId     String
+  productId  String
+  quantity   Int
+  unitPrice  Float
+  totalPrice Float
+  createdAt  DateTime @default(now())
+
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+}
+
+model SaleReturn {
+  id           String           @id @default(uuid())
+  tenantId     String
+  shopId       String
+  saleId       String?
+  customerId   String?
+  returnNumber String           @unique
+  totalAmount  Float
+  refundAmount Float
+  reason       String?
+  status       String           @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt    DateTime         @default(now())
+
+  items SaleReturnItem[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model SaleReturnItem {
+  id           String   @id @default(uuid())
+  saleReturnId String
+  productId    String
+  serialNumber String?
+  quantity     Int
+  unitCost     Float
+  refundAmount Float
+  createdAt    DateTime @default(now())
+
+  saleReturn SaleReturn @relation(fields: [saleReturnId], references: [id], onDelete: Cascade)
+}
+
+model PaymentMethod {
+  id            String    @id @default(uuid())
+  tenantId      String
+  shopId        String
+  name          String
+  type          String    // CASH, MOMO, BANK
+  accountNumber String?
+  bankName      String?
+  balance       Float     @default(0)
+  currency      String    @default("USD")
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model PhysicalConfirmation {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  methodId    String
+  confirmedBy String
+  amount      Float
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model Transfer {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  fromMethodId String
+  toMethodId   String
+  amount       Float
+  reference    String?
+  status       String   @default("COMPLETED") // PENDING, COMPLETED, FAILED
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model Reconciliation {
+  id             String   @id @default(uuid())
+  tenantId       String
+  shopId         String
+  methodId       String
+  systemBalance  Float
+  physicalBalance Float
+  difference     Float
+  status         String   @default("RECONCILED") // RECONCILED, MISMATCHED
+  reconciledBy   String
+  notes          String?
+  reconciledAt   DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model OperationalDeposit {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  methodId     String
+  amount       Float
+  depositedBy  String
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model OperationalBalance {
+  id              String   @id @default(uuid())
+  tenantId        String
+  shopId          String
+  paymentMethodId String   @unique
+  balance         Float    @default(0)
+  lastUpdated     DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model Purchase {
+  id         String        @id @default(uuid())
+  tenantId   String
+  shopId     String
+  supplierId String?
+  totalCost  Float
+  status     String        @default("COMPLETED") // PENDING, COMPLETED, CANCELLED
+  createdAt  DateTime      @default(now())
+
+  items PurchaseItem[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model PurchaseItem {
+  id         String   @id @default(uuid())
+  purchaseId String
+  productId  String
+  quantity   Int
+  unitCost   Float
+  totalCost  Float
+  createdAt  DateTime @default(now())
+
+  purchase Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+}
+
+model PurchaseReturn {
+  id           String             @id @default(uuid())
+  tenantId     String
+  shopId       String
+  purchaseId   String?
+  supplierId   String?
+  returnNumber String             @unique
+  totalAmount  Float
+  refundAmount Float
+  reason       String?
+  status       String             @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt    DateTime           @default(now())
+
+  items PurchaseReturnItem[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model PurchaseReturnItem {
+  id              String   @id @default(uuid())
+  purchaseReturnId String
+  productId       String
+  serialNumber    String?
+  quantity        Int
+  refundAmount    Float
+  createdAt       DateTime @default(now())
+
+  purchaseReturn PurchaseReturn @relation(fields: [purchaseReturnId], references: [id], onDelete: Cascade)
+}
+
+model SupplierOrder {
+  id          String             @id @default(uuid())
+  tenantId    String
+  shopId      String
+  supplierId  String
+  orderNumber String             @unique
+  totalAmount Float
+  status      String             @default("PENDING") // PENDING, APPROVED, RECEIVED, CANCELLED
+  createdAt   DateTime           @default(now())
+
+  items SupplierOrderItem[]
+  @@index([tenantId])
+  @@index([shopId])
+}
+
+model SupplierOrderItem {
+  id              String   @id @default(uuid())
+  supplierOrderId String
+  productId       String
+  quantity        Int
+  unitPrice       Float
+  total           Float
+  createdAt       DateTime @default(now())
+
+  supplierOrder SupplierOrder @relation(fields: [supplierOrderId], references: [id], onDelete: Cascade)
 }
 
 model AuditLog {

@@ -24,10 +24,10 @@ export class CreateStaffHandler extends BaseCommandHandler<CreateStaffCommand> {
         data: {
           tenantId: payload.tenantId,
           shopId: payload.shopId,
+          userId: payload.userId,
           firstName: payload.firstName,
           lastName: payload.lastName,
           email: payload.email,
-          phone: payload.phone,
           role: payload.role || 'STAFF',
           status: payload.status || 'ACTIVE',
         }

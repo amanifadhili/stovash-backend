@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { ConvertQuotationToSaleCommand } from '../impl/convert-quotation-to-sale.command.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { Inject } from '@nestjs/common';
 import { EventBus } from '@electronic-shop/framework-event';
@@ -17,6 +17,7 @@ export class ConvertQuotationToSaleHandler extends BaseCommandHandler<ConvertQuo
     const traceId = context?.traceId || 'unknown';
     const tenantId = context?.tenantId;
     const shopId = context?.shopId;
+    const workPeriodId = context?.workPeriodId || null;
 
     try {
       if (!tenantId || !shopId) {
@@ -37,183 +38,107 @@ export class ConvertQuotationToSaleHandler extends BaseCommandHandler<ConvertQuo
         };
       }
 
-      // Check active Work Period
-      const workPeriod = await prisma.workPeriod.findFirst({
-        where: { shopId, status: 'OPEN' },
-        orderBy: { openedAt: 'desc' }
+      // Validate quotation exists in sales DB
+      const quotation = await prisma.quotation.findUnique({
+        where: { id: payload.quotationId },
+        include: { items: true }
       });
 
-      if (!workPeriod) {
+      if (!quotation) {
         return {
           status: 'error',
           traceId,
-          message: `Shop ${shopId} work period is CLOSED or missing. Sales are locked out.`,
-          errorCode: ErrorCode.WORK_PERIOD_CLOSED
+          message: `Quotation ${payload.quotationId} not found`,
+          errorCode: ErrorCode.NOT_FOUND
         };
       }
 
-      // Validate & fetch inventory items
-      const allocatedItems: Array<{ invItem: any; unitPrice: number; unitCost: number }> = [];
-      let totalAmount = 0;
-      let totalCost = 0;
+      // Normalize items from payload (no cross-service reads)
+      const normalizedItems = payload.items.map((item) => ({
+        productId: item.productId || 'unknown',
+        serialNumber: item.serialNumber || item.inventoryItemId || 'unknown',
+        unitCost: item.unitCost || 0,
+        unitPrice: item.unitPrice,
+        total: item.unitPrice
+      }));
 
-      for (const itemInput of payload.items) {
-        let invItem = null;
-        if (itemInput.inventoryItemId) {
-          invItem = await prisma.inventoryItem.findUnique({ where: { id: itemInput.inventoryItemId } });
-        } else if (itemInput.serialNumber) {
-          invItem = await prisma.inventoryItem.findFirst({
-            where: { tenantId, shopId, serialNumber: itemInput.serialNumber }
-          });
-        }
-
-        if (!invItem) {
-          return {
-            status: 'error',
-            traceId,
-            message: `Inventory item ${itemInput.inventoryItemId || itemInput.serialNumber} not found`,
-            errorCode: ErrorCode.NOT_FOUND
-          };
-        }
-
-        if (invItem.status !== 'AVAILABLE') {
-          return {
-            status: 'error',
-            traceId,
-            message: `Item ${invItem.serialNumber} is not AVAILABLE (current status: ${invItem.status})`,
-            errorCode: ErrorCode.BUSINESS_RULE_VIOLATION
-          };
-        }
-
-        allocatedItems.push({
-          invItem,
-          unitPrice: itemInput.unitPrice,
-          unitCost: invItem.purchaseCost
-        });
-
-        totalAmount += itemInput.unitPrice;
-        totalCost += invItem.purchaseCost;
-      }
-
-      // Helper function to resolve or create standard accounting ledger accounts for the shop
-      const getOrCreateAccount = async (code: string, name: string, type: string) => {
-        let acc = await prisma.ledgerAccount.findFirst({
-          where: { tenantId, shopId, code }
-        });
-        if (!acc) {
-          acc = await prisma.ledgerAccount.create({
-            data: {
-              tenantId,
-              shopId,
-              code,
-              name,
-              type
-            }
-          });
-        }
-        return acc;
-      };
-
-      const cashAcc = await getOrCreateAccount('1001', 'Cash on Hand', 'ASSET');
-      const revAcc = await getOrCreateAccount('4001', 'Sales Revenue', 'REVENUE');
-      const cogsAcc = await getOrCreateAccount('5001', 'Cost of Goods Sold', 'EXPENSE');
-      const invAcc = await getOrCreateAccount('1002', 'Inventory Asset', 'ASSET');
+      const totalAmount = normalizedItems.reduce((sum, item) => sum + item.total, 0);
+      const totalCost = normalizedItems.reduce((sum, item) => sum + item.unitCost, 0);
 
       const orderNumber = `SALE-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
       const result = await prisma.$transaction(async (tx) => {
-        // 1. Create SalesOrder
-        const salesOrder = await tx.salesOrder.create({
+        // 1. Create Sale
+        const sale = await tx.sale.create({
           data: {
             tenantId,
             shopId,
-            workPeriodId: workPeriod.id,
+            workPeriodId,
             orderNumber,
             totalAmount,
             totalCost,
+            profit: totalAmount - totalCost,
             paymentMethod: payload.paymentMethod || 'CASH',
             status: 'COMPLETED',
             createdById: context.userId || 'system',
             items: {
-              create: allocatedItems.map(item => ({
-                inventoryItemId: item.invItem.id,
-                serialNumber: item.invItem.serialNumber,
+              create: normalizedItems.map(item => ({
+                productId: item.productId,
+                serialNumber: item.serialNumber,
+                quantity: 1,
                 unitCost: item.unitCost,
-                unitPrice: item.unitPrice
+                unitPrice: item.unitPrice,
+                total: item.total
               }))
             }
           },
           include: { items: true }
         });
 
-        // 2. Mark inventory items as RESERVED then SOLD per AD-0016 lifecycle
-        for (const item of allocatedItems) {
-          await tx.inventoryItem.update({
-            where: { id: item.invItem.id },
-            data: { status: 'RESERVED' }
-          });
-          
-          await tx.inventoryItem.update({
-            where: { id: item.invItem.id },
-            data: { status: 'SOLD' }
-          });
-        }
-
-        // 3. Post Journal Entry for Revenue & COGS
-        const journalEntry = await tx.journalEntry.create({
-          data: {
-            tenantId,
-            shopId,
-            workPeriodId: workPeriod.id,
-            description: `Sale from Quotation #${payload.quotationId} - Order #${orderNumber}`,
-            postedBy: context.userId || 'system',
-            entries: {
-              create: [
-                { accountId: cashAcc.id, type: 'DEBIT', amount: totalAmount },
-                { accountId: revAcc.id, type: 'CREDIT', amount: totalAmount },
-                { accountId: cogsAcc.id, type: 'DEBIT', amount: totalCost },
-                { accountId: invAcc.id, type: 'CREDIT', amount: totalCost }
-              ]
-            }
-          },
-          include: { entries: true }
+        // 2. Mark quotation as CONVERTED
+        await tx.quotation.update({
+          where: { id: payload.quotationId },
+          data: { status: 'CONVERTED' }
         });
 
-        // Update balances for ledger accounts
-        await tx.ledgerAccount.update({
-          where: { id: cashAcc.id },
-          data: { balance: { increment: totalAmount } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: revAcc.id },
-          data: { balance: { increment: totalAmount } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: cogsAcc.id },
-          data: { balance: { increment: totalCost } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: invAcc.id },
-          data: { balance: { decrement: totalCost } }
-        });
-
-        return { salesOrder, journalEntry };
+        return { sale };
       });
 
-      // Publish SaleCreated event
+      // Publish SaleCreated event (consumed by inventory + accounting services)
       await this.eventBus.publish(
         {
           eventType: 'SaleCreated',
-          aggregateId: result.salesOrder.id,
-          aggregateType: 'SalesOrder',
-          payload: result.salesOrder,
+          aggregateId: result.sale.id,
+          aggregateType: 'Sale',
+          tenantId,
+          shopId,
+          workPeriodId,
+          payload: {
+            saleId: result.sale.id,
+            tenantId,
+            shopId,
+            workPeriodId,
+            orderNumber,
+            totalAmount,
+            totalCost,
+            paymentMethod: payload.paymentMethod || 'CASH',
+            items: normalizedItems.map(item => ({
+              inventoryItemId: item.productId,
+              serialNumber: item.serialNumber,
+              productId: item.productId,
+              quantity: 1,
+              unitCost: item.unitCost,
+              unitPrice: item.unitPrice
+            }))
+          },
           timestamp: new Date().toISOString(),
           correlationId: traceId,
+          createdBy: context.userId,
         },
         'sale.created'
       );
 
-      // Log audit action
+      // Log audit action (own audit log)
       try {
         await prisma.auditLog.create({
           data: {
@@ -221,8 +146,8 @@ export class ConvertQuotationToSaleHandler extends BaseCommandHandler<ConvertQuo
             shopId,
             userId: context?.userId || null,
             action: 'ConvertQuotationToSale',
-            resource: 'SalesOrder',
-            resourceId: result.salesOrder.id,
+            resource: 'Sale',
+            resourceId: result.sale.id,
             traceId: context?.traceId || null,
             details: JSON.stringify({
               quotationId: payload.quotationId,

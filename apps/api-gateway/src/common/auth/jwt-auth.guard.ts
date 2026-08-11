@@ -1,13 +1,23 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken';
-import { prisma } from '@electronic-shop/database';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+
+const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant'];
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  private readonly jwtSecret = process.env.JWT_SECRET || 'dev-secret-key';
+  constructor(
+    @Inject('IDENTITY_SERVICE') private readonly identityClient: ClientProxy,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
+
+    const command = request.body?.command || request.headers['x-command'];
+    if (command && PUBLIC_COMMANDS.includes(command)) {
+      return true;
+    }
+
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -15,18 +25,18 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     const token = authHeader.split('Bearer ')[1];
-    
-    try {
-      const decodedToken = jwt.verify(token, this.jwtSecret) as any;
-      
-      // Verify user exists in database
-      const user = await prisma.user.findUnique({
-        where: { id: decodedToken.sub }
-      });
 
-      if (!user) {
-        throw new UnauthorizedException('User not found');
+    try {
+      // Verify token and load user via Identity Service
+      const response = await firstValueFrom(
+        this.identityClient.send({ cmd: 'VerifyUser' }, { payload: { token }, context: { traceId: request.context?.traceId } })
+      );
+
+      if (response?.status !== 'success' || !response?.data) {
+        throw new UnauthorizedException(response?.message || 'User not found');
       }
+
+      const user = response.data;
 
       if (user.status !== 'ACTIVE') {
         throw new UnauthorizedException('User account is not active');
@@ -39,21 +49,23 @@ export class JwtAuthGuard implements CanActivate {
         role: user.role,
         tenantId: user.tenantId,
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
+        permissions: user.role === 'ADMIN' ? ['*'] : []
       };
-      
+
       // Merge user ID into command context
       if (request.context) {
         request.context.userId = user.id;
+        request.context.tenantId = user.tenantId;
+        if (request.context.shopId === 'default-shop') {
+          request.context.shopId = 'shop-1';
+        }
       }
-      
+
       return true;
     } catch (error) {
-      if (error instanceof jwt.JsonWebTokenError) {
-        throw new UnauthorizedException('Invalid token');
-      }
-      if (error instanceof jwt.TokenExpiredError) {
-        throw new UnauthorizedException('Token expired');
+      if (error instanceof UnauthorizedException) {
+        throw error;
       }
       console.error('Error verifying JWT token:', error);
       throw new UnauthorizedException('Authentication failed');

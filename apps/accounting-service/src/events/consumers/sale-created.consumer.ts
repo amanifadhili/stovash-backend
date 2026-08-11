@@ -1,12 +1,12 @@
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 
 export const saleCreatedConsumer = async (event: any): Promise<void> => {
   const { payload, aggregateId, correlationId } = event;
-  
+
   try {
     // Create AR journal entry for sale
     // Debit Accounts Receivable, Credit Sales Revenue
-    
+
     const workPeriod = await prisma.workPeriod.findFirst({
       where: {
         shopId: payload.shopId,
@@ -24,8 +24,7 @@ export const saleCreatedConsumer = async (event: any): Promise<void> => {
       where: {
         tenantId: payload.tenantId,
         shopId: payload.shopId,
-        type: 'ASSET',
-        name: 'Accounts Receivable'
+        code: '1200'
       }
     });
 
@@ -34,6 +33,7 @@ export const saleCreatedConsumer = async (event: any): Promise<void> => {
         data: {
           tenantId: payload.tenantId,
           shopId: payload.shopId,
+          code: '1200',
           name: 'Accounts Receivable',
           type: 'ASSET',
           balance: 0
@@ -46,8 +46,7 @@ export const saleCreatedConsumer = async (event: any): Promise<void> => {
       where: {
         tenantId: payload.tenantId,
         shopId: payload.shopId,
-        type: 'REVENUE',
-        name: 'Sales Revenue'
+        code: '4001'
       }
     });
 
@@ -56,6 +55,7 @@ export const saleCreatedConsumer = async (event: any): Promise<void> => {
         data: {
           tenantId: payload.tenantId,
           shopId: payload.shopId,
+          code: '4001',
           name: 'Sales Revenue',
           type: 'REVENUE',
           balance: 0
@@ -69,33 +69,15 @@ export const saleCreatedConsumer = async (event: any): Promise<void> => {
         tenantId: payload.tenantId,
         shopId: payload.shopId,
         workPeriodId: workPeriod.id,
-        entryNumber: `JE-${Date.now()}`,
         description: `Sale ${aggregateId}`,
-        totalDebit: payload.totalAmount,
-        totalCredit: payload.totalAmount,
+        postedBy: 'system',
         status: 'POSTED',
-        referenceId: aggregateId,
-        referenceType: 'Sale'
-      }
-    });
-
-    // Debit Accounts Receivable
-    await prisma.ledgerEntry.create({
-      data: {
-        journalEntryId: journalEntry.id,
-        ledgerAccountId: arAccount.id,
-        debit: payload.totalAmount,
-        credit: 0
-      }
-    });
-
-    // Credit Sales Revenue
-    await prisma.ledgerEntry.create({
-      data: {
-        journalEntryId: journalEntry.id,
-        ledgerAccountId: revenueAccount.id,
-        debit: 0,
-        credit: payload.totalAmount
+        entries: {
+          create: [
+            { accountId: arAccount.id, type: 'DEBIT', amount: payload.totalAmount },
+            { accountId: revenueAccount.id, type: 'CREDIT', amount: payload.totalAmount }
+          ]
+        }
       }
     });
 
@@ -110,7 +92,7 @@ export const saleCreatedConsumer = async (event: any): Promise<void> => {
       data: { balance: { increment: payload.totalAmount } }
     });
 
-    console.log(`SaleCreated event processed: ${aggregateId} (correlationId: ${correlationId})`);
+    console.log(`SaleCreated event processed: ${aggregateId} (correlationId: ${correlationId})`, journalEntry.id);
   } catch (error) {
     console.error(`Error processing SaleCreated event:`, error);
     throw error;

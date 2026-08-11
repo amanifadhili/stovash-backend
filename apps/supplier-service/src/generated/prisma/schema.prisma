@@ -1,0 +1,98 @@
+// Supplier Service Database Schema
+// Handles: Suppliers, Balances, Statements
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SUPPLIER_DATABASE_URL")
+}
+
+model Supplier {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  balance   Float    @default(0)
+  status    String   @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contacts   SupplierContact[]
+  balances   SupplierBalance[]
+  payments   SupplierPayment[]
+  statements SupplierStatement[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("suppliers")
+}
+
+model SupplierContact {
+  id         String   @id @default(uuid())
+  supplierId String
+  type       String // PHONE, EMAIL, SOCIAL
+  value      String
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  supplier Supplier @relation(fields: [supplierId], references: [id])
+
+  @@index([supplierId])
+  @@map("supplier_contacts")
+}
+
+model SupplierBalance {
+  id         String   @id @default(uuid())
+  supplierId String
+  tenantId   String
+  amount     Float
+  currency   String   @default("USD")
+  updatedAt  DateTime @updatedAt
+
+  supplier Supplier          @relation(fields: [supplierId], references: [id])
+  payments SupplierPayment[]
+
+  @@unique([supplierId, tenantId])
+  @@index([supplierId])
+  @@index([tenantId])
+  @@map("supplier_balances")
+}
+
+model SupplierPayment {
+  id         String   @id @default(uuid())
+  supplierId String
+  balanceId  String
+  amount     Float
+  method     String // CASH, TRANSFER, CHECK
+  reference  String?
+  createdAt  DateTime @default(now())
+
+  supplier Supplier        @relation(fields: [supplierId], references: [id])
+  balance  SupplierBalance @relation(fields: [balanceId], references: [id])
+
+  @@index([supplierId])
+  @@index([balanceId])
+  @@map("supplier_payments")
+}
+
+model SupplierStatement {
+  id          String   @id @default(uuid())
+  supplierId  String
+  period      String // YYYY-MM
+  balance     Float
+  generatedAt DateTime @default(now())
+
+  supplier Supplier @relation(fields: [supplierId], references: [id])
+
+  @@unique([supplierId, period])
+  @@index([supplierId])
+  @@index([period])
+  @@map("supplier_statements")
+}

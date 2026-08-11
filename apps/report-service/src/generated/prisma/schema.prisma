@@ -1,0 +1,209 @@
+// Report Service Database Schema
+// Read-model / reporting database aggregating data across services
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("REPORT_DATABASE_URL")
+}
+
+model SalesOrder {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  customerId  String?
+  totalAmount Float
+  totalCost   Float
+  profit      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer Customer?        @relation(fields: [customerId], references: [id])
+  items    SalesOrderItem[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([createdAt])
+  @@map("sales_orders")
+}
+
+model SalesOrderItem {
+  id           String   @id @default(uuid())
+  salesOrderId String
+  productId    String
+  serialNumber String
+  quantity     Float
+  unitCost     Float
+  unitPrice    Float
+  discount     Float    @default(0)
+  tax          Float    @default(0)
+  total        Float
+  createdAt    DateTime @default(now())
+
+  salesOrder SalesOrder @relation(fields: [salesOrderId], references: [id])
+
+  @@index([salesOrderId])
+  @@index([productId])
+  @@map("sales_order_items")
+}
+
+model PurchaseOrder {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  supplierId  String?
+  totalAmount Float
+  totalCost   Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  supplier Supplier?           @relation(fields: [supplierId], references: [id])
+  items    PurchaseOrderItem[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([createdAt])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id              String   @id @default(uuid())
+  purchaseOrderId String
+  productId       String
+  serialNumber    String?
+  quantity        Float
+  purchaseCost    Float
+  total           Float
+  createdAt       DateTime @default(now())
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+
+  @@index([purchaseOrderId])
+  @@index([productId])
+  @@map("purchase_order_items")
+}
+
+model InventoryItem {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  productId    String
+  serialNumber String?
+  status       String   @default("AVAILABLE")
+  costPrice    Float?
+  sellingPrice Float?
+  quantity     Float    @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([status])
+  @@index([productId])
+  @@map("inventory_items")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  sku         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items InventoryItem[]
+
+  @@index([tenantId])
+  @@index([sku])
+  @@map("products")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  salesOrders SalesOrder[]
+
+  @@index([tenantId])
+  @@map("customers")
+}
+
+model Supplier {
+  id        String   @id @default(uuid())
+  tenantId  String
+  name      String
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  purchaseOrders PurchaseOrder[]
+
+  @@index([tenantId])
+  @@map("suppliers")
+}
+
+model LedgerAccount {
+  id        String   @id @default(uuid())
+  tenantId  String
+  shopId    String
+  code      String
+  name      String
+  type      String // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
+  balance   Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  entries LedgerEntry[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([type])
+  @@map("ledger_accounts")
+}
+
+model JournalEntry {
+  id           String   @id @default(uuid())
+  tenantId     String
+  shopId       String
+  workPeriodId String
+  description  String
+  status       String   @default("DRAFT")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  entries LedgerEntry[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([createdAt])
+  @@map("journal_entries")
+}
+
+model LedgerEntry {
+  id             String   @id @default(uuid())
+  journalEntryId String
+  accountId      String
+  type           String // DEBIT, CREDIT
+  amount         Float
+  createdAt      DateTime @default(now())
+
+  journalEntry  JournalEntry  @relation(fields: [journalEntryId], references: [id])
+  ledgerAccount LedgerAccount @relation(fields: [accountId], references: [id])
+
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@map("ledger_entries")
+}

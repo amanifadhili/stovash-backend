@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { SalesServiceController } from './sales-service.controller.js';
 import { CommandHandlers } from './commands/handlers/index.js';
+import { EventBusConnectionService } from './events/event-bus-connection.service.js';
 import { EventBus } from '@electronic-shop/framework-event';
 
 @Module({
@@ -9,6 +10,7 @@ import { EventBus } from '@electronic-shop/framework-event';
   controllers: [SalesServiceController],
   providers: [
     ...CommandHandlers,
+    EventBusConnectionService,
     {
       provide: 'EVENT_BUS',
       useFactory: () => {

@@ -8,6 +8,7 @@ export enum ErrorCode {
   INVALID_TENANT = 'INVALID_TENANT',
   INVALID_SHOP = 'INVALID_SHOP',
   WORK_PERIOD_CLOSED = 'WORK_PERIOD_CLOSED',
+  TENANT_EXISTS = 'TENANT_EXISTS',
 }
 
 export class AppError extends Error {

@@ -27,14 +27,17 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
       }
 
       const totalCost = payload.items.reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
+      const poNumber = `PO-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
       const purchase = await prisma.purchase.create({
         data: {
           tenantId: payload.tenantId,
           shopId: payload.shopId,
           supplierId: payload.supplierId,
+          poNumber,
+          totalAmount: totalCost,
           totalCost,
-          status: payload.status || 'COMPLETED',
+          status: payload.status || 'RECEIVED',
         }
       });
 
@@ -45,8 +48,8 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
               purchaseId: purchase.id,
               productId: item.productId,
               quantity: item.quantity,
-              unitCost: item.unitCost,
-              totalCost: item.quantity * item.unitCost,
+              purchaseCost: item.unitCost,
+              total: item.quantity * item.unitCost,
             }
           })
         )

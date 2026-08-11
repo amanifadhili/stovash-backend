@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { RecordInventoryUpgradeCommand } from '../impl/record-inventory-upgrade.command.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 
 @CommandHandler(RecordInventoryUpgradeCommand)

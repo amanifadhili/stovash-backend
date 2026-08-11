@@ -29,7 +29,6 @@ export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierComm
       const supplier = await prisma.supplier.create({
         data: {
           tenantId: payload.tenantId,
-          shopId: payload.shopId,
           name: payload.name,
           email: payload.email,
           phone: payload.phone,

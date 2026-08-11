@@ -11,6 +11,7 @@ export class ProcessPurchaseCommand implements ICommand {
         productId: string;
         serialNumber: string;
         purchaseCost: number;
+        quantity?: number;
       }>;
       paymentAccountCode?: string;
     },

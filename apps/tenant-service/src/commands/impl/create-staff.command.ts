@@ -4,6 +4,7 @@ import { IRequestContext } from '@electronic-shop/types';
 export class CreateStaffPayload {
   tenantId!: string;
   shopId!: string;
+  userId!: string;
   firstName!: string;
   lastName!: string;
   email!: string;

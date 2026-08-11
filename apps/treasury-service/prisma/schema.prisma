@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -24,7 +25,8 @@ model PaymentMethod {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  transfers   Transfer[]
+  outgoingTransfers Transfer[] @relation("FromMethod")
+  incomingTransfers Transfer[] @relation("ToMethod")
   confirmations PhysicalConfirmation[]
   deposits    OperationalDeposit[]
   reconciliations Reconciliation[]
@@ -117,4 +119,23 @@ model Reconciliation {
   @@index([methodId])
   @@index([reconciledAt])
   @@map("reconciliations")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  shopId     String?
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  traceId    String?
+  details    String?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

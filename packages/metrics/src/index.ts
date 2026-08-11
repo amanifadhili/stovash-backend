@@ -36,7 +36,7 @@ export const commandExecutionDuration = new Histogram({
 export const commandExecutionCounter = new Counter({
   name: 'command_executions_total',
   help: 'Total number of command executions',
-  labelNames: ['command', '-service', 'status'],
+  labelNames: ['command', 'service', 'status'],
   registers: [metricsRegistry],
 });
 

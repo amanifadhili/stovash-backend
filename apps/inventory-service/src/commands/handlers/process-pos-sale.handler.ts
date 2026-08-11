@@ -1,16 +1,23 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { ProcessPosSaleCommand } from '../impl/process-pos-sale.command.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { Inject } from '@nestjs/common';
+import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(ProcessPosSaleCommand)
 export class ProcessPosSaleHandler extends BaseCommandHandler<ProcessPosSaleCommand> {
+  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+    super();
+  }
+
   async execute(command: ProcessPosSaleCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
     const tenantId = context?.tenantId;
     const shopId = context?.shopId;
+    const workPeriodId = context?.workPeriodId || null;
 
     try {
       if (!tenantId || !shopId) {
@@ -31,22 +38,7 @@ export class ProcessPosSaleHandler extends BaseCommandHandler<ProcessPosSaleComm
         };
       }
 
-      // Check active Work Period and enforce period lockout
-      const workPeriod = await prisma.workPeriod.findFirst({
-        where: { shopId, status: 'OPEN' },
-        orderBy: { openedAt: 'desc' }
-      });
-
-      if (!workPeriod) {
-        return {
-          status: 'error',
-          traceId,
-          message: `Shop ${shopId} work period is CLOSED or missing. POS sales are locked out.`,
-          errorCode: ErrorCode.WORK_PERIOD_CLOSED
-        };
-      }
-
-      // Validate & fetch inventory items
+      // Validate & mark inventory items (own models only)
       const allocatedItems: Array<{ invItem: any; unitPrice: number; unitCost: number }> = [];
       let totalAmount = 0;
       let totalCost = 0;
@@ -79,7 +71,6 @@ export class ProcessPosSaleHandler extends BaseCommandHandler<ProcessPosSaleComm
           };
         }
 
-
         allocatedItems.push({
           invItem,
           unitPrice: itemInput.unitPrice,
@@ -90,118 +81,81 @@ export class ProcessPosSaleHandler extends BaseCommandHandler<ProcessPosSaleComm
         totalCost += invItem.purchaseCost;
       }
 
-      // Helper function to resolve or create standard accounting ledger accounts for the shop
-      const getOrCreateAccount = async (code: string, name: string, type: string) => {
-        let acc = await prisma.ledgerAccount.findFirst({
-          where: { tenantId, shopId, code }
-        });
-        if (!acc) {
-          acc = await prisma.ledgerAccount.create({
-            data: {
-              tenantId,
-              shopId,
-              code,
-              name,
-              type
-            }
-          });
-        }
-        return acc;
-      };
-
-      const cashAcc = await getOrCreateAccount('1001', 'Cash on Hand', 'ASSET');
-      const revAcc = await getOrCreateAccount('4001', 'Sales Revenue', 'REVENUE');
-      const cogsAcc = await getOrCreateAccount('5001', 'Cost of Goods Sold', 'EXPENSE');
-      const invAcc = await getOrCreateAccount('1002', 'Inventory Asset', 'ASSET');
-
-      // Execute transaction for Sale, Inventory Status update, and Journal Entries
-      const orderNumber = `POS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
       const result = await prisma.$transaction(async (tx) => {
-        // 1. Create SalesOrder
-        const salesOrder = await tx.salesOrder.create({
-          data: {
-            tenantId,
-            shopId,
-            workPeriodId: workPeriod.id,
-            orderNumber,
-            totalAmount,
-            totalCost,
-            paymentMethod: payload.paymentMethod || 'CASH',
-            status: 'COMPLETED',
-            createdById: context.userId || 'system',
-            items: {
-              create: allocatedItems.map(item => ({
-                inventoryItemId: item.invItem.id,
-                serialNumber: item.invItem.serialNumber,
-                unitCost: item.unitCost,
-                unitPrice: item.unitPrice
-              }))
-            }
-          },
-          include: { items: true }
-        });
-
-        // 2. Mark inventory items as RESERVED then SOLD per AD-0016 lifecycle
+        // 1. Mark inventory items as RESERVED then SOLD per AD-0016 lifecycle
         for (const item of allocatedItems) {
           // First transition to RESERVED
           await tx.inventoryItem.update({
             where: { id: item.invItem.id },
             data: { status: 'RESERVED' }
           });
-          
+
           // Then transition to SOLD
           await tx.inventoryItem.update({
             where: { id: item.invItem.id },
             data: { status: 'SOLD' }
           });
+
+          // Record movement
+          await tx.inventoryMovement.create({
+            data: {
+              tenantId,
+              shopId,
+              inventoryItemId: item.invItem.id,
+              movementType: 'OUT',
+              quantity: 1,
+              referenceId: item.invItem.id,
+              referenceType: 'SALE',
+              createdBy: context.userId || 'system'
+            }
+          });
         }
 
-        // 3. Post Journal Entry for Revenue (Debit Cash, Credit Revenue) & COGS (Debit COGS, Credit Inventory)
-        const journalEntry = await tx.journalEntry.create({
-          data: {
+        return { allocatedItems };
+      });
+
+      // Publish SaleCreated event (consumed by accounting service)
+      const orderNumber = `POS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      await this.eventBus.publish(
+        {
+          eventType: 'SaleCreated',
+          aggregateId: result.allocatedItems[0]?.invItem.id || 'unknown',
+          aggregateType: 'InventorySale',
+          tenantId,
+          shopId,
+          workPeriodId,
+          payload: {
             tenantId,
             shopId,
-            workPeriodId: workPeriod.id,
-            description: `POS Sale Order #${orderNumber}`,
-            postedBy: context.userId || 'system',
-            entries: {
-              create: [
-                { accountId: cashAcc.id, type: 'DEBIT', amount: totalAmount },
-                { accountId: revAcc.id, type: 'CREDIT', amount: totalAmount },
-                { accountId: cogsAcc.id, type: 'DEBIT', amount: totalCost },
-                { accountId: invAcc.id, type: 'CREDIT', amount: totalCost }
-              ]
-            }
+            workPeriodId,
+            orderNumber,
+            totalAmount,
+            totalCost,
+            paymentMethod: payload.paymentMethod || 'CASH',
+            items: allocatedItems.map(item => ({
+              inventoryItemId: item.invItem.id,
+              serialNumber: item.invItem.serialNumber,
+              productId: item.invItem.productId,
+              quantity: 1,
+              unitCost: item.unitCost,
+              unitPrice: item.unitPrice
+            }))
           },
-          include: { entries: true }
-        });
-
-        // Update balances for ledger accounts
-        await tx.ledgerAccount.update({
-          where: { id: cashAcc.id },
-          data: { balance: { increment: totalAmount } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: revAcc.id },
-          data: { balance: { increment: totalAmount } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: cogsAcc.id },
-          data: { balance: { increment: totalCost } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: invAcc.id },
-          data: { balance: { decrement: totalCost } }
-        });
-
-        return { salesOrder, journalEntry };
-      });
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+          createdBy: context.userId,
+        },
+        'sale.created'
+      );
 
       return {
         status: 'success',
         traceId,
-        data: result
+        data: {
+          markedSold: allocatedItems.map(item => item.invItem.serialNumber),
+          totalAmount,
+          totalCost
+        }
       };
     } catch (error: any) {
       return {

@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -11,21 +12,21 @@ datasource db {
 }
 
 model Purchase {
-  id           String   @id @default(uuid())
-  tenantId     String
-  shopId       String
-  poNumber     String   @unique
-  supplierId   String?
-  totalAmount  Float
-  totalCost    Float
-  status       String   @default("RECEIVED") // PENDING, RECEIVED, CANCELLED
-  createdById  String?  // userId
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  poNumber    String   @unique
+  supplierId  String?
+  totalAmount Float
+  totalCost   Float
+  status      String   @default("RECEIVED") // PENDING, RECEIVED, CANCELLED
+  createdById String? // userId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  items        PurchaseItem[]
-  payments     PurchasePayment[]
-  returns      PurchaseReturn[]
+  items    PurchaseItem[]
+  payments PurchasePayment[]
+  returns  PurchaseReturn[]
 
   @@index([tenantId])
   @@index([shopId])
@@ -44,7 +45,7 @@ model PurchaseItem {
   total        Float
   createdAt    DateTime @default(now())
 
-  purchase     Purchase @relation(fields: [purchaseId], references: [id])
+  purchase Purchase @relation(fields: [purchaseId], references: [id])
 
   @@index([purchaseId])
   @@index([productId])
@@ -55,29 +56,29 @@ model PurchasePayment {
   id         String   @id @default(uuid())
   purchaseId String
   amount     Float
-  method     String   // CASH, TRANSFER, CHECK
+  method     String // CASH, TRANSFER, CHECK
   reference  String?
   createdAt  DateTime @default(now())
 
-  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  purchase Purchase @relation(fields: [purchaseId], references: [id])
 
   @@index([purchaseId])
   @@map("purchase_payments")
 }
 
 model SupplierOrder {
-  id           String   @id @default(uuid())
-  tenantId     String
-  shopId       String
-  supplierId   String
-  orderNumber  String   @unique
-  totalAmount  Float
-  status       String   @default("PENDING") // PENDING, SENT, RECEIVED, CANCELLED
-  createdById  String?  // userId
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  supplierId  String
+  orderNumber String   @unique
+  totalAmount Float
+  status      String   @default("PENDING") // PENDING, SENT, RECEIVED, CANCELLED
+  createdById String? // userId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  items        SupplierOrderItem[]
+  items SupplierOrderItem[]
 
   @@index([tenantId])
   @@index([shopId])
@@ -95,7 +96,7 @@ model SupplierOrderItem {
   total           Float
   createdAt       DateTime @default(now())
 
-  supplierOrder   SupplierOrder @relation(fields: [supplierOrderId], references: [id])
+  supplierOrder SupplierOrder @relation(fields: [supplierOrderId], references: [id])
 
   @@index([supplierOrderId])
   @@index([productId])
@@ -113,11 +114,12 @@ model PurchaseReturn {
   refundAmount Float
   reason       String?
   status       String   @default("PENDING") // PENDING, APPROVED, COMPLETED, REJECTED
-  createdById  String?  // userId
+  createdById  String? // userId
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  items        PurchaseReturnItem[]
+  items    PurchaseReturnItem[]
+  Purchase Purchase?            @relation(fields: [purchaseId], references: [id])
 
   @@index([tenantId])
   @@index([shopId])
@@ -134,11 +136,30 @@ model PurchaseReturnItem {
   serialNumber     String?
   quantity         Float
   refundAmount     Float
-  createdAt       DateTime @default(now())
+  createdAt        DateTime @default(now())
 
-  purchaseReturn   PurchaseReturn @relation(fields: [purchaseReturnId], references: [id])
+  purchaseReturn PurchaseReturn @relation(fields: [purchaseReturnId], references: [id])
 
   @@index([purchaseReturnId])
   @@index([productId])
   @@map("purchase_return_items")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  shopId     String?
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  traceId    String?
+  details    String?  // JSON or text summary
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

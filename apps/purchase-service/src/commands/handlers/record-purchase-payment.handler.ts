@@ -1,16 +1,23 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { RecordPurchasePaymentCommand } from '../impl/record-purchase-payment.command.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { Inject } from '@nestjs/common';
+import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(RecordPurchasePaymentCommand)
 export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurchasePaymentCommand> {
+  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+    super();
+  }
+
   async execute(command: RecordPurchasePaymentCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
     const tenantId = context?.tenantId;
     const shopId = context?.shopId;
+    const workPeriodId = context?.workPeriodId || null;
 
     try {
       if (!tenantId || !shopId) {
@@ -31,93 +38,66 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
         };
       }
 
-      // Verify purchase order exists
-      const purchaseOrder = await prisma.purchaseOrder.findUnique({
+      // Verify purchase exists (own model)
+      const purchase = await prisma.purchase.findUnique({
         where: { id: payload.purchaseOrderId }
       });
 
-      if (!purchaseOrder) {
+      if (!purchase) {
         return {
           status: 'error',
           traceId,
-          message: `Purchase order ${payload.purchaseOrderId} not found`,
+          message: `Purchase ${payload.purchaseOrderId} not found`,
           errorCode: ErrorCode.NOT_FOUND
         };
       }
 
-      if (purchaseOrder.tenantId !== tenantId || purchaseOrder.shopId !== shopId) {
+      if (purchase.tenantId !== tenantId || purchase.shopId !== shopId) {
         return {
           status: 'error',
           traceId,
-          message: 'Purchase order does not belong to this tenant/shop',
+          message: 'Purchase does not belong to this tenant/shop',
           errorCode: ErrorCode.UNAUTHORIZED
         };
       }
 
-      // Check active Work Period
-      const workPeriod = await prisma.workPeriod.findFirst({
-        where: { shopId, status: 'OPEN' },
-        orderBy: { openedAt: 'desc' }
+      // Record payment on the purchase (own model only)
+      const payment = await prisma.purchasePayment.create({
+        data: {
+          purchaseId: purchase.id,
+          amount: payload.amount,
+          method: payload.paymentMethod,
+          reference: `PAY-${Date.now()}`
+        }
       });
 
-      if (!workPeriod) {
-        return {
-          status: 'error',
-          traceId,
-          message: `Shop ${shopId} work period is CLOSED or missing. Payment recording is locked out.`,
-          errorCode: ErrorCode.WORK_PERIOD_CLOSED
-        };
-      }
-
-      const result = await prisma.$transaction(async (tx) => {
-        // Helper function to resolve or create standard accounting ledger accounts
-        const getOrCreateAccount = async (code: string, name: string, type: string) => {
-          let acc = await tx.ledgerAccount.findFirst({
-            where: { tenantId, shopId, code }
-          });
-          if (!acc) {
-            acc = await tx.ledgerAccount.create({
-              data: { tenantId, shopId, code, name, type }
-            });
-          }
-          return acc;
-        };
-
-        const cashAcc = await getOrCreateAccount('1001', 'Cash on Hand', 'ASSET');
-        const apAcc = await getOrCreateAccount('2001', 'Accounts Payable', 'LIABILITY');
-
-        // Post journal entry for payment
-        const journalEntry = await tx.journalEntry.create({
-          data: {
+      // Publish PurchasePaymentRecorded event for accounting journal posting
+      await this.eventBus.publish(
+        {
+          eventType: 'PurchasePaymentRecorded',
+          aggregateId: payment.id,
+          aggregateType: 'PurchasePayment',
+          tenantId,
+          shopId,
+          workPeriodId,
+          payload: {
+            paymentId: payment.id,
+            purchaseId: purchase.id,
             tenantId,
             shopId,
-            workPeriodId: workPeriod.id,
-            description: `Payment for PO #${purchaseOrder.poNumber}`,
-            postedBy: context.userId || 'system',
-            entries: {
-              create: [
-                { accountId: apAcc.id, type: 'DEBIT', amount: payload.amount },
-                { accountId: cashAcc.id, type: 'CREDIT', amount: payload.amount }
-              ]
-            }
+            workPeriodId,
+            poNumber: purchase.poNumber,
+            amount: payload.amount,
+            paymentMethod: payload.paymentMethod
           },
-          include: { entries: true }
-        });
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+          createdBy: context.userId,
+        },
+        'purchase-payment.recorded'
+      );
 
-        // Update ledger balances
-        await tx.ledgerAccount.update({
-          where: { id: apAcc.id },
-          data: { balance: { decrement: payload.amount } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: cashAcc.id },
-          data: { balance: { decrement: payload.amount } }
-        });
-
-        return { purchaseOrder, journalEntry };
-      });
-
-      // Log audit action
+      // Log audit action (own audit log)
       try {
         await prisma.auditLog.create({
           data: {
@@ -125,8 +105,8 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
             shopId,
             userId: context.userId,
             action: 'RecordPurchasePayment',
-            resource: 'PurchaseOrder',
-            resourceId: payload.purchaseOrderId,
+            resource: 'PurchasePayment',
+            resourceId: payment.id,
             traceId: context.traceId || null,
             details: JSON.stringify({
               purchaseOrderId: payload.purchaseOrderId,
@@ -142,7 +122,7 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
       return {
         status: 'success',
         traceId,
-        data: result
+        data: { payment, purchase }
       };
     } catch (error: any) {
       return {

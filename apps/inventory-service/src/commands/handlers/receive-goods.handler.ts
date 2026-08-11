@@ -1,16 +1,23 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { ReceiveGoodsCommand } from '../impl/receive-goods.command.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { Inject } from '@nestjs/common';
+import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(ReceiveGoodsCommand)
 export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand> {
+  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+    super();
+  }
+
   async execute(command: ReceiveGoodsCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
     const tenantId = context?.tenantId;
     const shopId = context?.shopId;
+    const workPeriodId = context?.workPeriodId || null;
 
     try {
       if (!tenantId || !shopId) {
@@ -40,22 +47,7 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
         };
       }
 
-      // Check active Work Period and enforce period lockout
-      const workPeriod = await prisma.workPeriod.findFirst({
-        where: { shopId, status: 'OPEN' },
-        orderBy: { openedAt: 'desc' }
-      });
-
-      if (!workPeriod) {
-        return {
-          status: 'error',
-          traceId,
-          message: `Shop ${shopId} work period is CLOSED or missing. Goods receiving is locked out.`,
-          errorCode: ErrorCode.WORK_PERIOD_CLOSED
-        };
-      }
-
-      // Calculate totals and verify unique serial numbers
+      // Calculate totals and verify unique serial numbers (own models only)
       let totalAmount = 0;
       for (const item of payload.items) {
         if (!item.productId || !item.serialNumber || item.purchaseCost === undefined) {
@@ -83,56 +75,8 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
         totalAmount += item.purchaseCost;
       }
 
-      // Helper function to resolve or create standard accounting ledger accounts for the shop
-      const getOrCreateAccount = async (code: string, name: string, type: string) => {
-        let acc = await prisma.ledgerAccount.findFirst({
-          where: { tenantId, shopId, code }
-        });
-        if (!acc) {
-          acc = await prisma.ledgerAccount.create({
-            data: {
-              tenantId,
-              shopId,
-              code,
-              name,
-              type
-            }
-          });
-        }
-        return acc;
-      };
-
-      const invAcc = await getOrCreateAccount('1002', 'Inventory Asset', 'ASSET');
-      const creditAccCode = payload.paymentAccountCode || '2001';
-      const creditAccName = creditAccCode === '1001' ? 'Cash on Hand' : 'Accounts Payable';
-      const creditAccType = creditAccCode === '1001' ? 'ASSET' : 'LIABILITY';
-      const creditAcc = await getOrCreateAccount(creditAccCode, creditAccName, creditAccType);
-
-      const poNumber = `PO-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
       const result = await prisma.$transaction(async (tx) => {
-        // 1. Create PurchaseOrder & PurchaseOrderItems
-        const purchaseOrder = await tx.purchaseOrder.create({
-          data: {
-            tenantId,
-            shopId,
-            poNumber,
-            vendorName: payload.vendorName,
-            totalAmount,
-            status: 'RECEIVED',
-            createdById: context.userId || 'system',
-            items: {
-              create: payload.items.map((i: any) => ({
-                productId: i.productId,
-                serialNumber: i.serialNumber,
-                purchaseCost: i.purchaseCost
-              }))
-            }
-          },
-          include: { items: true }
-        });
-
-        // 2. Create serialized InventoryItems with proper lifecycle status
+        // Create serialized InventoryItems with proper lifecycle status
         const createdInventoryItems = [];
         for (const item of payload.items) {
           // Create item with RECEIVED status per AD-0016 lifecycle
@@ -146,46 +90,61 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
               status: 'RECEIVED'
             }
           });
-          
+
           // Immediately transition to AVAILABLE after receiving
           const updatedItem = await tx.inventoryItem.update({
             where: { id: invItem.id },
             data: { status: 'AVAILABLE' }
           });
-          
+
+          // Record movement
+          await tx.inventoryMovement.create({
+            data: {
+              tenantId,
+              shopId,
+              inventoryItemId: invItem.id,
+              movementType: 'IN',
+              quantity: 1,
+              referenceId: payload.notes || null,
+              referenceType: 'GOODS_RECEIPT',
+              createdBy: context.userId || 'system'
+            }
+          });
+
           createdInventoryItems.push(updatedItem);
         }
 
-        // 3. Post Journal Entry (Debit Inventory Asset, Credit AP/Cash)
-        const journalEntry = await tx.journalEntry.create({
-          data: {
+        return { createdInventoryItems };
+      });
+
+      // Publish PurchaseCreated event (consumed by accounting service)
+      await this.eventBus.publish(
+        {
+          eventType: 'PurchaseCreated',
+          aggregateId: result.createdInventoryItems[0]?.id || 'unknown',
+          aggregateType: 'GoodsReceipt',
+          tenantId,
+          shopId,
+          workPeriodId,
+          payload: {
             tenantId,
             shopId,
-            workPeriodId: workPeriod.id,
-            description: `Goods Receipt PO #${poNumber} - Vendor: ${payload.vendorName}`,
-            postedBy: context.userId || 'system',
-            entries: {
-              create: [
-                { accountId: invAcc.id, type: 'DEBIT', amount: totalAmount },
-                { accountId: creditAcc.id, type: 'CREDIT', amount: totalAmount }
-              ]
-            }
+            workPeriodId,
+            poNumber: `GR-${Date.now()}`,
+            vendorName: payload.vendorName,
+            totalAmount,
+            items: payload.items.map(i => ({
+              productId: i.productId,
+              serialNumber: i.serialNumber,
+              purchaseCost: i.purchaseCost
+            }))
           },
-          include: { entries: true }
-        });
-
-        // Update ledger balances
-        await tx.ledgerAccount.update({
-          where: { id: invAcc.id },
-          data: { balance: { increment: totalAmount } }
-        });
-        await tx.ledgerAccount.update({
-          where: { id: creditAcc.id },
-          data: { balance: { increment: totalAmount } }
-        });
-
-        return { purchaseOrder, createdInventoryItems, journalEntry };
-      });
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+          createdBy: context.userId,
+        },
+        'purchase.created'
+      );
 
       return {
         status: 'success',

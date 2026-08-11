@@ -6,19 +6,16 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     TreasuryServiceModule,
     {
-      transport: Transport.RMQ,
+      transport: Transport.TCP,
       options: {
-        urls: [process.env.RABBITMQ_URL || 'amqp://localhost:5672'],
-        queue: process.env.TREASURY_SERVICE_QUEUE || 'treasury-service',
-        queueOptions: {
-          durable: true,
-        },
+        host: '127.0.0.1',
+        port: parseInt(process.env.TREASURY_SERVICE_PORT || '3006', 10),
       },
     },
   );
 
   await app.listen();
-  console.log('Treasury Service is running');
+  console.log('Treasury Microservice is listening on TCP port', process.env.TREASURY_SERVICE_PORT || '3006');
 }
 
 bootstrap();

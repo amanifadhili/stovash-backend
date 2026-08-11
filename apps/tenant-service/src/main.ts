@@ -8,14 +8,14 @@ async function bootstrap() {
     {
       transport: Transport.TCP,
       options: {
-        host: process.env.TENANT_SERVICE_HOST || '0.0.0.0',
-        port: parseInt(process.env.TENANT_SERVICE_PORT || '3002', 10),
+        host: process.env.TENANT_SERVICE_HOST || '127.0.0.1',
+        port: parseInt(process.env.TENANT_SERVICE_PORT || '3008', 10),
       },
     },
   );
 
   await app.listen();
-  console.log('Tenant Service is listening on TCP port', process.env.TENANT_SERVICE_PORT || '3002');
+  console.log('Tenant Service is listening on TCP port', process.env.TENANT_SERVICE_PORT || '3008');
 }
 
 bootstrap();

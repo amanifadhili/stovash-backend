@@ -1,6 +1,6 @@
 import { ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { RecordBonusCommand } from '../impl/record-bonus.command.js';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client.js';
 
 @CommandHandler(RecordBonusCommand)
 export class RecordBonusHandler implements ICommandHandler<RecordBonusCommand> {
@@ -19,43 +19,17 @@ export class RecordBonusHandler implements ICommandHandler<RecordBonusCommand> {
         };
       }
 
-      // Verify work period is open
-      const workPeriod = await prisma.workPeriod.findFirst({
-        where: { tenantId, shopId, status: 'OPEN' }
-      });
-
-      if (!workPeriod) {
-        return {
-          status: 'error',
-          errorCode: 'NO_OPEN_WORK_PERIOD',
-          message: 'No open work period found'
-        };
-      }
-
-      // Create bonus record
+      // Create bonus record (own model only)
       const bonus = await prisma.bonus.create({
         data: {
           tenantId,
           shopId,
-          recipientType,
-          recipientId,
+          customerId: recipientType === 'CUSTOMER' ? recipientId : undefined,
           amount,
-          reason,
-          salesOrderId,
-          recordedBy: userId,
-          workPeriodId: workPeriod.id
+          type: recipientType === 'STAFF' ? 'STAFF' : 'LOYALTY',
+          description: reason || salesOrderId || null
         }
       });
-
-      // If it's a staff bonus, update staff total bonuses
-      if (recipientType === 'STAFF') {
-        await prisma.staff.update({
-          where: { id: recipientId },
-          data: {
-            totalBonuses: { increment: amount }
-          }
-        });
-      }
 
       // Log audit
       await prisma.auditLog.create({
@@ -64,9 +38,9 @@ export class RecordBonusHandler implements ICommandHandler<RecordBonusCommand> {
           shopId,
           userId,
           action: 'RECORD_BONUS',
-          entityType: 'Bonus',
-          entityId: bonus.id,
-          changes: JSON.stringify({
+          resource: 'Bonus',
+          resourceId: bonus.id,
+          details: JSON.stringify({
             recipientType,
             recipientId,
             amount,

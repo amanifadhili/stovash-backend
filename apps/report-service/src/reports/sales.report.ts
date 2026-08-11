@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../database/client.js';
 
 @Injectable()
 export class SalesReport {
