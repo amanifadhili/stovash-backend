@@ -2,11 +2,13 @@ import { BaseCommand } from '@electronic-shop/framework-command';
 import { IRequestContext } from '@electronic-shop/types';
 
 export class CreateShopPayload {
-  tenantId!: string;
+  tenantId?: string;
   name!: string;
   address?: string;
-  phone?: string;
   status?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
 }
 
 export class CreateShopCommand extends BaseCommand<CreateShopPayload> {

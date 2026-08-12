@@ -5,6 +5,7 @@ import { CreateTenantCommand } from '../impl/create-tenant.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { EventBus } from '@electronic-shop/framework-event';
 import { randomUUID } from 'crypto';
 
@@ -23,7 +24,7 @@ export class CreateTenantHandler extends BaseCommandHandler<CreateTenantCommand>
         return {
           status: 'error',
           traceId,
-          message: 'Shop name, admin email, password, first name, and last name are required',
+          message: 'Tenant name, admin email, password, first name, and last name are required',
           errorCode: ErrorCode.VALIDATION_ERROR
         };
       }
@@ -40,9 +41,9 @@ export class CreateTenantHandler extends BaseCommandHandler<CreateTenantCommand>
         };
       }
 
-      // Generate tenant/shop IDs (materialized by the tenant service via TenantCreated event)
+      // Registration creates a Tenant + the owner (admin) User only.
+      // Shops are created separately by the owner after registration.
       const tenantId = randomUUID();
-      const shopId = randomUUID();
       const hashedPassword = await bcrypt.hash(payload.adminPassword, 10);
 
       const user = await prisma.user.create({
@@ -61,7 +62,7 @@ export class CreateTenantHandler extends BaseCommandHandler<CreateTenantCommand>
         await prisma.auditLog.create({
           data: {
             tenantId,
-            shopId,
+            shopId: null,
             userId: user.id,
             action: 'CreateTenant',
             resource: 'Tenant',
@@ -74,7 +75,9 @@ export class CreateTenantHandler extends BaseCommandHandler<CreateTenantCommand>
         console.error('Failed to log audit action:', auditError);
       }
 
-      // Publish TenantCreated event; tenant service materializes Tenant/Shop/WorkPeriod
+      // Publish TenantCreated event; the tenant service materializes the Tenant
+      // (and the owner Staff record). No shop is created here on purpose — the
+      // owner will create shop(s) via CreateShop after onboarding.
       await this.eventBus.publish(
         {
           eventType: 'TenantCreated',
@@ -82,7 +85,6 @@ export class CreateTenantHandler extends BaseCommandHandler<CreateTenantCommand>
           aggregateType: 'Tenant',
           payload: {
             tenantId,
-            shopId,
             name: payload.name,
             userId: user.id,
             email: user.email,
@@ -95,19 +97,34 @@ export class CreateTenantHandler extends BaseCommandHandler<CreateTenantCommand>
         'tenant.created'
       );
 
+      // Sign a JWT so the owner is auto-authenticated after registration and can
+      // immediately proceed to create their first shop.
+      const accessToken = jwt.sign(
+        {
+          sub: user.id,
+          email: user.email,
+          role: user.role,
+          tenantId
+        },
+        process.env.JWT_SECRET || 'dev-secret-key',
+        { expiresIn: '1d' }
+      );
+
       return {
         status: 'success',
         traceId,
         data: {
           id: tenantId,
           name: payload.name,
-          shopId,
+          accessToken,
           user: {
             id: user.id,
             email: user.email,
-            name: `${user.firstName} ${user.lastName}`,
+            firstName: user.firstName,
+            lastName: user.lastName,
             role: user.role,
-            status: user.status
+            status: user.status,
+            tenantId
           }
         }
       };

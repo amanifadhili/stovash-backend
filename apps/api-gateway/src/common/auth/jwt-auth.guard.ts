@@ -53,13 +53,15 @@ export class JwtAuthGuard implements CanActivate {
         permissions: user.role === 'ADMIN' ? ['*'] : []
       };
 
-      // Merge user ID into command context
+      // Merge user ID + resolved tenant into the command context.
+      // The active shop is provided by the client via X-Shop-ID (shop context
+      // switching does not require re-authentication), so we do not override it.
       if (request.context) {
         request.context.userId = user.id;
         request.context.tenantId = user.tenantId;
-        if (request.context.shopId === 'default-shop') {
-          request.context.shopId = 'shop-1';
-        }
+        request.context.firstName = user.firstName;
+        request.context.lastName = user.lastName;
+        request.context.email = user.email;
       }
 
       return true;

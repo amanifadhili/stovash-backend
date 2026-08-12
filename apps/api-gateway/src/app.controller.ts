@@ -8,7 +8,10 @@ import { getMetrics } from '@electronic-shop/metrics';
 const COMMAND_PERMISSIONS: Record<string, string[]> = {
   // Tenant commands
   'CreateTenant': ['tenant:create'],
-  
+  'CreateShop': ['shop:create'],
+  'GetTenant': [],
+  'GetTenantShops': [],
+
   // User commands
   'CreateUser': ['user:create'],
   'LoginUser': [], // Public endpoint
@@ -56,10 +59,10 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
 
 // Command to role mapping (role-based access control)
 const COMMAND_ROLES: Record<string, string[]> = {
-  // Tenant commands - only ADMIN can create tenants
+  // Tenant commands - only ADMIN (tenant owner) can mutate tenants/shops;
+  // reads are authenticated only (resolved against the JWT tenant).
   'CreateTenant': ['ADMIN'],
-  
-  // User commands - ADMIN and MANAGER can create users
+  'CreateShop': ['ADMIN'],
   'CreateUser': ['ADMIN', 'MANAGER'],
   'LoginUser': [], // Public endpoint
   
@@ -113,6 +116,7 @@ const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant'];
 export class AppController {
   constructor(
     @Inject('IDENTITY_SERVICE') private readonly identityClient: ClientProxy,
+    @Inject('TENANT_SERVICE') private readonly tenantClient: ClientProxy,
     @Inject('ACCOUNTING_SERVICE') private readonly accountingClient: ClientProxy,
     @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
     @Inject('TREASURY_SERVICE') private readonly treasuryClient: ClientProxy,
@@ -178,7 +182,11 @@ export class AppController {
       if (['CreateTenant', 'CreateUser', 'LoginUser'].includes(cmd)) {
         return await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
       }
-      
+
+      if (['CreateShop', 'GetTenantShops', 'GetTenant'].includes(cmd)) {
+        return await firstValueFrom(this.tenantClient.send({ cmd }, { payload, context }));
+      }
+
       if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod', 'GetAccountTransactions', 'GetTrialBalance', 'GetIncomeStatement', 'GetBalanceSheet', 'CreatePostingBatch', 'PostBatch'].includes(cmd)) {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }

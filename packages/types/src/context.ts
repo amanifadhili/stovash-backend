@@ -9,6 +9,11 @@ export interface IRequestContext {
   permissions?: string[];
   ipAddress?: string;
   userAgent?: string;
+  // Enriched by the gateway from the verified JWT so downstream services can
+  // seed tenant-scoped records (e.g. Staff) without extra lookups.
+  firstName?: string;
+  lastName?: string;
+  email?: string;
 }
 
 export interface ITenantContext {
