@@ -3,15 +3,18 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { ConfirmPurchaseCommand } from '../impl/confirm-purchase.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { actorOf } from '../../common/actor.js';
 
 @CommandHandler(ConfirmPurchaseCommand)
 export class ConfirmPurchaseHandler extends BaseCommandHandler<ConfirmPurchaseCommand> {
   async execute(command: ConfirmPurchaseCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const traceId = context?.traceId || payload.traceId || 'unknown';
+    const { userId, userName, traceId } = actorOf(context);
 
     try {
-      const { purchaseId, approvedById, approvedByName } = payload;
+      const { purchaseId } = payload;
+      const approvedById = userId;
+      const approvedByName = userName;
 
       const purchase = await prisma.purchase.findUnique({ where: { id: purchaseId } });
       if (!purchase) {

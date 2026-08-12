@@ -56,7 +56,7 @@ model Purchase {
   tenantId           String
   shopId             String
   purchaseNumber     String                    @unique
-  supplierId         String
+  supplierId         String?
   supplierName       String
   supplierContact    String?
   supplierAddress    String?

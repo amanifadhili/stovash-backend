@@ -86,6 +86,10 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetPurchaseReturns': ['purchase:return:read'],
   'GetPurchaseDocuments': ['purchase:document:read'],
   'GetPurchaseHistory': ['purchase:purchase:read'],
+
+  // Supplier commands
+  'CreateSupplier': ['supplier:create'],
+  'GetSuppliers': ['supplier:read'],
   
   // Treasury commands
   'RecordOperationalDeposit': ['treasury:deposit:create'],
@@ -171,6 +175,10 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'GetPurchaseReturns': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetPurchaseDocuments': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetPurchaseHistory': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+
+  // Supplier commands
+  'CreateSupplier': ['ADMIN', 'MANAGER'],
+  'GetSuppliers': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   
   // Treasury commands
   'RecordOperationalDeposit': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -191,7 +199,8 @@ export class AppController {
     @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
     @Inject('TREASURY_SERVICE') private readonly treasuryClient: ClientProxy,
     @Inject('SALES_SERVICE') private readonly salesClient: ClientProxy,
-    @Inject('PURCHASE_SERVICE') private readonly purchaseClient: ClientProxy
+    @Inject('PURCHASE_SERVICE') private readonly purchaseClient: ClientProxy,
+    @Inject('SUPPLIER_SERVICE') private readonly supplierClient: ClientProxy
   ) {}
 
   @Get('health')
@@ -271,6 +280,10 @@ export class AppController {
 
       if (['CreatePurchase', 'AddPurchaseItem', 'UpdatePurchaseItem', 'RemovePurchaseItem', 'ConfirmPurchase', 'CancelPurchase', 'CreatePurchaseReceiving', 'AddReceivedItems', 'RecordPurchasePayment', 'CreatePurchaseReturn', 'AddPurchaseReturnItems', 'AddPurchaseDocument', 'GetPurchases', 'GetPurchaseById', 'GetPurchaseByNumber', 'GetPurchaseItems', 'GetPurchaseReceivings', 'GetPurchasePayments', 'GetPurchaseReturns', 'GetPurchaseDocuments', 'GetPurchaseHistory'].includes(cmd)) {
         return await firstValueFrom(this.purchaseClient.send({ cmd }, { payload, context }));
+      }
+
+      if (['CreateSupplier', 'GetSuppliers'].includes(cmd)) {
+        return await firstValueFrom(this.supplierClient.send({ cmd }, { payload, context }));
       }
 
       if (['RecordOperationalDeposit', 'ReconcilePaymentMethod'].includes(cmd)) {

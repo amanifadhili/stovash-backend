@@ -3,15 +3,18 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { AddPurchaseDocumentCommand } from '../impl/add-purchase-document.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { actorOf } from '../../common/actor.js';
 
 @CommandHandler(AddPurchaseDocumentCommand)
 export class AddPurchaseDocumentHandler extends BaseCommandHandler<AddPurchaseDocumentCommand> {
   async execute(command: AddPurchaseDocumentCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const traceId = context?.traceId || payload.traceId || 'unknown';
+    const { userId, userName, traceId } = actorOf(context);
 
     try {
-      const { purchaseId, documentType, fileName, fileUrl, fileSize, mimeType, uploadedById, uploadedByName, notes } = payload;
+      const { purchaseId, documentType, fileName, fileUrl, fileSize, mimeType, notes } = payload;
+      const uploadedById = userId;
+      const uploadedByName = userName;
 
       const purchase = await prisma.purchase.findUnique({ where: { id: purchaseId } });
       if (!purchase) {

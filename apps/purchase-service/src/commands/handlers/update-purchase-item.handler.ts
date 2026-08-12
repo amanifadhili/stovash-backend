@@ -3,15 +3,18 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { UpdatePurchaseItemCommand } from '../impl/update-purchase-item.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { actorOf } from '../../common/actor.js';
 
 @CommandHandler(UpdatePurchaseItemCommand)
 export class UpdatePurchaseItemHandler extends BaseCommandHandler<UpdatePurchaseItemCommand> {
   async execute(command: UpdatePurchaseItemCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const traceId = context?.traceId || payload.traceId || 'unknown';
+    const { userId, userName, traceId } = actorOf(context);
 
     try {
-      const { purchaseItemId, updatedById, updatedByName, ...updates } = payload;
+      const { purchaseItemId, ...updates } = payload;
+      const updatedById = userId;
+      const updatedByName = userName;
 
       const item = await prisma.purchaseItem.findUnique({ where: { id: purchaseItemId } });
       if (!item) {

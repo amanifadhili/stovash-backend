@@ -3,12 +3,13 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { AddPurchaseItemCommand } from '../impl/add-purchase-item.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { actorOf } from '../../common/actor.js';
 
 @CommandHandler(AddPurchaseItemCommand)
 export class AddPurchaseItemHandler extends BaseCommandHandler<AddPurchaseItemCommand> {
   async execute(command: AddPurchaseItemCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const traceId = context?.traceId || payload.traceId || 'unknown';
+    const { userId, userName, traceId } = actorOf(context);
 
     try {
       const {
@@ -25,9 +26,9 @@ export class AddPurchaseItemHandler extends BaseCommandHandler<AddPurchaseItemCo
         otherCosts = 0,
         purchaseSpecs,
         notes,
-        createdById,
-        createdByName,
       } = payload;
+      const createdById = userId;
+      const createdByName = userName;
 
       // Verify purchase exists and is in DRAFT status
       const purchase = await prisma.purchase.findUnique({ where: { id: purchaseId } });

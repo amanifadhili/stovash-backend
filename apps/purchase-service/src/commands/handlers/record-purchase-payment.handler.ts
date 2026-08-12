@@ -3,12 +3,13 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { RecordPurchasePaymentCommand } from '../impl/record-purchase-payment.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { actorOf } from '../../common/actor.js';
 
 @CommandHandler(RecordPurchasePaymentCommand)
 export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurchasePaymentCommand> {
   async execute(command: RecordPurchasePaymentCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const traceId = context?.traceId || payload.traceId || 'unknown';
+    const { userId, userName, traceId } = actorOf(context);
 
     try {
       const {
@@ -21,12 +22,12 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
         accountId,
         accountName,
         reference,
-        paidById,
-        paidByName,
         paidAt,
         notes,
         accountingRef,
       } = payload;
+      const paidById = userId;
+      const paidByName = userName;
 
       const purchase = await prisma.purchase.findUnique({ where: { id: purchaseId } });
       if (!purchase) {

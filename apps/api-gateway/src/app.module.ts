@@ -46,6 +46,11 @@ import { CircuitBreakerInterceptor } from './interceptors/circuit-breaker.interc
         transport: Transport.TCP,
         options: { host: '127.0.0.1', port: 3008 },
       },
+      {
+        name: 'SUPPLIER_SERVICE',
+        transport: Transport.TCP,
+        options: { host: '127.0.0.1', port: 3009 },
+      },
     ]),
   ],
   controllers: [AppController],

@@ -4,17 +4,16 @@ import { CreatePurchaseCommand } from '../impl/create-purchase.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { v4 as uuidv4 } from 'uuid';
+import { actorOf } from '../../common/actor.js';
 
 @CommandHandler(CreatePurchaseCommand)
 export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseCommand> {
   async execute(command: CreatePurchaseCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const traceId = context?.traceId || payload.traceId || 'unknown';
+    const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
 
     try {
       const {
-        tenantId,
-        shopId,
         supplierId,
         supplierName,
         supplierContact,
@@ -25,9 +24,9 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
         currency = 'RWF',
         exchangeRate = 1.0,
         notes,
-        createdById,
-        createdByName,
       } = payload;
+      const createdById = userId;
+      const createdByName = userName;
 
       // Generate purchase number
       const date = purchaseDate ? new Date(purchaseDate) : new Date();

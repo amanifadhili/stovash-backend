@@ -3,15 +3,18 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { RemovePurchaseItemCommand } from '../impl/remove-purchase-item.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { actorOf } from '../../common/actor.js';
 
 @CommandHandler(RemovePurchaseItemCommand)
 export class RemovePurchaseItemHandler extends BaseCommandHandler<RemovePurchaseItemCommand> {
   async execute(command: RemovePurchaseItemCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const traceId = context?.traceId || payload.traceId || 'unknown';
+    const { userId, userName, traceId } = actorOf(context);
 
     try {
-      const { purchaseItemId, deletedById, deletedByName } = payload;
+      const { purchaseItemId } = payload;
+      const deletedById = userId;
+      const deletedByName = userName;
 
       const item = await prisma.purchaseItem.findUnique({ where: { id: purchaseItemId } });
       if (!item) {

@@ -2441,7 +2441,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId: string | null
     supplierName: string
     supplierContact: string | null
     supplierAddress: string | null
@@ -2623,7 +2623,7 @@ export namespace Prisma {
       tenantId: string
       shopId: string
       purchaseNumber: string
-      supplierId: string
+      supplierId: string | null
       supplierName: string
       supplierContact: string | null
       supplierAddress: string | null
@@ -15621,7 +15621,7 @@ export namespace Prisma {
     tenantId?: StringFilter<"Purchase"> | string
     shopId?: StringFilter<"Purchase"> | string
     purchaseNumber?: StringFilter<"Purchase"> | string
-    supplierId?: StringFilter<"Purchase"> | string
+    supplierId?: StringNullableFilter<"Purchase"> | string | null
     supplierName?: StringFilter<"Purchase"> | string
     supplierContact?: StringNullableFilter<"Purchase"> | string | null
     supplierAddress?: StringNullableFilter<"Purchase"> | string | null
@@ -15661,7 +15661,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     purchaseNumber?: SortOrder
-    supplierId?: SortOrder
+    supplierId?: SortOrderInput | SortOrder
     supplierName?: SortOrder
     supplierContact?: SortOrderInput | SortOrder
     supplierAddress?: SortOrderInput | SortOrder
@@ -15704,7 +15704,7 @@ export namespace Prisma {
     NOT?: PurchaseWhereInput | PurchaseWhereInput[]
     tenantId?: StringFilter<"Purchase"> | string
     shopId?: StringFilter<"Purchase"> | string
-    supplierId?: StringFilter<"Purchase"> | string
+    supplierId?: StringNullableFilter<"Purchase"> | string | null
     supplierName?: StringFilter<"Purchase"> | string
     supplierContact?: StringNullableFilter<"Purchase"> | string | null
     supplierAddress?: StringNullableFilter<"Purchase"> | string | null
@@ -15744,7 +15744,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     purchaseNumber?: SortOrder
-    supplierId?: SortOrder
+    supplierId?: SortOrderInput | SortOrder
     supplierName?: SortOrder
     supplierContact?: SortOrderInput | SortOrder
     supplierAddress?: SortOrderInput | SortOrder
@@ -15785,7 +15785,7 @@ export namespace Prisma {
     tenantId?: StringWithAggregatesFilter<"Purchase"> | string
     shopId?: StringWithAggregatesFilter<"Purchase"> | string
     purchaseNumber?: StringWithAggregatesFilter<"Purchase"> | string
-    supplierId?: StringWithAggregatesFilter<"Purchase"> | string
+    supplierId?: StringNullableWithAggregatesFilter<"Purchase"> | string | null
     supplierName?: StringWithAggregatesFilter<"Purchase"> | string
     supplierContact?: StringNullableWithAggregatesFilter<"Purchase"> | string | null
     supplierAddress?: StringNullableWithAggregatesFilter<"Purchase"> | string | null
@@ -16847,7 +16847,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -16887,7 +16887,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -16927,7 +16927,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16967,7 +16967,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17007,7 +17007,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -17040,7 +17040,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17073,7 +17073,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20948,7 +20948,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -20987,7 +20987,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -21124,7 +21124,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21163,7 +21163,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21255,7 +21255,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -21294,7 +21294,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -21437,7 +21437,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21476,7 +21476,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21615,7 +21615,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -21654,7 +21654,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -21747,7 +21747,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21786,7 +21786,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21841,7 +21841,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -21880,7 +21880,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -21935,7 +21935,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21974,7 +21974,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22057,7 +22057,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -22096,7 +22096,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -22167,7 +22167,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22206,7 +22206,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22449,7 +22449,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -22488,7 +22488,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -22543,7 +22543,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22582,7 +22582,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22621,7 +22621,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -22660,7 +22660,7 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     purchaseNumber: string
-    supplierId: string
+    supplierId?: string | null
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
@@ -22715,7 +22715,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22754,7 +22754,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     purchaseNumber?: StringFieldUpdateOperationsInput | string
-    supplierId?: StringFieldUpdateOperationsInput | string
+    supplierId?: NullableStringFieldUpdateOperationsInput | string | null
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null

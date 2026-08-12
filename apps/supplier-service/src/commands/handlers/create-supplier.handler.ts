@@ -15,9 +15,10 @@ export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierComm
   async execute(command: CreateSupplierCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
+    const tenantId = context?.tenantId || payload?.tenantId;
 
     try {
-      if (!payload?.tenantId || !payload?.name) {
+      if (!tenantId || !payload?.name) {
         return {
           status: 'error',
           traceId,
@@ -28,7 +29,7 @@ export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierComm
 
       const supplier = await prisma.supplier.create({
         data: {
-          tenantId: payload.tenantId,
+          tenantId: tenantId,
           name: payload.name,
           email: payload.email,
           phone: payload.phone,
