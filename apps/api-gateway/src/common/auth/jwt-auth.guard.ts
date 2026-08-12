@@ -1,13 +1,20 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, ForbiddenException, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant'];
 
+// Commands that do NOT require an active subscription (auth, reads, subscription mgmt)
+const SUBSCRIPTION_EXEMPT = [
+  'LoginUser', 'CreateTenant', 'VerifyUser', 'RefreshToken',
+  'GetTenant', 'GetTenantSubscription',
+];
+
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     @Inject('IDENTITY_SERVICE') private readonly identityClient: ClientProxy,
+    @Inject('TENANT_SERVICE') private readonly tenantClient: ClientProxy,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -54,8 +61,6 @@ export class JwtAuthGuard implements CanActivate {
       };
 
       // Merge user ID + resolved tenant into the command context.
-      // The active shop is provided by the client via X-Shop-ID (shop context
-      // switching does not require re-authentication), so we do not override it.
       if (request.context) {
         request.context.userId = user.id;
         request.context.tenantId = user.tenantId;
@@ -64,9 +69,28 @@ export class JwtAuthGuard implements CanActivate {
         request.context.email = user.email;
       }
 
+      // Enforce active subscription for non-exempt commands
+      if (command && !SUBSCRIPTION_EXEMPT.includes(command)) {
+        const subscriptionResponse = await firstValueFrom(
+          this.tenantClient.send(
+            { cmd: 'GetTenantSubscription' },
+            { payload: { tenantId: user.tenantId }, context: { traceId: request.context?.traceId } }
+          )
+        );
+
+        const subscription = subscriptionResponse?.data;
+        if (!subscription || subscription.status !== 'ACTIVE') {
+          throw new ForbiddenException({
+            status: 'error',
+            message: 'No active subscription. Please subscribe to continue.',
+            errorCode: 'SUBSCRIPTION_REQUIRED'
+          });
+        }
+      }
+
       return true;
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
+      if (error instanceof UnauthorizedException || error instanceof ForbiddenException) {
         throw error;
       }
       console.error('Error verifying JWT token:', error);

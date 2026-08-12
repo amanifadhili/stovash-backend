@@ -130,6 +130,17 @@ exports.Prisma.TenantScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  plan: 'plan',
+  status: 'status',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ShopScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -228,6 +239,7 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
+  Subscription: 'Subscription',
   Shop: 'Shop',
   Staff: 'Staff',
   Role: 'Role',

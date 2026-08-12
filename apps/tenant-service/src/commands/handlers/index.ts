@@ -5,6 +5,7 @@ import { CreateRoleHandler } from './create-role.handler.js';
 import { AssignRoleHandler } from './assign-role.handler.js';
 import { GetTenantShopsHandler } from './get-tenant-shops.handler.js';
 import { GetTenantHandler } from './get-tenant.handler.js';
+import { GetTenantSubscriptionHandler } from './get-tenant-subscription.handler.js';
 
 export const CommandHandlers = [
   CreateTenantHandler,
@@ -14,4 +15,5 @@ export const CommandHandlers = [
   AssignRoleHandler,
   GetTenantShopsHandler,
   GetTenantHandler,
+  GetTenantSubscriptionHandler,
 ];

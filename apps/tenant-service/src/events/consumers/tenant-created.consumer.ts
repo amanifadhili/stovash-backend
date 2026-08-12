@@ -15,6 +15,17 @@ export const tenantCreatedConsumer = async (event: any): Promise<void> => {
       }
     });
 
+    // Auto-create a FREE subscription for new tenants
+    await prisma.subscription.create({
+      data: {
+        tenantId,
+        plan: 'FREE',
+        status: 'ACTIVE',
+        validFrom: new Date(),
+        validTo: null,
+      }
+    });
+
     let createdShopId: string | null = null;
     if (shopId) {
       const shop = await prisma.shop.create({

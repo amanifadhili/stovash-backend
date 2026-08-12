@@ -183,7 +183,7 @@ export class AppController {
         return await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
       }
 
-      if (['CreateShop', 'GetTenantShops', 'GetTenant'].includes(cmd)) {
+      if (['CreateShop', 'GetTenantShops', 'GetTenant', 'GetTenantSubscription'].includes(cmd)) {
         return await firstValueFrom(this.tenantClient.send({ cmd }, { payload, context }));
       }
 
