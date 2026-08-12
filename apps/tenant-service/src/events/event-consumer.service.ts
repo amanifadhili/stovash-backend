@@ -8,11 +8,12 @@ export class EventConsumerService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      await this.eventBus.connect();
-
+      // Create consumer BEFORE connecting
       this.eventBus.createConsumer('tenant-tenant-created', 'tenant.created');
-
       this.eventBus.registerHandler('tenant-tenant-created', 'TenantCreated', tenantCreatedConsumer);
+
+      // Now connect (will connect publisher + all consumers)
+      await this.eventBus.connect();
 
       await this.eventBus.startAllConsumers();
       console.log('Event consumers registered and started for Tenant Service');

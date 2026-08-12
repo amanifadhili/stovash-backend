@@ -27,7 +27,16 @@ async function bootstrap() {
     contentSecurityPolicy: false, // disable CSP for Vite dev server proxy
     crossOriginEmbedderPolicy: false
   }));
-  app.enableCors();
+  
+  // CORS configuration - allow Next.js frontend with credentials
+  const corsOrigins = process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3001'];
+  app.enableCors({
+    origin: corsOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID', 'X-Shop-ID', 'X-User-ID', 'X-Work-Period-ID', 'X-Trace-ID'],
+    credentials: true,
+    maxAge: 86400,
+  });
   
   app.use(
     rateLimit({

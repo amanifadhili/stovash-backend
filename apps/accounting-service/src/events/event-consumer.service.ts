@@ -11,8 +11,7 @@ export class EventConsumerService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      await this.eventBus.connect();
-
+      // Create consumers BEFORE connecting
       this.eventBus.createConsumer('accounting-sales', 'sale.created');
       this.eventBus.createConsumer('accounting-purchases', 'purchase.created');
       this.eventBus.createConsumer('accounting-sale-payments', 'sale-payment.recorded');
@@ -22,6 +21,9 @@ export class EventConsumerService implements OnModuleInit {
       this.eventBus.registerHandler('accounting-purchases', 'PurchaseCreated', purchaseCreatedConsumer);
       this.eventBus.registerHandler('accounting-sale-payments', 'SalePaymentRecorded', salePaymentRecordedConsumer);
       this.eventBus.registerHandler('accounting-purchase-payments', 'PurchasePaymentRecorded', purchasePaymentRecordedConsumer);
+
+      // Now connect (will connect publisher + all consumers)
+      await this.eventBus.connect();
 
       await this.eventBus.startAllConsumers();
       console.log('Event consumers registered and started for Accounting Service');

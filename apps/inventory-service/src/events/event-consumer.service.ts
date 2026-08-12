@@ -9,13 +9,15 @@ export class EventConsumerService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      await this.eventBus.connect();
-
+      // Create consumers BEFORE connecting
       this.eventBus.createConsumer('inventory-sales', 'sale.created');
       this.eventBus.createConsumer('inventory-purchases', 'purchase.created');
 
       this.eventBus.registerHandler('inventory-sales', 'SaleCreated', saleCreatedConsumer);
       this.eventBus.registerHandler('inventory-purchases', 'PurchaseCreated', purchaseCreatedConsumer);
+
+      // Now connect (will connect publisher + all consumers)
+      await this.eventBus.connect();
 
       await this.eventBus.startAllConsumers();
       console.log('Event consumers registered and started for Inventory Service');

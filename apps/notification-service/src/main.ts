@@ -9,12 +9,12 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: '127.0.0.1',
-        port: 3009,
+        port: parseInt(process.env.NOTIFICATION_SERVICE_PORT || '3009', 10),
       },
     },
   );
 
   await app.listen();
-  console.log('Notification Service is listening on port 3009');
+  console.log('Notification Service is listening on port', process.env.NOTIFICATION_SERVICE_PORT || '3009');
 }
 bootstrap();

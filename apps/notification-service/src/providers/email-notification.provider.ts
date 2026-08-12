@@ -4,18 +4,28 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class EmailNotificationProvider {
   private transporter: nodemailer.Transporter;
+  public from: string;
 
   constructor() {
     // Initialize email transporter with environment variables
+    const encryption = process.env.MAIL_ENCRYPTION || process.env.SMTP_ENCRYPTION || 'tls';
+    const host = process.env.MAIL_HOST || process.env.SMTP_HOST || 'localhost';
+    const port = parseInt(process.env.MAIL_PORT || process.env.SMTP_PORT || '587', 10);
+    const user = process.env.MAIL_USERNAME || process.env.SMTP_USER;
+    const pass = process.env.MAIL_PASSWORD || process.env.SMTP_PASS;
+
+    const fromAddress = process.env.MAIL_FROM_ADDRESS || process.env.SMTP_FROM || 'noreply@electronic-shop.com';
+    const fromName = process.env.MAIL_FROM_NAME || process.env.MAIL_FROM_NAME || 'Electronic Shop';
+    const from = fromName ? `"${fromName}" <${fromAddress}>` : fromAddress;
+
     this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'localhost',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+      host,
+      port,
+      secure: encryption === 'ssl', // true for 465 (implicit TLS), false for 587 STARTTLS
+      ignoreTLS: encryption === 'none',
+      auth: { user, pass },
     });
+    this.from = from;
   }
 
   async send(data: {
@@ -28,7 +38,7 @@ export class EmailNotificationProvider {
   }) {
     try {
       const mailOptions = {
-        from: process.env.SMTP_FROM || 'noreply@electronic-shop.com',
+        from: this.from,
         to: data.to,
         subject: data.subject,
         html: data.html || this.renderTemplate(data.template || 'default', data.data),
@@ -47,6 +57,12 @@ export class EmailNotificationProvider {
   private renderTemplate(template: string, data: any): string {
     // Simple template rendering - in production, use a proper template engine
     const templates: Record<string, (data: any) => string> = {
+      'welcome': (d) => `
+        <h2>Welcome${d.firstName ? ', ' + d.firstName : ''}${d.lastName ? ' ' + d.lastName : ''}!</h2>
+        <p>Thank you for registering on ${process.env.APP_NAME || 'Electronic Shop'}.</p>
+        ${d.role ? `<p><strong>Your account role:</strong> ${d.role}</p>` : ''}
+        <p>Your account has been created successfully. You can now sign in and start using the platform.</p>
+      `,
       'sale-confirmation': (d) => `
         <h2>Sale Confirmation</h2>
         <p>Thank you for your purchase!</p>

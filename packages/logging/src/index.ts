@@ -1,4 +1,5 @@
 import winston from 'winston';
+import TransportStream from 'winston-transport';
 import { Client } from '@opensearch-project/opensearch';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
@@ -90,7 +91,7 @@ if (process.env.OPENSEARCH_ENABLED === 'true') {
   });
 
   // Create a custom Winston transport for OpenSearch
-  class OpenSearchTransport extends winston.Transport {
+  class OpenSearchTransport extends TransportStream {
     name = 'OpenSearchTransport';
 
     log(info: any, callback: () => void) {
@@ -120,7 +121,7 @@ if (process.env.OPENSEARCH_ENABLED === 'true') {
           console.error('Error sending log to OpenSearch:', err);
           callback();
         });
-    });
+    }
   }
 
   transports.push(new OpenSearchTransport());

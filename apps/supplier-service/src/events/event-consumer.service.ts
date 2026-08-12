@@ -16,18 +16,14 @@ export class EventConsumerService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      // Connect to RabbitMQ
-      await this.eventBus.connect();
-
-      // Create consumer
-      const purchaseConsumer = this.eventBus.createConsumer('supplier-purchases', 'purchase.created');
-
-      // Register handler
+      // Create consumer BEFORE connecting
+      this.eventBus.createConsumer('supplier-purchases', 'purchase.created');
       this.eventBus.registerHandler('supplier-purchases', 'PurchaseCreated', purchaseCreatedConsumer);
 
-      // Start consuming
-      await this.eventBus.startAllConsumers();
+      // Now connect (will connect publisher + all consumers)
+      await this.eventBus.connect();
 
+      await this.eventBus.startAllConsumers();
       console.log('Event consumers registered and started for Supplier Service');
     } catch (error) {
       console.error('Failed to initialize event consumers:', error);

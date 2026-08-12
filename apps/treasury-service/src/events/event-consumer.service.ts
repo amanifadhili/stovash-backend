@@ -8,11 +8,12 @@ export class EventConsumerService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      await this.eventBus.connect();
-
+      // Create consumers BEFORE connecting
       this.eventBus.createConsumer('treasury-payment-methods', 'payment-method.created');
-
       this.eventBus.registerHandler('treasury-payment-methods', 'PaymentMethodCreated', paymentMethodCreatedConsumer);
+
+      // Now connect (will connect publisher + all consumers)
+      await this.eventBus.connect();
 
       await this.eventBus.startAllConsumers();
       console.log('Event consumers registered and started for Treasury Service');

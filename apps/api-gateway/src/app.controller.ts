@@ -100,6 +100,11 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'ReconcilePaymentMethod': ['ADMIN', 'MANAGER'],
 };
 
+// Commands that are public (no authenticated user required). Their role/permission
+// checks are skipped because there is no user context to authorize against.
+// CreateTenant is the tenant self-registration (onboarding) flow; LoginUser is public auth.
+const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant'];
+
 @Controller()
 export class AppController {
   constructor(
@@ -128,9 +133,12 @@ export class AppController {
 
     const context = req.context;
 
+    // Public commands (e.g. self-registration) bypass role/permission checks.
+    const isPublic = PUBLIC_COMMANDS.includes(cmd);
+
     // Check role-based access control
     const requiredRoles = COMMAND_ROLES[cmd];
-    if (requiredRoles && requiredRoles.length > 0) {
+    if (!isPublic && requiredRoles && requiredRoles.length > 0) {
       const userRole = req.user?.role;
       if (!userRole || !requiredRoles.includes(userRole)) {
         throw new HttpException(
@@ -146,7 +154,7 @@ export class AppController {
 
     // Check permissions for the command
     const requiredPermissions = COMMAND_PERMISSIONS[cmd];
-    if (requiredPermissions && requiredPermissions.length > 0) {
+    if (!isPublic && requiredPermissions && requiredPermissions.length > 0) {
       const userPermissions = req.user?.permissions || [];
       const hasPermission = userPermissions.includes('*') || requiredPermissions.some(p => userPermissions.includes(p));
       

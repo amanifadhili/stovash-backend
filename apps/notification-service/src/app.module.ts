@@ -6,6 +6,7 @@ import { EmailNotificationProvider } from './providers/email-notification.provid
 import { SmsNotificationProvider } from './providers/sms-notification.provider.js';
 import { PushNotificationProvider } from './providers/push-notification.provider.js';
 import { WebhookNotificationProvider } from './providers/webhook-notification.provider.js';
+import { EventConsumerService } from './events/event-consumer.service.js';
 import { CommandHandlers } from './commands/handlers/index.js';
 
 @Module({
@@ -17,6 +18,7 @@ import { CommandHandlers } from './commands/handlers/index.js';
     SmsNotificationProvider,
     PushNotificationProvider,
     WebhookNotificationProvider,
+    EventConsumerService,
     ...CommandHandlers,
   ],
 })

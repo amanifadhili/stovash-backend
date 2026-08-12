@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as twilio from 'twilio';
+import twilio from 'twilio';
 
 @Injectable()
 export class SmsNotificationProvider {
