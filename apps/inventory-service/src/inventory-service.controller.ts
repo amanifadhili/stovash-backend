@@ -2,13 +2,29 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AddProductCommand } from './commands/impl/add-product.command.js';
+import { UpdateProductCommand } from './commands/impl/update-product.command.js';
+import { DeleteProductCommand } from './commands/impl/delete-product.command.js';
+import { UpdateProductStatusCommand } from './commands/impl/update-product-status.command.js';
+import { SetProductPriceCommand } from './commands/impl/set-product-price.command.js';
 import { AddInventoryItemCommand } from './commands/impl/add-inventory-item.command.js';
 import { ProcessPosSaleCommand } from './commands/impl/process-pos-sale.command.js';
 import { ReceiveGoodsCommand } from './commands/impl/receive-goods.command.js';
 import { ProcessSalesReturnCommand } from './commands/impl/process-sales-return.command.js';
 import { CreateWarrantyClaimCommand } from './commands/impl/create-warranty-claim.command.js';
 import { TransferInventoryCommand } from './commands/impl/transfer-inventory.command.js';
+import { CreateBrandCommand } from './commands/impl/create-brand.command.js';
+import { UpdateBrandCommand } from './commands/impl/update-brand.command.js';
+import { DeleteBrandCommand } from './commands/impl/delete-brand.command.js';
+import { CreateCategoryCommand } from './commands/impl/create-category.command.js';
+import { UpdateCategoryCommand } from './commands/impl/update-category.command.js';
+import { DeleteCategoryCommand } from './commands/impl/delete-category.command.js';
 import { GetProductsQuery } from './queries/impl/get-products.query.js';
+import { GetProductByIdQuery } from './queries/impl/get-product-by-id.query.js';
+import { GetProductBySkuQuery } from './queries/impl/get-product-by-sku.query.js';
+import { GetBrandsQuery } from './queries/impl/get-brands.query.js';
+import { GetBrandByIdQuery } from './queries/impl/get-brand-by-id.query.js';
+import { GetCategoriesQuery } from './queries/impl/get-categories.query.js';
+import { GetCategoryByIdQuery } from './queries/impl/get-category-by-id.query.js';
 
 @Controller()
 export class InventoryServiceController {
@@ -17,6 +33,26 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'AddProduct' })
   async handleAddProduct(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new AddProductCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'UpdateProduct' })
+  async handleUpdateProduct(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new UpdateProductCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'DeleteProduct' })
+  async handleDeleteProduct(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new DeleteProductCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'UpdateProductStatus' })
+  async handleUpdateProductStatus(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new UpdateProductStatusCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'SetProductPrice' })
+  async handleSetProductPrice(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new SetProductPriceCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'AddInventoryItem' })
@@ -49,12 +85,68 @@ export class InventoryServiceController {
     return this.commandBus.execute(new TransferInventoryCommand(data.payload, data.context));
   }
 
+  @MessagePattern({ cmd: 'CreateBrand' })
+  async handleCreateBrand(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CreateBrandCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'UpdateBrand' })
+  async handleUpdateBrand(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new UpdateBrandCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'DeleteBrand' })
+  async handleDeleteBrand(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new DeleteBrandCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'CreateCategory' })
+  async handleCreateCategory(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CreateCategoryCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'UpdateCategory' })
+  async handleUpdateCategory(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new UpdateCategoryCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'DeleteCategory' })
+  async handleDeleteCategory(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new DeleteCategoryCommand(data.payload, data.context));
+  }
+
   @MessagePattern({ cmd: 'GetProducts' })
   async handleGetProducts(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetProductsQuery(data.payload, data.context));
   }
+
+  @MessagePattern({ cmd: 'GetProductById' })
+  async handleGetProductById(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetProductByIdQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetProductBySku' })
+  async handleGetProductBySku(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetProductBySkuQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetBrands' })
+  async handleGetBrands(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetBrandsQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetBrandById' })
+  async handleGetBrandById(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetBrandByIdQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetCategories' })
+  async handleGetCategories(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetCategoriesQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetCategoryById' })
+  async handleGetCategoryById(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetCategoryByIdQuery(data.payload, data.context));
+  }
 }
-
-
-
-

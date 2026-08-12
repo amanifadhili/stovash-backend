@@ -125,10 +125,15 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  sku: 'sku',
   name: 'name',
   description: 'description',
-  sku: 'sku',
-  brand: 'brand',
+  brandId: 'brandId',
+  categoryId: 'categoryId',
+  productType: 'productType',
+  trackingMethod: 'trackingMethod',
+  status: 'status',
+  specifications: 'specifications',
   createdAt: 'createdAt',
   createdBy: 'createdBy',
   updatedAt: 'updatedAt',
@@ -195,18 +200,33 @@ exports.Prisma.WarrantyClaimScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.InventoryCategoryScalarFieldEnum = {
+exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   name: 'name',
-  createdAt: 'createdAt'
+  parentId: 'parentId',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy'
 };
 
-exports.Prisma.InventoryBrandScalarFieldEnum = {
+exports.Prisma.BrandScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   name: 'name',
-  createdAt: 'createdAt'
+  description: 'description',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy'
+};
+
+exports.Prisma.ProductPriceScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  tenantId: 'tenantId',
+  sellingPrice: 'sellingPrice',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy'
 };
 
 exports.Prisma.InventoryMovementScalarFieldEnum = {
@@ -252,9 +272,20 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 
 exports.Prisma.NullsOrder = {
@@ -269,8 +300,9 @@ exports.Prisma.ModelName = {
   InventoryUpgrade: 'InventoryUpgrade',
   InventoryTransfer: 'InventoryTransfer',
   WarrantyClaim: 'WarrantyClaim',
-  InventoryCategory: 'InventoryCategory',
-  InventoryBrand: 'InventoryBrand',
+  Category: 'Category',
+  Brand: 'Brand',
+  ProductPrice: 'ProductPrice',
   InventoryMovement: 'InventoryMovement',
   InventoryAdjustment: 'InventoryAdjustment',
   AuditLog: 'AuditLog'

@@ -2808,8 +2808,8 @@ export namespace Prisma {
     deletedAt?: boolean
     deletedBy?: boolean
     version?: boolean
-    entries?: boolean | JournalEntry$entriesArgs<ExtArgs>
     batch?: boolean | JournalEntry$batchArgs<ExtArgs>
+    entries?: boolean | JournalEntry$entriesArgs<ExtArgs>
     _count?: boolean | JournalEntryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["journalEntry"]>
 
@@ -2851,8 +2851,8 @@ export namespace Prisma {
   }
 
   export type JournalEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    entries?: boolean | JournalEntry$entriesArgs<ExtArgs>
     batch?: boolean | JournalEntry$batchArgs<ExtArgs>
+    entries?: boolean | JournalEntry$entriesArgs<ExtArgs>
     _count?: boolean | JournalEntryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type JournalEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2862,8 +2862,8 @@ export namespace Prisma {
   export type $JournalEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "JournalEntry"
     objects: {
-      entries: Prisma.$LedgerEntryPayload<ExtArgs>[]
       batch: Prisma.$PostingBatchPayload<ExtArgs> | null
+      entries: Prisma.$LedgerEntryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3245,8 +3245,8 @@ export namespace Prisma {
    */
   export interface Prisma__JournalEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    entries<T extends JournalEntry$entriesArgs<ExtArgs> = {}>(args?: Subset<T, JournalEntry$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LedgerEntryPayload<ExtArgs>, T, "findMany"> | Null>
     batch<T extends JournalEntry$batchArgs<ExtArgs> = {}>(args?: Subset<T, JournalEntry$batchArgs<ExtArgs>>): Prisma__PostingBatchClient<$Result.GetResult<Prisma.$PostingBatchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    entries<T extends JournalEntry$entriesArgs<ExtArgs> = {}>(args?: Subset<T, JournalEntry$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LedgerEntryPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3609,6 +3609,21 @@ export namespace Prisma {
   }
 
   /**
+   * JournalEntry.batch
+   */
+  export type JournalEntry$batchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostingBatch
+     */
+    select?: PostingBatchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostingBatchInclude<ExtArgs> | null
+    where?: PostingBatchWhereInput
+  }
+
+  /**
    * JournalEntry.entries
    */
   export type JournalEntry$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3626,21 +3641,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LedgerEntryScalarFieldEnum | LedgerEntryScalarFieldEnum[]
-  }
-
-  /**
-   * JournalEntry.batch
-   */
-  export type JournalEntry$batchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PostingBatch
-     */
-    select?: PostingBatchSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostingBatchInclude<ExtArgs> | null
-    where?: PostingBatchWhereInput
   }
 
   /**
@@ -4978,8 +4978,8 @@ export namespace Prisma {
     type?: boolean
     amount?: boolean
     createdAt?: boolean
-    journalEntry?: boolean | JournalEntryDefaultArgs<ExtArgs>
     account?: boolean | LedgerAccountDefaultArgs<ExtArgs>
+    journalEntry?: boolean | JournalEntryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["ledgerEntry"]>
 
   export type LedgerEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4989,8 +4989,8 @@ export namespace Prisma {
     type?: boolean
     amount?: boolean
     createdAt?: boolean
-    journalEntry?: boolean | JournalEntryDefaultArgs<ExtArgs>
     account?: boolean | LedgerAccountDefaultArgs<ExtArgs>
+    journalEntry?: boolean | JournalEntryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["ledgerEntry"]>
 
   export type LedgerEntrySelectScalar = {
@@ -5003,19 +5003,19 @@ export namespace Prisma {
   }
 
   export type LedgerEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    journalEntry?: boolean | JournalEntryDefaultArgs<ExtArgs>
     account?: boolean | LedgerAccountDefaultArgs<ExtArgs>
+    journalEntry?: boolean | JournalEntryDefaultArgs<ExtArgs>
   }
   export type LedgerEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    journalEntry?: boolean | JournalEntryDefaultArgs<ExtArgs>
     account?: boolean | LedgerAccountDefaultArgs<ExtArgs>
+    journalEntry?: boolean | JournalEntryDefaultArgs<ExtArgs>
   }
 
   export type $LedgerEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "LedgerEntry"
     objects: {
-      journalEntry: Prisma.$JournalEntryPayload<ExtArgs>
       account: Prisma.$LedgerAccountPayload<ExtArgs>
+      journalEntry: Prisma.$JournalEntryPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5388,8 +5388,8 @@ export namespace Prisma {
    */
   export interface Prisma__LedgerEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    journalEntry<T extends JournalEntryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, JournalEntryDefaultArgs<ExtArgs>>): Prisma__JournalEntryClient<$Result.GetResult<Prisma.$JournalEntryPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     account<T extends LedgerAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LedgerAccountDefaultArgs<ExtArgs>>): Prisma__LedgerAccountClient<$Result.GetResult<Prisma.$LedgerAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    journalEntry<T extends JournalEntryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, JournalEntryDefaultArgs<ExtArgs>>): Prisma__JournalEntryClient<$Result.GetResult<Prisma.$JournalEntryPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8116,8 +8116,8 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"JournalEntry"> | Date | string | null
     deletedBy?: StringNullableFilter<"JournalEntry"> | string | null
     version?: IntFilter<"JournalEntry"> | number
-    entries?: LedgerEntryListRelationFilter
     batch?: XOR<PostingBatchNullableRelationFilter, PostingBatchWhereInput> | null
+    entries?: LedgerEntryListRelationFilter
   }
 
   export type JournalEntryOrderByWithRelationInput = {
@@ -8136,8 +8136,8 @@ export namespace Prisma {
     deletedAt?: SortOrderInput | SortOrder
     deletedBy?: SortOrderInput | SortOrder
     version?: SortOrder
-    entries?: LedgerEntryOrderByRelationAggregateInput
     batch?: PostingBatchOrderByWithRelationInput
+    entries?: LedgerEntryOrderByRelationAggregateInput
   }
 
   export type JournalEntryWhereUniqueInput = Prisma.AtLeast<{
@@ -8159,8 +8159,8 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"JournalEntry"> | Date | string | null
     deletedBy?: StringNullableFilter<"JournalEntry"> | string | null
     version?: IntFilter<"JournalEntry"> | number
-    entries?: LedgerEntryListRelationFilter
     batch?: XOR<PostingBatchNullableRelationFilter, PostingBatchWhereInput> | null
+    entries?: LedgerEntryListRelationFilter
   }, "id">
 
   export type JournalEntryOrderByWithAggregationInput = {
@@ -8329,8 +8329,8 @@ export namespace Prisma {
     type?: StringFilter<"LedgerEntry"> | string
     amount?: FloatFilter<"LedgerEntry"> | number
     createdAt?: DateTimeFilter<"LedgerEntry"> | Date | string
-    journalEntry?: XOR<JournalEntryRelationFilter, JournalEntryWhereInput>
     account?: XOR<LedgerAccountRelationFilter, LedgerAccountWhereInput>
+    journalEntry?: XOR<JournalEntryRelationFilter, JournalEntryWhereInput>
   }
 
   export type LedgerEntryOrderByWithRelationInput = {
@@ -8340,8 +8340,8 @@ export namespace Prisma {
     type?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
-    journalEntry?: JournalEntryOrderByWithRelationInput
     account?: LedgerAccountOrderByWithRelationInput
+    journalEntry?: JournalEntryOrderByWithRelationInput
   }
 
   export type LedgerEntryWhereUniqueInput = Prisma.AtLeast<{
@@ -8354,8 +8354,8 @@ export namespace Prisma {
     type?: StringFilter<"LedgerEntry"> | string
     amount?: FloatFilter<"LedgerEntry"> | number
     createdAt?: DateTimeFilter<"LedgerEntry"> | Date | string
-    journalEntry?: XOR<JournalEntryRelationFilter, JournalEntryWhereInput>
     account?: XOR<LedgerAccountRelationFilter, LedgerAccountWhereInput>
+    journalEntry?: XOR<JournalEntryRelationFilter, JournalEntryWhereInput>
   }, "id">
 
   export type LedgerEntryOrderByWithAggregationInput = {
@@ -8723,8 +8723,8 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     deletedBy?: string | null
     version?: number
-    entries?: LedgerEntryCreateNestedManyWithoutJournalEntryInput
     batch?: PostingBatchCreateNestedOneWithoutJournalEntriesInput
+    entries?: LedgerEntryCreateNestedManyWithoutJournalEntryInput
   }
 
   export type JournalEntryUncheckedCreateInput = {
@@ -8761,8 +8761,8 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
-    entries?: LedgerEntryUpdateManyWithoutJournalEntryNestedInput
     batch?: PostingBatchUpdateOneWithoutJournalEntriesNestedInput
+    entries?: LedgerEntryUpdateManyWithoutJournalEntryNestedInput
   }
 
   export type JournalEntryUncheckedUpdateInput = {
@@ -8979,8 +8979,8 @@ export namespace Prisma {
     type: string
     amount: number
     createdAt?: Date | string
-    journalEntry: JournalEntryCreateNestedOneWithoutEntriesInput
     account: LedgerAccountCreateNestedOneWithoutEntriesInput
+    journalEntry: JournalEntryCreateNestedOneWithoutEntriesInput
   }
 
   export type LedgerEntryUncheckedCreateInput = {
@@ -8997,8 +8997,8 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    journalEntry?: JournalEntryUpdateOneRequiredWithoutEntriesNestedInput
     account?: LedgerAccountUpdateOneRequiredWithoutEntriesNestedInput
+    journalEntry?: JournalEntryUpdateOneRequiredWithoutEntriesNestedInput
   }
 
   export type LedgerEntryUncheckedUpdateInput = {
@@ -9672,14 +9672,14 @@ export namespace Prisma {
     version?: SortOrder
   }
 
-  export type JournalEntryRelationFilter = {
-    is?: JournalEntryWhereInput
-    isNot?: JournalEntryWhereInput
-  }
-
   export type LedgerAccountRelationFilter = {
     is?: LedgerAccountWhereInput
     isNot?: LedgerAccountWhereInput
+  }
+
+  export type JournalEntryRelationFilter = {
+    is?: JournalEntryWhereInput
+    isNot?: JournalEntryWhereInput
   }
 
   export type LedgerEntryCountOrderByAggregateInput = {
@@ -9964,6 +9964,12 @@ export namespace Prisma {
     deleteMany?: LedgerEntryScalarWhereInput | LedgerEntryScalarWhereInput[]
   }
 
+  export type PostingBatchCreateNestedOneWithoutJournalEntriesInput = {
+    create?: XOR<PostingBatchCreateWithoutJournalEntriesInput, PostingBatchUncheckedCreateWithoutJournalEntriesInput>
+    connectOrCreate?: PostingBatchCreateOrConnectWithoutJournalEntriesInput
+    connect?: PostingBatchWhereUniqueInput
+  }
+
   export type LedgerEntryCreateNestedManyWithoutJournalEntryInput = {
     create?: XOR<LedgerEntryCreateWithoutJournalEntryInput, LedgerEntryUncheckedCreateWithoutJournalEntryInput> | LedgerEntryCreateWithoutJournalEntryInput[] | LedgerEntryUncheckedCreateWithoutJournalEntryInput[]
     connectOrCreate?: LedgerEntryCreateOrConnectWithoutJournalEntryInput | LedgerEntryCreateOrConnectWithoutJournalEntryInput[]
@@ -9971,17 +9977,21 @@ export namespace Prisma {
     connect?: LedgerEntryWhereUniqueInput | LedgerEntryWhereUniqueInput[]
   }
 
-  export type PostingBatchCreateNestedOneWithoutJournalEntriesInput = {
-    create?: XOR<PostingBatchCreateWithoutJournalEntriesInput, PostingBatchUncheckedCreateWithoutJournalEntriesInput>
-    connectOrCreate?: PostingBatchCreateOrConnectWithoutJournalEntriesInput
-    connect?: PostingBatchWhereUniqueInput
-  }
-
   export type LedgerEntryUncheckedCreateNestedManyWithoutJournalEntryInput = {
     create?: XOR<LedgerEntryCreateWithoutJournalEntryInput, LedgerEntryUncheckedCreateWithoutJournalEntryInput> | LedgerEntryCreateWithoutJournalEntryInput[] | LedgerEntryUncheckedCreateWithoutJournalEntryInput[]
     connectOrCreate?: LedgerEntryCreateOrConnectWithoutJournalEntryInput | LedgerEntryCreateOrConnectWithoutJournalEntryInput[]
     createMany?: LedgerEntryCreateManyJournalEntryInputEnvelope
     connect?: LedgerEntryWhereUniqueInput | LedgerEntryWhereUniqueInput[]
+  }
+
+  export type PostingBatchUpdateOneWithoutJournalEntriesNestedInput = {
+    create?: XOR<PostingBatchCreateWithoutJournalEntriesInput, PostingBatchUncheckedCreateWithoutJournalEntriesInput>
+    connectOrCreate?: PostingBatchCreateOrConnectWithoutJournalEntriesInput
+    upsert?: PostingBatchUpsertWithoutJournalEntriesInput
+    disconnect?: PostingBatchWhereInput | boolean
+    delete?: PostingBatchWhereInput | boolean
+    connect?: PostingBatchWhereUniqueInput
+    update?: XOR<XOR<PostingBatchUpdateToOneWithWhereWithoutJournalEntriesInput, PostingBatchUpdateWithoutJournalEntriesInput>, PostingBatchUncheckedUpdateWithoutJournalEntriesInput>
   }
 
   export type LedgerEntryUpdateManyWithoutJournalEntryNestedInput = {
@@ -9996,16 +10006,6 @@ export namespace Prisma {
     update?: LedgerEntryUpdateWithWhereUniqueWithoutJournalEntryInput | LedgerEntryUpdateWithWhereUniqueWithoutJournalEntryInput[]
     updateMany?: LedgerEntryUpdateManyWithWhereWithoutJournalEntryInput | LedgerEntryUpdateManyWithWhereWithoutJournalEntryInput[]
     deleteMany?: LedgerEntryScalarWhereInput | LedgerEntryScalarWhereInput[]
-  }
-
-  export type PostingBatchUpdateOneWithoutJournalEntriesNestedInput = {
-    create?: XOR<PostingBatchCreateWithoutJournalEntriesInput, PostingBatchUncheckedCreateWithoutJournalEntriesInput>
-    connectOrCreate?: PostingBatchCreateOrConnectWithoutJournalEntriesInput
-    upsert?: PostingBatchUpsertWithoutJournalEntriesInput
-    disconnect?: PostingBatchWhereInput | boolean
-    delete?: PostingBatchWhereInput | boolean
-    connect?: PostingBatchWhereUniqueInput
-    update?: XOR<XOR<PostingBatchUpdateToOneWithWhereWithoutJournalEntriesInput, PostingBatchUpdateWithoutJournalEntriesInput>, PostingBatchUncheckedUpdateWithoutJournalEntriesInput>
   }
 
   export type LedgerEntryUncheckedUpdateManyWithoutJournalEntryNestedInput = {
@@ -10064,24 +10064,16 @@ export namespace Prisma {
     deleteMany?: JournalEntryScalarWhereInput | JournalEntryScalarWhereInput[]
   }
 
-  export type JournalEntryCreateNestedOneWithoutEntriesInput = {
-    create?: XOR<JournalEntryCreateWithoutEntriesInput, JournalEntryUncheckedCreateWithoutEntriesInput>
-    connectOrCreate?: JournalEntryCreateOrConnectWithoutEntriesInput
-    connect?: JournalEntryWhereUniqueInput
-  }
-
   export type LedgerAccountCreateNestedOneWithoutEntriesInput = {
     create?: XOR<LedgerAccountCreateWithoutEntriesInput, LedgerAccountUncheckedCreateWithoutEntriesInput>
     connectOrCreate?: LedgerAccountCreateOrConnectWithoutEntriesInput
     connect?: LedgerAccountWhereUniqueInput
   }
 
-  export type JournalEntryUpdateOneRequiredWithoutEntriesNestedInput = {
+  export type JournalEntryCreateNestedOneWithoutEntriesInput = {
     create?: XOR<JournalEntryCreateWithoutEntriesInput, JournalEntryUncheckedCreateWithoutEntriesInput>
     connectOrCreate?: JournalEntryCreateOrConnectWithoutEntriesInput
-    upsert?: JournalEntryUpsertWithoutEntriesInput
     connect?: JournalEntryWhereUniqueInput
-    update?: XOR<XOR<JournalEntryUpdateToOneWithWhereWithoutEntriesInput, JournalEntryUpdateWithoutEntriesInput>, JournalEntryUncheckedUpdateWithoutEntriesInput>
   }
 
   export type LedgerAccountUpdateOneRequiredWithoutEntriesNestedInput = {
@@ -10090,6 +10082,14 @@ export namespace Prisma {
     upsert?: LedgerAccountUpsertWithoutEntriesInput
     connect?: LedgerAccountWhereUniqueInput
     update?: XOR<XOR<LedgerAccountUpdateToOneWithWhereWithoutEntriesInput, LedgerAccountUpdateWithoutEntriesInput>, LedgerAccountUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type JournalEntryUpdateOneRequiredWithoutEntriesNestedInput = {
+    create?: XOR<JournalEntryCreateWithoutEntriesInput, JournalEntryUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: JournalEntryCreateOrConnectWithoutEntriesInput
+    upsert?: JournalEntryUpsertWithoutEntriesInput
+    connect?: JournalEntryWhereUniqueInput
+    update?: XOR<XOR<JournalEntryUpdateToOneWithWhereWithoutEntriesInput, JournalEntryUpdateWithoutEntriesInput>, JournalEntryUncheckedUpdateWithoutEntriesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -10500,32 +10500,6 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"LedgerEntry"> | Date | string
   }
 
-  export type LedgerEntryCreateWithoutJournalEntryInput = {
-    id?: string
-    type: string
-    amount: number
-    createdAt?: Date | string
-    account: LedgerAccountCreateNestedOneWithoutEntriesInput
-  }
-
-  export type LedgerEntryUncheckedCreateWithoutJournalEntryInput = {
-    id?: string
-    accountId: string
-    type: string
-    amount: number
-    createdAt?: Date | string
-  }
-
-  export type LedgerEntryCreateOrConnectWithoutJournalEntryInput = {
-    where: LedgerEntryWhereUniqueInput
-    create: XOR<LedgerEntryCreateWithoutJournalEntryInput, LedgerEntryUncheckedCreateWithoutJournalEntryInput>
-  }
-
-  export type LedgerEntryCreateManyJournalEntryInputEnvelope = {
-    data: LedgerEntryCreateManyJournalEntryInput | LedgerEntryCreateManyJournalEntryInput[]
-    skipDuplicates?: boolean
-  }
-
   export type PostingBatchCreateWithoutJournalEntriesInput = {
     id?: string
     tenantId: string
@@ -10569,20 +10543,30 @@ export namespace Prisma {
     create: XOR<PostingBatchCreateWithoutJournalEntriesInput, PostingBatchUncheckedCreateWithoutJournalEntriesInput>
   }
 
-  export type LedgerEntryUpsertWithWhereUniqueWithoutJournalEntryInput = {
+  export type LedgerEntryCreateWithoutJournalEntryInput = {
+    id?: string
+    type: string
+    amount: number
+    createdAt?: Date | string
+    account: LedgerAccountCreateNestedOneWithoutEntriesInput
+  }
+
+  export type LedgerEntryUncheckedCreateWithoutJournalEntryInput = {
+    id?: string
+    accountId: string
+    type: string
+    amount: number
+    createdAt?: Date | string
+  }
+
+  export type LedgerEntryCreateOrConnectWithoutJournalEntryInput = {
     where: LedgerEntryWhereUniqueInput
-    update: XOR<LedgerEntryUpdateWithoutJournalEntryInput, LedgerEntryUncheckedUpdateWithoutJournalEntryInput>
     create: XOR<LedgerEntryCreateWithoutJournalEntryInput, LedgerEntryUncheckedCreateWithoutJournalEntryInput>
   }
 
-  export type LedgerEntryUpdateWithWhereUniqueWithoutJournalEntryInput = {
-    where: LedgerEntryWhereUniqueInput
-    data: XOR<LedgerEntryUpdateWithoutJournalEntryInput, LedgerEntryUncheckedUpdateWithoutJournalEntryInput>
-  }
-
-  export type LedgerEntryUpdateManyWithWhereWithoutJournalEntryInput = {
-    where: LedgerEntryScalarWhereInput
-    data: XOR<LedgerEntryUpdateManyMutationInput, LedgerEntryUncheckedUpdateManyWithoutJournalEntryInput>
+  export type LedgerEntryCreateManyJournalEntryInputEnvelope = {
+    data: LedgerEntryCreateManyJournalEntryInput | LedgerEntryCreateManyJournalEntryInput[]
+    skipDuplicates?: boolean
   }
 
   export type PostingBatchUpsertWithoutJournalEntriesInput = {
@@ -10632,6 +10616,22 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type LedgerEntryUpsertWithWhereUniqueWithoutJournalEntryInput = {
+    where: LedgerEntryWhereUniqueInput
+    update: XOR<LedgerEntryUpdateWithoutJournalEntryInput, LedgerEntryUncheckedUpdateWithoutJournalEntryInput>
+    create: XOR<LedgerEntryCreateWithoutJournalEntryInput, LedgerEntryUncheckedCreateWithoutJournalEntryInput>
+  }
+
+  export type LedgerEntryUpdateWithWhereUniqueWithoutJournalEntryInput = {
+    where: LedgerEntryWhereUniqueInput
+    data: XOR<LedgerEntryUpdateWithoutJournalEntryInput, LedgerEntryUncheckedUpdateWithoutJournalEntryInput>
+  }
+
+  export type LedgerEntryUpdateManyWithWhereWithoutJournalEntryInput = {
+    where: LedgerEntryScalarWhereInput
+    data: XOR<LedgerEntryUpdateManyMutationInput, LedgerEntryUncheckedUpdateManyWithoutJournalEntryInput>
   }
 
   export type JournalEntryCreateWithoutBatchInput = {
@@ -10717,47 +10717,6 @@ export namespace Prisma {
     version?: IntFilter<"JournalEntry"> | number
   }
 
-  export type JournalEntryCreateWithoutEntriesInput = {
-    id?: string
-    tenantId: string
-    shopId: string
-    workPeriodId: string
-    description: string
-    postedBy: string
-    status?: string
-    createdAt?: Date | string
-    createdBy?: string | null
-    updatedAt?: Date | string
-    updatedBy?: string | null
-    deletedAt?: Date | string | null
-    deletedBy?: string | null
-    version?: number
-    batch?: PostingBatchCreateNestedOneWithoutJournalEntriesInput
-  }
-
-  export type JournalEntryUncheckedCreateWithoutEntriesInput = {
-    id?: string
-    tenantId: string
-    shopId: string
-    workPeriodId: string
-    description: string
-    postedBy: string
-    status?: string
-    batchId?: string | null
-    createdAt?: Date | string
-    createdBy?: string | null
-    updatedAt?: Date | string
-    updatedBy?: string | null
-    deletedAt?: Date | string | null
-    deletedBy?: string | null
-    version?: number
-  }
-
-  export type JournalEntryCreateOrConnectWithoutEntriesInput = {
-    where: JournalEntryWhereUniqueInput
-    create: XOR<JournalEntryCreateWithoutEntriesInput, JournalEntryUncheckedCreateWithoutEntriesInput>
-  }
-
   export type LedgerAccountCreateWithoutEntriesInput = {
     id?: string
     tenantId: string
@@ -10801,51 +10760,45 @@ export namespace Prisma {
     create: XOR<LedgerAccountCreateWithoutEntriesInput, LedgerAccountUncheckedCreateWithoutEntriesInput>
   }
 
-  export type JournalEntryUpsertWithoutEntriesInput = {
-    update: XOR<JournalEntryUpdateWithoutEntriesInput, JournalEntryUncheckedUpdateWithoutEntriesInput>
+  export type JournalEntryCreateWithoutEntriesInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    workPeriodId: string
+    description: string
+    postedBy: string
+    status?: string
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+    batch?: PostingBatchCreateNestedOneWithoutJournalEntriesInput
+  }
+
+  export type JournalEntryUncheckedCreateWithoutEntriesInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    workPeriodId: string
+    description: string
+    postedBy: string
+    status?: string
+    batchId?: string | null
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+  }
+
+  export type JournalEntryCreateOrConnectWithoutEntriesInput = {
+    where: JournalEntryWhereUniqueInput
     create: XOR<JournalEntryCreateWithoutEntriesInput, JournalEntryUncheckedCreateWithoutEntriesInput>
-    where?: JournalEntryWhereInput
-  }
-
-  export type JournalEntryUpdateToOneWithWhereWithoutEntriesInput = {
-    where?: JournalEntryWhereInput
-    data: XOR<JournalEntryUpdateWithoutEntriesInput, JournalEntryUncheckedUpdateWithoutEntriesInput>
-  }
-
-  export type JournalEntryUpdateWithoutEntriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-    shopId?: StringFieldUpdateOperationsInput | string
-    workPeriodId?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    postedBy?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    version?: IntFieldUpdateOperationsInput | number
-    batch?: PostingBatchUpdateOneWithoutJournalEntriesNestedInput
-  }
-
-  export type JournalEntryUncheckedUpdateWithoutEntriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-    shopId?: StringFieldUpdateOperationsInput | string
-    workPeriodId?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    postedBy?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    batchId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    version?: IntFieldUpdateOperationsInput | number
   }
 
   export type LedgerAccountUpsertWithoutEntriesInput = {
@@ -10895,6 +10848,53 @@ export namespace Prisma {
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
     children?: LedgerAccountUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type JournalEntryUpsertWithoutEntriesInput = {
+    update: XOR<JournalEntryUpdateWithoutEntriesInput, JournalEntryUncheckedUpdateWithoutEntriesInput>
+    create: XOR<JournalEntryCreateWithoutEntriesInput, JournalEntryUncheckedCreateWithoutEntriesInput>
+    where?: JournalEntryWhereInput
+  }
+
+  export type JournalEntryUpdateToOneWithWhereWithoutEntriesInput = {
+    where?: JournalEntryWhereInput
+    data: XOR<JournalEntryUpdateWithoutEntriesInput, JournalEntryUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type JournalEntryUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    workPeriodId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    postedBy?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    batch?: PostingBatchUpdateOneWithoutJournalEntriesNestedInput
+  }
+
+  export type JournalEntryUncheckedUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    workPeriodId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    postedBy?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    batchId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
   }
 
   export type LedgerAccountCreateManyParentInput = {

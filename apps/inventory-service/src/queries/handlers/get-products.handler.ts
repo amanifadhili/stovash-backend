@@ -32,12 +32,36 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
         productWhere.OR = [
           { name: { contains: payload.search, mode: 'insensitive' } },
           { sku: { contains: payload.search, mode: 'insensitive' } },
-          { brand: { contains: payload.search, mode: 'insensitive' } }
+          { description: { contains: payload.search, mode: 'insensitive' } }
         ];
+      }
+
+      if (payload.brandId) {
+        productWhere.brandId = payload.brandId;
+      }
+
+      if (payload.categoryId) {
+        productWhere.categoryId = payload.categoryId;
+      }
+
+      if (payload.status) {
+        productWhere.status = payload.status;
+      }
+
+      if (payload.productType) {
+        productWhere.productType = payload.productType;
       }
 
       const products = await prisma.product.findMany({
         where: productWhere,
+        include: {
+          brand: true,
+          category: true,
+          prices: {
+            where: { validTo: null },
+            take: 1
+          }
+        },
         orderBy: { name: 'asc' }
       });
 
@@ -48,30 +72,78 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
       };
       if (shopId) itemWhere.shopId = shopId;
 
-      const counts = await prisma.inventoryItem.groupBy({
-        by: ['productId'],
-        where: itemWhere,
-        _count: { _all: true }
-      });
+      const productIds = products.map((p: any) => p.id);
+      if (productIds.length > 0) {
+        const counts = await prisma.inventoryItem.groupBy({
+          by: ['productId'],
+          where: { ...itemWhere, productId: { in: productIds } },
+          _count: { _all: true }
+        });
 
-      const stockByProduct = new Map(counts.map((c: { productId: string; _count: { _all: number } }) => [c.productId, c._count._all]));
+        const stockByProduct = new Map(counts.map((c: any) => [c.productId, c._count._all]));
 
-      const mapped = products.map((p) => {
-        const stock = stockByProduct.get(p.id) ?? 0;
-        let status: string;
-        if (stock === 0) status = 'Out of Stock';
-        else if (stock < 10) status = 'Low Stock';
-        else status = 'In Stock';
+        const mapped = products.map((p: any) => {
+          const stock = stockByProduct.get(p.id) ?? 0;
+          let stockStatus: string;
+          if (stock === 0) stockStatus = 'Out of Stock';
+          else if (stock < 10) stockStatus = 'Low Stock';
+          else stockStatus = 'In Stock';
+
+          return {
+            id: p.id,
+            sku: p.sku,
+            name: p.name,
+            description: p.description,
+            productType: p.productType,
+            trackingMethod: p.trackingMethod,
+            status: p.status,
+            specifications: p.specifications,
+            brand: p.brand ? { id: p.brand.id, name: p.brand.name } : null,
+            category: p.category ? { id: p.category.id, name: p.category.name } : null,
+            currentPrice: p.prices[0] ? {
+              sellingPrice: p.prices[0].sellingPrice,
+              validFrom: p.prices[0].validFrom
+            } : null,
+            stock,
+            stockStatus,
+            createdAt: p.createdAt,
+            updatedAt: p.updatedAt,
+            version: p.version
+          };
+        });
+
         return {
-          id: p.id,
-          name: p.name,
-          sku: p.sku,
-          description: p.description,
-          brand: p.brand,
-          stock,
-          status
+          status: 'success',
+          traceId,
+          data: {
+            shopId,
+            count: mapped.length,
+            products: mapped
+          }
         };
-      });
+      }
+
+      const mapped = products.map((p: any) => ({
+        id: p.id,
+        sku: p.sku,
+        name: p.name,
+        description: p.description,
+        productType: p.productType,
+        trackingMethod: p.trackingMethod,
+        status: p.status,
+        specifications: p.specifications,
+        brand: p.brand ? { id: p.brand.id, name: p.brand.name } : null,
+        category: p.category ? { id: p.category.id, name: p.category.name } : null,
+        currentPrice: p.prices[0] ? {
+          sellingPrice: p.prices[0].sellingPrice,
+          validFrom: p.prices[0].validFrom
+        } : null,
+        stock: 0,
+        stockStatus: 'Out of Stock',
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
+        version: p.version
+      }));
 
       return {
         status: 'success',

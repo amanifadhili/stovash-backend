@@ -20,6 +20,15 @@ export class AddInventoryItemHandler extends BaseCommandHandler<AddInventoryItem
         };
       }
 
+      if (!payload?.productId) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Product ID is required',
+          errorCode: ErrorCode.VALIDATION_ERROR
+        };
+      }
+
       if (!payload?.serialNumber) {
         return {
           status: 'error',
@@ -29,7 +38,33 @@ export class AddInventoryItemHandler extends BaseCommandHandler<AddInventoryItem
         };
       }
 
-      // Check serial number uniqueness
+      const product = await prisma.product.findFirst({
+        where: {
+          id: payload.productId,
+          tenantId: context.tenantId,
+          deletedAt: null,
+          status: 'ACTIVE'
+        }
+      });
+
+      if (!product) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Product not found or not active',
+          errorCode: ErrorCode.NOT_FOUND
+        };
+      }
+
+      if (product.trackingMethod === 'NON_SERIALIZED') {
+        return {
+          status: 'error',
+          traceId,
+          message: 'This product is non-serialized and cannot have individual serial numbers',
+          errorCode: ErrorCode.VALIDATION_ERROR
+        };
+      }
+
       const existingItem = await prisma.inventoryItem.findFirst({
         where: { tenantId: context.tenantId, serialNumber: payload.serialNumber }
       });
@@ -39,52 +74,19 @@ export class AddInventoryItemHandler extends BaseCommandHandler<AddInventoryItem
           status: 'error',
           traceId,
           message: `Serial number '${payload.serialNumber}' already exists`,
-          errorCode: ErrorCode.VALIDATION_ERROR
+          errorCode: "CONFLICT"
         };
-      }
-
-      // Resolve valid product ID or create auto product if missing/fake for testing
-      let productId = payload.productId;
-      if (productId) {
-        const existingProduct = await prisma.product.findUnique({ where: { id: productId } });
-        if (!existingProduct) {
-          const firstProduct = await prisma.product.findFirst({
-            where: { tenantId: context.tenantId }
-          });
-          if (firstProduct) {
-            productId = firstProduct.id;
-          } else {
-            const newProd = await prisma.product.create({
-              data: {
-                tenantId: context.tenantId,
-                name: 'Sample Product',
-                description: 'Auto-created product',
-                sku: `SKU-${Date.now()}`
-              }
-            });
-            productId = newProd.id;
-          }
-        }
-      } else {
-        const newProd = await prisma.product.create({
-          data: {
-            tenantId: context.tenantId,
-            name: 'Sample Product',
-            description: 'Auto-created product',
-            sku: `SKU-${Date.now()}`
-          }
-        });
-        productId = newProd.id;
       }
 
       const item = await prisma.inventoryItem.create({
         data: {
           tenantId: context.tenantId,
           shopId: context.shopId,
-          productId: productId,
+          productId: payload.productId,
           serialNumber: payload.serialNumber,
           purchaseCost: Number(payload.purchaseCost) || 0,
-          status: 'AVAILABLE'
+          status: 'AVAILABLE',
+          createdBy: context.userId || 'system'
         }
       });
 

@@ -31,7 +31,23 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   
   // Inventory commands
   'AddProduct': ['inventory:product:create'],
+  'UpdateProduct': ['inventory:product:update'],
+  'DeleteProduct': ['inventory:product:delete'],
+  'UpdateProductStatus': ['inventory:product:status'],
+  'SetProductPrice': ['inventory:product:price'],
   'GetProducts': ['inventory:product:read'],
+  'GetProductById': ['inventory:product:read'],
+  'GetProductBySku': ['inventory:product:read'],
+  'CreateBrand': ['inventory:brand:create'],
+  'UpdateBrand': ['inventory:brand:update'],
+  'DeleteBrand': ['inventory:brand:delete'],
+  'GetBrands': ['inventory:brand:read'],
+  'GetBrandById': ['inventory:brand:read'],
+  'CreateCategory': ['inventory:category:create'],
+  'UpdateCategory': ['inventory:category:update'],
+  'DeleteCategory': ['inventory:category:delete'],
+  'GetCategories': ['inventory:category:read'],
+  'GetCategoryById': ['inventory:category:read'],
   'AddInventoryItem': ['inventory:item:create'],
   'ProcessPosSale': ['inventory:sale:create'],
   'ReceiveGoods': ['inventory:goods:receive'],
@@ -81,7 +97,23 @@ const COMMAND_ROLES: Record<string, string[]> = {
   
   // Inventory commands
   'AddProduct': ['ADMIN', 'MANAGER'],
+  'UpdateProduct': ['ADMIN', 'MANAGER'],
+  'DeleteProduct': ['ADMIN'],
+  'UpdateProductStatus': ['ADMIN', 'MANAGER'],
+  'SetProductPrice': ['ADMIN', 'MANAGER'],
   'GetProducts': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetProductById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetProductBySku': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'CreateBrand': ['ADMIN', 'MANAGER'],
+  'UpdateBrand': ['ADMIN', 'MANAGER'],
+  'DeleteBrand': ['ADMIN'],
+  'GetBrands': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetBrandById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'CreateCategory': ['ADMIN', 'MANAGER'],
+  'UpdateCategory': ['ADMIN', 'MANAGER'],
+  'DeleteCategory': ['ADMIN'],
+  'GetCategories': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetCategoryById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'AddInventoryItem': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessPosSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'ReceiveGoods': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -191,7 +223,7 @@ export class AppController {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 
-      if (['AddProduct', 'GetProducts', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident'].includes(cmd)) {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
       }
 

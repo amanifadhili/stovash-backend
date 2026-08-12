@@ -4,7 +4,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../dist/generated/prisma"
 }
 
 datasource db {
@@ -13,24 +13,35 @@ datasource db {
 }
 
 model Product {
-  id          String   @id @default(uuid())
-  tenantId    String
-  name        String
-  description String?
-  sku         String?
-  brand       String?
-  createdAt   DateTime @default(now())
-  createdBy   String?
-  updatedAt   DateTime @updatedAt
-  updatedBy   String?
-  deletedAt   DateTime?
-  deletedBy   String?
-  version     Int      @default(1)
+  id             String   @id @default(uuid())
+  tenantId       String
+  sku            String
+  name           String
+  description    String?
+  brandId        String?
+  categoryId     String?
+  productType    String   @default("PHYSICAL_GOOD") // PHYSICAL_GOOD, SERVICE
+  trackingMethod String   @default("SERIALIZED")    // SERIALIZED, NON_SERIALIZED
+  status         String   @default("ACTIVE")        // DRAFT, ACTIVE, INACTIVE, DISCONTINUED, ARCHIVED
+  specifications Json?                              // [{key, value, type, sortOrder}]
+  createdAt      DateTime @default(now())
+  createdBy      String?
+  updatedAt      DateTime @updatedAt
+  updatedBy      String?
+  deletedAt      DateTime?
+  deletedBy      String?
+  version        Int      @default(1)
 
-  items InventoryItem[]
+  brand    Brand?        @relation(fields: [brandId], references: [id])
+  category Category?     @relation(fields: [categoryId], references: [id])
+  items    InventoryItem[]
+  prices   ProductPrice[]
 
+  @@unique([tenantId, sku])
   @@index([tenantId])
-  @@index([sku])
+  @@index([brandId])
+  @@index([categoryId])
+  @@index([status])
   @@map("products")
 }
 
@@ -121,24 +132,53 @@ model WarrantyClaim {
   @@map("warranty_claims")
 }
 
-model InventoryCategory {
+model Category {
   id        String   @id @default(uuid())
   tenantId  String
   name      String
+  parentId  String?
   createdAt DateTime @default(now())
+  createdBy String?
+
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
+  products Product[]
 
   @@index([tenantId])
-  @@map("inventory_categories")
+  @@index([parentId])
+  @@map("categories")
 }
 
-model InventoryBrand {
-  id        String   @id @default(uuid())
-  tenantId  String
-  name      String
-  createdAt DateTime @default(now())
+model Brand {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  createdBy   String?
 
+  products Product[]
+
+  @@unique([tenantId, name])
   @@index([tenantId])
-  @@map("inventory_brands")
+  @@map("brands")
+}
+
+model ProductPrice {
+  id           String   @id @default(uuid())
+  productId    String
+  tenantId     String
+  sellingPrice Float
+  validFrom    DateTime @default(now())
+  validTo      DateTime?
+  createdAt    DateTime @default(now())
+  createdBy    String?
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+  @@index([tenantId])
+  @@map("product_prices")
 }
 
 model InventoryMovement {

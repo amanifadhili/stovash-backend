@@ -3,9 +3,13 @@ import { IRequestContext } from '@electronic-shop/types';
 
 export class AddProductPayload {
   name!: string;
+  sku!: string;
   description?: string;
-  sku?: string;
-  brand?: string;
+  brandId?: string;
+  categoryId?: string;
+  productType?: string;
+  trackingMethod?: string;
+  specifications?: any[];
 }
 
 export class AddProductCommand extends BaseCommand<AddProductPayload> {
