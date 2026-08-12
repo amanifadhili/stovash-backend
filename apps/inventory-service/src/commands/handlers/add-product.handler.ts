@@ -34,7 +34,8 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
           tenantId: context.tenantId,
           name: payload.name,
           description: payload.description,
-          sku: payload.sku || `SKU-${Date.now()}`
+          sku: payload.sku || `SKU-${Date.now()}`,
+          brand: payload.brand
         }
       });
 

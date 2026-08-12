@@ -18,6 +18,7 @@ model Product {
   name        String
   description String?
   sku         String?
+  brand       String?
   createdAt   DateTime @default(now())
   createdBy   String?
   updatedAt   DateTime @updatedAt

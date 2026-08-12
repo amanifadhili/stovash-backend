@@ -1,7 +1,3 @@
-// Accounting Service Database Schema
-// Handles: Ledger Accounts, Journal Entries, Ledger, Posting Batches, Work Periods
-// Owner of: accounting_db
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -13,25 +9,24 @@ datasource db {
 }
 
 model LedgerAccount {
-  id        String   @id @default(uuid())
+  id        String          @id @default(uuid())
   tenantId  String
   shopId    String
   code      String
   name      String
-  type      String   // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
-  balance   Float    @default(0)
-  parentId  String?  // Parent account for hierarchy
-  createdAt DateTime @default(now())
+  type      String
+  balance   Float           @default(0)
+  parentId  String?
+  createdAt DateTime        @default(now())
   createdBy String?
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime        @updatedAt
   updatedBy String?
   deletedAt DateTime?
   deletedBy String?
-  version   Int      @default(1)
-
-  parent   LedgerAccount?  @relation("AccountHierarchy", fields: [parentId], references: [id])
-  children LedgerAccount[] @relation("AccountHierarchy")
-  entries  LedgerEntry[]
+  version   Int             @default(1)
+  parent    LedgerAccount?  @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children  LedgerAccount[] @relation("AccountHierarchy")
+  entries   LedgerEntry[]
 
   @@index([tenantId])
   @@index([shopId])
@@ -47,9 +42,9 @@ model JournalEntry {
   shopId       String
   workPeriodId String
   description  String
-  postedBy     String        // userId
-  status       String        @default("DRAFT") // DRAFT, POSTED
-  batchId      String?       // Reference to posting batch
+  postedBy     String
+  status       String        @default("DRAFT")
+  batchId      String?
   createdAt    DateTime      @default(now())
   createdBy    String?
   updatedAt    DateTime      @updatedAt
@@ -57,9 +52,8 @@ model JournalEntry {
   deletedAt    DateTime?
   deletedBy    String?
   version      Int           @default(1)
-
-  entries LedgerEntry[]
-  batch   PostingBatch? @relation(fields: [batchId], references: [id])
+  batch        PostingBatch? @relation(fields: [batchId], references: [id])
+  entries      LedgerEntry[]
 
   @@index([tenantId])
   @@index([shopId])
@@ -70,23 +64,22 @@ model JournalEntry {
 }
 
 model PostingBatch {
-  id            String         @id @default(uuid())
-  tenantId      String
-  shopId        String
-  workPeriodId  String?
-  name          String
-  description   String?
-  status        String         @default("DRAFT") // DRAFT, POSTED
-  postedBy      String?        // userId
-  postedAt      DateTime?
-  createdAt     DateTime       @default(now())
-  createdBy     String?
-  updatedAt     DateTime       @updatedAt
-  updatedBy     String?
-  deletedAt     DateTime?
-  deletedBy     String?
-  version       Int            @default(1)
-
+  id             String         @id @default(uuid())
+  tenantId       String
+  shopId         String
+  workPeriodId   String?
+  name           String
+  description    String?
+  status         String         @default("DRAFT")
+  postedBy       String?
+  postedAt       DateTime?
+  createdAt      DateTime       @default(now())
+  createdBy      String?
+  updatedAt      DateTime       @updatedAt
+  updatedBy      String?
+  deletedAt      DateTime?
+  deletedBy      String?
+  version        Int            @default(1)
   journalEntries JournalEntry[]
 
   @@index([tenantId])
@@ -97,15 +90,14 @@ model PostingBatch {
 }
 
 model LedgerEntry {
-  id             String   @id @default(uuid())
+  id             String        @id @default(uuid())
   journalEntryId String
   accountId      String
-  type           String   // DEBIT, CREDIT
+  type           String
   amount         Float
-  createdAt      DateTime @default(now())
-
-  journalEntry JournalEntry  @relation(fields: [journalEntryId], references: [id])
-  account      LedgerAccount @relation(fields: [accountId], references: [id])
+  createdAt      DateTime      @default(now())
+  account        LedgerAccount @relation(fields: [accountId], references: [id])
+  journalEntry   JournalEntry  @relation(fields: [journalEntryId], references: [id])
 
   @@index([journalEntryId])
   @@index([accountId])
@@ -114,23 +106,23 @@ model LedgerEntry {
 }
 
 model WorkPeriod {
-  id             String    @id @default(uuid())
-  tenantId       String?
-  shopId         String
-  openedBy       String    // userId
-  closedBy       String?   // userId
-  openedAt       DateTime  @default(now())
-  closedAt       DateTime?
-  status         String    @default("OPEN") // OPEN, CLOSED, PENDING_CLOSING, PENDING_RECONCILIATION
-  totalRevenue   Float    @default(0)
-  totalExpense   Float    @default(0)
-  netProfit      Float    @default(0)
-  grossProfit    Float    @default(0)
-  createdAt      DateTime  @default(now())
-  createdBy      String?
-  updatedAt      DateTime  @updatedAt
-  updatedBy      String?
-  version        Int       @default(1)
+  id           String    @id @default(uuid())
+  tenantId     String?
+  shopId       String
+  openedBy     String
+  closedBy     String?
+  openedAt     DateTime  @default(now())
+  closedAt     DateTime?
+  status       String    @default("OPEN")
+  totalRevenue Float     @default(0)
+  totalExpense Float     @default(0)
+  netProfit    Float     @default(0)
+  grossProfit  Float     @default(0)
+  createdAt    DateTime  @default(now())
+  createdBy    String?
+  updatedAt    DateTime  @updatedAt
+  updatedBy    String?
+  version      Int       @default(1)
 
   @@index([tenantId])
   @@index([shopId])
@@ -147,7 +139,7 @@ model AuditLog {
   resource   String
   resourceId String?
   traceId    String?
-  details    String?  // JSON or text summary
+  details    String?
   createdAt  DateTime @default(now())
 
   @@index([tenantId])

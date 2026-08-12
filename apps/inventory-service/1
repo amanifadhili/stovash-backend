@@ -1,0 +1,36 @@
+[31m[Nest] 2341007  - [39m08/12/2026, 3:15:14 AM [31m  ERROR[39m [38;5;3m[Server] [39m[31mError: listen EADDRINUSE: address already in use 127.0.0.1:3004[39m
+[31m[Nest] 2341007  - [39m08/12/2026, 3:15:14 AM [31m  ERROR[39m [38;5;3m[Server] [39m[31mError: listen EADDRINUSE: address already in use 127.0.0.1:3004[39m
+node:net:1940
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use 127.0.0.1:3004
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '127.0.0.1',
+  port: 3004
+}
+
+Node.js v22.22.2
+node:net:1940
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use 127.0.0.1:3004
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '127.0.0.1',
+  port: 3004
+}
+
+Node.js v22.22.2

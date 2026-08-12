@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AddProductCommand } from './commands/impl/add-product.command.js';
 import { AddInventoryItemCommand } from './commands/impl/add-inventory-item.command.js';
 import { ProcessPosSaleCommand } from './commands/impl/process-pos-sale.command.js';
@@ -8,10 +8,11 @@ import { ReceiveGoodsCommand } from './commands/impl/receive-goods.command.js';
 import { ProcessSalesReturnCommand } from './commands/impl/process-sales-return.command.js';
 import { CreateWarrantyClaimCommand } from './commands/impl/create-warranty-claim.command.js';
 import { TransferInventoryCommand } from './commands/impl/transfer-inventory.command.js';
+import { GetProductsQuery } from './queries/impl/get-products.query.js';
 
 @Controller()
 export class InventoryServiceController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
 
   @MessagePattern({ cmd: 'AddProduct' })
   async handleAddProduct(@Payload() data: { payload: any, context: any }) {
@@ -46,6 +47,11 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'TransferInventory' })
   async handleTransferInventory(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new TransferInventoryCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetProducts' })
+  async handleGetProducts(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetProductsQuery(data.payload, data.context));
   }
 }
 

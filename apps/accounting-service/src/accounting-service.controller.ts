@@ -8,6 +8,7 @@ import { CloseWorkPeriodCommand } from './commands/impl/close-work-period.comman
 import { GetTrialBalanceQuery } from './queries/impl/get-trial-balance.query.js';
 import { GetIncomeStatementQuery } from './queries/impl/get-income-statement.query.js';
 import { GetBalanceSheetQuery } from './queries/impl/get-balance-sheet.query.js';
+import { GetAccountTransactionsQuery } from './queries/impl/get-account-transactions.query.js';
 
 @Controller()
 export class AccountingServiceController {
@@ -49,6 +50,11 @@ export class AccountingServiceController {
   @MessagePattern({ cmd: 'GetBalanceSheet' })
   async handleGetBalanceSheet(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetBalanceSheetQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetAccountTransactions' })
+  async handleGetAccountTransactions(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetAccountTransactionsQuery(data.payload, data.context));
   }
 }
 

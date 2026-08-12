@@ -19,6 +19,7 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'OpenWorkPeriod': ['accounting:workperiod:open'],
   'CloseWorkPeriod': ['accounting:workperiod:close'],
   'GetActiveWorkPeriod': ['accounting:workperiod:read'],
+  'GetAccountTransactions': ['accounting:journal:read'],
   'GetTrialBalance': ['accounting:report:read'],
   'GetIncomeStatement': ['accounting:report:read'],
   'GetBalanceSheet': ['accounting:report:read'],
@@ -27,6 +28,7 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   
   // Inventory commands
   'AddProduct': ['inventory:product:create'],
+  'GetProducts': ['inventory:product:read'],
   'AddInventoryItem': ['inventory:item:create'],
   'ProcessPosSale': ['inventory:sale:create'],
   'ReceiveGoods': ['inventory:goods:receive'],
@@ -67,6 +69,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'OpenWorkPeriod': ['ADMIN', 'MANAGER'],
   'CloseWorkPeriod': ['ADMIN', 'MANAGER'],
   'GetActiveWorkPeriod': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetAccountTransactions': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'GetTrialBalance': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'GetIncomeStatement': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'GetBalanceSheet': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
@@ -75,6 +78,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   
   // Inventory commands
   'AddProduct': ['ADMIN', 'MANAGER'],
+  'GetProducts': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'AddInventoryItem': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessPosSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'ReceiveGoods': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -175,11 +179,11 @@ export class AppController {
         return await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
       }
       
-      if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod', 'GetTrialBalance', 'GetIncomeStatement', 'GetBalanceSheet', 'CreatePostingBatch', 'PostBatch'].includes(cmd)) {
+      if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod', 'GetAccountTransactions', 'GetTrialBalance', 'GetIncomeStatement', 'GetBalanceSheet', 'CreatePostingBatch', 'PostBatch'].includes(cmd)) {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 
-      if (['AddProduct', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident'].includes(cmd)) {
+      if (['AddProduct', 'GetProducts', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident'].includes(cmd)) {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
       }
 

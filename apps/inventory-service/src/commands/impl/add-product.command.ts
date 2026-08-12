@@ -5,6 +5,7 @@ export class AddProductPayload {
   name!: string;
   description?: string;
   sku?: string;
+  brand?: string;
 }
 
 export class AddProductCommand extends BaseCommand<AddProductPayload> {

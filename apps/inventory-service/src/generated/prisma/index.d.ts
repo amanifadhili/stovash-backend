@@ -1704,6 +1704,7 @@ export namespace Prisma {
     name: string | null
     description: string | null
     sku: string | null
+    brand: string | null
     createdAt: Date | null
     createdBy: string | null
     updatedAt: Date | null
@@ -1719,6 +1720,7 @@ export namespace Prisma {
     name: string | null
     description: string | null
     sku: string | null
+    brand: string | null
     createdAt: Date | null
     createdBy: string | null
     updatedAt: Date | null
@@ -1734,6 +1736,7 @@ export namespace Prisma {
     name: number
     description: number
     sku: number
+    brand: number
     createdAt: number
     createdBy: number
     updatedAt: number
@@ -1759,6 +1762,7 @@ export namespace Prisma {
     name?: true
     description?: true
     sku?: true
+    brand?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -1774,6 +1778,7 @@ export namespace Prisma {
     name?: true
     description?: true
     sku?: true
+    brand?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -1789,6 +1794,7 @@ export namespace Prisma {
     name?: true
     description?: true
     sku?: true
+    brand?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -1891,6 +1897,7 @@ export namespace Prisma {
     name: string
     description: string | null
     sku: string | null
+    brand: string | null
     createdAt: Date
     createdBy: string | null
     updatedAt: Date
@@ -1925,6 +1932,7 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     sku?: boolean
+    brand?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -1942,6 +1950,7 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     sku?: boolean
+    brand?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -1957,6 +1966,7 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     sku?: boolean
+    brand?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -1983,6 +1993,7 @@ export namespace Prisma {
       name: string
       description: string | null
       sku: string | null
+      brand: string | null
       createdAt: Date
       createdBy: string | null
       updatedAt: Date
@@ -2389,6 +2400,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Product", 'String'>
     readonly description: FieldRef<"Product", 'String'>
     readonly sku: FieldRef<"Product", 'String'>
+    readonly brand: FieldRef<"Product", 'String'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
     readonly createdBy: FieldRef<"Product", 'String'>
     readonly updatedAt: FieldRef<"Product", 'DateTime'>
@@ -11390,6 +11402,7 @@ export namespace Prisma {
     name: 'name',
     description: 'description',
     sku: 'sku',
+    brand: 'brand',
     createdAt: 'createdAt',
     createdBy: 'createdBy',
     updatedAt: 'updatedAt',
@@ -11635,6 +11648,7 @@ export namespace Prisma {
     name?: StringFilter<"Product"> | string
     description?: StringNullableFilter<"Product"> | string | null
     sku?: StringNullableFilter<"Product"> | string | null
+    brand?: StringNullableFilter<"Product"> | string | null
     createdAt?: DateTimeFilter<"Product"> | Date | string
     createdBy?: StringNullableFilter<"Product"> | string | null
     updatedAt?: DateTimeFilter<"Product"> | Date | string
@@ -11651,6 +11665,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     sku?: SortOrderInput | SortOrder
+    brand?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
@@ -11670,6 +11685,7 @@ export namespace Prisma {
     name?: StringFilter<"Product"> | string
     description?: StringNullableFilter<"Product"> | string | null
     sku?: StringNullableFilter<"Product"> | string | null
+    brand?: StringNullableFilter<"Product"> | string | null
     createdAt?: DateTimeFilter<"Product"> | Date | string
     createdBy?: StringNullableFilter<"Product"> | string | null
     updatedAt?: DateTimeFilter<"Product"> | Date | string
@@ -11686,6 +11702,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     sku?: SortOrderInput | SortOrder
+    brand?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
@@ -11709,6 +11726,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Product"> | string
     description?: StringNullableWithAggregatesFilter<"Product"> | string | null
     sku?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    brand?: StringNullableWithAggregatesFilter<"Product"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
     createdBy?: StringNullableWithAggregatesFilter<"Product"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
@@ -12395,6 +12413,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     sku?: string | null
+    brand?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -12411,6 +12430,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     sku?: string | null
+    brand?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -12427,6 +12447,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
+    brand?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12443,6 +12464,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
+    brand?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12459,6 +12481,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     sku?: string | null
+    brand?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -12474,6 +12497,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
+    brand?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12489,6 +12513,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
+    brand?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13347,6 +13372,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     sku?: SortOrder
+    brand?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -13366,6 +13392,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     sku?: SortOrder
+    brand?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -13381,6 +13408,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     sku?: SortOrder
+    brand?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -14299,6 +14327,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     sku?: string | null
+    brand?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -14314,6 +14343,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     sku?: string | null
+    brand?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -14375,6 +14405,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
+    brand?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14390,6 +14421,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     sku?: NullableStringFieldUpdateOperationsInput | string | null
+    brand?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
