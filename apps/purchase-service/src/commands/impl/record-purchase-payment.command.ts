@@ -1,15 +1,26 @@
-import { ICommand } from '@electronic-shop/types';
+import { BaseCommand } from '@electronic-shop/framework-command';
+import { IRequestContext } from '@electronic-shop/types';
 
-export class RecordPurchasePaymentCommand implements ICommand {
-  readonly command = 'RecordPurchasePayment';
-  readonly description = 'Record a payment for a purchase order';
+export interface RecordPurchasePaymentPayload {
+  purchaseId: string;
+  paymentNumber: string;
+  amount: number;
+  currency?: string;
+  exchangeRate?: number;
+  paymentMethod: 'CASH' | 'BANK_TRANSFER' | 'MOBILE_MONEY' | 'CHECK' | 'CREDIT' | 'OTHER';
+  accountId?: string;
+  accountName?: string;
+  reference?: string;
+  paidById: string;
+  paidByName: string;
+  paidAt?: string;
+  notes?: string;
+  accountingRef?: string;
+  traceId?: string;
+}
 
-  constructor(
-    public readonly payload: {
-      purchaseOrderId: string;
-      amount: number;
-      paymentMethod: string;
-    },
-    public readonly context: any
-  ) {}
+export class RecordPurchasePaymentCommand extends BaseCommand<RecordPurchasePaymentPayload> {
+  constructor(payload: RecordPurchasePaymentPayload, context?: IRequestContext) {
+    super(payload, context);
+  }
 }

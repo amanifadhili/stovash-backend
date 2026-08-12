@@ -3,133 +3,107 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { RecordPurchasePaymentCommand } from '../impl/record-purchase-payment.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
-import { Inject } from '@nestjs/common';
-import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(RecordPurchasePaymentCommand)
 export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurchasePaymentCommand> {
-  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
-    super();
-  }
-
   async execute(command: RecordPurchasePaymentCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const traceId = context?.traceId || 'unknown';
-    const tenantId = context?.tenantId;
-    const shopId = context?.shopId;
-    const workPeriodId = context?.workPeriodId || null;
+    const traceId = context?.traceId || payload.traceId || 'unknown';
 
     try {
-      if (!tenantId || !shopId) {
-        return {
-          status: 'error',
-          traceId,
-          message: 'tenantId and shopId are required in context',
-          errorCode: ErrorCode.VALIDATION_ERROR
-        };
-      }
+      const {
+        purchaseId,
+        paymentNumber,
+        amount,
+        currency = 'RWF',
+        exchangeRate = 1.0,
+        paymentMethod,
+        accountId,
+        accountName,
+        reference,
+        paidById,
+        paidByName,
+        paidAt,
+        notes,
+        accountingRef,
+      } = payload;
 
-      if (!payload?.purchaseOrderId || !payload?.amount || !payload?.paymentMethod) {
-        return {
-          status: 'error',
-          traceId,
-          message: 'purchaseOrderId, amount, and paymentMethod are required',
-          errorCode: ErrorCode.VALIDATION_ERROR
-        };
-      }
-
-      // Verify purchase exists (own model)
-      const purchase = await prisma.purchase.findUnique({
-        where: { id: payload.purchaseOrderId }
-      });
-
+      const purchase = await prisma.purchase.findUnique({ where: { id: purchaseId } });
       if (!purchase) {
-        return {
-          status: 'error',
-          traceId,
-          message: `Purchase ${payload.purchaseOrderId} not found`,
-          errorCode: ErrorCode.NOT_FOUND
-        };
+        return { status: 'error', traceId, message: 'Purchase not found', errorCode: ErrorCode.NOT_FOUND };
       }
 
-      if (purchase.tenantId !== tenantId || purchase.shopId !== shopId) {
-        return {
-          status: 'error',
-          traceId,
-          message: 'Purchase does not belong to this tenant/shop',
-          errorCode: ErrorCode.UNAUTHORIZED
-        };
+      if (purchase.commercialStatus === 'CANCELLED') {
+        return { status: 'error', traceId, message: 'Cannot record payment for cancelled purchase', errorCode: ErrorCode.VALIDATION_ERROR };
       }
 
-      // Record payment on the purchase (own model only)
       const payment = await prisma.purchasePayment.create({
         data: {
-          purchaseId: purchase.id,
-          amount: payload.amount,
-          method: payload.paymentMethod,
-          reference: `PAY-${Date.now()}`
-        }
+          purchaseId,
+          paymentNumber,
+          amount,
+          currency,
+          exchangeRate,
+          paymentMethod,
+          accountId,
+          accountName,
+          reference,
+          paidById,
+          paidAt: paidAt ? new Date(paidAt) : new Date(),
+          notes,
+          accountingRef,
+        },
       });
 
-      // Publish PurchasePaymentRecorded event for accounting journal posting
-      await this.eventBus.publish(
-        {
-          eventType: 'PurchasePaymentRecorded',
-          aggregateId: payment.id,
-          aggregateType: 'PurchasePayment',
-          tenantId,
-          shopId,
-          workPeriodId,
-          payload: {
-            paymentId: payment.id,
-            purchaseId: purchase.id,
-            tenantId,
-            shopId,
-            workPeriodId,
-            poNumber: purchase.poNumber,
-            amount: payload.amount,
-            paymentMethod: payload.paymentMethod
-          },
-          timestamp: new Date().toISOString(),
-          correlationId: traceId,
-          createdBy: context.userId,
+      // Update purchase payment totals
+      const totalPaid = await prisma.purchasePayment.aggregate({
+        where: { purchaseId },
+        _sum: { amount: true },
+      });
+      const amountPaid = totalPaid._sum.amount || 0;
+      const amountOutstanding = purchase.grandTotal - amountPaid;
+
+      let paymentStatus: 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' = 'UNPAID';
+      if (amountPaid === 0) paymentStatus = 'UNPAID';
+      else if (amountPaid >= purchase.grandTotal) paymentStatus = 'PAID';
+      else paymentStatus = 'PARTIALLY_PAID';
+
+      await prisma.purchase.update({
+        where: { id: purchaseId },
+        data: { amountPaid, amountOutstanding, paymentStatus },
+      });
+
+      await prisma.purchaseHistory.create({
+        data: {
+          purchaseId,
+          eventType: 'PAYMENT_RECEIVED',
+          eventData: JSON.stringify({ paymentNumber, amount, method: paymentMethod, paidBy: paidByName }),
+          userId: paidById,
+          userName: paidByName,
+          traceId,
         },
-        'purchase-payment.recorded'
-      );
+      });
 
-      // Log audit action (own audit log)
-      try {
-        await prisma.auditLog.create({
-          data: {
-            tenantId,
-            shopId,
-            userId: context.userId,
-            action: 'RecordPurchasePayment',
-            resource: 'PurchasePayment',
-            resourceId: payment.id,
-            traceId: context.traceId || null,
-            details: JSON.stringify({
-              purchaseOrderId: payload.purchaseOrderId,
-              amount: payload.amount,
-              paymentMethod: payload.paymentMethod
-            })
-          }
-        });
-      } catch (auditError) {
-        console.error('Failed to log audit action:', auditError);
-      }
+      await prisma.auditLog.create({
+        data: {
+          tenantId: purchase.tenantId,
+          shopId: purchase.shopId,
+          userId: paidById,
+          action: 'RecordPurchasePayment',
+          resource: 'PurchasePayment',
+          resourceId: payment.id,
+          traceId,
+          details: JSON.stringify({ paymentNumber, amount, method: paymentMethod }),
+        },
+      });
 
-      return {
-        status: 'success',
-        traceId,
-        data: { payment, purchase }
-      };
+      return { status: 'success', traceId, data: payment };
     } catch (error: any) {
       return {
         status: 'error',
         traceId,
-        message: error.message || 'Failed to record purchase payment',
-        errorCode: error.code || ErrorCode.INTERNAL_ERROR
+        message: error.message || 'Failed to record payment',
+        errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }
   }

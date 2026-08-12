@@ -1,20 +1,143 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CommandBus } from '@nestjs/cqrs';
-import { ProcessPurchaseCommand } from './commands/impl/process-purchase.command.js';
-import { RecordPurchasePaymentCommand } from './commands/impl/record-purchase-payment.command.js';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import {
+  CreatePurchaseCommand,
+  AddPurchaseItemCommand,
+  UpdatePurchaseItemCommand,
+  RemovePurchaseItemCommand,
+  ConfirmPurchaseCommand,
+  CancelPurchaseCommand,
+  CreatePurchaseReceivingCommand,
+  AddReceivedItemsCommand,
+  RecordPurchasePaymentCommand,
+  CreatePurchaseReturnCommand,
+  AddPurchaseReturnItemsCommand,
+  AddPurchaseDocumentCommand,
+} from './commands/impl/index.js';
+import {
+  GetPurchasesQuery,
+  GetPurchaseByIdQuery,
+  GetPurchaseByNumberQuery,
+  GetPurchaseItemsQuery,
+  GetPurchaseReceivingsQuery,
+  GetPurchasePaymentsQuery,
+  GetPurchaseReturnsQuery,
+  GetPurchaseDocumentsQuery,
+  GetPurchaseHistoryQuery,
+} from './queries/impl/index.js';
 
 @Controller()
 export class PurchaseServiceController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
-  @MessagePattern({ cmd: 'ProcessPurchase' })
-  async handleProcessPurchase(@Payload() data: { payload: any, context: any }) {
-    return this.commandBus.execute(new ProcessPurchaseCommand(data.payload, data.context));
+  // Commands
+  @MessagePattern({ cmd: 'CreatePurchase' })
+  async handleCreatePurchase(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CreatePurchaseCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'AddPurchaseItem' })
+  async handleAddPurchaseItem(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new AddPurchaseItemCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'UpdatePurchaseItem' })
+  async handleUpdatePurchaseItem(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new UpdatePurchaseItemCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'RemovePurchaseItem' })
+  async handleRemovePurchaseItem(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new RemovePurchaseItemCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'ConfirmPurchase' })
+  async handleConfirmPurchase(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ConfirmPurchaseCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'CancelPurchase' })
+  async handleCancelPurchase(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CancelPurchaseCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'CreatePurchaseReceiving' })
+  async handleCreatePurchaseReceiving(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CreatePurchaseReceivingCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'AddReceivedItems' })
+  async handleAddReceivedItems(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new AddReceivedItemsCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'RecordPurchasePayment' })
   async handleRecordPurchasePayment(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new RecordPurchasePaymentCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'CreatePurchaseReturn' })
+  async handleCreatePurchaseReturn(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CreatePurchaseReturnCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'AddPurchaseReturnItems' })
+  async handleAddPurchaseReturnItems(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new AddPurchaseReturnItemsCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'AddPurchaseDocument' })
+  async handleAddPurchaseDocument(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new AddPurchaseDocumentCommand(data.payload, data.context));
+  }
+
+  // Queries
+  @MessagePattern({ cmd: 'GetPurchases' })
+  async handleGetPurchases(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetPurchasesQuery(data.payload));
+  }
+
+  @MessagePattern({ cmd: 'GetPurchaseById' })
+  async handleGetPurchaseById(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetPurchaseByIdQuery(data.payload));
+  }
+
+  @MessagePattern({ cmd: 'GetPurchaseByNumber' })
+  async handleGetPurchaseByNumber(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetPurchaseByNumberQuery(data.payload));
+  }
+
+  @MessagePattern({ cmd: 'GetPurchaseItems' })
+  async handleGetPurchaseItems(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetPurchaseItemsQuery(data.payload));
+  }
+
+  @MessagePattern({ cmd: 'GetPurchaseReceivings' })
+  async handleGetPurchaseReceivings(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetPurchaseReceivingsQuery(data.payload));
+  }
+
+  @MessagePattern({ cmd: 'GetPurchasePayments' })
+  async handleGetPurchasePayments(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetPurchasePaymentsQuery(data.payload));
+  }
+
+  @MessagePattern({ cmd: 'GetPurchaseReturns' })
+  async handleGetPurchaseReturns(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetPurchaseReturnsQuery(data.payload));
+  }
+
+  @MessagePattern({ cmd: 'GetPurchaseDocuments' })
+  async handleGetPurchaseDocuments(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetPurchaseDocumentsQuery(data.payload));
+  }
+
+  @MessagePattern({ cmd: 'GetPurchaseHistory' })
+  async handleGetPurchaseHistory(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetPurchaseHistoryQuery(data.payload));
   }
 }

@@ -1,23 +1,16 @@
 import { BaseCommand } from '@electronic-shop/framework-command';
 import { IRequestContext } from '@electronic-shop/types';
 
-export class PurchaseReturnItem {
-  productId!: string;
-  serialNumber?: string;
-  quantity!: number;
-  refundAmount!: number;
-}
-
-export class CreatePurchaseReturnPayload {
-  tenantId!: string;
-  shopId!: string;
+export interface CreatePurchaseReturnPayload {
+  tenantId: string;
+  shopId: string;
   purchaseId?: string;
-  supplierId?: string;
-  items!: PurchaseReturnItem[];
-  totalAmount!: number;
-  refundAmount!: number;
+  supplierId: string;
+  returnNumber: string;
   reason?: string;
-  status?: string;
+  createdById: string;
+  createdByName: string;
+  traceId?: string;
 }
 
 export class CreatePurchaseReturnCommand extends BaseCommand<CreatePurchaseReturnPayload> {

@@ -65,8 +65,27 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'ProcessLoanSale': ['sales:loan:create'],
   
   // Purchase commands
-  'ProcessPurchase': ['purchase:purchase:create'],
+  'CreatePurchase': ['purchase:purchase:create'],
+  'AddPurchaseItem': ['purchase:purchase:update'],
+  'UpdatePurchaseItem': ['purchase:purchase:update'],
+  'RemovePurchaseItem': ['purchase:purchase:update'],
+  'ConfirmPurchase': ['purchase:purchase:confirm'],
+  'CancelPurchase': ['purchase:purchase:cancel'],
+  'CreatePurchaseReceiving': ['purchase:receiving:create'],
+  'AddReceivedItems': ['purchase:receiving:record'],
   'RecordPurchasePayment': ['purchase:payment:create'],
+  'CreatePurchaseReturn': ['purchase:return:create'],
+  'AddPurchaseReturnItems': ['purchase:return:add'],
+  'AddPurchaseDocument': ['purchase:document:add'],
+  'GetPurchases': ['purchase:purchase:read'],
+  'GetPurchaseById': ['purchase:purchase:read'],
+  'GetPurchaseByNumber': ['purchase:purchase:read'],
+  'GetPurchaseItems': ['purchase:purchase:read'],
+  'GetPurchaseReceivings': ['purchase:receiving:read'],
+  'GetPurchasePayments': ['purchase:payment:read'],
+  'GetPurchaseReturns': ['purchase:return:read'],
+  'GetPurchaseDocuments': ['purchase:document:read'],
+  'GetPurchaseHistory': ['purchase:purchase:read'],
   
   // Treasury commands
   'RecordOperationalDeposit': ['treasury:deposit:create'],
@@ -131,8 +150,27 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'ProcessLoanSale': ['ADMIN', 'MANAGER'],
   
   // Purchase commands
-  'ProcessPurchase': ['ADMIN', 'MANAGER', 'STAFF'],
+  'CreatePurchase': ['ADMIN', 'MANAGER', 'STAFF'],
+  'AddPurchaseItem': ['ADMIN', 'MANAGER', 'STAFF'],
+  'UpdatePurchaseItem': ['ADMIN', 'MANAGER', 'STAFF'],
+  'RemovePurchaseItem': ['ADMIN', 'MANAGER', 'STAFF'],
+  'ConfirmPurchase': ['ADMIN', 'MANAGER', 'STAFF'],
+  'CancelPurchase': ['ADMIN', 'MANAGER', 'STAFF'],
+  'CreatePurchaseReceiving': ['ADMIN', 'MANAGER', 'STAFF'],
+  'AddReceivedItems': ['ADMIN', 'MANAGER', 'STAFF'],
   'RecordPurchasePayment': ['ADMIN', 'MANAGER', 'STAFF'],
+  'CreatePurchaseReturn': ['ADMIN', 'MANAGER', 'STAFF'],
+  'AddPurchaseReturnItems': ['ADMIN', 'MANAGER', 'STAFF'],
+  'AddPurchaseDocument': ['ADMIN', 'MANAGER', 'STAFF'],
+  'GetPurchases': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetPurchaseById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetPurchaseByNumber': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetPurchaseItems': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetPurchaseReceivings': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetPurchasePayments': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetPurchaseReturns': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetPurchaseDocuments': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetPurchaseHistory': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   
   // Treasury commands
   'RecordOperationalDeposit': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -231,7 +269,7 @@ export class AppController {
         return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
       }
 
-      if (['ProcessPurchase', 'RecordPurchasePayment'].includes(cmd)) {
+      if (['CreatePurchase', 'AddPurchaseItem', 'UpdatePurchaseItem', 'RemovePurchaseItem', 'ConfirmPurchase', 'CancelPurchase', 'CreatePurchaseReceiving', 'AddReceivedItems', 'RecordPurchasePayment', 'CreatePurchaseReturn', 'AddPurchaseReturnItems', 'AddPurchaseDocument', 'GetPurchases', 'GetPurchaseById', 'GetPurchaseByNumber', 'GetPurchaseItems', 'GetPurchaseReceivings', 'GetPurchasePayments', 'GetPurchaseReturns', 'GetPurchaseDocuments', 'GetPurchaseHistory'].includes(cmd)) {
         return await firstValueFrom(this.purchaseClient.send({ cmd }, { payload, context }));
       }
 

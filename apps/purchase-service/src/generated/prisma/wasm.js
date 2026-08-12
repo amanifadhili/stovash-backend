@@ -126,11 +126,30 @@ exports.Prisma.PurchaseScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   shopId: 'shopId',
-  poNumber: 'poNumber',
+  purchaseNumber: 'purchaseNumber',
   supplierId: 'supplierId',
-  totalAmount: 'totalAmount',
-  totalCost: 'totalCost',
-  status: 'status',
+  supplierName: 'supplierName',
+  supplierContact: 'supplierContact',
+  supplierAddress: 'supplierAddress',
+  supplierTaxId: 'supplierTaxId',
+  purchaseDate: 'purchaseDate',
+  supplierInvoiceNo: 'supplierInvoiceNo',
+  currency: 'currency',
+  exchangeRate: 'exchangeRate',
+  commercialStatus: 'commercialStatus',
+  receivingStatus: 'receivingStatus',
+  paymentStatus: 'paymentStatus',
+  accountingStatus: 'accountingStatus',
+  subtotal: 'subtotal',
+  discountTotal: 'discountTotal',
+  taxTotal: 'taxTotal',
+  otherCostTotal: 'otherCostTotal',
+  grandTotal: 'grandTotal',
+  amountPaid: 'amountPaid',
+  amountOutstanding: 'amountOutstanding',
+  notes: 'notes',
+  approvedById: 'approvedById',
+  approvedAt: 'approvedAt',
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -140,19 +159,129 @@ exports.Prisma.PurchaseItemScalarFieldEnum = {
   id: 'id',
   purchaseId: 'purchaseId',
   productId: 'productId',
+  productName: 'productName',
+  productSku: 'productSku',
+  productTracking: 'productTracking',
+  orderedQty: 'orderedQty',
+  receivedQty: 'receivedQty',
+  acceptedQty: 'acceptedQty',
+  rejectedQty: 'rejectedQty',
+  returnedQty: 'returnedQty',
+  unitPrice: 'unitPrice',
+  discountAmount: 'discountAmount',
+  discountType: 'discountType',
+  taxRate: 'taxRate',
+  taxAmount: 'taxAmount',
+  otherCosts: 'otherCosts',
+  lineTotal: 'lineTotal',
+  acquisitionCost: 'acquisitionCost',
+  purchaseSpecs: 'purchaseSpecs',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PurchaseReceivedItemScalarFieldEnum = {
+  id: 'id',
+  purchaseId: 'purchaseId',
+  purchaseItemId: 'purchaseItemId',
+  receivingId: 'receivingId',
   serialNumber: 'serialNumber',
-  quantity: 'quantity',
-  purchaseCost: 'purchaseCost',
-  total: 'total',
+  imei1: 'imei1',
+  imei2: 'imei2',
+  condition: 'condition',
+  actualSpecs: 'actualSpecs',
+  unitAcquisitionCost: 'unitAcquisitionCost',
+  notes: 'notes',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.PurchaseReceivingScalarFieldEnum = {
+  id: 'id',
+  purchaseId: 'purchaseId',
+  receivingNumber: 'receivingNumber',
+  receivedById: 'receivedById',
+  receivedAt: 'receivedAt',
+  receivedAtShop: 'receivedAtShop',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.PurchasePaymentScalarFieldEnum = {
   id: 'id',
   purchaseId: 'purchaseId',
+  paymentNumber: 'paymentNumber',
   amount: 'amount',
-  method: 'method',
+  currency: 'currency',
+  exchangeRate: 'exchangeRate',
+  paymentMethod: 'paymentMethod',
+  accountId: 'accountId',
+  accountName: 'accountName',
   reference: 'reference',
+  paidById: 'paidById',
+  paidAt: 'paidAt',
+  notes: 'notes',
+  accountingRef: 'accountingRef',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PurchaseReturnScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  purchaseId: 'purchaseId',
+  supplierId: 'supplierId',
+  returnNumber: 'returnNumber',
+  totalAmount: 'totalAmount',
+  refundAmount: 'refundAmount',
+  reason: 'reason',
+  status: 'status',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PurchaseReturnItemScalarFieldEnum = {
+  id: 'id',
+  purchaseReturnId: 'purchaseReturnId',
+  purchaseItemId: 'purchaseItemId',
+  productId: 'productId',
+  productName: 'productName',
+  productSku: 'productSku',
+  receivedItemId: 'receivedItemId',
+  serialNumber: 'serialNumber',
+  imei1: 'imei1',
+  imei2: 'imei2',
+  quantity: 'quantity',
+  refundAmount: 'refundAmount',
+  condition: 'condition',
+  reason: 'reason',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PurchaseDocumentScalarFieldEnum = {
+  id: 'id',
+  purchaseId: 'purchaseId',
+  documentType: 'documentType',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
+  uploadedById: 'uploadedById',
+  uploadedAt: 'uploadedAt',
+  notes: 'notes'
+};
+
+exports.Prisma.PurchaseHistoryScalarFieldEnum = {
+  id: 'id',
+  purchaseId: 'purchaseId',
+  eventType: 'eventType',
+  eventData: 'eventData',
+  userId: 'userId',
+  userName: 'userName',
+  traceId: 'traceId',
   createdAt: 'createdAt'
 };
 
@@ -176,32 +305,6 @@ exports.Prisma.SupplierOrderItemScalarFieldEnum = {
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   total: 'total',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.PurchaseReturnScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  shopId: 'shopId',
-  purchaseId: 'purchaseId',
-  supplierId: 'supplierId',
-  returnNumber: 'returnNumber',
-  totalAmount: 'totalAmount',
-  refundAmount: 'refundAmount',
-  reason: 'reason',
-  status: 'status',
-  createdById: 'createdById',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.PurchaseReturnItemScalarFieldEnum = {
-  id: 'id',
-  purchaseReturnId: 'purchaseReturnId',
-  productId: 'productId',
-  serialNumber: 'serialNumber',
-  quantity: 'quantity',
-  refundAmount: 'refundAmount',
   createdAt: 'createdAt'
 };
 
@@ -232,16 +335,58 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.PurchaseCommercialStatus = exports.$Enums.PurchaseCommercialStatus = {
+  DRAFT: 'DRAFT',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED'
+};
 
+exports.PurchaseReceivingStatus = exports.$Enums.PurchaseReceivingStatus = {
+  NOT_RECEIVED: 'NOT_RECEIVED',
+  PARTIALLY_RECEIVED: 'PARTIALLY_RECEIVED',
+  FULLY_RECEIVED: 'FULLY_RECEIVED'
+};
+
+exports.PurchasePaymentStatus = exports.$Enums.PurchasePaymentStatus = {
+  UNPAID: 'UNPAID',
+  PARTIALLY_PAID: 'PARTIALLY_PAID',
+  PAID: 'PAID'
+};
+
+exports.PurchaseAccountingStatus = exports.$Enums.PurchaseAccountingStatus = {
+  UNPOSTED: 'UNPOSTED',
+  POSTED: 'POSTED',
+  REVERSED: 'REVERSED'
+};
+
+exports.ReceivingItemCondition = exports.$Enums.ReceivingItemCondition = {
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  DAMAGED: 'DAMAGED',
+  WRONG_ITEM: 'WRONG_ITEM'
+};
+
+exports.PaymentMethod = exports.$Enums.PaymentMethod = {
+  CASH: 'CASH',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  MOBILE_MONEY: 'MOBILE_MONEY',
+  CHECK: 'CHECK',
+  CREDIT: 'CREDIT',
+  OTHER: 'OTHER'
+};
 
 exports.Prisma.ModelName = {
   Purchase: 'Purchase',
   PurchaseItem: 'PurchaseItem',
+  PurchaseReceivedItem: 'PurchaseReceivedItem',
+  PurchaseReceiving: 'PurchaseReceiving',
   PurchasePayment: 'PurchasePayment',
-  SupplierOrder: 'SupplierOrder',
-  SupplierOrderItem: 'SupplierOrderItem',
   PurchaseReturn: 'PurchaseReturn',
   PurchaseReturnItem: 'PurchaseReturnItem',
+  PurchaseDocument: 'PurchaseDocument',
+  PurchaseHistory: 'PurchaseHistory',
+  SupplierOrder: 'SupplierOrder',
+  SupplierOrderItem: 'SupplierOrderItem',
   AuditLog: 'AuditLog'
 };
 

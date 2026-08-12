@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PurchaseServiceController } from './purchase-service.controller.js';
 import { CommandHandlers } from './commands/handlers/index.js';
+import { QueryHandlers } from './queries/handlers/index.js';
 import { EventBusConnectionService } from './events/event-bus-connection.service.js';
 import { EventBus } from '@electronic-shop/framework-event';
 
@@ -10,6 +11,7 @@ import { EventBus } from '@electronic-shop/framework-event';
   controllers: [PurchaseServiceController],
   providers: [
     ...CommandHandlers,
+    ...QueryHandlers,
     EventBusConnectionService,
     {
       provide: 'EVENT_BUS',
