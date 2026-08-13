@@ -17,6 +17,7 @@ model Product {
   tenantId       String
   shopId         String?  // null = shared with ALL shops; set = owner shop
   sharedShopIds  String[] @default([]) // additional shops chosen to share with
+  type           String   @default("DEVICE") // DEVICE, ACCESSORY
   sku            String
   name           String
   description    String?
