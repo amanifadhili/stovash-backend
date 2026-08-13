@@ -15,7 +15,8 @@ datasource db {
 model Product {
   id             String    @id @default(uuid())
   tenantId       String
-  shopId         String? // null = shared at tenant level; set = owned by that shop
+  shopId         String? // null = shared with ALL shops; set = owner shop
+  sharedShopIds  String[]  @default([]) // additional shops chosen to share with
   sku            String
   name           String
   description    String?
@@ -135,13 +136,14 @@ model WarrantyClaim {
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  tenantId  String
-  shopId    String? // null = shared at tenant level; set = owned by that shop
-  name      String
-  parentId  String?
-  createdAt DateTime @default(now())
-  createdBy String?
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String? // null = shared with ALL shops; set = owner shop
+  sharedShopIds String[] @default([]) // additional shops chosen to share with
+  name          String
+  parentId      String?
+  createdAt     DateTime @default(now())
+  createdBy     String?
 
   parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children Category[] @relation("CategoryHierarchy")
@@ -154,13 +156,14 @@ model Category {
 }
 
 model Brand {
-  id          String   @id @default(uuid())
-  tenantId    String
-  shopId      String? // null = shared at tenant level; set = owned by that shop
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  createdBy   String?
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String? // null = shared with ALL shops; set = owner shop
+  sharedShopIds String[] @default([]) // additional shops chosen to share with
+  name          String
+  description   String?
+  createdAt     DateTime @default(now())
+  createdBy     String?
 
   products Product[]
 

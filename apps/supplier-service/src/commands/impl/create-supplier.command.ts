@@ -3,7 +3,9 @@ import { IRequestContext } from '@electronic-shop/types';
 
 export class CreateSupplierPayload {
   tenantId!: string;
-  shopId?: string;
+  shopId?: string; // null = shared with all shops; set = owner shop
+  sharedWithOtherShops?: boolean;
+  sharedShopIds?: string[];
   name!: string;
   email?: string;
   phone?: string;

@@ -12,17 +12,18 @@ datasource db {
 }
 
 model Supplier {
-  id        String   @id @default(uuid())
-  tenantId  String
-  shopId    String? // null = shared at tenant level; set = owned by that shop
-  name      String
-  email     String?
-  phone     String?
-  address   String?
-  balance   Float    @default(0)
-  status    String   @default("ACTIVE") // ACTIVE, INACTIVE
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String? // null = shared with ALL shops; set = owner shop
+  sharedShopIds String[] @default([]) // additional shops chosen to share with
+  name          String
+  email         String?
+  phone         String?
+  address       String?
+  balance       Float    @default(0)
+  status        String   @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   contacts   SupplierContact[]
   balances   SupplierBalance[]

@@ -5,6 +5,7 @@ import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { EventBus } from '@electronic-shop/framework-event';
 import { Inject } from '@nestjs/common';
+import { resolveSharedConfig } from '../../common/visibility.js';
 
 @CommandHandler(UpdateSupplierCommand)
 export class UpdateSupplierHandler extends BaseCommandHandler<UpdateSupplierCommand> {
@@ -39,7 +40,17 @@ export class UpdateSupplierHandler extends BaseCommandHandler<UpdateSupplierComm
       if (payload.phone !== undefined) data.phone = payload.phone;
       if (payload.address !== undefined) data.address = payload.address;
       if (payload.status !== undefined) data.status = payload.status;
-      if (payload.shopId !== undefined) data.shopId = payload.shopId || null;
+
+      // When the create/edit form provides an explicit visibility choice, apply
+      // it. Otherwise honor a legacy shopId field if present.
+      if (payload.sharedWithOtherShops !== undefined) {
+        const cfg = resolveSharedConfig(payload, context?.shopId);
+        data.shopId = cfg.shopId || null;
+        data.sharedShopIds = cfg.sharedShopIds || [];
+      } else if (payload.shopId !== undefined) {
+        data.shopId = payload.shopId || null;
+        if (payload.sharedShopIds !== undefined) data.sharedShopIds = payload.sharedShopIds;
+      }
 
       const supplier = await prisma.supplier.update({ where: { id: payload.id }, data });
 

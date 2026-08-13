@@ -114,6 +114,8 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
             } : null,
             stock,
             stockStatus,
+            shopId: p.shopId,
+            sharedShopIds: p.sharedShopIds ?? [],
             createdAt: p.createdAt,
             updatedAt: p.updatedAt,
             version: p.version
@@ -148,6 +150,8 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
         } : null,
         stock: 0,
         stockStatus: 'Out of Stock',
+        shopId: p.shopId,
+        sharedShopIds: p.sharedShopIds ?? [],
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,
         version: p.version

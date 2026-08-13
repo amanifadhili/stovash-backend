@@ -5,7 +5,7 @@ import { CreateSupplierCommand } from '../impl/create-supplier.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { EventBus } from '@electronic-shop/framework-event';
-import { effectiveShopId } from '../../common/visibility.js';
+import { effectiveShopId, resolveSharedConfig } from '../../common/visibility.js';
 
 @CommandHandler(CreateSupplierCommand)
 export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierCommand> {
@@ -17,9 +17,10 @@ export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierComm
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
     const tenantId = context?.tenantId || payload?.tenantId;
-    // Explicit null/empty shopId means "shared at tenant level"; otherwise fall
-    // back to the active shop context.
-    const shopId = effectiveShopId(payload?.shopId, context?.shopId);
+    // The create/edit form chooses visibility explicitly:
+    //  - sharedWithOtherShops = false → this shop only
+    //  - sharedWithOtherShops = true  → shared with sharedShopIds (or all shops)
+    const { shopId, sharedShopIds } = resolveSharedConfig(payload, context?.shopId);
 
     try {
       if (!tenantId || !payload?.name) {
@@ -35,6 +36,7 @@ export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierComm
         data: {
           tenantId: tenantId,
           shopId: shopId || null,
+          sharedShopIds: sharedShopIds || [],
           name: payload.name,
           email: payload.email,
           phone: payload.phone,

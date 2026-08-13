@@ -1327,6 +1327,7 @@ export namespace Prisma {
     id: number
     tenantId: number
     shopId: number
+    sharedShopIds: number
     name: number
     email: number
     phone: number
@@ -1379,6 +1380,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     shopId?: true
+    sharedShopIds?: true
     name?: true
     email?: true
     phone?: true
@@ -1480,6 +1482,7 @@ export namespace Prisma {
     id: string
     tenantId: string
     shopId: string | null
+    sharedShopIds: string[]
     name: string
     email: string | null
     phone: string | null
@@ -1513,6 +1516,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -1532,6 +1536,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -1546,6 +1551,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -1577,6 +1583,7 @@ export namespace Prisma {
       id: string
       tenantId: string
       shopId: string | null
+      sharedShopIds: string[]
       name: string
       email: string | null
       phone: string | null
@@ -1985,6 +1992,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Supplier", 'String'>
     readonly tenantId: FieldRef<"Supplier", 'String'>
     readonly shopId: FieldRef<"Supplier", 'String'>
+    readonly sharedShopIds: FieldRef<"Supplier", 'String[]'>
     readonly name: FieldRef<"Supplier", 'String'>
     readonly email: FieldRef<"Supplier", 'String'>
     readonly phone: FieldRef<"Supplier", 'String'>
@@ -6345,6 +6353,7 @@ export namespace Prisma {
     id: 'id',
     tenantId: 'tenantId',
     shopId: 'shopId',
+    sharedShopIds: 'sharedShopIds',
     name: 'name',
     email: 'email',
     phone: 'phone',
@@ -6509,6 +6518,7 @@ export namespace Prisma {
     id?: StringFilter<"Supplier"> | string
     tenantId?: StringFilter<"Supplier"> | string
     shopId?: StringNullableFilter<"Supplier"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Supplier">
     name?: StringFilter<"Supplier"> | string
     email?: StringNullableFilter<"Supplier"> | string | null
     phone?: StringNullableFilter<"Supplier"> | string | null
@@ -6527,6 +6537,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrderInput | SortOrder
+    sharedShopIds?: SortOrder
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -6548,6 +6559,7 @@ export namespace Prisma {
     NOT?: SupplierWhereInput | SupplierWhereInput[]
     tenantId?: StringFilter<"Supplier"> | string
     shopId?: StringNullableFilter<"Supplier"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Supplier">
     name?: StringFilter<"Supplier"> | string
     email?: StringNullableFilter<"Supplier"> | string | null
     phone?: StringNullableFilter<"Supplier"> | string | null
@@ -6566,6 +6578,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrderInput | SortOrder
+    sharedShopIds?: SortOrder
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -6588,6 +6601,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Supplier"> | string
     tenantId?: StringWithAggregatesFilter<"Supplier"> | string
     shopId?: StringNullableWithAggregatesFilter<"Supplier"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Supplier">
     name?: StringWithAggregatesFilter<"Supplier"> | string
     email?: StringNullableWithAggregatesFilter<"Supplier"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Supplier"> | string | null
@@ -6861,6 +6875,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -6879,6 +6894,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -6897,6 +6913,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -6915,6 +6932,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -6933,6 +6951,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -6947,6 +6966,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -6961,6 +6981,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7259,6 +7280,14 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type FloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -7330,6 +7359,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrder
+    sharedShopIds?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -7610,6 +7640,10 @@ export namespace Prisma {
     balance?: SortOrder
   }
 
+  export type SupplierCreatesharedShopIdsInput = {
+    set: string[]
+  }
+
   export type SupplierContactCreateNestedManyWithoutSupplierInput = {
     create?: XOR<SupplierContactCreateWithoutSupplierInput, SupplierContactUncheckedCreateWithoutSupplierInput> | SupplierContactCreateWithoutSupplierInput[] | SupplierContactUncheckedCreateWithoutSupplierInput[]
     connectOrCreate?: SupplierContactCreateOrConnectWithoutSupplierInput | SupplierContactCreateOrConnectWithoutSupplierInput[]
@@ -7672,6 +7706,11 @@ export namespace Prisma {
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type SupplierUpdatesharedShopIdsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -8288,6 +8327,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -8305,6 +8345,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -8338,6 +8379,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8355,6 +8397,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8372,6 +8415,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -8389,6 +8433,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -8450,6 +8495,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8467,6 +8513,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8500,6 +8547,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -8517,6 +8565,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -8573,6 +8622,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8590,6 +8640,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8636,6 +8687,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -8653,6 +8705,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: SupplierCreatesharedShopIdsInput | string[]
     name: string
     email?: string | null
     phone?: string | null
@@ -8686,6 +8739,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8703,6 +8757,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: SupplierUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null

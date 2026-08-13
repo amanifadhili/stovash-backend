@@ -3,7 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { CreateBrandCommand } from '../impl/create-brand.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
-import { effectiveShopId } from '../../common/visibility.js';
+import { effectiveShopId, resolveSharedConfig } from '../../common/visibility.js';
 
 @CommandHandler(CreateBrandCommand)
 export class CreateBrandHandler extends BaseCommandHandler<CreateBrandCommand> {
@@ -39,7 +39,7 @@ export class CreateBrandHandler extends BaseCommandHandler<CreateBrandCommand> {
         };
       }
 
-      const shopId = effectiveShopId(payload.shopId, context.shopId);
+      const { shopId, sharedShopIds } = resolveSharedConfig(payload, context.shopId);
 
       const existing = await prisma.brand.findFirst({
         where: {
@@ -61,6 +61,7 @@ export class CreateBrandHandler extends BaseCommandHandler<CreateBrandCommand> {
         data: {
           tenantId: context.tenantId,
           shopId: shopId || null,
+          sharedShopIds: sharedShopIds || [],
           name: payload.name.trim(),
           description: payload.description?.trim() || null,
           createdBy: context.userId || 'system'
