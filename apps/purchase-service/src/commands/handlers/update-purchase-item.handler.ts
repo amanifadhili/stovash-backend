@@ -31,22 +31,19 @@ export class UpdatePurchaseItemHandler extends BaseCommandHandler<UpdatePurchase
       const unitPrice = updates.unitPrice ?? item.unitPrice;
       const discountAmount = updates.discountAmount ?? item.discountAmount;
       const discountType = updates.discountType ?? item.discountType;
-      const taxRate = updates.taxRate ?? item.taxRate;
       const otherCosts = updates.otherCosts ?? item.otherCosts;
 
       const gross = orderedQty * unitPrice;
       const discount = discountType === 'PERCENTAGE' ? (gross * discountAmount / 100) : discountAmount;
       const net = gross - discount;
-      const tax = net * (taxRate / 100);
-      const lineTotal = net + tax + otherCosts;
-      const acquisitionCost = lineTotal / orderedQty;
+      const lineTotal = net + otherCosts;
+      const acquisitionCost = orderedQty > 0 ? lineTotal / orderedQty : 0;
 
       const updatedItem = await prisma.purchaseItem.update({
         where: { id: purchaseItemId },
         data: {
           ...updates,
           discountAmount: discount,
-          taxAmount: tax,
           lineTotal,
           acquisitionCost,
         },
@@ -96,7 +93,6 @@ export class UpdatePurchaseItemHandler extends BaseCommandHandler<UpdatePurchase
     const items = await prisma.purchaseItem.findMany({ where: { purchaseId } });
     const subtotal = items.reduce((sum, i) => sum + i.orderedQty * i.unitPrice, 0);
     const discountTotal = items.reduce((sum, i) => sum + i.discountAmount, 0);
-    const taxTotal = items.reduce((sum, i) => sum + i.taxAmount, 0);
     const otherCostTotal = items.reduce((sum, i) => sum + i.otherCosts, 0);
     const grandTotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
 
@@ -109,7 +105,7 @@ export class UpdatePurchaseItemHandler extends BaseCommandHandler<UpdatePurchase
 
     await prisma.purchase.update({
       where: { id: purchaseId },
-      data: { subtotal, discountTotal, taxTotal, otherCostTotal, grandTotal, amountPaid, amountOutstanding },
+      data: { subtotal, discountTotal, otherCostTotal, grandTotal, amountPaid, amountOutstanding },
     });
   }
 }

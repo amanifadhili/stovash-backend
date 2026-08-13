@@ -10,6 +10,7 @@ export interface ReceivedItemData {
   actualSpecs?: string;
   unitAcquisitionCost: number;
   notes?: string;
+  images?: string[];
 }
 
 export interface AddReceivedItemsPayload {

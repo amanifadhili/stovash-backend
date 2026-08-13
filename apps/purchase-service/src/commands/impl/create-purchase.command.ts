@@ -1,6 +1,31 @@
 import { BaseCommand } from '@electronic-shop/framework-command';
 import { IRequestContext } from '@electronic-shop/types';
 
+export interface CreatePurchaseUnitInput {
+  serialNumber?: string;
+  imei1?: string;
+  imei2?: string;
+  condition?: 'ACCEPTED' | 'REJECTED' | 'DAMAGED' | 'WRONG_ITEM';
+  unitAcquisitionCost?: number;
+  notes?: string;
+  images?: string[];
+}
+
+export interface CreatePurchaseItemInput {
+  productId: string;
+  productName?: string;
+  productSku?: string;
+  productTracking?: string;
+  orderedQty: number;
+  unitPrice: number;
+  discountAmount?: number;
+  discountType?: 'PERCENTAGE' | 'FIXED';
+  otherCosts?: number;
+  purchaseSpecs?: string;
+  notes?: string;
+  units?: CreatePurchaseUnitInput[];
+}
+
 export interface CreatePurchasePayload {
   tenantId: string;
   shopId: string;
@@ -8,12 +33,12 @@ export interface CreatePurchasePayload {
   supplierName: string;
   supplierContact?: string;
   supplierAddress?: string;
-  supplierTaxId?: string;
   purchaseDate?: string;
   supplierInvoiceNo?: string;
   currency?: string;
   exchangeRate?: number;
   notes?: string;
+  items?: CreatePurchaseItemInput[];
   createdById: string;
   createdByName: string;
   traceId?: string;

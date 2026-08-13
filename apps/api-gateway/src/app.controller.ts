@@ -73,6 +73,9 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'CancelPurchase': ['purchase:purchase:cancel'],
   'CreatePurchaseReceiving': ['purchase:receiving:create'],
   'AddReceivedItems': ['purchase:receiving:record'],
+  'ReceivePurchaseUnit': ['purchase:receiving:record'],
+  'ConfirmPurchaseUnit': ['purchase:receiving:confirm'],
+  'AddReceivedItemCost': ['purchase:receiving:record'],
   'RecordPurchasePayment': ['purchase:payment:create'],
   'CreatePurchaseReturn': ['purchase:return:create'],
   'AddPurchaseReturnItems': ['purchase:return:add'],
@@ -164,6 +167,9 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'CancelPurchase': ['ADMIN', 'MANAGER', 'STAFF'],
   'CreatePurchaseReceiving': ['ADMIN', 'MANAGER', 'STAFF'],
   'AddReceivedItems': ['ADMIN', 'MANAGER', 'STAFF'],
+  'ReceivePurchaseUnit': ['ADMIN', 'MANAGER', 'STAFF'],
+  'ConfirmPurchaseUnit': ['ADMIN', 'MANAGER', 'STAFF'],
+  'AddReceivedItemCost': ['ADMIN', 'MANAGER', 'STAFF'],
   'RecordPurchasePayment': ['ADMIN', 'MANAGER', 'STAFF'],
   'CreatePurchaseReturn': ['ADMIN', 'MANAGER', 'STAFF'],
   'AddPurchaseReturnItems': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -282,7 +288,7 @@ export class AppController {
         return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
       }
 
-      if (['CreatePurchase', 'AddPurchaseItem', 'UpdatePurchaseItem', 'RemovePurchaseItem', 'ConfirmPurchase', 'CancelPurchase', 'CreatePurchaseReceiving', 'AddReceivedItems', 'RecordPurchasePayment', 'CreatePurchaseReturn', 'AddPurchaseReturnItems', 'AddPurchaseDocument', 'GetPurchases', 'GetPurchaseById', 'GetPurchaseByNumber', 'GetPurchaseItems', 'GetPurchaseReceivings', 'GetPurchasePayments', 'GetPurchaseReturns', 'GetPurchaseDocuments', 'GetPurchaseHistory'].includes(cmd)) {
+      if (['CreatePurchase', 'AddPurchaseItem', 'UpdatePurchaseItem', 'RemovePurchaseItem', 'ConfirmPurchase', 'CancelPurchase', 'CreatePurchaseReceiving', 'AddReceivedItems', 'ReceivePurchaseUnit', 'ConfirmPurchaseUnit', 'AddReceivedItemCost', 'RecordPurchasePayment', 'CreatePurchaseReturn', 'AddPurchaseReturnItems', 'AddPurchaseDocument', 'GetPurchases', 'GetPurchaseById', 'GetPurchaseByNumber', 'GetPurchaseItems', 'GetPurchaseReceivings', 'GetPurchasePayments', 'GetPurchaseReturns', 'GetPurchaseDocuments', 'GetPurchaseHistory'].includes(cmd)) {
         return await firstValueFrom(this.purchaseClient.send({ cmd }, { payload, context }));
       }
 

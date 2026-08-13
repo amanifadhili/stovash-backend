@@ -7,7 +7,6 @@ export interface UpdatePurchaseItemPayload {
   unitPrice?: number;
   discountAmount?: number;
   discountType?: 'PERCENTAGE' | 'FIXED';
-  taxRate?: number;
   otherCosts?: number;
   purchaseSpecs?: string;
   notes?: string;

@@ -10,6 +10,9 @@ import {
   CancelPurchaseCommand,
   CreatePurchaseReceivingCommand,
   AddReceivedItemsCommand,
+  ReceivePurchaseUnitCommand,
+  ConfirmPurchaseUnitCommand,
+  AddReceivedItemCostCommand,
   RecordPurchasePaymentCommand,
   CreatePurchaseReturnCommand,
   AddPurchaseReturnItemsCommand,
@@ -73,6 +76,21 @@ export class PurchaseServiceController {
   @MessagePattern({ cmd: 'AddReceivedItems' })
   async handleAddReceivedItems(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new AddReceivedItemsCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'ReceivePurchaseUnit' })
+  async handleReceivePurchaseUnit(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ReceivePurchaseUnitCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'ConfirmPurchaseUnit' })
+  async handleConfirmPurchaseUnit(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ConfirmPurchaseUnitCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'AddReceivedItemCost' })
+  async handleAddReceivedItemCost(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new AddReceivedItemCostCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'RecordPurchasePayment' })

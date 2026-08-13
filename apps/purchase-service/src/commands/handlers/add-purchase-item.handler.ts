@@ -22,7 +22,6 @@ export class AddPurchaseItemHandler extends BaseCommandHandler<AddPurchaseItemCo
         unitPrice,
         discountAmount = 0,
         discountType = 'FIXED',
-        taxRate = 0,
         otherCosts = 0,
         purchaseSpecs,
         notes,
@@ -43,9 +42,8 @@ export class AddPurchaseItemHandler extends BaseCommandHandler<AddPurchaseItemCo
       const gross = orderedQty * unitPrice;
       const discount = discountType === 'PERCENTAGE' ? (gross * discountAmount / 100) : discountAmount;
       const net = gross - discount;
-      const tax = net * (taxRate / 100);
-      const lineTotal = net + tax + otherCosts;
-      const acquisitionCost = lineTotal / orderedQty; // per unit
+      const lineTotal = net + otherCosts;
+      const acquisitionCost = orderedQty > 0 ? lineTotal / orderedQty : 0; // per unit
 
       const item = await prisma.purchaseItem.create({
         data: {
@@ -58,8 +56,6 @@ export class AddPurchaseItemHandler extends BaseCommandHandler<AddPurchaseItemCo
           unitPrice,
           discountAmount: discount,
           discountType,
-          taxRate,
-          taxAmount: tax,
           otherCosts,
           lineTotal,
           acquisitionCost,
@@ -112,13 +108,12 @@ export class AddPurchaseItemHandler extends BaseCommandHandler<AddPurchaseItemCo
     const items = await prisma.purchaseItem.findMany({ where: { purchaseId } });
     const subtotal = items.reduce((sum, i) => sum + i.orderedQty * i.unitPrice, 0);
     const discountTotal = items.reduce((sum, i) => sum + i.discountAmount, 0);
-    const taxTotal = items.reduce((sum, i) => sum + i.taxAmount, 0);
     const otherCostTotal = items.reduce((sum, i) => sum + i.otherCosts, 0);
     const grandTotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
 
     await prisma.purchase.update({
       where: { id: purchaseId },
-      data: { subtotal, discountTotal, taxTotal, otherCostTotal, grandTotal, amountOutstanding: grandTotal },
+      data: { subtotal, discountTotal, otherCostTotal, grandTotal, amountOutstanding: grandTotal },
     });
   }
 }

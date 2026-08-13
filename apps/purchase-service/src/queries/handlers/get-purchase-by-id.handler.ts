@@ -17,7 +17,12 @@ export class GetPurchaseByIdHandler implements IQueryHandler<GetPurchaseByIdQuer
         include: {
           items: {
             include: {
-              receivedItems: { include: { receiving: { select: { receivingNumber: true, receivedAt: true } } } },
+              receivedItems: {
+                include: {
+                  receiving: { select: { receivingNumber: true, receivedAt: true } },
+                  costs: true,
+                },
+              },
               returnItems: true,
             },
           },

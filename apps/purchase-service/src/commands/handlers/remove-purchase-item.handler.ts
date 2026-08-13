@@ -68,13 +68,12 @@ export class RemovePurchaseItemHandler extends BaseCommandHandler<RemovePurchase
     const items = await prisma.purchaseItem.findMany({ where: { purchaseId } });
     const subtotal = items.reduce((sum, i) => sum + i.orderedQty * i.unitPrice, 0);
     const discountTotal = items.reduce((sum, i) => sum + i.discountAmount, 0);
-    const taxTotal = items.reduce((sum, i) => sum + i.taxAmount, 0);
     const otherCostTotal = items.reduce((sum, i) => sum + i.otherCosts, 0);
     const grandTotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
 
     await prisma.purchase.update({
       where: { id: purchaseId },
-      data: { subtotal, discountTotal, taxTotal, otherCostTotal, grandTotal, amountOutstanding: grandTotal },
+      data: { subtotal, discountTotal, otherCostTotal, grandTotal, amountOutstanding: grandTotal },
     });
   }
 }

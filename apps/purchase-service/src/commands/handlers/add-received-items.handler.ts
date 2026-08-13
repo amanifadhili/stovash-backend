@@ -67,7 +67,11 @@ export class AddReceivedItemsHandler extends BaseCommandHandler<AddReceivedItems
             condition: item.condition,
             actualSpecs: item.actualSpecs,
             unitAcquisitionCost: item.unitAcquisitionCost,
+            status: 'PENDING',
+            receivedAt: new Date(),
+            receivedById: recordedById,
             notes: item.notes,
+            images: Array.isArray(item.images) && item.images.length > 0 ? item.images.slice(0, 3) : undefined,
           },
         });
 

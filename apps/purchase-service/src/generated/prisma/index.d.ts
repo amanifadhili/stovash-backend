@@ -29,6 +29,11 @@ export type PurchaseItem = $Result.DefaultSelection<Prisma.$PurchaseItemPayload>
  */
 export type PurchaseReceivedItem = $Result.DefaultSelection<Prisma.$PurchaseReceivedItemPayload>
 /**
+ * Model PurchaseReceivedItemCost
+ * 
+ */
+export type PurchaseReceivedItemCost = $Result.DefaultSelection<Prisma.$PurchaseReceivedItemCostPayload>
+/**
  * Model PurchaseReceiving
  * 
  */
@@ -313,6 +318,16 @@ export class PrismaClient<
     * ```
     */
   get purchaseReceivedItem(): Prisma.PurchaseReceivedItemDelegate<ExtArgs>;
+
+  /**
+   * `prisma.purchaseReceivedItemCost`: Exposes CRUD operations for the **PurchaseReceivedItemCost** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PurchaseReceivedItemCosts
+    * const purchaseReceivedItemCosts = await prisma.purchaseReceivedItemCost.findMany()
+    * ```
+    */
+  get purchaseReceivedItemCost(): Prisma.PurchaseReceivedItemCostDelegate<ExtArgs>;
 
   /**
    * `prisma.purchaseReceiving`: Exposes CRUD operations for the **PurchaseReceiving** model.
@@ -847,6 +862,7 @@ export namespace Prisma {
     Purchase: 'Purchase',
     PurchaseItem: 'PurchaseItem',
     PurchaseReceivedItem: 'PurchaseReceivedItem',
+    PurchaseReceivedItemCost: 'PurchaseReceivedItemCost',
     PurchaseReceiving: 'PurchaseReceiving',
     PurchasePayment: 'PurchasePayment',
     PurchaseReturn: 'PurchaseReturn',
@@ -871,7 +887,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "purchase" | "purchaseItem" | "purchaseReceivedItem" | "purchaseReceiving" | "purchasePayment" | "purchaseReturn" | "purchaseReturnItem" | "purchaseDocument" | "purchaseHistory" | "supplierOrder" | "supplierOrderItem" | "auditLog"
+      modelProps: "purchase" | "purchaseItem" | "purchaseReceivedItem" | "purchaseReceivedItemCost" | "purchaseReceiving" | "purchasePayment" | "purchaseReturn" | "purchaseReturnItem" | "purchaseDocument" | "purchaseHistory" | "supplierOrder" | "supplierOrderItem" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1082,6 +1098,76 @@ export namespace Prisma {
           count: {
             args: Prisma.PurchaseReceivedItemCountArgs<ExtArgs>
             result: $Utils.Optional<PurchaseReceivedItemCountAggregateOutputType> | number
+          }
+        }
+      }
+      PurchaseReceivedItemCost: {
+        payload: Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>
+        fields: Prisma.PurchaseReceivedItemCostFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PurchaseReceivedItemCostFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PurchaseReceivedItemCostFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload>
+          }
+          findFirst: {
+            args: Prisma.PurchaseReceivedItemCostFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PurchaseReceivedItemCostFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload>
+          }
+          findMany: {
+            args: Prisma.PurchaseReceivedItemCostFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload>[]
+          }
+          create: {
+            args: Prisma.PurchaseReceivedItemCostCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload>
+          }
+          createMany: {
+            args: Prisma.PurchaseReceivedItemCostCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PurchaseReceivedItemCostCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload>[]
+          }
+          delete: {
+            args: Prisma.PurchaseReceivedItemCostDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload>
+          }
+          update: {
+            args: Prisma.PurchaseReceivedItemCostUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload>
+          }
+          deleteMany: {
+            args: Prisma.PurchaseReceivedItemCostDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PurchaseReceivedItemCostUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PurchaseReceivedItemCostUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PurchaseReceivedItemCostPayload>
+          }
+          aggregate: {
+            args: Prisma.PurchaseReceivedItemCostAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePurchaseReceivedItemCost>
+          }
+          groupBy: {
+            args: Prisma.PurchaseReceivedItemCostGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PurchaseReceivedItemCostGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PurchaseReceivedItemCostCountArgs<ExtArgs>
+            result: $Utils.Optional<PurchaseReceivedItemCostCountAggregateOutputType> | number
           }
         }
       }
@@ -1997,6 +2083,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type PurchaseReceivedItemCountOutputType
+   */
+
+  export type PurchaseReceivedItemCountOutputType = {
+    costs: number
+  }
+
+  export type PurchaseReceivedItemCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    costs?: boolean | PurchaseReceivedItemCountOutputTypeCountCostsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PurchaseReceivedItemCountOutputType without action
+   */
+  export type PurchaseReceivedItemCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCountOutputType
+     */
+    select?: PurchaseReceivedItemCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PurchaseReceivedItemCountOutputType without action
+   */
+  export type PurchaseReceivedItemCountOutputTypeCountCostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PurchaseReceivedItemCostWhereInput
+  }
+
+
+  /**
    * Count Type PurchaseReceivingCountOutputType
    */
 
@@ -2109,7 +2226,6 @@ export namespace Prisma {
     exchangeRate: number | null
     subtotal: number | null
     discountTotal: number | null
-    taxTotal: number | null
     otherCostTotal: number | null
     grandTotal: number | null
     amountPaid: number | null
@@ -2120,7 +2236,6 @@ export namespace Prisma {
     exchangeRate: number | null
     subtotal: number | null
     discountTotal: number | null
-    taxTotal: number | null
     otherCostTotal: number | null
     grandTotal: number | null
     amountPaid: number | null
@@ -2136,7 +2251,6 @@ export namespace Prisma {
     supplierName: string | null
     supplierContact: string | null
     supplierAddress: string | null
-    supplierTaxId: string | null
     purchaseDate: Date | null
     supplierInvoiceNo: string | null
     currency: string | null
@@ -2147,7 +2261,6 @@ export namespace Prisma {
     accountingStatus: $Enums.PurchaseAccountingStatus | null
     subtotal: number | null
     discountTotal: number | null
-    taxTotal: number | null
     otherCostTotal: number | null
     grandTotal: number | null
     amountPaid: number | null
@@ -2169,7 +2282,6 @@ export namespace Prisma {
     supplierName: string | null
     supplierContact: string | null
     supplierAddress: string | null
-    supplierTaxId: string | null
     purchaseDate: Date | null
     supplierInvoiceNo: string | null
     currency: string | null
@@ -2180,7 +2292,6 @@ export namespace Prisma {
     accountingStatus: $Enums.PurchaseAccountingStatus | null
     subtotal: number | null
     discountTotal: number | null
-    taxTotal: number | null
     otherCostTotal: number | null
     grandTotal: number | null
     amountPaid: number | null
@@ -2202,7 +2313,6 @@ export namespace Prisma {
     supplierName: number
     supplierContact: number
     supplierAddress: number
-    supplierTaxId: number
     purchaseDate: number
     supplierInvoiceNo: number
     currency: number
@@ -2213,7 +2323,6 @@ export namespace Prisma {
     accountingStatus: number
     subtotal: number
     discountTotal: number
-    taxTotal: number
     otherCostTotal: number
     grandTotal: number
     amountPaid: number
@@ -2232,7 +2341,6 @@ export namespace Prisma {
     exchangeRate?: true
     subtotal?: true
     discountTotal?: true
-    taxTotal?: true
     otherCostTotal?: true
     grandTotal?: true
     amountPaid?: true
@@ -2243,7 +2351,6 @@ export namespace Prisma {
     exchangeRate?: true
     subtotal?: true
     discountTotal?: true
-    taxTotal?: true
     otherCostTotal?: true
     grandTotal?: true
     amountPaid?: true
@@ -2259,7 +2366,6 @@ export namespace Prisma {
     supplierName?: true
     supplierContact?: true
     supplierAddress?: true
-    supplierTaxId?: true
     purchaseDate?: true
     supplierInvoiceNo?: true
     currency?: true
@@ -2270,7 +2376,6 @@ export namespace Prisma {
     accountingStatus?: true
     subtotal?: true
     discountTotal?: true
-    taxTotal?: true
     otherCostTotal?: true
     grandTotal?: true
     amountPaid?: true
@@ -2292,7 +2397,6 @@ export namespace Prisma {
     supplierName?: true
     supplierContact?: true
     supplierAddress?: true
-    supplierTaxId?: true
     purchaseDate?: true
     supplierInvoiceNo?: true
     currency?: true
@@ -2303,7 +2407,6 @@ export namespace Prisma {
     accountingStatus?: true
     subtotal?: true
     discountTotal?: true
-    taxTotal?: true
     otherCostTotal?: true
     grandTotal?: true
     amountPaid?: true
@@ -2325,7 +2428,6 @@ export namespace Prisma {
     supplierName?: true
     supplierContact?: true
     supplierAddress?: true
-    supplierTaxId?: true
     purchaseDate?: true
     supplierInvoiceNo?: true
     currency?: true
@@ -2336,7 +2438,6 @@ export namespace Prisma {
     accountingStatus?: true
     subtotal?: true
     discountTotal?: true
-    taxTotal?: true
     otherCostTotal?: true
     grandTotal?: true
     amountPaid?: true
@@ -2445,7 +2546,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact: string | null
     supplierAddress: string | null
-    supplierTaxId: string | null
     purchaseDate: Date
     supplierInvoiceNo: string | null
     currency: string
@@ -2456,7 +2556,6 @@ export namespace Prisma {
     accountingStatus: $Enums.PurchaseAccountingStatus
     subtotal: number
     discountTotal: number
-    taxTotal: number
     otherCostTotal: number
     grandTotal: number
     amountPaid: number
@@ -2497,7 +2596,6 @@ export namespace Prisma {
     supplierName?: boolean
     supplierContact?: boolean
     supplierAddress?: boolean
-    supplierTaxId?: boolean
     purchaseDate?: boolean
     supplierInvoiceNo?: boolean
     currency?: boolean
@@ -2508,7 +2606,6 @@ export namespace Prisma {
     accountingStatus?: boolean
     subtotal?: boolean
     discountTotal?: boolean
-    taxTotal?: boolean
     otherCostTotal?: boolean
     grandTotal?: boolean
     amountPaid?: boolean
@@ -2538,7 +2635,6 @@ export namespace Prisma {
     supplierName?: boolean
     supplierContact?: boolean
     supplierAddress?: boolean
-    supplierTaxId?: boolean
     purchaseDate?: boolean
     supplierInvoiceNo?: boolean
     currency?: boolean
@@ -2549,7 +2645,6 @@ export namespace Prisma {
     accountingStatus?: boolean
     subtotal?: boolean
     discountTotal?: boolean
-    taxTotal?: boolean
     otherCostTotal?: boolean
     grandTotal?: boolean
     amountPaid?: boolean
@@ -2571,7 +2666,6 @@ export namespace Prisma {
     supplierName?: boolean
     supplierContact?: boolean
     supplierAddress?: boolean
-    supplierTaxId?: boolean
     purchaseDate?: boolean
     supplierInvoiceNo?: boolean
     currency?: boolean
@@ -2582,7 +2676,6 @@ export namespace Prisma {
     accountingStatus?: boolean
     subtotal?: boolean
     discountTotal?: boolean
-    taxTotal?: boolean
     otherCostTotal?: boolean
     grandTotal?: boolean
     amountPaid?: boolean
@@ -2627,7 +2720,6 @@ export namespace Prisma {
       supplierName: string
       supplierContact: string | null
       supplierAddress: string | null
-      supplierTaxId: string | null
       purchaseDate: Date
       supplierInvoiceNo: string | null
       currency: string
@@ -2638,7 +2730,6 @@ export namespace Prisma {
       accountingStatus: $Enums.PurchaseAccountingStatus
       subtotal: number
       discountTotal: number
-      taxTotal: number
       otherCostTotal: number
       grandTotal: number
       amountPaid: number
@@ -3057,7 +3148,6 @@ export namespace Prisma {
     readonly supplierName: FieldRef<"Purchase", 'String'>
     readonly supplierContact: FieldRef<"Purchase", 'String'>
     readonly supplierAddress: FieldRef<"Purchase", 'String'>
-    readonly supplierTaxId: FieldRef<"Purchase", 'String'>
     readonly purchaseDate: FieldRef<"Purchase", 'DateTime'>
     readonly supplierInvoiceNo: FieldRef<"Purchase", 'String'>
     readonly currency: FieldRef<"Purchase", 'String'>
@@ -3068,7 +3158,6 @@ export namespace Prisma {
     readonly accountingStatus: FieldRef<"Purchase", 'PurchaseAccountingStatus'>
     readonly subtotal: FieldRef<"Purchase", 'Float'>
     readonly discountTotal: FieldRef<"Purchase", 'Float'>
-    readonly taxTotal: FieldRef<"Purchase", 'Float'>
     readonly otherCostTotal: FieldRef<"Purchase", 'Float'>
     readonly grandTotal: FieldRef<"Purchase", 'Float'>
     readonly amountPaid: FieldRef<"Purchase", 'Float'>
@@ -3567,8 +3656,6 @@ export namespace Prisma {
     returnedQty: number | null
     unitPrice: number | null
     discountAmount: number | null
-    taxRate: number | null
-    taxAmount: number | null
     otherCosts: number | null
     lineTotal: number | null
     acquisitionCost: number | null
@@ -3582,8 +3669,6 @@ export namespace Prisma {
     returnedQty: number | null
     unitPrice: number | null
     discountAmount: number | null
-    taxRate: number | null
-    taxAmount: number | null
     otherCosts: number | null
     lineTotal: number | null
     acquisitionCost: number | null
@@ -3604,8 +3689,6 @@ export namespace Prisma {
     unitPrice: number | null
     discountAmount: number | null
     discountType: string | null
-    taxRate: number | null
-    taxAmount: number | null
     otherCosts: number | null
     lineTotal: number | null
     acquisitionCost: number | null
@@ -3630,8 +3713,6 @@ export namespace Prisma {
     unitPrice: number | null
     discountAmount: number | null
     discountType: string | null
-    taxRate: number | null
-    taxAmount: number | null
     otherCosts: number | null
     lineTotal: number | null
     acquisitionCost: number | null
@@ -3656,8 +3737,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount: number
     discountType: number
-    taxRate: number
-    taxAmount: number
     otherCosts: number
     lineTotal: number
     acquisitionCost: number
@@ -3677,8 +3756,6 @@ export namespace Prisma {
     returnedQty?: true
     unitPrice?: true
     discountAmount?: true
-    taxRate?: true
-    taxAmount?: true
     otherCosts?: true
     lineTotal?: true
     acquisitionCost?: true
@@ -3692,8 +3769,6 @@ export namespace Prisma {
     returnedQty?: true
     unitPrice?: true
     discountAmount?: true
-    taxRate?: true
-    taxAmount?: true
     otherCosts?: true
     lineTotal?: true
     acquisitionCost?: true
@@ -3714,8 +3789,6 @@ export namespace Prisma {
     unitPrice?: true
     discountAmount?: true
     discountType?: true
-    taxRate?: true
-    taxAmount?: true
     otherCosts?: true
     lineTotal?: true
     acquisitionCost?: true
@@ -3740,8 +3813,6 @@ export namespace Prisma {
     unitPrice?: true
     discountAmount?: true
     discountType?: true
-    taxRate?: true
-    taxAmount?: true
     otherCosts?: true
     lineTotal?: true
     acquisitionCost?: true
@@ -3766,8 +3837,6 @@ export namespace Prisma {
     unitPrice?: true
     discountAmount?: true
     discountType?: true
-    taxRate?: true
-    taxAmount?: true
     otherCosts?: true
     lineTotal?: true
     acquisitionCost?: true
@@ -3879,8 +3948,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount: number
     discountType: string | null
-    taxRate: number
-    taxAmount: number
     otherCosts: number
     lineTotal: number
     acquisitionCost: number
@@ -3924,8 +3991,6 @@ export namespace Prisma {
     unitPrice?: boolean
     discountAmount?: boolean
     discountType?: boolean
-    taxRate?: boolean
-    taxAmount?: boolean
     otherCosts?: boolean
     lineTotal?: boolean
     acquisitionCost?: boolean
@@ -3954,8 +4019,6 @@ export namespace Prisma {
     unitPrice?: boolean
     discountAmount?: boolean
     discountType?: boolean
-    taxRate?: boolean
-    taxAmount?: boolean
     otherCosts?: boolean
     lineTotal?: boolean
     acquisitionCost?: boolean
@@ -3981,8 +4044,6 @@ export namespace Prisma {
     unitPrice?: boolean
     discountAmount?: boolean
     discountType?: boolean
-    taxRate?: boolean
-    taxAmount?: boolean
     otherCosts?: boolean
     lineTotal?: boolean
     acquisitionCost?: boolean
@@ -4024,8 +4085,6 @@ export namespace Prisma {
       unitPrice: number
       discountAmount: number
       discountType: string | null
-      taxRate: number
-      taxAmount: number
       otherCosts: number
       lineTotal: number
       acquisitionCost: number
@@ -4443,8 +4502,6 @@ export namespace Prisma {
     readonly unitPrice: FieldRef<"PurchaseItem", 'Float'>
     readonly discountAmount: FieldRef<"PurchaseItem", 'Float'>
     readonly discountType: FieldRef<"PurchaseItem", 'String'>
-    readonly taxRate: FieldRef<"PurchaseItem", 'Float'>
-    readonly taxAmount: FieldRef<"PurchaseItem", 'Float'>
     readonly otherCosts: FieldRef<"PurchaseItem", 'Float'>
     readonly lineTotal: FieldRef<"PurchaseItem", 'Float'>
     readonly acquisitionCost: FieldRef<"PurchaseItem", 'Float'>
@@ -4838,10 +4895,12 @@ export namespace Prisma {
 
   export type PurchaseReceivedItemAvgAggregateOutputType = {
     unitAcquisitionCost: number | null
+    additionalCost: number | null
   }
 
   export type PurchaseReceivedItemSumAggregateOutputType = {
     unitAcquisitionCost: number | null
+    additionalCost: number | null
   }
 
   export type PurchaseReceivedItemMinAggregateOutputType = {
@@ -4855,7 +4914,13 @@ export namespace Prisma {
     condition: $Enums.ReceivingItemCondition | null
     actualSpecs: string | null
     unitAcquisitionCost: number | null
+    status: string | null
+    confirmedAt: Date | null
+    confirmedById: string | null
+    receivedAt: Date | null
+    receivedById: string | null
     notes: string | null
+    additionalCost: number | null
     createdAt: Date | null
   }
 
@@ -4870,7 +4935,13 @@ export namespace Prisma {
     condition: $Enums.ReceivingItemCondition | null
     actualSpecs: string | null
     unitAcquisitionCost: number | null
+    status: string | null
+    confirmedAt: Date | null
+    confirmedById: string | null
+    receivedAt: Date | null
+    receivedById: string | null
     notes: string | null
+    additionalCost: number | null
     createdAt: Date | null
   }
 
@@ -4885,7 +4956,14 @@ export namespace Prisma {
     condition: number
     actualSpecs: number
     unitAcquisitionCost: number
+    status: number
+    confirmedAt: number
+    confirmedById: number
+    receivedAt: number
+    receivedById: number
     notes: number
+    additionalCost: number
+    images: number
     createdAt: number
     _all: number
   }
@@ -4893,10 +4971,12 @@ export namespace Prisma {
 
   export type PurchaseReceivedItemAvgAggregateInputType = {
     unitAcquisitionCost?: true
+    additionalCost?: true
   }
 
   export type PurchaseReceivedItemSumAggregateInputType = {
     unitAcquisitionCost?: true
+    additionalCost?: true
   }
 
   export type PurchaseReceivedItemMinAggregateInputType = {
@@ -4910,7 +4990,13 @@ export namespace Prisma {
     condition?: true
     actualSpecs?: true
     unitAcquisitionCost?: true
+    status?: true
+    confirmedAt?: true
+    confirmedById?: true
+    receivedAt?: true
+    receivedById?: true
     notes?: true
+    additionalCost?: true
     createdAt?: true
   }
 
@@ -4925,7 +5011,13 @@ export namespace Prisma {
     condition?: true
     actualSpecs?: true
     unitAcquisitionCost?: true
+    status?: true
+    confirmedAt?: true
+    confirmedById?: true
+    receivedAt?: true
+    receivedById?: true
     notes?: true
+    additionalCost?: true
     createdAt?: true
   }
 
@@ -4940,7 +5032,14 @@ export namespace Prisma {
     condition?: true
     actualSpecs?: true
     unitAcquisitionCost?: true
+    status?: true
+    confirmedAt?: true
+    confirmedById?: true
+    receivedAt?: true
+    receivedById?: true
     notes?: true
+    additionalCost?: true
+    images?: true
     createdAt?: true
     _all?: true
   }
@@ -5035,14 +5134,21 @@ export namespace Prisma {
     id: string
     purchaseId: string
     purchaseItemId: string
-    receivingId: string
+    receivingId: string | null
     serialNumber: string | null
     imei1: string | null
     imei2: string | null
     condition: $Enums.ReceivingItemCondition
     actualSpecs: string | null
     unitAcquisitionCost: number
+    status: string
+    confirmedAt: Date | null
+    confirmedById: string | null
+    receivedAt: Date
+    receivedById: string
     notes: string | null
+    additionalCost: number
+    images: JsonValue | null
     createdAt: Date
     _count: PurchaseReceivedItemCountAggregateOutputType | null
     _avg: PurchaseReceivedItemAvgAggregateOutputType | null
@@ -5076,11 +5182,20 @@ export namespace Prisma {
     condition?: boolean
     actualSpecs?: boolean
     unitAcquisitionCost?: boolean
+    status?: boolean
+    confirmedAt?: boolean
+    confirmedById?: boolean
+    receivedAt?: boolean
+    receivedById?: boolean
     notes?: boolean
+    additionalCost?: boolean
+    images?: boolean
     createdAt?: boolean
     purchase?: boolean | PurchaseDefaultArgs<ExtArgs>
     purchaseItem?: boolean | PurchaseItemDefaultArgs<ExtArgs>
-    receiving?: boolean | PurchaseReceivingDefaultArgs<ExtArgs>
+    receiving?: boolean | PurchaseReceivedItem$receivingArgs<ExtArgs>
+    costs?: boolean | PurchaseReceivedItem$costsArgs<ExtArgs>
+    _count?: boolean | PurchaseReceivedItemCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["purchaseReceivedItem"]>
 
   export type PurchaseReceivedItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5094,11 +5209,18 @@ export namespace Prisma {
     condition?: boolean
     actualSpecs?: boolean
     unitAcquisitionCost?: boolean
+    status?: boolean
+    confirmedAt?: boolean
+    confirmedById?: boolean
+    receivedAt?: boolean
+    receivedById?: boolean
     notes?: boolean
+    additionalCost?: boolean
+    images?: boolean
     createdAt?: boolean
     purchase?: boolean | PurchaseDefaultArgs<ExtArgs>
     purchaseItem?: boolean | PurchaseItemDefaultArgs<ExtArgs>
-    receiving?: boolean | PurchaseReceivingDefaultArgs<ExtArgs>
+    receiving?: boolean | PurchaseReceivedItem$receivingArgs<ExtArgs>
   }, ExtArgs["result"]["purchaseReceivedItem"]>
 
   export type PurchaseReceivedItemSelectScalar = {
@@ -5112,19 +5234,28 @@ export namespace Prisma {
     condition?: boolean
     actualSpecs?: boolean
     unitAcquisitionCost?: boolean
+    status?: boolean
+    confirmedAt?: boolean
+    confirmedById?: boolean
+    receivedAt?: boolean
+    receivedById?: boolean
     notes?: boolean
+    additionalCost?: boolean
+    images?: boolean
     createdAt?: boolean
   }
 
   export type PurchaseReceivedItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     purchase?: boolean | PurchaseDefaultArgs<ExtArgs>
     purchaseItem?: boolean | PurchaseItemDefaultArgs<ExtArgs>
-    receiving?: boolean | PurchaseReceivingDefaultArgs<ExtArgs>
+    receiving?: boolean | PurchaseReceivedItem$receivingArgs<ExtArgs>
+    costs?: boolean | PurchaseReceivedItem$costsArgs<ExtArgs>
+    _count?: boolean | PurchaseReceivedItemCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PurchaseReceivedItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     purchase?: boolean | PurchaseDefaultArgs<ExtArgs>
     purchaseItem?: boolean | PurchaseItemDefaultArgs<ExtArgs>
-    receiving?: boolean | PurchaseReceivingDefaultArgs<ExtArgs>
+    receiving?: boolean | PurchaseReceivedItem$receivingArgs<ExtArgs>
   }
 
   export type $PurchaseReceivedItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5132,20 +5263,28 @@ export namespace Prisma {
     objects: {
       purchase: Prisma.$PurchasePayload<ExtArgs>
       purchaseItem: Prisma.$PurchaseItemPayload<ExtArgs>
-      receiving: Prisma.$PurchaseReceivingPayload<ExtArgs>
+      receiving: Prisma.$PurchaseReceivingPayload<ExtArgs> | null
+      costs: Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       purchaseId: string
       purchaseItemId: string
-      receivingId: string
+      receivingId: string | null
       serialNumber: string | null
       imei1: string | null
       imei2: string | null
       condition: $Enums.ReceivingItemCondition
       actualSpecs: string | null
       unitAcquisitionCost: number
+      status: string
+      confirmedAt: Date | null
+      confirmedById: string | null
+      receivedAt: Date
+      receivedById: string
       notes: string | null
+      additionalCost: number
+      images: Prisma.JsonValue | null
       createdAt: Date
     }, ExtArgs["result"]["purchaseReceivedItem"]>
     composites: {}
@@ -5513,7 +5652,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     purchase<T extends PurchaseDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseDefaultArgs<ExtArgs>>): Prisma__PurchaseClient<$Result.GetResult<Prisma.$PurchasePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     purchaseItem<T extends PurchaseItemDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseItemDefaultArgs<ExtArgs>>): Prisma__PurchaseItemClient<$Result.GetResult<Prisma.$PurchaseItemPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    receiving<T extends PurchaseReceivingDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseReceivingDefaultArgs<ExtArgs>>): Prisma__PurchaseReceivingClient<$Result.GetResult<Prisma.$PurchaseReceivingPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    receiving<T extends PurchaseReceivedItem$receivingArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseReceivedItem$receivingArgs<ExtArgs>>): Prisma__PurchaseReceivingClient<$Result.GetResult<Prisma.$PurchaseReceivingPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    costs<T extends PurchaseReceivedItem$costsArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseReceivedItem$costsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5553,7 +5693,14 @@ export namespace Prisma {
     readonly condition: FieldRef<"PurchaseReceivedItem", 'ReceivingItemCondition'>
     readonly actualSpecs: FieldRef<"PurchaseReceivedItem", 'String'>
     readonly unitAcquisitionCost: FieldRef<"PurchaseReceivedItem", 'Float'>
+    readonly status: FieldRef<"PurchaseReceivedItem", 'String'>
+    readonly confirmedAt: FieldRef<"PurchaseReceivedItem", 'DateTime'>
+    readonly confirmedById: FieldRef<"PurchaseReceivedItem", 'String'>
+    readonly receivedAt: FieldRef<"PurchaseReceivedItem", 'DateTime'>
+    readonly receivedById: FieldRef<"PurchaseReceivedItem", 'String'>
     readonly notes: FieldRef<"PurchaseReceivedItem", 'String'>
+    readonly additionalCost: FieldRef<"PurchaseReceivedItem", 'Float'>
+    readonly images: FieldRef<"PurchaseReceivedItem", 'Json'>
     readonly createdAt: FieldRef<"PurchaseReceivedItem", 'DateTime'>
   }
     
@@ -5873,6 +6020,41 @@ export namespace Prisma {
   }
 
   /**
+   * PurchaseReceivedItem.receiving
+   */
+  export type PurchaseReceivedItem$receivingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceiving
+     */
+    select?: PurchaseReceivingSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivingInclude<ExtArgs> | null
+    where?: PurchaseReceivingWhereInput
+  }
+
+  /**
+   * PurchaseReceivedItem.costs
+   */
+  export type PurchaseReceivedItem$costsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    where?: PurchaseReceivedItemCostWhereInput
+    orderBy?: PurchaseReceivedItemCostOrderByWithRelationInput | PurchaseReceivedItemCostOrderByWithRelationInput[]
+    cursor?: PurchaseReceivedItemCostWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PurchaseReceivedItemCostScalarFieldEnum | PurchaseReceivedItemCostScalarFieldEnum[]
+  }
+
+  /**
    * PurchaseReceivedItem without action
    */
   export type PurchaseReceivedItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5884,6 +6066,997 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PurchaseReceivedItemInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PurchaseReceivedItemCost
+   */
+
+  export type AggregatePurchaseReceivedItemCost = {
+    _count: PurchaseReceivedItemCostCountAggregateOutputType | null
+    _avg: PurchaseReceivedItemCostAvgAggregateOutputType | null
+    _sum: PurchaseReceivedItemCostSumAggregateOutputType | null
+    _min: PurchaseReceivedItemCostMinAggregateOutputType | null
+    _max: PurchaseReceivedItemCostMaxAggregateOutputType | null
+  }
+
+  export type PurchaseReceivedItemCostAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type PurchaseReceivedItemCostSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type PurchaseReceivedItemCostMinAggregateOutputType = {
+    id: string | null
+    receivedItemId: string | null
+    label: string | null
+    amount: number | null
+    addedById: string | null
+    addedAt: Date | null
+    notes: string | null
+  }
+
+  export type PurchaseReceivedItemCostMaxAggregateOutputType = {
+    id: string | null
+    receivedItemId: string | null
+    label: string | null
+    amount: number | null
+    addedById: string | null
+    addedAt: Date | null
+    notes: string | null
+  }
+
+  export type PurchaseReceivedItemCostCountAggregateOutputType = {
+    id: number
+    receivedItemId: number
+    label: number
+    amount: number
+    addedById: number
+    addedAt: number
+    notes: number
+    _all: number
+  }
+
+
+  export type PurchaseReceivedItemCostAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type PurchaseReceivedItemCostSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type PurchaseReceivedItemCostMinAggregateInputType = {
+    id?: true
+    receivedItemId?: true
+    label?: true
+    amount?: true
+    addedById?: true
+    addedAt?: true
+    notes?: true
+  }
+
+  export type PurchaseReceivedItemCostMaxAggregateInputType = {
+    id?: true
+    receivedItemId?: true
+    label?: true
+    amount?: true
+    addedById?: true
+    addedAt?: true
+    notes?: true
+  }
+
+  export type PurchaseReceivedItemCostCountAggregateInputType = {
+    id?: true
+    receivedItemId?: true
+    label?: true
+    amount?: true
+    addedById?: true
+    addedAt?: true
+    notes?: true
+    _all?: true
+  }
+
+  export type PurchaseReceivedItemCostAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PurchaseReceivedItemCost to aggregate.
+     */
+    where?: PurchaseReceivedItemCostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PurchaseReceivedItemCosts to fetch.
+     */
+    orderBy?: PurchaseReceivedItemCostOrderByWithRelationInput | PurchaseReceivedItemCostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PurchaseReceivedItemCostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PurchaseReceivedItemCosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PurchaseReceivedItemCosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PurchaseReceivedItemCosts
+    **/
+    _count?: true | PurchaseReceivedItemCostCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PurchaseReceivedItemCostAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PurchaseReceivedItemCostSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PurchaseReceivedItemCostMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PurchaseReceivedItemCostMaxAggregateInputType
+  }
+
+  export type GetPurchaseReceivedItemCostAggregateType<T extends PurchaseReceivedItemCostAggregateArgs> = {
+        [P in keyof T & keyof AggregatePurchaseReceivedItemCost]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePurchaseReceivedItemCost[P]>
+      : GetScalarType<T[P], AggregatePurchaseReceivedItemCost[P]>
+  }
+
+
+
+
+  export type PurchaseReceivedItemCostGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PurchaseReceivedItemCostWhereInput
+    orderBy?: PurchaseReceivedItemCostOrderByWithAggregationInput | PurchaseReceivedItemCostOrderByWithAggregationInput[]
+    by: PurchaseReceivedItemCostScalarFieldEnum[] | PurchaseReceivedItemCostScalarFieldEnum
+    having?: PurchaseReceivedItemCostScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PurchaseReceivedItemCostCountAggregateInputType | true
+    _avg?: PurchaseReceivedItemCostAvgAggregateInputType
+    _sum?: PurchaseReceivedItemCostSumAggregateInputType
+    _min?: PurchaseReceivedItemCostMinAggregateInputType
+    _max?: PurchaseReceivedItemCostMaxAggregateInputType
+  }
+
+  export type PurchaseReceivedItemCostGroupByOutputType = {
+    id: string
+    receivedItemId: string
+    label: string
+    amount: number
+    addedById: string
+    addedAt: Date
+    notes: string | null
+    _count: PurchaseReceivedItemCostCountAggregateOutputType | null
+    _avg: PurchaseReceivedItemCostAvgAggregateOutputType | null
+    _sum: PurchaseReceivedItemCostSumAggregateOutputType | null
+    _min: PurchaseReceivedItemCostMinAggregateOutputType | null
+    _max: PurchaseReceivedItemCostMaxAggregateOutputType | null
+  }
+
+  type GetPurchaseReceivedItemCostGroupByPayload<T extends PurchaseReceivedItemCostGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PurchaseReceivedItemCostGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PurchaseReceivedItemCostGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PurchaseReceivedItemCostGroupByOutputType[P]>
+            : GetScalarType<T[P], PurchaseReceivedItemCostGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PurchaseReceivedItemCostSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    receivedItemId?: boolean
+    label?: boolean
+    amount?: boolean
+    addedById?: boolean
+    addedAt?: boolean
+    notes?: boolean
+    receivedItem?: boolean | PurchaseReceivedItemDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["purchaseReceivedItemCost"]>
+
+  export type PurchaseReceivedItemCostSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    receivedItemId?: boolean
+    label?: boolean
+    amount?: boolean
+    addedById?: boolean
+    addedAt?: boolean
+    notes?: boolean
+    receivedItem?: boolean | PurchaseReceivedItemDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["purchaseReceivedItemCost"]>
+
+  export type PurchaseReceivedItemCostSelectScalar = {
+    id?: boolean
+    receivedItemId?: boolean
+    label?: boolean
+    amount?: boolean
+    addedById?: boolean
+    addedAt?: boolean
+    notes?: boolean
+  }
+
+  export type PurchaseReceivedItemCostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    receivedItem?: boolean | PurchaseReceivedItemDefaultArgs<ExtArgs>
+  }
+  export type PurchaseReceivedItemCostIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    receivedItem?: boolean | PurchaseReceivedItemDefaultArgs<ExtArgs>
+  }
+
+  export type $PurchaseReceivedItemCostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PurchaseReceivedItemCost"
+    objects: {
+      receivedItem: Prisma.$PurchaseReceivedItemPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      receivedItemId: string
+      label: string
+      amount: number
+      addedById: string
+      addedAt: Date
+      notes: string | null
+    }, ExtArgs["result"]["purchaseReceivedItemCost"]>
+    composites: {}
+  }
+
+  type PurchaseReceivedItemCostGetPayload<S extends boolean | null | undefined | PurchaseReceivedItemCostDefaultArgs> = $Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload, S>
+
+  type PurchaseReceivedItemCostCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PurchaseReceivedItemCostFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PurchaseReceivedItemCostCountAggregateInputType | true
+    }
+
+  export interface PurchaseReceivedItemCostDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PurchaseReceivedItemCost'], meta: { name: 'PurchaseReceivedItemCost' } }
+    /**
+     * Find zero or one PurchaseReceivedItemCost that matches the filter.
+     * @param {PurchaseReceivedItemCostFindUniqueArgs} args - Arguments to find a PurchaseReceivedItemCost
+     * @example
+     * // Get one PurchaseReceivedItemCost
+     * const purchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PurchaseReceivedItemCostFindUniqueArgs>(args: SelectSubset<T, PurchaseReceivedItemCostFindUniqueArgs<ExtArgs>>): Prisma__PurchaseReceivedItemCostClient<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PurchaseReceivedItemCost that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PurchaseReceivedItemCostFindUniqueOrThrowArgs} args - Arguments to find a PurchaseReceivedItemCost
+     * @example
+     * // Get one PurchaseReceivedItemCost
+     * const purchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PurchaseReceivedItemCostFindUniqueOrThrowArgs>(args: SelectSubset<T, PurchaseReceivedItemCostFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PurchaseReceivedItemCostClient<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PurchaseReceivedItemCost that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseReceivedItemCostFindFirstArgs} args - Arguments to find a PurchaseReceivedItemCost
+     * @example
+     * // Get one PurchaseReceivedItemCost
+     * const purchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PurchaseReceivedItemCostFindFirstArgs>(args?: SelectSubset<T, PurchaseReceivedItemCostFindFirstArgs<ExtArgs>>): Prisma__PurchaseReceivedItemCostClient<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PurchaseReceivedItemCost that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseReceivedItemCostFindFirstOrThrowArgs} args - Arguments to find a PurchaseReceivedItemCost
+     * @example
+     * // Get one PurchaseReceivedItemCost
+     * const purchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PurchaseReceivedItemCostFindFirstOrThrowArgs>(args?: SelectSubset<T, PurchaseReceivedItemCostFindFirstOrThrowArgs<ExtArgs>>): Prisma__PurchaseReceivedItemCostClient<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PurchaseReceivedItemCosts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseReceivedItemCostFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PurchaseReceivedItemCosts
+     * const purchaseReceivedItemCosts = await prisma.purchaseReceivedItemCost.findMany()
+     * 
+     * // Get first 10 PurchaseReceivedItemCosts
+     * const purchaseReceivedItemCosts = await prisma.purchaseReceivedItemCost.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const purchaseReceivedItemCostWithIdOnly = await prisma.purchaseReceivedItemCost.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PurchaseReceivedItemCostFindManyArgs>(args?: SelectSubset<T, PurchaseReceivedItemCostFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PurchaseReceivedItemCost.
+     * @param {PurchaseReceivedItemCostCreateArgs} args - Arguments to create a PurchaseReceivedItemCost.
+     * @example
+     * // Create one PurchaseReceivedItemCost
+     * const PurchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.create({
+     *   data: {
+     *     // ... data to create a PurchaseReceivedItemCost
+     *   }
+     * })
+     * 
+     */
+    create<T extends PurchaseReceivedItemCostCreateArgs>(args: SelectSubset<T, PurchaseReceivedItemCostCreateArgs<ExtArgs>>): Prisma__PurchaseReceivedItemCostClient<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PurchaseReceivedItemCosts.
+     * @param {PurchaseReceivedItemCostCreateManyArgs} args - Arguments to create many PurchaseReceivedItemCosts.
+     * @example
+     * // Create many PurchaseReceivedItemCosts
+     * const purchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PurchaseReceivedItemCostCreateManyArgs>(args?: SelectSubset<T, PurchaseReceivedItemCostCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PurchaseReceivedItemCosts and returns the data saved in the database.
+     * @param {PurchaseReceivedItemCostCreateManyAndReturnArgs} args - Arguments to create many PurchaseReceivedItemCosts.
+     * @example
+     * // Create many PurchaseReceivedItemCosts
+     * const purchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PurchaseReceivedItemCosts and only return the `id`
+     * const purchaseReceivedItemCostWithIdOnly = await prisma.purchaseReceivedItemCost.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PurchaseReceivedItemCostCreateManyAndReturnArgs>(args?: SelectSubset<T, PurchaseReceivedItemCostCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PurchaseReceivedItemCost.
+     * @param {PurchaseReceivedItemCostDeleteArgs} args - Arguments to delete one PurchaseReceivedItemCost.
+     * @example
+     * // Delete one PurchaseReceivedItemCost
+     * const PurchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.delete({
+     *   where: {
+     *     // ... filter to delete one PurchaseReceivedItemCost
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PurchaseReceivedItemCostDeleteArgs>(args: SelectSubset<T, PurchaseReceivedItemCostDeleteArgs<ExtArgs>>): Prisma__PurchaseReceivedItemCostClient<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PurchaseReceivedItemCost.
+     * @param {PurchaseReceivedItemCostUpdateArgs} args - Arguments to update one PurchaseReceivedItemCost.
+     * @example
+     * // Update one PurchaseReceivedItemCost
+     * const purchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PurchaseReceivedItemCostUpdateArgs>(args: SelectSubset<T, PurchaseReceivedItemCostUpdateArgs<ExtArgs>>): Prisma__PurchaseReceivedItemCostClient<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PurchaseReceivedItemCosts.
+     * @param {PurchaseReceivedItemCostDeleteManyArgs} args - Arguments to filter PurchaseReceivedItemCosts to delete.
+     * @example
+     * // Delete a few PurchaseReceivedItemCosts
+     * const { count } = await prisma.purchaseReceivedItemCost.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PurchaseReceivedItemCostDeleteManyArgs>(args?: SelectSubset<T, PurchaseReceivedItemCostDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PurchaseReceivedItemCosts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseReceivedItemCostUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PurchaseReceivedItemCosts
+     * const purchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PurchaseReceivedItemCostUpdateManyArgs>(args: SelectSubset<T, PurchaseReceivedItemCostUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PurchaseReceivedItemCost.
+     * @param {PurchaseReceivedItemCostUpsertArgs} args - Arguments to update or create a PurchaseReceivedItemCost.
+     * @example
+     * // Update or create a PurchaseReceivedItemCost
+     * const purchaseReceivedItemCost = await prisma.purchaseReceivedItemCost.upsert({
+     *   create: {
+     *     // ... data to create a PurchaseReceivedItemCost
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PurchaseReceivedItemCost we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PurchaseReceivedItemCostUpsertArgs>(args: SelectSubset<T, PurchaseReceivedItemCostUpsertArgs<ExtArgs>>): Prisma__PurchaseReceivedItemCostClient<$Result.GetResult<Prisma.$PurchaseReceivedItemCostPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PurchaseReceivedItemCosts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseReceivedItemCostCountArgs} args - Arguments to filter PurchaseReceivedItemCosts to count.
+     * @example
+     * // Count the number of PurchaseReceivedItemCosts
+     * const count = await prisma.purchaseReceivedItemCost.count({
+     *   where: {
+     *     // ... the filter for the PurchaseReceivedItemCosts we want to count
+     *   }
+     * })
+    **/
+    count<T extends PurchaseReceivedItemCostCountArgs>(
+      args?: Subset<T, PurchaseReceivedItemCostCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PurchaseReceivedItemCostCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PurchaseReceivedItemCost.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseReceivedItemCostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PurchaseReceivedItemCostAggregateArgs>(args: Subset<T, PurchaseReceivedItemCostAggregateArgs>): Prisma.PrismaPromise<GetPurchaseReceivedItemCostAggregateType<T>>
+
+    /**
+     * Group by PurchaseReceivedItemCost.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseReceivedItemCostGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PurchaseReceivedItemCostGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PurchaseReceivedItemCostGroupByArgs['orderBy'] }
+        : { orderBy?: PurchaseReceivedItemCostGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PurchaseReceivedItemCostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPurchaseReceivedItemCostGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PurchaseReceivedItemCost model
+   */
+  readonly fields: PurchaseReceivedItemCostFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PurchaseReceivedItemCost.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PurchaseReceivedItemCostClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    receivedItem<T extends PurchaseReceivedItemDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PurchaseReceivedItemDefaultArgs<ExtArgs>>): Prisma__PurchaseReceivedItemClient<$Result.GetResult<Prisma.$PurchaseReceivedItemPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PurchaseReceivedItemCost model
+   */ 
+  interface PurchaseReceivedItemCostFieldRefs {
+    readonly id: FieldRef<"PurchaseReceivedItemCost", 'String'>
+    readonly receivedItemId: FieldRef<"PurchaseReceivedItemCost", 'String'>
+    readonly label: FieldRef<"PurchaseReceivedItemCost", 'String'>
+    readonly amount: FieldRef<"PurchaseReceivedItemCost", 'Float'>
+    readonly addedById: FieldRef<"PurchaseReceivedItemCost", 'String'>
+    readonly addedAt: FieldRef<"PurchaseReceivedItemCost", 'DateTime'>
+    readonly notes: FieldRef<"PurchaseReceivedItemCost", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PurchaseReceivedItemCost findUnique
+   */
+  export type PurchaseReceivedItemCostFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    /**
+     * Filter, which PurchaseReceivedItemCost to fetch.
+     */
+    where: PurchaseReceivedItemCostWhereUniqueInput
+  }
+
+  /**
+   * PurchaseReceivedItemCost findUniqueOrThrow
+   */
+  export type PurchaseReceivedItemCostFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    /**
+     * Filter, which PurchaseReceivedItemCost to fetch.
+     */
+    where: PurchaseReceivedItemCostWhereUniqueInput
+  }
+
+  /**
+   * PurchaseReceivedItemCost findFirst
+   */
+  export type PurchaseReceivedItemCostFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    /**
+     * Filter, which PurchaseReceivedItemCost to fetch.
+     */
+    where?: PurchaseReceivedItemCostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PurchaseReceivedItemCosts to fetch.
+     */
+    orderBy?: PurchaseReceivedItemCostOrderByWithRelationInput | PurchaseReceivedItemCostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PurchaseReceivedItemCosts.
+     */
+    cursor?: PurchaseReceivedItemCostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PurchaseReceivedItemCosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PurchaseReceivedItemCosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PurchaseReceivedItemCosts.
+     */
+    distinct?: PurchaseReceivedItemCostScalarFieldEnum | PurchaseReceivedItemCostScalarFieldEnum[]
+  }
+
+  /**
+   * PurchaseReceivedItemCost findFirstOrThrow
+   */
+  export type PurchaseReceivedItemCostFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    /**
+     * Filter, which PurchaseReceivedItemCost to fetch.
+     */
+    where?: PurchaseReceivedItemCostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PurchaseReceivedItemCosts to fetch.
+     */
+    orderBy?: PurchaseReceivedItemCostOrderByWithRelationInput | PurchaseReceivedItemCostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PurchaseReceivedItemCosts.
+     */
+    cursor?: PurchaseReceivedItemCostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PurchaseReceivedItemCosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PurchaseReceivedItemCosts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PurchaseReceivedItemCosts.
+     */
+    distinct?: PurchaseReceivedItemCostScalarFieldEnum | PurchaseReceivedItemCostScalarFieldEnum[]
+  }
+
+  /**
+   * PurchaseReceivedItemCost findMany
+   */
+  export type PurchaseReceivedItemCostFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    /**
+     * Filter, which PurchaseReceivedItemCosts to fetch.
+     */
+    where?: PurchaseReceivedItemCostWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PurchaseReceivedItemCosts to fetch.
+     */
+    orderBy?: PurchaseReceivedItemCostOrderByWithRelationInput | PurchaseReceivedItemCostOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PurchaseReceivedItemCosts.
+     */
+    cursor?: PurchaseReceivedItemCostWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PurchaseReceivedItemCosts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PurchaseReceivedItemCosts.
+     */
+    skip?: number
+    distinct?: PurchaseReceivedItemCostScalarFieldEnum | PurchaseReceivedItemCostScalarFieldEnum[]
+  }
+
+  /**
+   * PurchaseReceivedItemCost create
+   */
+  export type PurchaseReceivedItemCostCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PurchaseReceivedItemCost.
+     */
+    data: XOR<PurchaseReceivedItemCostCreateInput, PurchaseReceivedItemCostUncheckedCreateInput>
+  }
+
+  /**
+   * PurchaseReceivedItemCost createMany
+   */
+  export type PurchaseReceivedItemCostCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PurchaseReceivedItemCosts.
+     */
+    data: PurchaseReceivedItemCostCreateManyInput | PurchaseReceivedItemCostCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PurchaseReceivedItemCost createManyAndReturn
+   */
+  export type PurchaseReceivedItemCostCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PurchaseReceivedItemCosts.
+     */
+    data: PurchaseReceivedItemCostCreateManyInput | PurchaseReceivedItemCostCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PurchaseReceivedItemCost update
+   */
+  export type PurchaseReceivedItemCostUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PurchaseReceivedItemCost.
+     */
+    data: XOR<PurchaseReceivedItemCostUpdateInput, PurchaseReceivedItemCostUncheckedUpdateInput>
+    /**
+     * Choose, which PurchaseReceivedItemCost to update.
+     */
+    where: PurchaseReceivedItemCostWhereUniqueInput
+  }
+
+  /**
+   * PurchaseReceivedItemCost updateMany
+   */
+  export type PurchaseReceivedItemCostUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PurchaseReceivedItemCosts.
+     */
+    data: XOR<PurchaseReceivedItemCostUpdateManyMutationInput, PurchaseReceivedItemCostUncheckedUpdateManyInput>
+    /**
+     * Filter which PurchaseReceivedItemCosts to update
+     */
+    where?: PurchaseReceivedItemCostWhereInput
+  }
+
+  /**
+   * PurchaseReceivedItemCost upsert
+   */
+  export type PurchaseReceivedItemCostUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PurchaseReceivedItemCost to update in case it exists.
+     */
+    where: PurchaseReceivedItemCostWhereUniqueInput
+    /**
+     * In case the PurchaseReceivedItemCost found by the `where` argument doesn't exist, create a new PurchaseReceivedItemCost with this data.
+     */
+    create: XOR<PurchaseReceivedItemCostCreateInput, PurchaseReceivedItemCostUncheckedCreateInput>
+    /**
+     * In case the PurchaseReceivedItemCost was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PurchaseReceivedItemCostUpdateInput, PurchaseReceivedItemCostUncheckedUpdateInput>
+  }
+
+  /**
+   * PurchaseReceivedItemCost delete
+   */
+  export type PurchaseReceivedItemCostDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
+    /**
+     * Filter which PurchaseReceivedItemCost to delete.
+     */
+    where: PurchaseReceivedItemCostWhereUniqueInput
+  }
+
+  /**
+   * PurchaseReceivedItemCost deleteMany
+   */
+  export type PurchaseReceivedItemCostDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PurchaseReceivedItemCosts to delete
+     */
+    where?: PurchaseReceivedItemCostWhereInput
+  }
+
+  /**
+   * PurchaseReceivedItemCost without action
+   */
+  export type PurchaseReceivedItemCostDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PurchaseReceivedItemCost
+     */
+    select?: PurchaseReceivedItemCostSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PurchaseReceivedItemCostInclude<ExtArgs> | null
   }
 
 
@@ -15215,7 +16388,6 @@ export namespace Prisma {
     supplierName: 'supplierName',
     supplierContact: 'supplierContact',
     supplierAddress: 'supplierAddress',
-    supplierTaxId: 'supplierTaxId',
     purchaseDate: 'purchaseDate',
     supplierInvoiceNo: 'supplierInvoiceNo',
     currency: 'currency',
@@ -15226,7 +16398,6 @@ export namespace Prisma {
     accountingStatus: 'accountingStatus',
     subtotal: 'subtotal',
     discountTotal: 'discountTotal',
-    taxTotal: 'taxTotal',
     otherCostTotal: 'otherCostTotal',
     grandTotal: 'grandTotal',
     amountPaid: 'amountPaid',
@@ -15257,8 +16428,6 @@ export namespace Prisma {
     unitPrice: 'unitPrice',
     discountAmount: 'discountAmount',
     discountType: 'discountType',
-    taxRate: 'taxRate',
-    taxAmount: 'taxAmount',
     otherCosts: 'otherCosts',
     lineTotal: 'lineTotal',
     acquisitionCost: 'acquisitionCost',
@@ -15282,11 +16451,31 @@ export namespace Prisma {
     condition: 'condition',
     actualSpecs: 'actualSpecs',
     unitAcquisitionCost: 'unitAcquisitionCost',
+    status: 'status',
+    confirmedAt: 'confirmedAt',
+    confirmedById: 'confirmedById',
+    receivedAt: 'receivedAt',
+    receivedById: 'receivedById',
     notes: 'notes',
+    additionalCost: 'additionalCost',
+    images: 'images',
     createdAt: 'createdAt'
   };
 
   export type PurchaseReceivedItemScalarFieldEnum = (typeof PurchaseReceivedItemScalarFieldEnum)[keyof typeof PurchaseReceivedItemScalarFieldEnum]
+
+
+  export const PurchaseReceivedItemCostScalarFieldEnum: {
+    id: 'id',
+    receivedItemId: 'receivedItemId',
+    label: 'label',
+    amount: 'amount',
+    addedById: 'addedById',
+    addedAt: 'addedAt',
+    notes: 'notes'
+  };
+
+  export type PurchaseReceivedItemCostScalarFieldEnum = (typeof PurchaseReceivedItemCostScalarFieldEnum)[keyof typeof PurchaseReceivedItemCostScalarFieldEnum]
 
 
   export const PurchaseReceivingScalarFieldEnum: {
@@ -15449,6 +16638,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -15463,6 +16660,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -15583,6 +16789,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
    * Reference to a field of type 'PaymentMethod'
    */
   export type EnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod'>
@@ -15625,7 +16838,6 @@ export namespace Prisma {
     supplierName?: StringFilter<"Purchase"> | string
     supplierContact?: StringNullableFilter<"Purchase"> | string | null
     supplierAddress?: StringNullableFilter<"Purchase"> | string | null
-    supplierTaxId?: StringNullableFilter<"Purchase"> | string | null
     purchaseDate?: DateTimeFilter<"Purchase"> | Date | string
     supplierInvoiceNo?: StringNullableFilter<"Purchase"> | string | null
     currency?: StringFilter<"Purchase"> | string
@@ -15636,7 +16848,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFilter<"Purchase"> | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFilter<"Purchase"> | number
     discountTotal?: FloatFilter<"Purchase"> | number
-    taxTotal?: FloatFilter<"Purchase"> | number
     otherCostTotal?: FloatFilter<"Purchase"> | number
     grandTotal?: FloatFilter<"Purchase"> | number
     amountPaid?: FloatFilter<"Purchase"> | number
@@ -15665,7 +16876,6 @@ export namespace Prisma {
     supplierName?: SortOrder
     supplierContact?: SortOrderInput | SortOrder
     supplierAddress?: SortOrderInput | SortOrder
-    supplierTaxId?: SortOrderInput | SortOrder
     purchaseDate?: SortOrder
     supplierInvoiceNo?: SortOrderInput | SortOrder
     currency?: SortOrder
@@ -15676,7 +16886,6 @@ export namespace Prisma {
     accountingStatus?: SortOrder
     subtotal?: SortOrder
     discountTotal?: SortOrder
-    taxTotal?: SortOrder
     otherCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
@@ -15708,7 +16917,6 @@ export namespace Prisma {
     supplierName?: StringFilter<"Purchase"> | string
     supplierContact?: StringNullableFilter<"Purchase"> | string | null
     supplierAddress?: StringNullableFilter<"Purchase"> | string | null
-    supplierTaxId?: StringNullableFilter<"Purchase"> | string | null
     purchaseDate?: DateTimeFilter<"Purchase"> | Date | string
     supplierInvoiceNo?: StringNullableFilter<"Purchase"> | string | null
     currency?: StringFilter<"Purchase"> | string
@@ -15719,7 +16927,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFilter<"Purchase"> | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFilter<"Purchase"> | number
     discountTotal?: FloatFilter<"Purchase"> | number
-    taxTotal?: FloatFilter<"Purchase"> | number
     otherCostTotal?: FloatFilter<"Purchase"> | number
     grandTotal?: FloatFilter<"Purchase"> | number
     amountPaid?: FloatFilter<"Purchase"> | number
@@ -15748,7 +16955,6 @@ export namespace Prisma {
     supplierName?: SortOrder
     supplierContact?: SortOrderInput | SortOrder
     supplierAddress?: SortOrderInput | SortOrder
-    supplierTaxId?: SortOrderInput | SortOrder
     purchaseDate?: SortOrder
     supplierInvoiceNo?: SortOrderInput | SortOrder
     currency?: SortOrder
@@ -15759,7 +16965,6 @@ export namespace Prisma {
     accountingStatus?: SortOrder
     subtotal?: SortOrder
     discountTotal?: SortOrder
-    taxTotal?: SortOrder
     otherCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
@@ -15789,7 +16994,6 @@ export namespace Prisma {
     supplierName?: StringWithAggregatesFilter<"Purchase"> | string
     supplierContact?: StringNullableWithAggregatesFilter<"Purchase"> | string | null
     supplierAddress?: StringNullableWithAggregatesFilter<"Purchase"> | string | null
-    supplierTaxId?: StringNullableWithAggregatesFilter<"Purchase"> | string | null
     purchaseDate?: DateTimeWithAggregatesFilter<"Purchase"> | Date | string
     supplierInvoiceNo?: StringNullableWithAggregatesFilter<"Purchase"> | string | null
     currency?: StringWithAggregatesFilter<"Purchase"> | string
@@ -15800,7 +17004,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusWithAggregatesFilter<"Purchase"> | $Enums.PurchaseAccountingStatus
     subtotal?: FloatWithAggregatesFilter<"Purchase"> | number
     discountTotal?: FloatWithAggregatesFilter<"Purchase"> | number
-    taxTotal?: FloatWithAggregatesFilter<"Purchase"> | number
     otherCostTotal?: FloatWithAggregatesFilter<"Purchase"> | number
     grandTotal?: FloatWithAggregatesFilter<"Purchase"> | number
     amountPaid?: FloatWithAggregatesFilter<"Purchase"> | number
@@ -15831,8 +17034,6 @@ export namespace Prisma {
     unitPrice?: FloatFilter<"PurchaseItem"> | number
     discountAmount?: FloatFilter<"PurchaseItem"> | number
     discountType?: StringNullableFilter<"PurchaseItem"> | string | null
-    taxRate?: FloatFilter<"PurchaseItem"> | number
-    taxAmount?: FloatFilter<"PurchaseItem"> | number
     otherCosts?: FloatFilter<"PurchaseItem"> | number
     lineTotal?: FloatFilter<"PurchaseItem"> | number
     acquisitionCost?: FloatFilter<"PurchaseItem"> | number
@@ -15860,8 +17061,6 @@ export namespace Prisma {
     unitPrice?: SortOrder
     discountAmount?: SortOrder
     discountType?: SortOrderInput | SortOrder
-    taxRate?: SortOrder
-    taxAmount?: SortOrder
     otherCosts?: SortOrder
     lineTotal?: SortOrder
     acquisitionCost?: SortOrder
@@ -15892,8 +17091,6 @@ export namespace Prisma {
     unitPrice?: FloatFilter<"PurchaseItem"> | number
     discountAmount?: FloatFilter<"PurchaseItem"> | number
     discountType?: StringNullableFilter<"PurchaseItem"> | string | null
-    taxRate?: FloatFilter<"PurchaseItem"> | number
-    taxAmount?: FloatFilter<"PurchaseItem"> | number
     otherCosts?: FloatFilter<"PurchaseItem"> | number
     lineTotal?: FloatFilter<"PurchaseItem"> | number
     acquisitionCost?: FloatFilter<"PurchaseItem"> | number
@@ -15921,8 +17118,6 @@ export namespace Prisma {
     unitPrice?: SortOrder
     discountAmount?: SortOrder
     discountType?: SortOrderInput | SortOrder
-    taxRate?: SortOrder
-    taxAmount?: SortOrder
     otherCosts?: SortOrder
     lineTotal?: SortOrder
     acquisitionCost?: SortOrder
@@ -15955,8 +17150,6 @@ export namespace Prisma {
     unitPrice?: FloatWithAggregatesFilter<"PurchaseItem"> | number
     discountAmount?: FloatWithAggregatesFilter<"PurchaseItem"> | number
     discountType?: StringNullableWithAggregatesFilter<"PurchaseItem"> | string | null
-    taxRate?: FloatWithAggregatesFilter<"PurchaseItem"> | number
-    taxAmount?: FloatWithAggregatesFilter<"PurchaseItem"> | number
     otherCosts?: FloatWithAggregatesFilter<"PurchaseItem"> | number
     lineTotal?: FloatWithAggregatesFilter<"PurchaseItem"> | number
     acquisitionCost?: FloatWithAggregatesFilter<"PurchaseItem"> | number
@@ -15973,36 +17166,52 @@ export namespace Prisma {
     id?: StringFilter<"PurchaseReceivedItem"> | string
     purchaseId?: StringFilter<"PurchaseReceivedItem"> | string
     purchaseItemId?: StringFilter<"PurchaseReceivedItem"> | string
-    receivingId?: StringFilter<"PurchaseReceivedItem"> | string
+    receivingId?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     serialNumber?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     imei1?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     imei2?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     condition?: EnumReceivingItemConditionFilter<"PurchaseReceivedItem"> | $Enums.ReceivingItemCondition
     actualSpecs?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     unitAcquisitionCost?: FloatFilter<"PurchaseReceivedItem"> | number
+    status?: StringFilter<"PurchaseReceivedItem"> | string
+    confirmedAt?: DateTimeNullableFilter<"PurchaseReceivedItem"> | Date | string | null
+    confirmedById?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
+    receivedAt?: DateTimeFilter<"PurchaseReceivedItem"> | Date | string
+    receivedById?: StringFilter<"PurchaseReceivedItem"> | string
     notes?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
+    additionalCost?: FloatFilter<"PurchaseReceivedItem"> | number
+    images?: JsonNullableFilter<"PurchaseReceivedItem">
     createdAt?: DateTimeFilter<"PurchaseReceivedItem"> | Date | string
     purchase?: XOR<PurchaseRelationFilter, PurchaseWhereInput>
     purchaseItem?: XOR<PurchaseItemRelationFilter, PurchaseItemWhereInput>
-    receiving?: XOR<PurchaseReceivingRelationFilter, PurchaseReceivingWhereInput>
+    receiving?: XOR<PurchaseReceivingNullableRelationFilter, PurchaseReceivingWhereInput> | null
+    costs?: PurchaseReceivedItemCostListRelationFilter
   }
 
   export type PurchaseReceivedItemOrderByWithRelationInput = {
     id?: SortOrder
     purchaseId?: SortOrder
     purchaseItemId?: SortOrder
-    receivingId?: SortOrder
+    receivingId?: SortOrderInput | SortOrder
     serialNumber?: SortOrderInput | SortOrder
     imei1?: SortOrderInput | SortOrder
     imei2?: SortOrderInput | SortOrder
     condition?: SortOrder
     actualSpecs?: SortOrderInput | SortOrder
     unitAcquisitionCost?: SortOrder
+    status?: SortOrder
+    confirmedAt?: SortOrderInput | SortOrder
+    confirmedById?: SortOrderInput | SortOrder
+    receivedAt?: SortOrder
+    receivedById?: SortOrder
     notes?: SortOrderInput | SortOrder
+    additionalCost?: SortOrder
+    images?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     purchase?: PurchaseOrderByWithRelationInput
     purchaseItem?: PurchaseItemOrderByWithRelationInput
     receiving?: PurchaseReceivingOrderByWithRelationInput
+    costs?: PurchaseReceivedItemCostOrderByRelationAggregateInput
   }
 
   export type PurchaseReceivedItemWhereUniqueInput = Prisma.AtLeast<{
@@ -16012,32 +17221,47 @@ export namespace Prisma {
     NOT?: PurchaseReceivedItemWhereInput | PurchaseReceivedItemWhereInput[]
     purchaseId?: StringFilter<"PurchaseReceivedItem"> | string
     purchaseItemId?: StringFilter<"PurchaseReceivedItem"> | string
-    receivingId?: StringFilter<"PurchaseReceivedItem"> | string
+    receivingId?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     serialNumber?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     imei1?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     imei2?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     condition?: EnumReceivingItemConditionFilter<"PurchaseReceivedItem"> | $Enums.ReceivingItemCondition
     actualSpecs?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     unitAcquisitionCost?: FloatFilter<"PurchaseReceivedItem"> | number
+    status?: StringFilter<"PurchaseReceivedItem"> | string
+    confirmedAt?: DateTimeNullableFilter<"PurchaseReceivedItem"> | Date | string | null
+    confirmedById?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
+    receivedAt?: DateTimeFilter<"PurchaseReceivedItem"> | Date | string
+    receivedById?: StringFilter<"PurchaseReceivedItem"> | string
     notes?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
+    additionalCost?: FloatFilter<"PurchaseReceivedItem"> | number
+    images?: JsonNullableFilter<"PurchaseReceivedItem">
     createdAt?: DateTimeFilter<"PurchaseReceivedItem"> | Date | string
     purchase?: XOR<PurchaseRelationFilter, PurchaseWhereInput>
     purchaseItem?: XOR<PurchaseItemRelationFilter, PurchaseItemWhereInput>
-    receiving?: XOR<PurchaseReceivingRelationFilter, PurchaseReceivingWhereInput>
+    receiving?: XOR<PurchaseReceivingNullableRelationFilter, PurchaseReceivingWhereInput> | null
+    costs?: PurchaseReceivedItemCostListRelationFilter
   }, "id">
 
   export type PurchaseReceivedItemOrderByWithAggregationInput = {
     id?: SortOrder
     purchaseId?: SortOrder
     purchaseItemId?: SortOrder
-    receivingId?: SortOrder
+    receivingId?: SortOrderInput | SortOrder
     serialNumber?: SortOrderInput | SortOrder
     imei1?: SortOrderInput | SortOrder
     imei2?: SortOrderInput | SortOrder
     condition?: SortOrder
     actualSpecs?: SortOrderInput | SortOrder
     unitAcquisitionCost?: SortOrder
+    status?: SortOrder
+    confirmedAt?: SortOrderInput | SortOrder
+    confirmedById?: SortOrderInput | SortOrder
+    receivedAt?: SortOrder
+    receivedById?: SortOrder
     notes?: SortOrderInput | SortOrder
+    additionalCost?: SortOrder
+    images?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: PurchaseReceivedItemCountOrderByAggregateInput
     _avg?: PurchaseReceivedItemAvgOrderByAggregateInput
@@ -16053,15 +17277,89 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"PurchaseReceivedItem"> | string
     purchaseId?: StringWithAggregatesFilter<"PurchaseReceivedItem"> | string
     purchaseItemId?: StringWithAggregatesFilter<"PurchaseReceivedItem"> | string
-    receivingId?: StringWithAggregatesFilter<"PurchaseReceivedItem"> | string
+    receivingId?: StringNullableWithAggregatesFilter<"PurchaseReceivedItem"> | string | null
     serialNumber?: StringNullableWithAggregatesFilter<"PurchaseReceivedItem"> | string | null
     imei1?: StringNullableWithAggregatesFilter<"PurchaseReceivedItem"> | string | null
     imei2?: StringNullableWithAggregatesFilter<"PurchaseReceivedItem"> | string | null
     condition?: EnumReceivingItemConditionWithAggregatesFilter<"PurchaseReceivedItem"> | $Enums.ReceivingItemCondition
     actualSpecs?: StringNullableWithAggregatesFilter<"PurchaseReceivedItem"> | string | null
     unitAcquisitionCost?: FloatWithAggregatesFilter<"PurchaseReceivedItem"> | number
+    status?: StringWithAggregatesFilter<"PurchaseReceivedItem"> | string
+    confirmedAt?: DateTimeNullableWithAggregatesFilter<"PurchaseReceivedItem"> | Date | string | null
+    confirmedById?: StringNullableWithAggregatesFilter<"PurchaseReceivedItem"> | string | null
+    receivedAt?: DateTimeWithAggregatesFilter<"PurchaseReceivedItem"> | Date | string
+    receivedById?: StringWithAggregatesFilter<"PurchaseReceivedItem"> | string
     notes?: StringNullableWithAggregatesFilter<"PurchaseReceivedItem"> | string | null
+    additionalCost?: FloatWithAggregatesFilter<"PurchaseReceivedItem"> | number
+    images?: JsonNullableWithAggregatesFilter<"PurchaseReceivedItem">
     createdAt?: DateTimeWithAggregatesFilter<"PurchaseReceivedItem"> | Date | string
+  }
+
+  export type PurchaseReceivedItemCostWhereInput = {
+    AND?: PurchaseReceivedItemCostWhereInput | PurchaseReceivedItemCostWhereInput[]
+    OR?: PurchaseReceivedItemCostWhereInput[]
+    NOT?: PurchaseReceivedItemCostWhereInput | PurchaseReceivedItemCostWhereInput[]
+    id?: StringFilter<"PurchaseReceivedItemCost"> | string
+    receivedItemId?: StringFilter<"PurchaseReceivedItemCost"> | string
+    label?: StringFilter<"PurchaseReceivedItemCost"> | string
+    amount?: FloatFilter<"PurchaseReceivedItemCost"> | number
+    addedById?: StringFilter<"PurchaseReceivedItemCost"> | string
+    addedAt?: DateTimeFilter<"PurchaseReceivedItemCost"> | Date | string
+    notes?: StringNullableFilter<"PurchaseReceivedItemCost"> | string | null
+    receivedItem?: XOR<PurchaseReceivedItemRelationFilter, PurchaseReceivedItemWhereInput>
+  }
+
+  export type PurchaseReceivedItemCostOrderByWithRelationInput = {
+    id?: SortOrder
+    receivedItemId?: SortOrder
+    label?: SortOrder
+    amount?: SortOrder
+    addedById?: SortOrder
+    addedAt?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    receivedItem?: PurchaseReceivedItemOrderByWithRelationInput
+  }
+
+  export type PurchaseReceivedItemCostWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PurchaseReceivedItemCostWhereInput | PurchaseReceivedItemCostWhereInput[]
+    OR?: PurchaseReceivedItemCostWhereInput[]
+    NOT?: PurchaseReceivedItemCostWhereInput | PurchaseReceivedItemCostWhereInput[]
+    receivedItemId?: StringFilter<"PurchaseReceivedItemCost"> | string
+    label?: StringFilter<"PurchaseReceivedItemCost"> | string
+    amount?: FloatFilter<"PurchaseReceivedItemCost"> | number
+    addedById?: StringFilter<"PurchaseReceivedItemCost"> | string
+    addedAt?: DateTimeFilter<"PurchaseReceivedItemCost"> | Date | string
+    notes?: StringNullableFilter<"PurchaseReceivedItemCost"> | string | null
+    receivedItem?: XOR<PurchaseReceivedItemRelationFilter, PurchaseReceivedItemWhereInput>
+  }, "id">
+
+  export type PurchaseReceivedItemCostOrderByWithAggregationInput = {
+    id?: SortOrder
+    receivedItemId?: SortOrder
+    label?: SortOrder
+    amount?: SortOrder
+    addedById?: SortOrder
+    addedAt?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    _count?: PurchaseReceivedItemCostCountOrderByAggregateInput
+    _avg?: PurchaseReceivedItemCostAvgOrderByAggregateInput
+    _max?: PurchaseReceivedItemCostMaxOrderByAggregateInput
+    _min?: PurchaseReceivedItemCostMinOrderByAggregateInput
+    _sum?: PurchaseReceivedItemCostSumOrderByAggregateInput
+  }
+
+  export type PurchaseReceivedItemCostScalarWhereWithAggregatesInput = {
+    AND?: PurchaseReceivedItemCostScalarWhereWithAggregatesInput | PurchaseReceivedItemCostScalarWhereWithAggregatesInput[]
+    OR?: PurchaseReceivedItemCostScalarWhereWithAggregatesInput[]
+    NOT?: PurchaseReceivedItemCostScalarWhereWithAggregatesInput | PurchaseReceivedItemCostScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PurchaseReceivedItemCost"> | string
+    receivedItemId?: StringWithAggregatesFilter<"PurchaseReceivedItemCost"> | string
+    label?: StringWithAggregatesFilter<"PurchaseReceivedItemCost"> | string
+    amount?: FloatWithAggregatesFilter<"PurchaseReceivedItemCost"> | number
+    addedById?: StringWithAggregatesFilter<"PurchaseReceivedItemCost"> | string
+    addedAt?: DateTimeWithAggregatesFilter<"PurchaseReceivedItemCost"> | Date | string
+    notes?: StringNullableWithAggregatesFilter<"PurchaseReceivedItemCost"> | string | null
   }
 
   export type PurchaseReceivingWhereInput = {
@@ -16851,7 +18149,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -16862,7 +18159,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -16891,7 +18187,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -16902,7 +18197,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -16931,7 +18225,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -16942,7 +18235,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -16971,7 +18263,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -16982,7 +18273,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -17011,7 +18301,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -17022,7 +18311,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -17044,7 +18332,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -17055,7 +18342,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -17077,7 +18363,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -17088,7 +18373,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -17115,8 +18399,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -17144,8 +18426,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -17171,8 +18451,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -17200,8 +18478,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -17228,8 +18504,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -17253,8 +18527,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -17279,8 +18551,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -17298,26 +18568,42 @@ export namespace Prisma {
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     purchase: PurchaseCreateNestedOneWithoutReceivedItemsInput
     purchaseItem: PurchaseItemCreateNestedOneWithoutReceivedItemsInput
-    receiving: PurchaseReceivingCreateNestedOneWithoutReceivedItemsInput
+    receiving?: PurchaseReceivingCreateNestedOneWithoutReceivedItemsInput
+    costs?: PurchaseReceivedItemCostCreateNestedManyWithoutReceivedItemInput
   }
 
   export type PurchaseReceivedItemUncheckedCreateInput = {
     id?: string
     purchaseId: string
     purchaseItemId: string
-    receivingId: string
+    receivingId?: string | null
     serialNumber?: string | null
     imei1?: string | null
     imei2?: string | null
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    costs?: PurchaseReceivedItemCostUncheckedCreateNestedManyWithoutReceivedItemInput
   }
 
   export type PurchaseReceivedItemUpdateInput = {
@@ -17328,40 +18614,63 @@ export namespace Prisma {
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchase?: PurchaseUpdateOneRequiredWithoutReceivedItemsNestedInput
     purchaseItem?: PurchaseItemUpdateOneRequiredWithoutReceivedItemsNestedInput
-    receiving?: PurchaseReceivingUpdateOneRequiredWithoutReceivedItemsNestedInput
+    receiving?: PurchaseReceivingUpdateOneWithoutReceivedItemsNestedInput
+    costs?: PurchaseReceivedItemCostUpdateManyWithoutReceivedItemNestedInput
   }
 
   export type PurchaseReceivedItemUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     purchaseId?: StringFieldUpdateOperationsInput | string
     purchaseItemId?: StringFieldUpdateOperationsInput | string
-    receivingId?: StringFieldUpdateOperationsInput | string
+    receivingId?: NullableStringFieldUpdateOperationsInput | string | null
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     imei1?: NullableStringFieldUpdateOperationsInput | string | null
     imei2?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    costs?: PurchaseReceivedItemCostUncheckedUpdateManyWithoutReceivedItemNestedInput
   }
 
   export type PurchaseReceivedItemCreateManyInput = {
     id?: string
     purchaseId: string
     purchaseItemId: string
-    receivingId: string
+    receivingId?: string | null
     serialNumber?: string | null
     imei1?: string | null
     imei2?: string | null
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -17373,7 +18682,14 @@ export namespace Prisma {
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -17381,15 +18697,91 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     purchaseId?: StringFieldUpdateOperationsInput | string
     purchaseItemId?: StringFieldUpdateOperationsInput | string
-    receivingId?: StringFieldUpdateOperationsInput | string
+    receivingId?: NullableStringFieldUpdateOperationsInput | string | null
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     imei1?: NullableStringFieldUpdateOperationsInput | string | null
     imei2?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PurchaseReceivedItemCostCreateInput = {
+    id?: string
+    label: string
+    amount: number
+    addedById: string
+    addedAt?: Date | string
+    notes?: string | null
+    receivedItem: PurchaseReceivedItemCreateNestedOneWithoutCostsInput
+  }
+
+  export type PurchaseReceivedItemCostUncheckedCreateInput = {
+    id?: string
+    receivedItemId: string
+    label: string
+    amount: number
+    addedById: string
+    addedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type PurchaseReceivedItemCostUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    addedById?: StringFieldUpdateOperationsInput | string
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedItem?: PurchaseReceivedItemUpdateOneRequiredWithoutCostsNestedInput
+  }
+
+  export type PurchaseReceivedItemCostUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    receivedItemId?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    addedById?: StringFieldUpdateOperationsInput | string
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PurchaseReceivedItemCostCreateManyInput = {
+    id?: string
+    receivedItemId: string
+    label: string
+    amount: number
+    addedById: string
+    addedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type PurchaseReceivedItemCostUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    addedById?: StringFieldUpdateOperationsInput | string
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PurchaseReceivedItemCostUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    receivedItemId?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    addedById?: StringFieldUpdateOperationsInput | string
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PurchaseReceivingCreateInput = {
@@ -18446,7 +19838,6 @@ export namespace Prisma {
     supplierName?: SortOrder
     supplierContact?: SortOrder
     supplierAddress?: SortOrder
-    supplierTaxId?: SortOrder
     purchaseDate?: SortOrder
     supplierInvoiceNo?: SortOrder
     currency?: SortOrder
@@ -18457,7 +19848,6 @@ export namespace Prisma {
     accountingStatus?: SortOrder
     subtotal?: SortOrder
     discountTotal?: SortOrder
-    taxTotal?: SortOrder
     otherCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
@@ -18474,7 +19864,6 @@ export namespace Prisma {
     exchangeRate?: SortOrder
     subtotal?: SortOrder
     discountTotal?: SortOrder
-    taxTotal?: SortOrder
     otherCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
@@ -18490,7 +19879,6 @@ export namespace Prisma {
     supplierName?: SortOrder
     supplierContact?: SortOrder
     supplierAddress?: SortOrder
-    supplierTaxId?: SortOrder
     purchaseDate?: SortOrder
     supplierInvoiceNo?: SortOrder
     currency?: SortOrder
@@ -18501,7 +19889,6 @@ export namespace Prisma {
     accountingStatus?: SortOrder
     subtotal?: SortOrder
     discountTotal?: SortOrder
-    taxTotal?: SortOrder
     otherCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
@@ -18523,7 +19910,6 @@ export namespace Prisma {
     supplierName?: SortOrder
     supplierContact?: SortOrder
     supplierAddress?: SortOrder
-    supplierTaxId?: SortOrder
     purchaseDate?: SortOrder
     supplierInvoiceNo?: SortOrder
     currency?: SortOrder
@@ -18534,7 +19920,6 @@ export namespace Prisma {
     accountingStatus?: SortOrder
     subtotal?: SortOrder
     discountTotal?: SortOrder
-    taxTotal?: SortOrder
     otherCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
@@ -18551,7 +19936,6 @@ export namespace Prisma {
     exchangeRate?: SortOrder
     subtotal?: SortOrder
     discountTotal?: SortOrder
-    taxTotal?: SortOrder
     otherCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
@@ -18708,8 +20092,6 @@ export namespace Prisma {
     unitPrice?: SortOrder
     discountAmount?: SortOrder
     discountType?: SortOrder
-    taxRate?: SortOrder
-    taxAmount?: SortOrder
     otherCosts?: SortOrder
     lineTotal?: SortOrder
     acquisitionCost?: SortOrder
@@ -18727,8 +20109,6 @@ export namespace Prisma {
     returnedQty?: SortOrder
     unitPrice?: SortOrder
     discountAmount?: SortOrder
-    taxRate?: SortOrder
-    taxAmount?: SortOrder
     otherCosts?: SortOrder
     lineTotal?: SortOrder
     acquisitionCost?: SortOrder
@@ -18749,8 +20129,6 @@ export namespace Prisma {
     unitPrice?: SortOrder
     discountAmount?: SortOrder
     discountType?: SortOrder
-    taxRate?: SortOrder
-    taxAmount?: SortOrder
     otherCosts?: SortOrder
     lineTotal?: SortOrder
     acquisitionCost?: SortOrder
@@ -18775,8 +20153,6 @@ export namespace Prisma {
     unitPrice?: SortOrder
     discountAmount?: SortOrder
     discountType?: SortOrder
-    taxRate?: SortOrder
-    taxAmount?: SortOrder
     otherCosts?: SortOrder
     lineTotal?: SortOrder
     acquisitionCost?: SortOrder
@@ -18794,8 +20170,6 @@ export namespace Prisma {
     returnedQty?: SortOrder
     unitPrice?: SortOrder
     discountAmount?: SortOrder
-    taxRate?: SortOrder
-    taxAmount?: SortOrder
     otherCosts?: SortOrder
     lineTotal?: SortOrder
     acquisitionCost?: SortOrder
@@ -18807,15 +20181,47 @@ export namespace Prisma {
     notIn?: $Enums.ReceivingItemCondition[] | ListEnumReceivingItemConditionFieldRefInput<$PrismaModel>
     not?: NestedEnumReceivingItemConditionFilter<$PrismaModel> | $Enums.ReceivingItemCondition
   }
+  export type JsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type PurchaseItemRelationFilter = {
     is?: PurchaseItemWhereInput
     isNot?: PurchaseItemWhereInput
   }
 
-  export type PurchaseReceivingRelationFilter = {
-    is?: PurchaseReceivingWhereInput
-    isNot?: PurchaseReceivingWhereInput
+  export type PurchaseReceivingNullableRelationFilter = {
+    is?: PurchaseReceivingWhereInput | null
+    isNot?: PurchaseReceivingWhereInput | null
+  }
+
+  export type PurchaseReceivedItemCostListRelationFilter = {
+    every?: PurchaseReceivedItemCostWhereInput
+    some?: PurchaseReceivedItemCostWhereInput
+    none?: PurchaseReceivedItemCostWhereInput
+  }
+
+  export type PurchaseReceivedItemCostOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type PurchaseReceivedItemCountOrderByAggregateInput = {
@@ -18829,12 +20235,20 @@ export namespace Prisma {
     condition?: SortOrder
     actualSpecs?: SortOrder
     unitAcquisitionCost?: SortOrder
+    status?: SortOrder
+    confirmedAt?: SortOrder
+    confirmedById?: SortOrder
+    receivedAt?: SortOrder
+    receivedById?: SortOrder
     notes?: SortOrder
+    additionalCost?: SortOrder
+    images?: SortOrder
     createdAt?: SortOrder
   }
 
   export type PurchaseReceivedItemAvgOrderByAggregateInput = {
     unitAcquisitionCost?: SortOrder
+    additionalCost?: SortOrder
   }
 
   export type PurchaseReceivedItemMaxOrderByAggregateInput = {
@@ -18848,7 +20262,13 @@ export namespace Prisma {
     condition?: SortOrder
     actualSpecs?: SortOrder
     unitAcquisitionCost?: SortOrder
+    status?: SortOrder
+    confirmedAt?: SortOrder
+    confirmedById?: SortOrder
+    receivedAt?: SortOrder
+    receivedById?: SortOrder
     notes?: SortOrder
+    additionalCost?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -18863,12 +20283,19 @@ export namespace Prisma {
     condition?: SortOrder
     actualSpecs?: SortOrder
     unitAcquisitionCost?: SortOrder
+    status?: SortOrder
+    confirmedAt?: SortOrder
+    confirmedById?: SortOrder
+    receivedAt?: SortOrder
+    receivedById?: SortOrder
     notes?: SortOrder
+    additionalCost?: SortOrder
     createdAt?: SortOrder
   }
 
   export type PurchaseReceivedItemSumOrderByAggregateInput = {
     unitAcquisitionCost?: SortOrder
+    additionalCost?: SortOrder
   }
 
   export type EnumReceivingItemConditionWithAggregatesFilter<$PrismaModel = never> = {
@@ -18879,6 +20306,74 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumReceivingItemConditionFilter<$PrismaModel>
     _max?: NestedEnumReceivingItemConditionFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type PurchaseReceivedItemRelationFilter = {
+    is?: PurchaseReceivedItemWhereInput
+    isNot?: PurchaseReceivedItemWhereInput
+  }
+
+  export type PurchaseReceivedItemCostCountOrderByAggregateInput = {
+    id?: SortOrder
+    receivedItemId?: SortOrder
+    label?: SortOrder
+    amount?: SortOrder
+    addedById?: SortOrder
+    addedAt?: SortOrder
+    notes?: SortOrder
+  }
+
+  export type PurchaseReceivedItemCostAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type PurchaseReceivedItemCostMaxOrderByAggregateInput = {
+    id?: SortOrder
+    receivedItemId?: SortOrder
+    label?: SortOrder
+    amount?: SortOrder
+    addedById?: SortOrder
+    addedAt?: SortOrder
+    notes?: SortOrder
+  }
+
+  export type PurchaseReceivedItemCostMinOrderByAggregateInput = {
+    id?: SortOrder
+    receivedItemId?: SortOrder
+    label?: SortOrder
+    amount?: SortOrder
+    addedById?: SortOrder
+    addedAt?: SortOrder
+    notes?: SortOrder
+  }
+
+  export type PurchaseReceivedItemCostSumOrderByAggregateInput = {
+    amount?: SortOrder
   }
 
   export type PurchaseReceivingCountOrderByAggregateInput = {
@@ -19838,6 +21333,20 @@ export namespace Prisma {
     connect?: PurchaseReceivingWhereUniqueInput
   }
 
+  export type PurchaseReceivedItemCostCreateNestedManyWithoutReceivedItemInput = {
+    create?: XOR<PurchaseReceivedItemCostCreateWithoutReceivedItemInput, PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput> | PurchaseReceivedItemCostCreateWithoutReceivedItemInput[] | PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput[]
+    connectOrCreate?: PurchaseReceivedItemCostCreateOrConnectWithoutReceivedItemInput | PurchaseReceivedItemCostCreateOrConnectWithoutReceivedItemInput[]
+    createMany?: PurchaseReceivedItemCostCreateManyReceivedItemInputEnvelope
+    connect?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+  }
+
+  export type PurchaseReceivedItemCostUncheckedCreateNestedManyWithoutReceivedItemInput = {
+    create?: XOR<PurchaseReceivedItemCostCreateWithoutReceivedItemInput, PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput> | PurchaseReceivedItemCostCreateWithoutReceivedItemInput[] | PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput[]
+    connectOrCreate?: PurchaseReceivedItemCostCreateOrConnectWithoutReceivedItemInput | PurchaseReceivedItemCostCreateOrConnectWithoutReceivedItemInput[]
+    createMany?: PurchaseReceivedItemCostCreateManyReceivedItemInputEnvelope
+    connect?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+  }
+
   export type EnumReceivingItemConditionFieldUpdateOperationsInput = {
     set?: $Enums.ReceivingItemCondition
   }
@@ -19858,12 +21367,56 @@ export namespace Prisma {
     update?: XOR<XOR<PurchaseItemUpdateToOneWithWhereWithoutReceivedItemsInput, PurchaseItemUpdateWithoutReceivedItemsInput>, PurchaseItemUncheckedUpdateWithoutReceivedItemsInput>
   }
 
-  export type PurchaseReceivingUpdateOneRequiredWithoutReceivedItemsNestedInput = {
+  export type PurchaseReceivingUpdateOneWithoutReceivedItemsNestedInput = {
     create?: XOR<PurchaseReceivingCreateWithoutReceivedItemsInput, PurchaseReceivingUncheckedCreateWithoutReceivedItemsInput>
     connectOrCreate?: PurchaseReceivingCreateOrConnectWithoutReceivedItemsInput
     upsert?: PurchaseReceivingUpsertWithoutReceivedItemsInput
+    disconnect?: PurchaseReceivingWhereInput | boolean
+    delete?: PurchaseReceivingWhereInput | boolean
     connect?: PurchaseReceivingWhereUniqueInput
     update?: XOR<XOR<PurchaseReceivingUpdateToOneWithWhereWithoutReceivedItemsInput, PurchaseReceivingUpdateWithoutReceivedItemsInput>, PurchaseReceivingUncheckedUpdateWithoutReceivedItemsInput>
+  }
+
+  export type PurchaseReceivedItemCostUpdateManyWithoutReceivedItemNestedInput = {
+    create?: XOR<PurchaseReceivedItemCostCreateWithoutReceivedItemInput, PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput> | PurchaseReceivedItemCostCreateWithoutReceivedItemInput[] | PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput[]
+    connectOrCreate?: PurchaseReceivedItemCostCreateOrConnectWithoutReceivedItemInput | PurchaseReceivedItemCostCreateOrConnectWithoutReceivedItemInput[]
+    upsert?: PurchaseReceivedItemCostUpsertWithWhereUniqueWithoutReceivedItemInput | PurchaseReceivedItemCostUpsertWithWhereUniqueWithoutReceivedItemInput[]
+    createMany?: PurchaseReceivedItemCostCreateManyReceivedItemInputEnvelope
+    set?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+    disconnect?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+    delete?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+    connect?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+    update?: PurchaseReceivedItemCostUpdateWithWhereUniqueWithoutReceivedItemInput | PurchaseReceivedItemCostUpdateWithWhereUniqueWithoutReceivedItemInput[]
+    updateMany?: PurchaseReceivedItemCostUpdateManyWithWhereWithoutReceivedItemInput | PurchaseReceivedItemCostUpdateManyWithWhereWithoutReceivedItemInput[]
+    deleteMany?: PurchaseReceivedItemCostScalarWhereInput | PurchaseReceivedItemCostScalarWhereInput[]
+  }
+
+  export type PurchaseReceivedItemCostUncheckedUpdateManyWithoutReceivedItemNestedInput = {
+    create?: XOR<PurchaseReceivedItemCostCreateWithoutReceivedItemInput, PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput> | PurchaseReceivedItemCostCreateWithoutReceivedItemInput[] | PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput[]
+    connectOrCreate?: PurchaseReceivedItemCostCreateOrConnectWithoutReceivedItemInput | PurchaseReceivedItemCostCreateOrConnectWithoutReceivedItemInput[]
+    upsert?: PurchaseReceivedItemCostUpsertWithWhereUniqueWithoutReceivedItemInput | PurchaseReceivedItemCostUpsertWithWhereUniqueWithoutReceivedItemInput[]
+    createMany?: PurchaseReceivedItemCostCreateManyReceivedItemInputEnvelope
+    set?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+    disconnect?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+    delete?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+    connect?: PurchaseReceivedItemCostWhereUniqueInput | PurchaseReceivedItemCostWhereUniqueInput[]
+    update?: PurchaseReceivedItemCostUpdateWithWhereUniqueWithoutReceivedItemInput | PurchaseReceivedItemCostUpdateWithWhereUniqueWithoutReceivedItemInput[]
+    updateMany?: PurchaseReceivedItemCostUpdateManyWithWhereWithoutReceivedItemInput | PurchaseReceivedItemCostUpdateManyWithWhereWithoutReceivedItemInput[]
+    deleteMany?: PurchaseReceivedItemCostScalarWhereInput | PurchaseReceivedItemCostScalarWhereInput[]
+  }
+
+  export type PurchaseReceivedItemCreateNestedOneWithoutCostsInput = {
+    create?: XOR<PurchaseReceivedItemCreateWithoutCostsInput, PurchaseReceivedItemUncheckedCreateWithoutCostsInput>
+    connectOrCreate?: PurchaseReceivedItemCreateOrConnectWithoutCostsInput
+    connect?: PurchaseReceivedItemWhereUniqueInput
+  }
+
+  export type PurchaseReceivedItemUpdateOneRequiredWithoutCostsNestedInput = {
+    create?: XOR<PurchaseReceivedItemCreateWithoutCostsInput, PurchaseReceivedItemUncheckedCreateWithoutCostsInput>
+    connectOrCreate?: PurchaseReceivedItemCreateOrConnectWithoutCostsInput
+    upsert?: PurchaseReceivedItemUpsertWithoutCostsInput
+    connect?: PurchaseReceivedItemWhereUniqueInput
+    update?: XOR<XOR<PurchaseReceivedItemUpdateToOneWithWhereWithoutCostsInput, PurchaseReceivedItemUpdateWithoutCostsInput>, PurchaseReceivedItemUncheckedUpdateWithoutCostsInput>
   }
 
   export type PurchaseCreateNestedOneWithoutReceivingsInput = {
@@ -20365,6 +21918,28 @@ export namespace Prisma {
     _min?: NestedEnumReceivingItemConditionFilter<$PrismaModel>
     _max?: NestedEnumReceivingItemConditionFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedEnumPaymentMethodFilter<$PrismaModel = never> = {
     equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
@@ -20424,8 +21999,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -20451,8 +22024,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -20482,24 +22053,40 @@ export namespace Prisma {
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     purchaseItem: PurchaseItemCreateNestedOneWithoutReceivedItemsInput
-    receiving: PurchaseReceivingCreateNestedOneWithoutReceivedItemsInput
+    receiving?: PurchaseReceivingCreateNestedOneWithoutReceivedItemsInput
+    costs?: PurchaseReceivedItemCostCreateNestedManyWithoutReceivedItemInput
   }
 
   export type PurchaseReceivedItemUncheckedCreateWithoutPurchaseInput = {
     id?: string
     purchaseItemId: string
-    receivingId: string
+    receivingId?: string | null
     serialNumber?: string | null
     imei1?: string | null
     imei2?: string | null
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    costs?: PurchaseReceivedItemCostUncheckedCreateNestedManyWithoutReceivedItemInput
   }
 
   export type PurchaseReceivedItemCreateOrConnectWithoutPurchaseInput = {
@@ -20732,8 +22319,6 @@ export namespace Prisma {
     unitPrice?: FloatFilter<"PurchaseItem"> | number
     discountAmount?: FloatFilter<"PurchaseItem"> | number
     discountType?: StringNullableFilter<"PurchaseItem"> | string | null
-    taxRate?: FloatFilter<"PurchaseItem"> | number
-    taxAmount?: FloatFilter<"PurchaseItem"> | number
     otherCosts?: FloatFilter<"PurchaseItem"> | number
     lineTotal?: FloatFilter<"PurchaseItem"> | number
     acquisitionCost?: FloatFilter<"PurchaseItem"> | number
@@ -20766,14 +22351,21 @@ export namespace Prisma {
     id?: StringFilter<"PurchaseReceivedItem"> | string
     purchaseId?: StringFilter<"PurchaseReceivedItem"> | string
     purchaseItemId?: StringFilter<"PurchaseReceivedItem"> | string
-    receivingId?: StringFilter<"PurchaseReceivedItem"> | string
+    receivingId?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     serialNumber?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     imei1?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     imei2?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     condition?: EnumReceivingItemConditionFilter<"PurchaseReceivedItem"> | $Enums.ReceivingItemCondition
     actualSpecs?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
     unitAcquisitionCost?: FloatFilter<"PurchaseReceivedItem"> | number
+    status?: StringFilter<"PurchaseReceivedItem"> | string
+    confirmedAt?: DateTimeNullableFilter<"PurchaseReceivedItem"> | Date | string | null
+    confirmedById?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
+    receivedAt?: DateTimeFilter<"PurchaseReceivedItem"> | Date | string
+    receivedById?: StringFilter<"PurchaseReceivedItem"> | string
     notes?: StringNullableFilter<"PurchaseReceivedItem"> | string | null
+    additionalCost?: FloatFilter<"PurchaseReceivedItem"> | number
+    images?: JsonNullableFilter<"PurchaseReceivedItem">
     createdAt?: DateTimeFilter<"PurchaseReceivedItem"> | Date | string
   }
 
@@ -20952,7 +22544,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -20963,7 +22554,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -20991,7 +22581,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -21002,7 +22591,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -21034,24 +22622,40 @@ export namespace Prisma {
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     purchase: PurchaseCreateNestedOneWithoutReceivedItemsInput
-    receiving: PurchaseReceivingCreateNestedOneWithoutReceivedItemsInput
+    receiving?: PurchaseReceivingCreateNestedOneWithoutReceivedItemsInput
+    costs?: PurchaseReceivedItemCostCreateNestedManyWithoutReceivedItemInput
   }
 
   export type PurchaseReceivedItemUncheckedCreateWithoutPurchaseItemInput = {
     id?: string
     purchaseId: string
-    receivingId: string
+    receivingId?: string | null
     serialNumber?: string | null
     imei1?: string | null
     imei2?: string | null
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    costs?: PurchaseReceivedItemCostUncheckedCreateNestedManyWithoutReceivedItemInput
   }
 
   export type PurchaseReceivedItemCreateOrConnectWithoutPurchaseItemInput = {
@@ -21128,7 +22732,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -21139,7 +22742,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -21167,7 +22769,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -21178,7 +22779,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -21259,7 +22859,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -21270,7 +22869,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -21298,7 +22896,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -21309,7 +22906,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -21347,8 +22943,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -21375,8 +22969,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -21421,6 +23013,34 @@ export namespace Prisma {
     create: XOR<PurchaseReceivingCreateWithoutReceivedItemsInput, PurchaseReceivingUncheckedCreateWithoutReceivedItemsInput>
   }
 
+  export type PurchaseReceivedItemCostCreateWithoutReceivedItemInput = {
+    id?: string
+    label: string
+    amount: number
+    addedById: string
+    addedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput = {
+    id?: string
+    label: string
+    amount: number
+    addedById: string
+    addedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type PurchaseReceivedItemCostCreateOrConnectWithoutReceivedItemInput = {
+    where: PurchaseReceivedItemCostWhereUniqueInput
+    create: XOR<PurchaseReceivedItemCostCreateWithoutReceivedItemInput, PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput>
+  }
+
+  export type PurchaseReceivedItemCostCreateManyReceivedItemInputEnvelope = {
+    data: PurchaseReceivedItemCostCreateManyReceivedItemInput | PurchaseReceivedItemCostCreateManyReceivedItemInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PurchaseUpsertWithoutReceivedItemsInput = {
     update: XOR<PurchaseUpdateWithoutReceivedItemsInput, PurchaseUncheckedUpdateWithoutReceivedItemsInput>
     create: XOR<PurchaseCreateWithoutReceivedItemsInput, PurchaseUncheckedCreateWithoutReceivedItemsInput>
@@ -21441,7 +23061,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -21452,7 +23071,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -21480,7 +23098,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -21491,7 +23108,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -21535,8 +23151,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -21563,8 +23177,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -21610,6 +23222,139 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PurchaseReceivedItemCostUpsertWithWhereUniqueWithoutReceivedItemInput = {
+    where: PurchaseReceivedItemCostWhereUniqueInput
+    update: XOR<PurchaseReceivedItemCostUpdateWithoutReceivedItemInput, PurchaseReceivedItemCostUncheckedUpdateWithoutReceivedItemInput>
+    create: XOR<PurchaseReceivedItemCostCreateWithoutReceivedItemInput, PurchaseReceivedItemCostUncheckedCreateWithoutReceivedItemInput>
+  }
+
+  export type PurchaseReceivedItemCostUpdateWithWhereUniqueWithoutReceivedItemInput = {
+    where: PurchaseReceivedItemCostWhereUniqueInput
+    data: XOR<PurchaseReceivedItemCostUpdateWithoutReceivedItemInput, PurchaseReceivedItemCostUncheckedUpdateWithoutReceivedItemInput>
+  }
+
+  export type PurchaseReceivedItemCostUpdateManyWithWhereWithoutReceivedItemInput = {
+    where: PurchaseReceivedItemCostScalarWhereInput
+    data: XOR<PurchaseReceivedItemCostUpdateManyMutationInput, PurchaseReceivedItemCostUncheckedUpdateManyWithoutReceivedItemInput>
+  }
+
+  export type PurchaseReceivedItemCostScalarWhereInput = {
+    AND?: PurchaseReceivedItemCostScalarWhereInput | PurchaseReceivedItemCostScalarWhereInput[]
+    OR?: PurchaseReceivedItemCostScalarWhereInput[]
+    NOT?: PurchaseReceivedItemCostScalarWhereInput | PurchaseReceivedItemCostScalarWhereInput[]
+    id?: StringFilter<"PurchaseReceivedItemCost"> | string
+    receivedItemId?: StringFilter<"PurchaseReceivedItemCost"> | string
+    label?: StringFilter<"PurchaseReceivedItemCost"> | string
+    amount?: FloatFilter<"PurchaseReceivedItemCost"> | number
+    addedById?: StringFilter<"PurchaseReceivedItemCost"> | string
+    addedAt?: DateTimeFilter<"PurchaseReceivedItemCost"> | Date | string
+    notes?: StringNullableFilter<"PurchaseReceivedItemCost"> | string | null
+  }
+
+  export type PurchaseReceivedItemCreateWithoutCostsInput = {
+    id?: string
+    serialNumber?: string | null
+    imei1?: string | null
+    imei2?: string | null
+    condition?: $Enums.ReceivingItemCondition
+    actualSpecs?: string | null
+    unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
+    notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    purchase: PurchaseCreateNestedOneWithoutReceivedItemsInput
+    purchaseItem: PurchaseItemCreateNestedOneWithoutReceivedItemsInput
+    receiving?: PurchaseReceivingCreateNestedOneWithoutReceivedItemsInput
+  }
+
+  export type PurchaseReceivedItemUncheckedCreateWithoutCostsInput = {
+    id?: string
+    purchaseId: string
+    purchaseItemId: string
+    receivingId?: string | null
+    serialNumber?: string | null
+    imei1?: string | null
+    imei2?: string | null
+    condition?: $Enums.ReceivingItemCondition
+    actualSpecs?: string | null
+    unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
+    notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type PurchaseReceivedItemCreateOrConnectWithoutCostsInput = {
+    where: PurchaseReceivedItemWhereUniqueInput
+    create: XOR<PurchaseReceivedItemCreateWithoutCostsInput, PurchaseReceivedItemUncheckedCreateWithoutCostsInput>
+  }
+
+  export type PurchaseReceivedItemUpsertWithoutCostsInput = {
+    update: XOR<PurchaseReceivedItemUpdateWithoutCostsInput, PurchaseReceivedItemUncheckedUpdateWithoutCostsInput>
+    create: XOR<PurchaseReceivedItemCreateWithoutCostsInput, PurchaseReceivedItemUncheckedCreateWithoutCostsInput>
+    where?: PurchaseReceivedItemWhereInput
+  }
+
+  export type PurchaseReceivedItemUpdateToOneWithWhereWithoutCostsInput = {
+    where?: PurchaseReceivedItemWhereInput
+    data: XOR<PurchaseReceivedItemUpdateWithoutCostsInput, PurchaseReceivedItemUncheckedUpdateWithoutCostsInput>
+  }
+
+  export type PurchaseReceivedItemUpdateWithoutCostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
+    actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
+    unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    purchase?: PurchaseUpdateOneRequiredWithoutReceivedItemsNestedInput
+    purchaseItem?: PurchaseItemUpdateOneRequiredWithoutReceivedItemsNestedInput
+    receiving?: PurchaseReceivingUpdateOneWithoutReceivedItemsNestedInput
+  }
+
+  export type PurchaseReceivedItemUncheckedUpdateWithoutCostsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purchaseId?: StringFieldUpdateOperationsInput | string
+    purchaseItemId?: StringFieldUpdateOperationsInput | string
+    receivingId?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
+    actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
+    unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PurchaseCreateWithoutReceivingsInput = {
     id?: string
     tenantId: string
@@ -21619,7 +23364,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -21630,7 +23374,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -21658,7 +23401,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -21669,7 +23411,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -21701,10 +23442,18 @@ export namespace Prisma {
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     purchase: PurchaseCreateNestedOneWithoutReceivedItemsInput
     purchaseItem: PurchaseItemCreateNestedOneWithoutReceivedItemsInput
+    costs?: PurchaseReceivedItemCostCreateNestedManyWithoutReceivedItemInput
   }
 
   export type PurchaseReceivedItemUncheckedCreateWithoutReceivingInput = {
@@ -21717,8 +23466,16 @@ export namespace Prisma {
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    costs?: PurchaseReceivedItemCostUncheckedCreateNestedManyWithoutReceivedItemInput
   }
 
   export type PurchaseReceivedItemCreateOrConnectWithoutReceivingInput = {
@@ -21751,7 +23508,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -21762,7 +23518,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -21790,7 +23545,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -21801,7 +23555,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -21845,7 +23598,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -21856,7 +23608,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -21884,7 +23635,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -21895,7 +23645,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -21939,7 +23688,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -21950,7 +23698,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -21978,7 +23725,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -21989,7 +23735,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -22061,7 +23806,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -22072,7 +23816,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -22100,7 +23843,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -22111,7 +23853,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -22171,7 +23912,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -22182,7 +23922,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -22210,7 +23949,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -22221,7 +23959,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -22291,8 +24028,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -22319,8 +24054,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -22404,8 +24137,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -22432,8 +24163,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -22453,7 +24182,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -22464,7 +24192,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -22492,7 +24219,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -22503,7 +24229,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -22547,7 +24272,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -22558,7 +24282,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -22586,7 +24309,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -22597,7 +24319,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -22625,7 +24346,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -22636,7 +24356,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -22664,7 +24383,6 @@ export namespace Prisma {
     supplierName: string
     supplierContact?: string | null
     supplierAddress?: string | null
-    supplierTaxId?: string | null
     purchaseDate?: Date | string
     supplierInvoiceNo?: string | null
     currency?: string
@@ -22675,7 +24393,6 @@ export namespace Prisma {
     accountingStatus?: $Enums.PurchaseAccountingStatus
     subtotal?: number
     discountTotal?: number
-    taxTotal?: number
     otherCostTotal?: number
     grandTotal?: number
     amountPaid?: number
@@ -22719,7 +24436,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -22730,7 +24446,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -22758,7 +24473,6 @@ export namespace Prisma {
     supplierName?: StringFieldUpdateOperationsInput | string
     supplierContact?: NullableStringFieldUpdateOperationsInput | string | null
     supplierAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    supplierTaxId?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
     supplierInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: StringFieldUpdateOperationsInput | string
@@ -22769,7 +24483,6 @@ export namespace Prisma {
     accountingStatus?: EnumPurchaseAccountingStatusFieldUpdateOperationsInput | $Enums.PurchaseAccountingStatus
     subtotal?: FloatFieldUpdateOperationsInput | number
     discountTotal?: FloatFieldUpdateOperationsInput | number
-    taxTotal?: FloatFieldUpdateOperationsInput | number
     otherCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
@@ -22927,8 +24640,6 @@ export namespace Prisma {
     unitPrice: number
     discountAmount?: number
     discountType?: string | null
-    taxRate?: number
-    taxAmount?: number
     otherCosts?: number
     lineTotal: number
     acquisitionCost?: number
@@ -22941,14 +24652,21 @@ export namespace Prisma {
   export type PurchaseReceivedItemCreateManyPurchaseInput = {
     id?: string
     purchaseItemId: string
-    receivingId: string
+    receivingId?: string | null
     serialNumber?: string | null
     imei1?: string | null
     imei2?: string | null
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -23032,8 +24750,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -23059,8 +24775,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -23086,8 +24800,6 @@ export namespace Prisma {
     unitPrice?: FloatFieldUpdateOperationsInput | number
     discountAmount?: FloatFieldUpdateOperationsInput | number
     discountType?: NullableStringFieldUpdateOperationsInput | string | null
-    taxRate?: FloatFieldUpdateOperationsInput | number
-    taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCosts?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     acquisitionCost?: FloatFieldUpdateOperationsInput | number
@@ -23105,37 +24817,60 @@ export namespace Prisma {
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseItem?: PurchaseItemUpdateOneRequiredWithoutReceivedItemsNestedInput
-    receiving?: PurchaseReceivingUpdateOneRequiredWithoutReceivedItemsNestedInput
+    receiving?: PurchaseReceivingUpdateOneWithoutReceivedItemsNestedInput
+    costs?: PurchaseReceivedItemCostUpdateManyWithoutReceivedItemNestedInput
   }
 
   export type PurchaseReceivedItemUncheckedUpdateWithoutPurchaseInput = {
     id?: StringFieldUpdateOperationsInput | string
     purchaseItemId?: StringFieldUpdateOperationsInput | string
-    receivingId?: StringFieldUpdateOperationsInput | string
+    receivingId?: NullableStringFieldUpdateOperationsInput | string | null
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     imei1?: NullableStringFieldUpdateOperationsInput | string | null
     imei2?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    costs?: PurchaseReceivedItemCostUncheckedUpdateManyWithoutReceivedItemNestedInput
   }
 
   export type PurchaseReceivedItemUncheckedUpdateManyWithoutPurchaseInput = {
     id?: StringFieldUpdateOperationsInput | string
     purchaseItemId?: StringFieldUpdateOperationsInput | string
-    receivingId?: StringFieldUpdateOperationsInput | string
+    receivingId?: NullableStringFieldUpdateOperationsInput | string | null
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     imei1?: NullableStringFieldUpdateOperationsInput | string | null
     imei2?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -23344,14 +25079,21 @@ export namespace Prisma {
   export type PurchaseReceivedItemCreateManyPurchaseItemInput = {
     id?: string
     purchaseId: string
-    receivingId: string
+    receivingId?: string | null
     serialNumber?: string | null
     imei1?: string | null
     imei2?: string | null
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -23380,37 +25122,60 @@ export namespace Prisma {
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchase?: PurchaseUpdateOneRequiredWithoutReceivedItemsNestedInput
-    receiving?: PurchaseReceivingUpdateOneRequiredWithoutReceivedItemsNestedInput
+    receiving?: PurchaseReceivingUpdateOneWithoutReceivedItemsNestedInput
+    costs?: PurchaseReceivedItemCostUpdateManyWithoutReceivedItemNestedInput
   }
 
   export type PurchaseReceivedItemUncheckedUpdateWithoutPurchaseItemInput = {
     id?: StringFieldUpdateOperationsInput | string
     purchaseId?: StringFieldUpdateOperationsInput | string
-    receivingId?: StringFieldUpdateOperationsInput | string
+    receivingId?: NullableStringFieldUpdateOperationsInput | string | null
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     imei1?: NullableStringFieldUpdateOperationsInput | string | null
     imei2?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    costs?: PurchaseReceivedItemCostUncheckedUpdateManyWithoutReceivedItemNestedInput
   }
 
   export type PurchaseReceivedItemUncheckedUpdateManyWithoutPurchaseItemInput = {
     id?: StringFieldUpdateOperationsInput | string
     purchaseId?: StringFieldUpdateOperationsInput | string
-    receivingId?: StringFieldUpdateOperationsInput | string
+    receivingId?: NullableStringFieldUpdateOperationsInput | string | null
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     imei1?: NullableStringFieldUpdateOperationsInput | string | null
     imei2?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -23465,6 +25230,42 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PurchaseReceivedItemCostCreateManyReceivedItemInput = {
+    id?: string
+    label: string
+    amount: number
+    addedById: string
+    addedAt?: Date | string
+    notes?: string | null
+  }
+
+  export type PurchaseReceivedItemCostUpdateWithoutReceivedItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    addedById?: StringFieldUpdateOperationsInput | string
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PurchaseReceivedItemCostUncheckedUpdateWithoutReceivedItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    addedById?: StringFieldUpdateOperationsInput | string
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PurchaseReceivedItemCostUncheckedUpdateManyWithoutReceivedItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    addedById?: StringFieldUpdateOperationsInput | string
+    addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type PurchaseReceivedItemCreateManyReceivingInput = {
     id?: string
     purchaseId: string
@@ -23475,7 +25276,14 @@ export namespace Prisma {
     condition?: $Enums.ReceivingItemCondition
     actualSpecs?: string | null
     unitAcquisitionCost: number
+    status?: string
+    confirmedAt?: Date | string | null
+    confirmedById?: string | null
+    receivedAt?: Date | string
+    receivedById: string
     notes?: string | null
+    additionalCost?: number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -23487,10 +25295,18 @@ export namespace Prisma {
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchase?: PurchaseUpdateOneRequiredWithoutReceivedItemsNestedInput
     purchaseItem?: PurchaseItemUpdateOneRequiredWithoutReceivedItemsNestedInput
+    costs?: PurchaseReceivedItemCostUpdateManyWithoutReceivedItemNestedInput
   }
 
   export type PurchaseReceivedItemUncheckedUpdateWithoutReceivingInput = {
@@ -23503,8 +25319,16 @@ export namespace Prisma {
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    costs?: PurchaseReceivedItemCostUncheckedUpdateManyWithoutReceivedItemNestedInput
   }
 
   export type PurchaseReceivedItemUncheckedUpdateManyWithoutReceivingInput = {
@@ -23517,7 +25341,14 @@ export namespace Prisma {
     condition?: EnumReceivingItemConditionFieldUpdateOperationsInput | $Enums.ReceivingItemCondition
     actualSpecs?: NullableStringFieldUpdateOperationsInput | string | null
     unitAcquisitionCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedById?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedById?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    images?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -23639,6 +25470,10 @@ export namespace Prisma {
      */
     export type PurchaseItemCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PurchaseItemCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use PurchaseReceivedItemCountOutputTypeDefaultArgs instead
+     */
+    export type PurchaseReceivedItemCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PurchaseReceivedItemCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use PurchaseReceivingCountOutputTypeDefaultArgs instead
      */
     export type PurchaseReceivingCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PurchaseReceivingCountOutputTypeDefaultArgs<ExtArgs>
@@ -23662,6 +25497,10 @@ export namespace Prisma {
      * @deprecated Use PurchaseReceivedItemDefaultArgs instead
      */
     export type PurchaseReceivedItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PurchaseReceivedItemDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PurchaseReceivedItemCostDefaultArgs instead
+     */
+    export type PurchaseReceivedItemCostArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PurchaseReceivedItemCostDefaultArgs<ExtArgs>
     /**
      * @deprecated Use PurchaseReceivingDefaultArgs instead
      */

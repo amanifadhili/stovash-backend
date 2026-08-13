@@ -131,7 +131,6 @@ exports.Prisma.PurchaseScalarFieldEnum = {
   supplierName: 'supplierName',
   supplierContact: 'supplierContact',
   supplierAddress: 'supplierAddress',
-  supplierTaxId: 'supplierTaxId',
   purchaseDate: 'purchaseDate',
   supplierInvoiceNo: 'supplierInvoiceNo',
   currency: 'currency',
@@ -142,7 +141,6 @@ exports.Prisma.PurchaseScalarFieldEnum = {
   accountingStatus: 'accountingStatus',
   subtotal: 'subtotal',
   discountTotal: 'discountTotal',
-  taxTotal: 'taxTotal',
   otherCostTotal: 'otherCostTotal',
   grandTotal: 'grandTotal',
   amountPaid: 'amountPaid',
@@ -170,8 +168,6 @@ exports.Prisma.PurchaseItemScalarFieldEnum = {
   unitPrice: 'unitPrice',
   discountAmount: 'discountAmount',
   discountType: 'discountType',
-  taxRate: 'taxRate',
-  taxAmount: 'taxAmount',
   otherCosts: 'otherCosts',
   lineTotal: 'lineTotal',
   acquisitionCost: 'acquisitionCost',
@@ -192,8 +188,25 @@ exports.Prisma.PurchaseReceivedItemScalarFieldEnum = {
   condition: 'condition',
   actualSpecs: 'actualSpecs',
   unitAcquisitionCost: 'unitAcquisitionCost',
+  status: 'status',
+  confirmedAt: 'confirmedAt',
+  confirmedById: 'confirmedById',
+  receivedAt: 'receivedAt',
+  receivedById: 'receivedById',
   notes: 'notes',
+  additionalCost: 'additionalCost',
+  images: 'images',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.PurchaseReceivedItemCostScalarFieldEnum = {
+  id: 'id',
+  receivedItemId: 'receivedItemId',
+  label: 'label',
+  amount: 'amount',
+  addedById: 'addedById',
+  addedAt: 'addedAt',
+  notes: 'notes'
 };
 
 exports.Prisma.PurchaseReceivingScalarFieldEnum = {
@@ -326,6 +339,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -334,6 +352,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.PurchaseCommercialStatus = exports.$Enums.PurchaseCommercialStatus = {
   DRAFT: 'DRAFT',
@@ -379,6 +403,7 @@ exports.Prisma.ModelName = {
   Purchase: 'Purchase',
   PurchaseItem: 'PurchaseItem',
   PurchaseReceivedItem: 'PurchaseReceivedItem',
+  PurchaseReceivedItemCost: 'PurchaseReceivedItemCost',
   PurchaseReceiving: 'PurchaseReceiving',
   PurchasePayment: 'PurchasePayment',
   PurchaseReturn: 'PurchaseReturn',

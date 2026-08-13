@@ -29,12 +29,12 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
         supplierName,
         supplierContact,
         supplierAddress,
-        supplierTaxId,
         purchaseDate,
         supplierInvoiceNo,
         currency = 'RWF',
         exchangeRate = 1.0,
         notes,
+        items = [],
       } = payload;
       const createdById = userId;
       const createdByName = userName;
@@ -95,7 +95,6 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
               supplierName,
               supplierContact,
               supplierAddress,
-              supplierTaxId,
               purchaseDate: date,
               supplierInvoiceNo,
               currency,
@@ -106,7 +105,6 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
               accountingStatus: 'UNPOSTED',
               subtotal: 0,
               discountTotal: 0,
-              taxTotal: 0,
               otherCostTotal: 0,
               grandTotal: 0,
               amountPaid: 0,
@@ -130,6 +128,140 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
         };
       }
 
+      // Create inline items (if provided) and recompute purchase totals.
+      if (Array.isArray(items) && items.length > 0) {
+        for (const it of items) {
+          const qty = Number(it.orderedQty) || 0;
+          const unitPrice = Number(it.unitPrice) || 0;
+          const gross = qty * unitPrice;
+          const discount = it.discountType === 'PERCENTAGE'
+            ? (gross * (Number(it.discountAmount) || 0)) / 100
+            : (Number(it.discountAmount) || 0);
+          const net = gross - discount;
+          const otherCosts = Number(it.otherCosts) || 0;
+          const lineTotal = net + otherCosts;
+          const acquisitionCost = qty > 0 ? lineTotal / qty : 0;
+
+          await prisma.purchaseItem.create({
+            data: {
+              purchaseId: purchase.id,
+              productId: it.productId,
+              productName: it.productName || it.productId,
+              productSku: it.productSku || null,
+              productTracking: it.productTracking || 'NON_SERIALIZED',
+              orderedQty: qty,
+              unitPrice,
+              discountAmount: discount,
+              discountType: it.discountType || 'FIXED',
+              otherCosts,
+              lineTotal,
+              acquisitionCost,
+              purchaseSpecs: it.purchaseSpecs,
+              notes: it.notes,
+            },
+          });
+        }
+
+        const itemRows = await prisma.purchaseItem.findMany({ where: { purchaseId: purchase.id } });
+        const subtotal = itemRows.reduce((s, i) => s + i.orderedQty * i.unitPrice, 0);
+        const discountTotal = itemRows.reduce((s, i) => s + i.discountAmount, 0);
+        const otherCostTotal = itemRows.reduce((s, i) => s + i.otherCosts, 0);
+        const grandTotal = itemRows.reduce((s, i) => s + i.lineTotal, 0);
+        await prisma.purchase.update({
+          where: { id: purchase.id },
+          data: { subtotal, discountTotal, otherCostTotal, grandTotal, amountOutstanding: grandTotal },
+        });
+      }
+
+      // Inline per-unit receive: if any item carries serialized units, auto-confirm
+      // the order (receiving requires CONFIRMED) and create the received units.
+      const hasUnits = Array.isArray(items) && items.some((it) => Array.isArray(it.units) && it.units.length > 0);
+      if (hasUnits) {
+        await prisma.purchase.update({
+          where: { id: purchase.id },
+          data: { commercialStatus: 'CONFIRMED', approvedById: createdById, approvedAt: new Date() },
+        });
+
+        await prisma.purchaseHistory.create({
+          data: {
+            purchaseId: purchase.id,
+            eventType: 'CONFIRMED',
+            eventData: JSON.stringify({ approvedBy: createdByName, auto: true }),
+            userId: createdById,
+            userName: createdByName,
+            traceId,
+          },
+        });
+
+        for (const it of items) {
+          if (!Array.isArray(it.units) || it.units.length === 0) continue;
+          const purchaseItem = await prisma.purchaseItem.findFirst({
+            where: { purchaseId: purchase.id, productId: it.productId },
+          });
+          if (!purchaseItem) continue;
+
+          for (const unit of it.units) {
+            if (unit.serialNumber) {
+              const existing = await prisma.purchaseReceivedItem.findFirst({
+                where: { serialNumber: unit.serialNumber, purchaseId: purchase.id },
+              });
+              if (existing) {
+                return { status: 'error', traceId, message: `Serial ${unit.serialNumber} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
+              }
+            }
+            if (unit.imei1) {
+              const existing = await prisma.purchaseReceivedItem.findFirst({
+                where: { imei1: unit.imei1, purchaseId: purchase.id },
+              });
+              if (existing) {
+                return { status: 'error', traceId, message: `IMEI ${unit.imei1} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
+              }
+            }
+
+            await prisma.purchaseReceivedItem.create({
+              data: {
+                purchaseId: purchase.id,
+                purchaseItemId: purchaseItem.id,
+                serialNumber: unit.serialNumber,
+                imei1: unit.imei1,
+                imei2: unit.imei2,
+                condition: unit.condition || 'ACCEPTED',
+                unitAcquisitionCost: Number(unit.unitAcquisitionCost) || 0,
+                status: 'PENDING',
+                receivedAt: new Date(),
+                receivedById: createdById,
+                notes: unit.notes,
+                images: Array.isArray(unit.images) && unit.images.length > 0 ? unit.images.slice(0, 3) : undefined,
+              },
+            });
+          }
+
+          const receivedItems = await prisma.purchaseReceivedItem.findMany({
+            where: { purchaseItemId: purchaseItem.id },
+          });
+          const receivedQty = receivedItems.length;
+          const acceptedQty = receivedItems.filter((i) => i.condition === 'ACCEPTED').length;
+          const rejectedQty = receivedItems.filter((i) => i.condition !== 'ACCEPTED').length;
+          await prisma.purchaseItem.update({
+            where: { id: purchaseItem.id },
+            data: { receivedQty, acceptedQty, rejectedQty },
+          });
+        }
+
+        const unitItems = await prisma.purchaseItem.findMany({ where: { purchaseId: purchase.id } });
+        const totalOrdered = unitItems.reduce((s, i) => s + i.orderedQty, 0);
+        const totalReceived = unitItems.reduce((s, i) => s + i.receivedQty, 0);
+        const totalAccepted = unitItems.reduce((s, i) => s + i.acceptedQty, 0);
+        let receivingStatus: 'NOT_RECEIVED' | 'PARTIALLY_RECEIVED' | 'FULLY_RECEIVED' = 'NOT_RECEIVED';
+        if (totalReceived === 0) receivingStatus = 'NOT_RECEIVED';
+        else if (totalAccepted >= totalOrdered) receivingStatus = 'FULLY_RECEIVED';
+        else receivingStatus = 'PARTIALLY_RECEIVED';
+        await prisma.purchase.update({
+          where: { id: purchase.id },
+          data: { receivingStatus },
+        });
+      }
+
       // Create history entry
       await prisma.purchaseHistory.create({
         data: {
@@ -141,6 +273,19 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
           traceId,
         },
       });
+
+      if (Array.isArray(items) && items.length > 0) {
+        await prisma.purchaseHistory.create({
+          data: {
+            purchaseId: purchase.id,
+            eventType: 'ITEM_ADDED',
+            eventData: JSON.stringify({ itemsCount: items.length, createdBy: createdByName }),
+            userId: createdById,
+            userName: createdByName,
+            traceId,
+          },
+        });
+      }
 
       // Audit log
       await prisma.auditLog.create({
