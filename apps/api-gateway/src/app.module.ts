@@ -49,7 +49,7 @@ import { CircuitBreakerInterceptor } from './interceptors/circuit-breaker.interc
       {
         name: 'SUPPLIER_SERVICE',
         transport: Transport.TCP,
-        options: { host: '127.0.0.1', port: 3009 },
+        options: { host: '127.0.0.1', port: 3012 },
       },
     ]),
   ],

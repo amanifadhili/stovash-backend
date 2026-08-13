@@ -49,7 +49,7 @@ export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierComm
           correlationId: traceId,
         },
         'supplier.created'
-      );
+      ).catch(() => {});
 
       return {
         status: 'success',

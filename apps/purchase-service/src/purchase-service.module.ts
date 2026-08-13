@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PurchaseServiceController } from './purchase-service.controller.js';
 import { CommandHandlers } from './commands/handlers/index.js';
 import { QueryHandlers } from './queries/handlers/index.js';
@@ -7,7 +8,19 @@ import { EventBusConnectionService } from './events/event-bus-connection.service
 import { EventBus } from '@electronic-shop/framework-event';
 
 @Module({
-  imports: [CqrsModule],
+  imports: [
+    CqrsModule,
+    ClientsModule.register([
+      {
+        name: 'SUPPLIER_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: '127.0.0.1',
+          port: parseInt(process.env.SUPPLIER_SERVICE_PORT || '3012', 10),
+        },
+      },
+    ]),
+  ],
   controllers: [PurchaseServiceController],
   providers: [
     ...CommandHandlers,

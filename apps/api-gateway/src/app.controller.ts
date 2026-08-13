@@ -90,6 +90,8 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   // Supplier commands
   'CreateSupplier': ['supplier:create'],
   'GetSuppliers': ['supplier:read'],
+  'UpdateSupplier': ['supplier:update'],
+  'DeleteSupplier': ['supplier:delete'],
   
   // Treasury commands
   'RecordOperationalDeposit': ['treasury:deposit:create'],
@@ -179,6 +181,8 @@ const COMMAND_ROLES: Record<string, string[]> = {
   // Supplier commands
   'CreateSupplier': ['ADMIN', 'MANAGER'],
   'GetSuppliers': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'UpdateSupplier': ['ADMIN', 'MANAGER'],
+  'DeleteSupplier': ['ADMIN', 'MANAGER'],
   
   // Treasury commands
   'RecordOperationalDeposit': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -282,7 +286,7 @@ export class AppController {
         return await firstValueFrom(this.purchaseClient.send({ cmd }, { payload, context }));
       }
 
-      if (['CreateSupplier', 'GetSuppliers'].includes(cmd)) {
+      if (['CreateSupplier', 'GetSuppliers', 'UpdateSupplier', 'DeleteSupplier'].includes(cmd)) {
         return await firstValueFrom(this.supplierClient.send({ cmd }, { payload, context }));
       }
 

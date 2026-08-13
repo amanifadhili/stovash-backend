@@ -12,8 +12,8 @@ const LOGIN_EXEMPT_COMMANDS = ['LoginUser', 'CreateTenant'];
 export class RateLimitMiddleware implements NestMiddleware {
   private store = new Map<string, RateLimitStore>();
   private readonly windowMs = 60 * 1000; // 1 minute window
-  private readonly maxRequests = 500; // 500 requests per minute for authenticated users
-  private readonly maxRequestsAnonymous = 50; // 50 requests per minute for anonymous (login)
+  private readonly maxRequests = 20000; // 20000 requests per minute for authenticated users
+  private readonly maxRequestsAnonymous = 2000; // 2000 requests per minute for anonymous (login)
 
   use(req: Request, res: Response, next: NextFunction) {
     const command = req.body?.command || req.headers['x-command'];
@@ -54,10 +54,26 @@ export class RateLimitMiddleware implements NestMiddleware {
   }
 
   private getKey(req: Request): string {
-    const userId = (req as any).user?.id;
+    const userId = (req as any).user?.id || this.decodeTokenUserId(req);
     if (userId) {
       return `user:${userId}`;
     }
     return `ip:${req.ip}`;
+  }
+
+  private decodeTokenUserId(req: Request): string | null {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+    try {
+      const token = authHeader.split(' ')[1];
+      const payloadPart = token.split('.')[1];
+      if (!payloadPart) return null;
+      const payload = JSON.parse(Buffer.from(payloadPart, 'base64url').toString('utf8'));
+      return payload?.sub || null;
+    } catch {
+      return null;
+    }
   }
 }

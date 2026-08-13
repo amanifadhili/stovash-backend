@@ -29,7 +29,8 @@ async function bootstrap() {
   }));
   
   // CORS configuration - allow Next.js frontend with credentials
-  const corsOrigins = process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3001'];
+  const corsOriginsEnv = process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()).filter(Boolean);
+  const corsOrigins = corsOriginsEnv && corsOriginsEnv.length > 0 ? corsOriginsEnv : true;
   app.enableCors({
     origin: corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
