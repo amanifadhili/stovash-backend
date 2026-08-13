@@ -56,6 +56,7 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
       });
 
       const data = items.map((item) => {
+        console.log("DEBUG ITEM:", item.serialNumber, "imageUrl:", item.imageUrl);
         const capitalized = (item.upgrades ?? []).reduce((s, u) => s + (Number(u.cost) || 0), 0);
         const totalCost = Number(item.purchaseCost || 0) + Number(item.capitalizedCost || 0) + capitalized;
         return {
