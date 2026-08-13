@@ -16,6 +16,8 @@ export class CreateSaleItemInput {
   discountAmount?: number;
   taxRate?: number;
   otherCharges?: number;
+  additionalCost?: number; // bonus/commission/extra SPENT on this line (not charged to customer) — reduces profit
+  additionalCostPaymentMethod?: string; // CASH, MOMO, BANK_TRANSFER, CARD, CREDIT, CHECK, OTHER
   notes?: string;
 }
 

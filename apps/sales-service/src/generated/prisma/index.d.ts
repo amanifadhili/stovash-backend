@@ -2118,6 +2118,7 @@ export namespace Prisma {
     discountTotal: number | null
     taxTotal: number | null
     otherChargesTotal: number | null
+    additionalCostTotal: number | null
     grandTotal: number | null
     amountPaid: number | null
     amountDue: number | null
@@ -2132,6 +2133,7 @@ export namespace Prisma {
     discountTotal: number | null
     taxTotal: number | null
     otherChargesTotal: number | null
+    additionalCostTotal: number | null
     grandTotal: number | null
     amountPaid: number | null
     amountDue: number | null
@@ -2162,6 +2164,7 @@ export namespace Prisma {
     discountTotal: number | null
     taxTotal: number | null
     otherChargesTotal: number | null
+    additionalCostTotal: number | null
     grandTotal: number | null
     amountPaid: number | null
     amountDue: number | null
@@ -2203,6 +2206,7 @@ export namespace Prisma {
     discountTotal: number | null
     taxTotal: number | null
     otherChargesTotal: number | null
+    additionalCostTotal: number | null
     grandTotal: number | null
     amountPaid: number | null
     amountDue: number | null
@@ -2244,6 +2248,7 @@ export namespace Prisma {
     discountTotal: number
     taxTotal: number
     otherChargesTotal: number
+    additionalCostTotal: number
     grandTotal: number
     amountPaid: number
     amountDue: number
@@ -2271,6 +2276,7 @@ export namespace Prisma {
     discountTotal?: true
     taxTotal?: true
     otherChargesTotal?: true
+    additionalCostTotal?: true
     grandTotal?: true
     amountPaid?: true
     amountDue?: true
@@ -2285,6 +2291,7 @@ export namespace Prisma {
     discountTotal?: true
     taxTotal?: true
     otherChargesTotal?: true
+    additionalCostTotal?: true
     grandTotal?: true
     amountPaid?: true
     amountDue?: true
@@ -2315,6 +2322,7 @@ export namespace Prisma {
     discountTotal?: true
     taxTotal?: true
     otherChargesTotal?: true
+    additionalCostTotal?: true
     grandTotal?: true
     amountPaid?: true
     amountDue?: true
@@ -2356,6 +2364,7 @@ export namespace Prisma {
     discountTotal?: true
     taxTotal?: true
     otherChargesTotal?: true
+    additionalCostTotal?: true
     grandTotal?: true
     amountPaid?: true
     amountDue?: true
@@ -2397,6 +2406,7 @@ export namespace Prisma {
     discountTotal?: true
     taxTotal?: true
     otherChargesTotal?: true
+    additionalCostTotal?: true
     grandTotal?: true
     amountPaid?: true
     amountDue?: true
@@ -2525,6 +2535,7 @@ export namespace Prisma {
     discountTotal: number
     taxTotal: number
     otherChargesTotal: number
+    additionalCostTotal: number
     grandTotal: number
     amountPaid: number
     amountDue: number
@@ -2585,6 +2596,7 @@ export namespace Prisma {
     discountTotal?: boolean
     taxTotal?: boolean
     otherChargesTotal?: boolean
+    additionalCostTotal?: boolean
     grandTotal?: boolean
     amountPaid?: boolean
     amountDue?: boolean
@@ -2633,6 +2645,7 @@ export namespace Prisma {
     discountTotal?: boolean
     taxTotal?: boolean
     otherChargesTotal?: boolean
+    additionalCostTotal?: boolean
     grandTotal?: boolean
     amountPaid?: boolean
     amountDue?: boolean
@@ -2674,6 +2687,7 @@ export namespace Prisma {
     discountTotal?: boolean
     taxTotal?: boolean
     otherChargesTotal?: boolean
+    additionalCostTotal?: boolean
     grandTotal?: boolean
     amountPaid?: boolean
     amountDue?: boolean
@@ -2736,6 +2750,7 @@ export namespace Prisma {
       discountTotal: number
       taxTotal: number
       otherChargesTotal: number
+      additionalCostTotal: number
       grandTotal: number
       amountPaid: number
       amountDue: number
@@ -3173,6 +3188,7 @@ export namespace Prisma {
     readonly discountTotal: FieldRef<"Sale", 'Float'>
     readonly taxTotal: FieldRef<"Sale", 'Float'>
     readonly otherChargesTotal: FieldRef<"Sale", 'Float'>
+    readonly additionalCostTotal: FieldRef<"Sale", 'Float'>
     readonly grandTotal: FieldRef<"Sale", 'Float'>
     readonly amountPaid: FieldRef<"Sale", 'Float'>
     readonly amountDue: FieldRef<"Sale", 'Float'>
@@ -3658,6 +3674,7 @@ export namespace Prisma {
     taxRate: number | null
     taxAmount: number | null
     otherCharges: number | null
+    additionalCost: number | null
     netTotal: number | null
     lineTotal: number | null
     total: number | null
@@ -3671,6 +3688,7 @@ export namespace Prisma {
     taxRate: number | null
     taxAmount: number | null
     otherCharges: number | null
+    additionalCost: number | null
     netTotal: number | null
     lineTotal: number | null
     total: number | null
@@ -3694,6 +3712,8 @@ export namespace Prisma {
     taxRate: number | null
     taxAmount: number | null
     otherCharges: number | null
+    additionalCost: number | null
+    additionalCostPaymentMethod: string | null
     netTotal: number | null
     lineTotal: number | null
     total: number | null
@@ -3719,6 +3739,8 @@ export namespace Prisma {
     taxRate: number | null
     taxAmount: number | null
     otherCharges: number | null
+    additionalCost: number | null
+    additionalCostPaymentMethod: string | null
     netTotal: number | null
     lineTotal: number | null
     total: number | null
@@ -3744,6 +3766,8 @@ export namespace Prisma {
     taxRate: number
     taxAmount: number
     otherCharges: number
+    additionalCost: number
+    additionalCostPaymentMethod: number
     netTotal: number
     lineTotal: number
     total: number
@@ -3761,6 +3785,7 @@ export namespace Prisma {
     taxRate?: true
     taxAmount?: true
     otherCharges?: true
+    additionalCost?: true
     netTotal?: true
     lineTotal?: true
     total?: true
@@ -3774,6 +3799,7 @@ export namespace Prisma {
     taxRate?: true
     taxAmount?: true
     otherCharges?: true
+    additionalCost?: true
     netTotal?: true
     lineTotal?: true
     total?: true
@@ -3797,6 +3823,8 @@ export namespace Prisma {
     taxRate?: true
     taxAmount?: true
     otherCharges?: true
+    additionalCost?: true
+    additionalCostPaymentMethod?: true
     netTotal?: true
     lineTotal?: true
     total?: true
@@ -3822,6 +3850,8 @@ export namespace Prisma {
     taxRate?: true
     taxAmount?: true
     otherCharges?: true
+    additionalCost?: true
+    additionalCostPaymentMethod?: true
     netTotal?: true
     lineTotal?: true
     total?: true
@@ -3847,6 +3877,8 @@ export namespace Prisma {
     taxRate?: true
     taxAmount?: true
     otherCharges?: true
+    additionalCost?: true
+    additionalCostPaymentMethod?: true
     netTotal?: true
     lineTotal?: true
     total?: true
@@ -3959,6 +3991,8 @@ export namespace Prisma {
     taxRate: number
     taxAmount: number
     otherCharges: number
+    additionalCost: number
+    additionalCostPaymentMethod: string | null
     netTotal: number
     lineTotal: number
     total: number
@@ -4003,6 +4037,8 @@ export namespace Prisma {
     taxRate?: boolean
     taxAmount?: boolean
     otherCharges?: boolean
+    additionalCost?: boolean
+    additionalCostPaymentMethod?: boolean
     netTotal?: boolean
     lineTotal?: boolean
     total?: boolean
@@ -4032,6 +4068,8 @@ export namespace Prisma {
     taxRate?: boolean
     taxAmount?: boolean
     otherCharges?: boolean
+    additionalCost?: boolean
+    additionalCostPaymentMethod?: boolean
     netTotal?: boolean
     lineTotal?: boolean
     total?: boolean
@@ -4058,6 +4096,8 @@ export namespace Prisma {
     taxRate?: boolean
     taxAmount?: boolean
     otherCharges?: boolean
+    additionalCost?: boolean
+    additionalCostPaymentMethod?: boolean
     netTotal?: boolean
     lineTotal?: boolean
     total?: boolean
@@ -4100,6 +4140,8 @@ export namespace Prisma {
       taxRate: number
       taxAmount: number
       otherCharges: number
+      additionalCost: number
+      additionalCostPaymentMethod: string | null
       netTotal: number
       lineTotal: number
       total: number
@@ -4518,6 +4560,8 @@ export namespace Prisma {
     readonly taxRate: FieldRef<"SaleItem", 'Float'>
     readonly taxAmount: FieldRef<"SaleItem", 'Float'>
     readonly otherCharges: FieldRef<"SaleItem", 'Float'>
+    readonly additionalCost: FieldRef<"SaleItem", 'Float'>
+    readonly additionalCostPaymentMethod: FieldRef<"SaleItem", 'String'>
     readonly netTotal: FieldRef<"SaleItem", 'Float'>
     readonly lineTotal: FieldRef<"SaleItem", 'Float'>
     readonly total: FieldRef<"SaleItem", 'Float'>
@@ -16378,6 +16422,7 @@ export namespace Prisma {
     discountTotal: 'discountTotal',
     taxTotal: 'taxTotal',
     otherChargesTotal: 'otherChargesTotal',
+    additionalCostTotal: 'additionalCostTotal',
     grandTotal: 'grandTotal',
     amountPaid: 'amountPaid',
     amountDue: 'amountDue',
@@ -16418,6 +16463,8 @@ export namespace Prisma {
     taxRate: 'taxRate',
     taxAmount: 'taxAmount',
     otherCharges: 'otherCharges',
+    additionalCost: 'additionalCost',
+    additionalCostPaymentMethod: 'additionalCostPaymentMethod',
     netTotal: 'netTotal',
     lineTotal: 'lineTotal',
     total: 'total',
@@ -16794,6 +16841,7 @@ export namespace Prisma {
     discountTotal?: FloatFilter<"Sale"> | number
     taxTotal?: FloatFilter<"Sale"> | number
     otherChargesTotal?: FloatFilter<"Sale"> | number
+    additionalCostTotal?: FloatFilter<"Sale"> | number
     grandTotal?: FloatFilter<"Sale"> | number
     amountPaid?: FloatFilter<"Sale"> | number
     amountDue?: FloatFilter<"Sale"> | number
@@ -16841,6 +16889,7 @@ export namespace Prisma {
     discountTotal?: SortOrder
     taxTotal?: SortOrder
     otherChargesTotal?: SortOrder
+    additionalCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
     amountDue?: SortOrder
@@ -16891,6 +16940,7 @@ export namespace Prisma {
     discountTotal?: FloatFilter<"Sale"> | number
     taxTotal?: FloatFilter<"Sale"> | number
     otherChargesTotal?: FloatFilter<"Sale"> | number
+    additionalCostTotal?: FloatFilter<"Sale"> | number
     grandTotal?: FloatFilter<"Sale"> | number
     amountPaid?: FloatFilter<"Sale"> | number
     amountDue?: FloatFilter<"Sale"> | number
@@ -16938,6 +16988,7 @@ export namespace Prisma {
     discountTotal?: SortOrder
     taxTotal?: SortOrder
     otherChargesTotal?: SortOrder
+    additionalCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
     amountDue?: SortOrder
@@ -16987,6 +17038,7 @@ export namespace Prisma {
     discountTotal?: FloatWithAggregatesFilter<"Sale"> | number
     taxTotal?: FloatWithAggregatesFilter<"Sale"> | number
     otherChargesTotal?: FloatWithAggregatesFilter<"Sale"> | number
+    additionalCostTotal?: FloatWithAggregatesFilter<"Sale"> | number
     grandTotal?: FloatWithAggregatesFilter<"Sale"> | number
     amountPaid?: FloatWithAggregatesFilter<"Sale"> | number
     amountDue?: FloatWithAggregatesFilter<"Sale"> | number
@@ -17027,6 +17079,8 @@ export namespace Prisma {
     taxRate?: FloatFilter<"SaleItem"> | number
     taxAmount?: FloatFilter<"SaleItem"> | number
     otherCharges?: FloatFilter<"SaleItem"> | number
+    additionalCost?: FloatFilter<"SaleItem"> | number
+    additionalCostPaymentMethod?: StringNullableFilter<"SaleItem"> | string | null
     netTotal?: FloatFilter<"SaleItem"> | number
     lineTotal?: FloatFilter<"SaleItem"> | number
     total?: FloatFilter<"SaleItem"> | number
@@ -17055,6 +17109,8 @@ export namespace Prisma {
     taxRate?: SortOrder
     taxAmount?: SortOrder
     otherCharges?: SortOrder
+    additionalCost?: SortOrder
+    additionalCostPaymentMethod?: SortOrderInput | SortOrder
     netTotal?: SortOrder
     lineTotal?: SortOrder
     total?: SortOrder
@@ -17086,6 +17142,8 @@ export namespace Prisma {
     taxRate?: FloatFilter<"SaleItem"> | number
     taxAmount?: FloatFilter<"SaleItem"> | number
     otherCharges?: FloatFilter<"SaleItem"> | number
+    additionalCost?: FloatFilter<"SaleItem"> | number
+    additionalCostPaymentMethod?: StringNullableFilter<"SaleItem"> | string | null
     netTotal?: FloatFilter<"SaleItem"> | number
     lineTotal?: FloatFilter<"SaleItem"> | number
     total?: FloatFilter<"SaleItem"> | number
@@ -17114,6 +17172,8 @@ export namespace Prisma {
     taxRate?: SortOrder
     taxAmount?: SortOrder
     otherCharges?: SortOrder
+    additionalCost?: SortOrder
+    additionalCostPaymentMethod?: SortOrderInput | SortOrder
     netTotal?: SortOrder
     lineTotal?: SortOrder
     total?: SortOrder
@@ -17147,6 +17207,8 @@ export namespace Prisma {
     taxRate?: FloatWithAggregatesFilter<"SaleItem"> | number
     taxAmount?: FloatWithAggregatesFilter<"SaleItem"> | number
     otherCharges?: FloatWithAggregatesFilter<"SaleItem"> | number
+    additionalCost?: FloatWithAggregatesFilter<"SaleItem"> | number
+    additionalCostPaymentMethod?: StringNullableWithAggregatesFilter<"SaleItem"> | string | null
     netTotal?: FloatWithAggregatesFilter<"SaleItem"> | number
     lineTotal?: FloatWithAggregatesFilter<"SaleItem"> | number
     total?: FloatWithAggregatesFilter<"SaleItem"> | number
@@ -18177,6 +18239,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -18224,6 +18287,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -18271,6 +18335,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -18318,6 +18383,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -18365,6 +18431,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -18406,6 +18473,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -18447,6 +18515,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -18483,6 +18552,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -18511,6 +18582,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -18537,6 +18610,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -18565,6 +18640,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -18592,6 +18669,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -18616,6 +18695,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -18641,6 +18722,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -19973,6 +20056,7 @@ export namespace Prisma {
     discountTotal?: SortOrder
     taxTotal?: SortOrder
     otherChargesTotal?: SortOrder
+    additionalCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
     amountDue?: SortOrder
@@ -19998,6 +20082,7 @@ export namespace Prisma {
     discountTotal?: SortOrder
     taxTotal?: SortOrder
     otherChargesTotal?: SortOrder
+    additionalCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
     amountDue?: SortOrder
@@ -20028,6 +20113,7 @@ export namespace Prisma {
     discountTotal?: SortOrder
     taxTotal?: SortOrder
     otherChargesTotal?: SortOrder
+    additionalCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
     amountDue?: SortOrder
@@ -20069,6 +20155,7 @@ export namespace Prisma {
     discountTotal?: SortOrder
     taxTotal?: SortOrder
     otherChargesTotal?: SortOrder
+    additionalCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
     amountDue?: SortOrder
@@ -20094,6 +20181,7 @@ export namespace Prisma {
     discountTotal?: SortOrder
     taxTotal?: SortOrder
     otherChargesTotal?: SortOrder
+    additionalCostTotal?: SortOrder
     grandTotal?: SortOrder
     amountPaid?: SortOrder
     amountDue?: SortOrder
@@ -20260,6 +20348,8 @@ export namespace Prisma {
     taxRate?: SortOrder
     taxAmount?: SortOrder
     otherCharges?: SortOrder
+    additionalCost?: SortOrder
+    additionalCostPaymentMethod?: SortOrder
     netTotal?: SortOrder
     lineTotal?: SortOrder
     total?: SortOrder
@@ -20275,6 +20365,7 @@ export namespace Prisma {
     taxRate?: SortOrder
     taxAmount?: SortOrder
     otherCharges?: SortOrder
+    additionalCost?: SortOrder
     netTotal?: SortOrder
     lineTotal?: SortOrder
     total?: SortOrder
@@ -20298,6 +20389,8 @@ export namespace Prisma {
     taxRate?: SortOrder
     taxAmount?: SortOrder
     otherCharges?: SortOrder
+    additionalCost?: SortOrder
+    additionalCostPaymentMethod?: SortOrder
     netTotal?: SortOrder
     lineTotal?: SortOrder
     total?: SortOrder
@@ -20323,6 +20416,8 @@ export namespace Prisma {
     taxRate?: SortOrder
     taxAmount?: SortOrder
     otherCharges?: SortOrder
+    additionalCost?: SortOrder
+    additionalCostPaymentMethod?: SortOrder
     netTotal?: SortOrder
     lineTotal?: SortOrder
     total?: SortOrder
@@ -20338,6 +20433,7 @@ export namespace Prisma {
     taxRate?: SortOrder
     taxAmount?: SortOrder
     otherCharges?: SortOrder
+    additionalCost?: SortOrder
     netTotal?: SortOrder
     lineTotal?: SortOrder
     total?: SortOrder
@@ -21869,6 +21965,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -21895,6 +21993,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -22155,6 +22255,8 @@ export namespace Prisma {
     taxRate?: FloatFilter<"SaleItem"> | number
     taxAmount?: FloatFilter<"SaleItem"> | number
     otherCharges?: FloatFilter<"SaleItem"> | number
+    additionalCost?: FloatFilter<"SaleItem"> | number
+    additionalCostPaymentMethod?: StringNullableFilter<"SaleItem"> | string | null
     netTotal?: FloatFilter<"SaleItem"> | number
     lineTotal?: FloatFilter<"SaleItem"> | number
     total?: FloatFilter<"SaleItem"> | number
@@ -22360,6 +22462,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -22406,6 +22509,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -22545,6 +22649,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -22591,6 +22696,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -22712,6 +22818,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -22758,6 +22865,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -22820,6 +22928,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -22866,6 +22975,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -22912,6 +23022,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -22958,6 +23069,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -23020,6 +23132,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -23066,6 +23179,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -23112,6 +23226,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -23158,6 +23273,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -23220,6 +23336,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -23266,6 +23383,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -23312,6 +23430,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -23358,6 +23477,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -23404,6 +23524,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -23431,6 +23553,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -23477,6 +23601,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -23523,6 +23648,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -23575,6 +23701,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -23602,6 +23730,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -23810,6 +23940,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -23856,6 +23987,7 @@ export namespace Prisma {
     discountTotal?: number
     taxTotal?: number
     otherChargesTotal?: number
+    additionalCostTotal?: number
     grandTotal?: number
     amountPaid?: number
     amountDue?: number
@@ -23934,6 +24066,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -23980,6 +24113,7 @@ export namespace Prisma {
     discountTotal?: FloatFieldUpdateOperationsInput | number
     taxTotal?: FloatFieldUpdateOperationsInput | number
     otherChargesTotal?: FloatFieldUpdateOperationsInput | number
+    additionalCostTotal?: FloatFieldUpdateOperationsInput | number
     grandTotal?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     amountDue?: FloatFieldUpdateOperationsInput | number
@@ -24074,6 +24208,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -24101,6 +24237,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -24201,6 +24339,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -24228,6 +24368,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -24253,6 +24395,8 @@ export namespace Prisma {
     taxRate?: number
     taxAmount?: number
     otherCharges?: number
+    additionalCost?: number
+    additionalCostPaymentMethod?: string | null
     netTotal?: number
     lineTotal?: number
     total?: number
@@ -24353,6 +24497,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -24379,6 +24525,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number
@@ -24405,6 +24553,8 @@ export namespace Prisma {
     taxRate?: FloatFieldUpdateOperationsInput | number
     taxAmount?: FloatFieldUpdateOperationsInput | number
     otherCharges?: FloatFieldUpdateOperationsInput | number
+    additionalCost?: FloatFieldUpdateOperationsInput | number
+    additionalCostPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     netTotal?: FloatFieldUpdateOperationsInput | number
     lineTotal?: FloatFieldUpdateOperationsInput | number
     total?: FloatFieldUpdateOperationsInput | number

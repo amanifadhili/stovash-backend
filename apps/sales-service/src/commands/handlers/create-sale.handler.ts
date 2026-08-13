@@ -50,6 +50,7 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
       let discountTotal = 0;
       let taxTotal = 0;
       let otherChargesTotal = 0;
+      let additionalCostTotal = 0;
       let grandTotal = 0;
       const lines = payload.items.map((it) => {
         const qty = Number(it.quantity) || 1;
@@ -63,11 +64,13 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
           ? (net * Number(it.taxRate)) / 100
           : 0;
         const otherCharges = Number(it.otherCharges) || 0;
+        const additionalCost = Number(it.additionalCost) || 0;
         const lineTotal = net + tax + otherCharges;
         subtotal += gross;
         discountTotal += discount;
         taxTotal += tax;
         otherChargesTotal += otherCharges;
+        additionalCostTotal += additionalCost;
         grandTotal += lineTotal;
         return {
           productId: it.productId,
@@ -84,6 +87,8 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
           taxRate: Number(it.taxRate) || 0,
           taxAmount: tax,
           otherCharges,
+          additionalCost,
+          additionalCostPaymentMethod: it.additionalCostPaymentMethod || null,
           netTotal: net,
           lineTotal,
           total: lineTotal,
@@ -129,12 +134,13 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
               discountTotal,
               taxTotal,
               otherChargesTotal,
+              additionalCostTotal,
               grandTotal,
               amountPaid: 0,
               amountDue: grandTotal,
               totalAmount: grandTotal,
               totalCost,
-              profit: grandTotal - totalCost,
+              profit: grandTotal - totalCost - additionalCostTotal,
               paymentMethod: 'CASH',
               notes: payload.notes || null,
               createdById,
@@ -224,6 +230,7 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
             discountTotal,
             taxTotal,
             otherChargesTotal,
+            additionalCostTotal,
             grandTotal,
             commercialStatus: 'DRAFT',
             fulfillmentStatus: 'NOT_FULFILLED',
@@ -240,6 +247,8 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
               discountAmount: i.discountAmount,
               taxAmount: i.taxAmount,
               otherCharges: i.otherCharges,
+              additionalCost: i.additionalCost,
+              additionalCostPaymentMethod: i.additionalCostPaymentMethod,
               lineTotal: i.lineTotal,
             })),
           },

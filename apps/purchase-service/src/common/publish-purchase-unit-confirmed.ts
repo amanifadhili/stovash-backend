@@ -50,38 +50,45 @@ export async function publishPurchaseUnitConfirmed(
     if (resp?.status === 'error') {
       console.error(`SyncPurchaseStock failed: ${resp.message}`);
     }
-
-    // 2) Async broadcast (idempotent consumer — cannot double-count).
-    await eventBus.publish(
-      {
-        eventType: 'PurchaseUnitConfirmed',
-        aggregateId: receivedItem.id,
-        aggregateType: 'PurchaseReceivedItem',
-        tenantId: context?.tenantId,
-        shopId: context?.shopId,
-        payload: {
-          receivedItemId: receivedItem.id,
-          purchaseId: receivedItem.purchaseId,
-          purchaseItemId: purchaseItem?.id,
-          productId: purchaseItem?.productId,
-          productName: purchaseItem?.productName,
-          productSku: purchaseItem?.productSku,
-          productTracking: purchaseItem?.productTracking,
-          serialNumber: receivedItem.serialNumber,
-          imei1: receivedItem.imei1,
-          imei2: receivedItem.imei2,
-          unitAcquisitionCost: receivedItem.unitAcquisitionCost || 0,
-          additionalCost: receivedItem.additionalCost || 0,
-          condition: receivedItem.condition,
-          confirmedAt: receivedItem.confirmedAt || new Date().toISOString(),
-        },
-        timestamp: new Date().toISOString(),
-        correlationId: traceId,
-        createdBy,
-      },
-      'purchase.unit.confirmed',
-    );
   } catch (error: any) {
     console.error(`Failed to sync purchase unit to inventory: ${error.message}`);
+  }
+
+  // 2) Async broadcast — only when the event bus is actually connected
+  //    (RabbitMQ down on this dev box -> skip quietly instead of erroring).
+  try {
+    if (eventBus.isConnected?.()) {
+      await eventBus.publish(
+        {
+          eventType: 'PurchaseUnitConfirmed',
+          aggregateId: receivedItem.id,
+          aggregateType: 'PurchaseReceivedItem',
+          tenantId: context?.tenantId,
+          shopId: context?.shopId,
+          payload: {
+            receivedItemId: receivedItem.id,
+            purchaseId: receivedItem.purchaseId,
+            purchaseItemId: purchaseItem?.id,
+            productId: purchaseItem?.productId,
+            productName: purchaseItem?.productName,
+            productSku: purchaseItem?.productSku,
+            productTracking: purchaseItem?.productTracking,
+            serialNumber: receivedItem.serialNumber,
+            imei1: receivedItem.imei1,
+            imei2: receivedItem.imei2,
+            unitAcquisitionCost: receivedItem.unitAcquisitionCost || 0,
+            additionalCost: receivedItem.additionalCost || 0,
+            condition: receivedItem.condition,
+            confirmedAt: receivedItem.confirmedAt || new Date().toISOString(),
+          },
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+          createdBy,
+        },
+        'purchase.unit.confirmed',
+      );
+    }
+  } catch (error: any) {
+    console.error(`Failed to publish PurchaseUnitConfirmed event: ${error.message}`);
   }
 }

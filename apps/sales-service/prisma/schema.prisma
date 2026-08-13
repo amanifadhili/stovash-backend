@@ -59,12 +59,13 @@ model Sale {
   discountTotal      Float                     @default(0)
   taxTotal           Float                     @default(0)
   otherChargesTotal  Float                     @default(0)
+  additionalCostTotal Float                   @default(0) // bonus/commission/extra spent on the sale (reduces profit)
   grandTotal         Float                     @default(0)
   amountPaid         Float                     @default(0)
   amountDue          Float                     @default(0)
   totalAmount        Float                     @default(0) // legacy
   totalCost          Float                     @default(0) // legacy
-  profit             Float                     @default(0) // legacy
+  profit             Float                     @default(0) // legacy: revenue - COGS - additional costs spent
   paymentMethod      String                    @default("CASH") // legacy: CASH, CARD, CREDIT, LOAN, MOMO, BANK
   notes              String?
   confirmedById      String?
@@ -115,6 +116,8 @@ model SaleItem {
   taxRate         Float    @default(0)
   taxAmount       Float    @default(0)
   otherCharges    Float    @default(0)
+  additionalCost  Float    @default(0) // bonus/commission/extra SPENT on this line (NOT charged to customer) — reduces profit
+  additionalCostPaymentMethod String? // CASH, MOMO, BANK_TRANSFER, CARD, CREDIT, CHECK, OTHER — how the cost was paid
   netTotal        Float    @default(0) // after discount + tax
   lineTotal       Float    @default(0) // grand line total incl charges
   total           Float    @default(0) // legacy
