@@ -8,6 +8,7 @@ export * from './create-purchase-receiving.command.js';
 export * from './add-received-items.command.js';
 export * from './receive-purchase-unit.command.js';
 export * from './confirm-purchase-unit.command.js';
+export * from './cancel-purchase-unit.command.js';
 export * from './add-received-item-cost.command.js';
 export * from './record-purchase-payment.command.js';
 export * from './create-purchase-return.command.js';

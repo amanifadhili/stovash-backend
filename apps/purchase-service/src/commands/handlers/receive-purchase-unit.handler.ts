@@ -4,6 +4,7 @@ import { ReceivePurchaseUnitCommand } from '../impl/receive-purchase-unit.comman
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { actorOf } from '../../common/actor.js';
+import { recomputePurchaseItemCounts, recomputePurchaseReceivingStatus } from '../../common/receiving-counts.js';
 
 @CommandHandler(ReceivePurchaseUnitCommand)
 export class ReceivePurchaseUnitHandler extends BaseCommandHandler<ReceivePurchaseUnitCommand> {
@@ -44,34 +45,41 @@ export class ReceivePurchaseUnitHandler extends BaseCommandHandler<ReceivePurcha
         return { status: 'error', traceId, message: 'Purchase item not found', errorCode: ErrorCode.NOT_FOUND };
       }
 
-      // Cannot receive more than the remaining ordered quantity.
-      if (purchaseItem.receivedQty >= purchaseItem.orderedQty) {
-        return { status: 'error', traceId, message: 'All ordered quantity has already been received', errorCode: ErrorCode.VALIDATION_ERROR };
+      // Guard on ACCEPTED quantity (not raw received) so rejected/damaged units
+      // can be replaced by receiving additional units later.
+      if (purchaseItem.acceptedQty >= purchaseItem.orderedQty) {
+        return { status: 'error', traceId, message: 'All ordered quantity has already been received and accepted', errorCode: ErrorCode.VALIDATION_ERROR };
       }
 
-      // Duplicate serial/IMEI guard (own purchase + inventory-wide handled elsewhere).
-      if (serialNumber) {
-        const existing = await prisma.purchaseReceivedItem.findFirst({
-          where: { serialNumber, purchaseId: purchase.id },
-        });
-        if (existing) {
-          return { status: 'error', traceId, message: `Serial number ${serialNumber} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
-        }
+      // Duplicate serial/IMEI guard across ALL purchases of this tenant+shop.
+      const existingSerial = serialNumber
+        ? await prisma.purchaseReceivedItem.findFirst({
+            where: { serialNumber, purchase: { tenantId, shopId } },
+          })
+        : null;
+      if (existingSerial) {
+        return { status: 'error', traceId, message: `Serial number ${serialNumber} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
       }
-      if (imei1) {
-        const existing = await prisma.purchaseReceivedItem.findFirst({ where: { imei1, purchaseId: purchase.id } });
-        if (existing) {
-          return { status: 'error', traceId, message: `IMEI ${imei1} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
-        }
+      const existingImei = imei1
+        ? await prisma.purchaseReceivedItem.findFirst({
+            where: { imei1, purchase: { tenantId, shopId } },
+          })
+        : null;
+      if (existingImei) {
+        return { status: 'error', traceId, message: `IMEI ${imei1} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
       }
 
-      // Reuse or create a receiving batch for this purchase on this receivedAt date.
+      // Reuse the most recent receiving batch for this purchase so units added
+      // later group into the same GRN instead of spawning a GRN per unit.
       const recvDate = receivedAt ? new Date(receivedAt) : new Date();
       let receiving = await prisma.purchaseReceiving.findFirst({
-        where: { purchaseId, receivedAt: recvDate },
+        where: { purchaseId },
+        orderBy: { createdAt: 'desc' },
       });
       if (!receiving) {
-        const receivingCount = await prisma.purchaseReceiving.count({ where: { purchaseId } });
+        const receivingCount = await prisma.purchaseReceiving.count({
+          where: { receivedAtShop: shopId },
+        });
         const receivingNumber = `GRN-${String(receivingCount + 1).padStart(4, '0')}`;
         receiving = await prisma.purchaseReceiving.create({
           data: {
@@ -103,8 +111,8 @@ export class ReceivePurchaseUnitHandler extends BaseCommandHandler<ReceivePurcha
         },
       });
 
-      await this.updatePurchaseItemCounts(purchaseItemId);
-      await this.updatePurchaseReceivingStatus(purchase.id);
+      await recomputePurchaseItemCounts(purchaseItemId);
+      await recomputePurchaseReceivingStatus(purchase.id);
 
       await prisma.purchaseHistory.create({
         data: {
@@ -139,29 +147,5 @@ export class ReceivePurchaseUnitHandler extends BaseCommandHandler<ReceivePurcha
         errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }
-  }
-
-  private async updatePurchaseItemCounts(purchaseItemId: string) {
-    const receivedItems = await prisma.purchaseReceivedItem.findMany({ where: { purchaseItemId } });
-    const receivedQty = receivedItems.length;
-    const acceptedQty = receivedItems.filter((i) => i.condition === 'ACCEPTED').length;
-    const rejectedQty = receivedItems.filter((i) => i.condition !== 'ACCEPTED').length;
-    await prisma.purchaseItem.update({
-      where: { id: purchaseItemId },
-      data: { receivedQty, acceptedQty, rejectedQty },
-    });
-  }
-
-  private async updatePurchaseReceivingStatus(purchaseId: string) {
-    const items = await prisma.purchaseItem.findMany({ where: { purchaseId } });
-    const totalOrdered = items.reduce((sum, i) => sum + i.orderedQty, 0);
-    const totalReceived = items.reduce((sum, i) => sum + i.receivedQty, 0);
-
-    let status: 'NOT_RECEIVED' | 'PARTIALLY_RECEIVED' | 'FULLY_RECEIVED' = 'NOT_RECEIVED';
-    if (totalReceived === 0) status = 'NOT_RECEIVED';
-    else if (totalReceived >= totalOrdered) status = 'FULLY_RECEIVED';
-    else status = 'PARTIALLY_RECEIVED';
-
-    await prisma.purchase.update({ where: { id: purchaseId }, data: { receivingStatus: status } });
   }
 }

@@ -19,6 +19,14 @@ import { EventBus } from '@electronic-shop/framework-event';
           port: parseInt(process.env.SUPPLIER_SERVICE_PORT || '3012', 10),
         },
       },
+      {
+        name: 'INVENTORY_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: '127.0.0.1',
+          port: parseInt(process.env.INVENTORY_SERVICE_PORT || '3004', 10),
+        },
+      },
     ]),
   ],
   controllers: [PurchaseServiceController],

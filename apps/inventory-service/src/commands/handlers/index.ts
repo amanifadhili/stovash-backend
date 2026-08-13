@@ -4,6 +4,7 @@ import { DeleteProductHandler } from './delete-product.handler.js';
 import { UpdateProductStatusHandler } from './update-product-status.handler.js';
 import { SetProductPriceHandler } from './set-product-price.handler.js';
 import { AddInventoryItemHandler } from './add-inventory-item.handler.js';
+import { SyncPurchaseStockHandler } from './sync-purchase-stock.handler.js';
 import { ProcessPosSaleHandler } from './process-pos-sale.handler.js';
 import { ReceiveGoodsHandler } from './receive-goods.handler.js';
 import { ProcessSalesReturnHandler } from './process-sales-return.handler.js';
@@ -25,6 +26,7 @@ export const CommandHandlers = [
   UpdateProductStatusHandler,
   SetProductPriceHandler,
   AddInventoryItemHandler,
+  SyncPurchaseStockHandler,
   ProcessPosSaleHandler,
   ReceiveGoodsHandler,
   ProcessSalesReturnHandler,

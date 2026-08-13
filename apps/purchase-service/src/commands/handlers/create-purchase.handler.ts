@@ -3,11 +3,13 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { CreatePurchaseCommand } from '../impl/create-purchase.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
-import { v4 as uuidv4 } from 'uuid';
 import { actorOf } from '../../common/actor.js';
 import { firstValueFrom } from 'rxjs';
 import { Inject, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { EventBus } from '@electronic-shop/framework-event';
+import { recomputePurchaseItemCounts, recomputePurchaseReceivingStatus } from '../../common/receiving-counts.js';
+import { publishPurchaseUnitConfirmed } from '../../common/publish-purchase-unit-confirmed.js';
 
 @CommandHandler(CreatePurchaseCommand)
 export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseCommand> {
@@ -15,6 +17,8 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
 
   constructor(
     @Inject('SUPPLIER_SERVICE') private readonly supplierClient: ClientProxy,
+    @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
+    @Inject('EVENT_BUS') private readonly eventBus: EventBus,
   ) {
     super();
   }
@@ -203,7 +207,7 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
           for (const unit of it.units) {
             if (unit.serialNumber) {
               const existing = await prisma.purchaseReceivedItem.findFirst({
-                where: { serialNumber: unit.serialNumber, purchaseId: purchase.id },
+                where: { serialNumber: unit.serialNumber, purchase: { tenantId, shopId } },
               });
               if (existing) {
                 return { status: 'error', traceId, message: `Serial ${unit.serialNumber} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
@@ -211,14 +215,15 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
             }
             if (unit.imei1) {
               const existing = await prisma.purchaseReceivedItem.findFirst({
-                where: { imei1: unit.imei1, purchaseId: purchase.id },
+                where: { imei1: unit.imei1, purchase: { tenantId, shopId } },
               });
               if (existing) {
                 return { status: 'error', traceId, message: `IMEI ${unit.imei1} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
               }
             }
 
-            await prisma.purchaseReceivedItem.create({
+            const isConfirmed = unit.received === true;
+            const createdReceived = await prisma.purchaseReceivedItem.create({
               data: {
                 purchaseId: purchase.id,
                 purchaseItemId: purchaseItem.id,
@@ -227,41 +232,27 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
                 imei2: unit.imei2,
                 condition: unit.condition || 'ACCEPTED',
                 unitAcquisitionCost: Number(unit.unitAcquisitionCost) || 0,
-                status: unit.received ? 'CONFIRMED' : 'PENDING',
-                confirmedAt: unit.received ? new Date() : undefined,
-                confirmedById: unit.received ? createdById : undefined,
+                status: isConfirmed ? 'CONFIRMED' : 'PENDING',
+                confirmedAt: isConfirmed ? new Date() : undefined,
+                confirmedById: isConfirmed ? createdById : undefined,
                 receivedAt: new Date(),
                 receivedById: createdById,
                 notes: unit.notes,
                 images: Array.isArray(unit.images) && unit.images.length > 0 ? unit.images.slice(0, 3) : undefined,
               },
             });
+
+            // Inline confirmed units also stock the inventory (sync RPC + event, idempotent).
+            if (isConfirmed) {
+              await publishPurchaseUnitConfirmed(this.inventoryClient, this.eventBus, createdReceived, purchaseItem, context);
+            }
           }
 
-          const receivedItems = await prisma.purchaseReceivedItem.findMany({
-            where: { purchaseItemId: purchaseItem.id },
-          });
-          const receivedQty = receivedItems.length;
-          const acceptedQty = receivedItems.filter((i) => i.condition === 'ACCEPTED').length;
-          const rejectedQty = receivedItems.filter((i) => i.condition !== 'ACCEPTED').length;
-          await prisma.purchaseItem.update({
-            where: { id: purchaseItem.id },
-            data: { receivedQty, acceptedQty, rejectedQty },
-          });
+          // Status-aware counts: only CONFIRMED units count as received.
+          await recomputePurchaseItemCounts(purchaseItem.id);
         }
 
-        const unitItems = await prisma.purchaseItem.findMany({ where: { purchaseId: purchase.id } });
-        const totalOrdered = unitItems.reduce((s, i) => s + i.orderedQty, 0);
-        const totalReceived = unitItems.reduce((s, i) => s + i.receivedQty, 0);
-        const totalAccepted = unitItems.reduce((s, i) => s + i.acceptedQty, 0);
-        let receivingStatus: 'NOT_RECEIVED' | 'PARTIALLY_RECEIVED' | 'FULLY_RECEIVED' = 'NOT_RECEIVED';
-        if (totalReceived === 0) receivingStatus = 'NOT_RECEIVED';
-        else if (totalAccepted >= totalOrdered) receivingStatus = 'FULLY_RECEIVED';
-        else receivingStatus = 'PARTIALLY_RECEIVED';
-        await prisma.purchase.update({
-          where: { id: purchase.id },
-          data: { receivingStatus },
-        });
+        await recomputePurchaseReceivingStatus(purchase.id);
       }
 
       // Create history entry

@@ -8,6 +8,7 @@ import { CreatePurchaseReceivingHandler } from './create-purchase-receiving.hand
 import { AddReceivedItemsHandler } from './add-received-items.handler.js';
 import { ReceivePurchaseUnitHandler } from './receive-purchase-unit.handler.js';
 import { ConfirmPurchaseUnitHandler } from './confirm-purchase-unit.handler.js';
+import { CancelPurchaseUnitHandler } from './cancel-purchase-unit.handler.js';
 import { AddReceivedItemCostHandler } from './add-received-item-cost.handler.js';
 import { RecordPurchasePaymentHandler } from './record-purchase-payment.handler.js';
 import { CreatePurchaseReturnHandler } from './create-purchase-return.handler.js';
@@ -25,6 +26,7 @@ export const CommandHandlers = [
   AddReceivedItemsHandler,
   ReceivePurchaseUnitHandler,
   ConfirmPurchaseUnitHandler,
+  CancelPurchaseUnitHandler,
   AddReceivedItemCostHandler,
   RecordPurchasePaymentHandler,
   CreatePurchaseReturnHandler,
@@ -42,6 +44,7 @@ export * from './create-purchase-receiving.handler.js';
 export * from './add-received-items.handler.js';
 export * from './receive-purchase-unit.handler.js';
 export * from './confirm-purchase-unit.handler.js';
+export * from './cancel-purchase-unit.handler.js';
 export * from './add-received-item-cost.handler.js';
 export * from './record-purchase-payment.handler.js';
 export * from './create-purchase-return.handler.js';

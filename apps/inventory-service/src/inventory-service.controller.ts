@@ -7,6 +7,7 @@ import { DeleteProductCommand } from './commands/impl/delete-product.command.js'
 import { UpdateProductStatusCommand } from './commands/impl/update-product-status.command.js';
 import { SetProductPriceCommand } from './commands/impl/set-product-price.command.js';
 import { AddInventoryItemCommand } from './commands/impl/add-inventory-item.command.js';
+import { SyncPurchaseStockCommand } from './commands/impl/sync-purchase-stock.command.js';
 import { ProcessPosSaleCommand } from './commands/impl/process-pos-sale.command.js';
 import { ReceiveGoodsCommand } from './commands/impl/receive-goods.command.js';
 import { ProcessSalesReturnCommand } from './commands/impl/process-sales-return.command.js';
@@ -59,6 +60,11 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'AddInventoryItem' })
   async handleAddInventoryItem(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new AddInventoryItemCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'SyncPurchaseStock' })
+  async handleSyncPurchaseStock(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new SyncPurchaseStockCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'ProcessPosSale' })

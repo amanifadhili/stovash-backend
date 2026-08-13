@@ -4,6 +4,7 @@ import { AddReceivedItemCostCommand } from '../impl/add-received-item-cost.comma
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { actorOf } from '../../common/actor.js';
+import { recomputePurchaseItemAcquisitionCost } from '../../common/receiving-counts.js';
 
 @CommandHandler(AddReceivedItemCostCommand)
 export class AddReceivedItemCostHandler extends BaseCommandHandler<AddReceivedItemCostCommand> {
@@ -40,6 +41,9 @@ export class AddReceivedItemCostHandler extends BaseCommandHandler<AddReceivedIt
         where: { id: receivedItemId },
         data: { additionalCost },
       });
+
+      // Roll the extra cost up into the purchase item's per-unit landed cost.
+      await recomputePurchaseItemAcquisitionCost(receivedItem.purchaseItemId);
 
       await prisma.purchaseHistory.create({
         data: {

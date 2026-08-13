@@ -12,6 +12,7 @@ import {
   AddReceivedItemsCommand,
   ReceivePurchaseUnitCommand,
   ConfirmPurchaseUnitCommand,
+  CancelPurchaseUnitCommand,
   AddReceivedItemCostCommand,
   RecordPurchasePaymentCommand,
   CreatePurchaseReturnCommand,
@@ -86,6 +87,11 @@ export class PurchaseServiceController {
   @MessagePattern({ cmd: 'ConfirmPurchaseUnit' })
   async handleConfirmPurchaseUnit(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new ConfirmPurchaseUnitCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'CancelPurchaseUnit' })
+  async handleCancelPurchaseUnit(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CancelPurchaseUnitCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'AddReceivedItemCost' })

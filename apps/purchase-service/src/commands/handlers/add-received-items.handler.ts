@@ -4,9 +4,21 @@ import { AddReceivedItemsCommand, ReceivedItemData } from '../impl/add-received-
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { actorOf } from '../../common/actor.js';
+import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { EventBus } from '@electronic-shop/framework-event';
+import { recomputePurchaseItemAcquisitionCost, recomputePurchaseItemCounts, recomputePurchaseReceivingStatus } from '../../common/receiving-counts.js';
+import { publishPurchaseUnitConfirmed } from '../../common/publish-purchase-unit-confirmed.js';
 
 @CommandHandler(AddReceivedItemsCommand)
 export class AddReceivedItemsHandler extends BaseCommandHandler<AddReceivedItemsCommand> {
+  constructor(
+    @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
+    @Inject('EVENT_BUS') private readonly eventBus: EventBus,
+  ) {
+    super();
+  }
+
   async execute(command: AddReceivedItemsCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
@@ -38,10 +50,10 @@ export class AddReceivedItemsHandler extends BaseCommandHandler<AddReceivedItems
           continue;
         }
 
-        // Check for duplicate serial/IMEI
+        // Check for duplicate serial/IMEI across ALL purchases of this tenant+shop.
         if (item.serialNumber) {
           const existing = await prisma.purchaseReceivedItem.findFirst({
-            where: { serialNumber: item.serialNumber, purchaseId: purchase.id },
+            where: { serialNumber: item.serialNumber, purchase: { tenantId, shopId } },
           });
           if (existing) {
             return { status: 'error', traceId, message: `Serial number ${item.serialNumber} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
@@ -49,7 +61,7 @@ export class AddReceivedItemsHandler extends BaseCommandHandler<AddReceivedItems
         }
         if (item.imei1) {
           const existing = await prisma.purchaseReceivedItem.findFirst({
-            where: { imei1: item.imei1, purchaseId: purchase.id },
+            where: { imei1: item.imei1, purchase: { tenantId, shopId } },
           });
           if (existing) {
             return { status: 'error', traceId, message: `IMEI ${item.imei1} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
@@ -79,12 +91,16 @@ export class AddReceivedItemsHandler extends BaseCommandHandler<AddReceivedItems
 
         results.push(receivedItem);
 
-        // Update purchase item received/accepted/rejected counts
-        await this.updatePurchaseItemCounts(item.purchaseItemId);
+        // Update purchase item received/accepted/rejected counts (status-aware).
+        await recomputePurchaseItemCounts(item.purchaseItemId);
+        if (item.received) {
+          await recomputePurchaseItemAcquisitionCost(item.purchaseItemId);
+          await publishPurchaseUnitConfirmed(this.inventoryClient, this.eventBus, receivedItem, purchaseItem, context);
+        }
       }
 
-      // Update overall purchase receiving status
-      await this.updatePurchaseReceivingStatus(purchase.id);
+      // Update overall purchase receiving status (unified accepted-based rule).
+      await recomputePurchaseReceivingStatus(purchase.id);
 
       await prisma.purchaseHistory.create({
         data: {
@@ -118,36 +134,5 @@ export class AddReceivedItemsHandler extends BaseCommandHandler<AddReceivedItems
         errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }
-  }
-
-  private async updatePurchaseItemCounts(purchaseItemId: string) {
-    const receivedItems = await prisma.purchaseReceivedItem.findMany({
-      where: { purchaseItemId },
-    });
-    const receivedQty = receivedItems.length;
-    const acceptedQty = receivedItems.filter(i => i.condition === 'ACCEPTED').length;
-    const rejectedQty = receivedItems.filter(i => i.condition !== 'ACCEPTED').length;
-
-    await prisma.purchaseItem.update({
-      where: { id: purchaseItemId },
-      data: { receivedQty, acceptedQty, rejectedQty },
-    });
-  }
-
-  private async updatePurchaseReceivingStatus(purchaseId: string) {
-    const items = await prisma.purchaseItem.findMany({ where: { purchaseId } });
-    const totalOrdered = items.reduce((sum, i) => sum + i.orderedQty, 0);
-    const totalReceived = items.reduce((sum, i) => sum + i.receivedQty, 0);
-    const totalAccepted = items.reduce((sum, i) => sum + i.acceptedQty, 0);
-
-    let status: 'NOT_RECEIVED' | 'PARTIALLY_RECEIVED' | 'FULLY_RECEIVED' = 'NOT_RECEIVED';
-    if (totalReceived === 0) status = 'NOT_RECEIVED';
-    else if (totalAccepted >= totalOrdered) status = 'FULLY_RECEIVED';
-    else status = 'PARTIALLY_RECEIVED';
-
-    await prisma.purchase.update({
-      where: { id: purchaseId },
-      data: { receivingStatus: status },
-    });
   }
 }

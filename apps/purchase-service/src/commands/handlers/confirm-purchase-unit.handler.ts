@@ -4,9 +4,21 @@ import { ConfirmPurchaseUnitCommand } from '../impl/confirm-purchase-unit.comman
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { actorOf } from '../../common/actor.js';
+import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { EventBus } from '@electronic-shop/framework-event';
+import { recomputePurchaseItemAcquisitionCost, recomputePurchaseItemCounts, recomputePurchaseReceivingStatus } from '../../common/receiving-counts.js';
+import { publishPurchaseUnitConfirmed } from '../../common/publish-purchase-unit-confirmed.js';
 
 @CommandHandler(ConfirmPurchaseUnitCommand)
 export class ConfirmPurchaseUnitHandler extends BaseCommandHandler<ConfirmPurchaseUnitCommand> {
+  constructor(
+    @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
+    @Inject('EVENT_BUS') private readonly eventBus: EventBus,
+  ) {
+    super();
+  }
+
   async execute(command: ConfirmPurchaseUnitCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
@@ -34,6 +46,17 @@ export class ConfirmPurchaseUnitHandler extends BaseCommandHandler<ConfirmPurcha
         where: { id: receivedItemId },
         data: { status: 'CONFIRMED', confirmedAt: new Date(), confirmedById },
       });
+
+      // Recompose counts so PENDING/CANCELLED units don't inflate received totals.
+      await recomputePurchaseItemCounts(receivedItem.purchaseItemId);
+      await recomputePurchaseItemAcquisitionCost(receivedItem.purchaseItemId);
+      await recomputePurchaseReceivingStatus(receivedItem.purchaseId);
+
+      const purchaseItem = await prisma.purchaseItem.findUnique({
+        where: { id: receivedItem.purchaseItemId },
+      });
+
+      await publishPurchaseUnitConfirmed(this.inventoryClient, this.eventBus, updated, purchaseItem, context);
 
       await prisma.purchaseHistory.create({
         data: {
