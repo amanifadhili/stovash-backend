@@ -11,6 +11,7 @@ export interface ReceivedItemData {
   unitAcquisitionCost: number;
   notes?: string;
   images?: string[];
+  received?: boolean;
 }
 
 export interface AddReceivedItemsPayload {

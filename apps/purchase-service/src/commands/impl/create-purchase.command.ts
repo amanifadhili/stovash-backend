@@ -9,6 +9,7 @@ export interface CreatePurchaseUnitInput {
   unitAcquisitionCost?: number;
   notes?: string;
   images?: string[];
+  received?: boolean;
 }
 
 export interface CreatePurchaseItemInput {
