@@ -12,8 +12,10 @@ export class ProcessSaleCommand implements ICommand {
         productId?: string;
         unitCost: number;
         unitPrice: number;
+        quantity?: number;
       }>;
       paymentMethod?: string;
+      amount?: number;
     },
     public readonly context: any
   ) {}

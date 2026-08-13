@@ -25,6 +25,7 @@ import { GetBrandsQuery } from './queries/impl/get-brands.query.js';
 import { GetBrandByIdQuery } from './queries/impl/get-brand-by-id.query.js';
 import { GetCategoriesQuery } from './queries/impl/get-categories.query.js';
 import { GetCategoryByIdQuery } from './queries/impl/get-category-by-id.query.js';
+import { GetAvailableInventoryItemsQuery } from './queries/impl/get-available-inventory-items.query.js';
 
 @Controller()
 export class InventoryServiceController {
@@ -148,5 +149,10 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'GetCategoryById' })
   async handleGetCategoryById(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetCategoryByIdQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetAvailableInventoryItems' })
+  async handleGetAvailableInventoryItems(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetAvailableInventoryItemsQuery(data.payload, data.context));
   }
 }

@@ -129,11 +129,35 @@ exports.Prisma.SaleScalarFieldEnum = {
   workPeriodId: 'workPeriodId',
   orderNumber: 'orderNumber',
   customerId: 'customerId',
+  customerName: 'customerName',
+  sellerId: 'sellerId',
+  sellerName: 'sellerName',
+  saleDate: 'saleDate',
+  currency: 'currency',
+  exchangeRate: 'exchangeRate',
+  status: 'status',
+  commercialStatus: 'commercialStatus',
+  fulfillmentStatus: 'fulfillmentStatus',
+  paymentStatus: 'paymentStatus',
+  accountingStatus: 'accountingStatus',
+  subtotal: 'subtotal',
+  discountTotal: 'discountTotal',
+  taxTotal: 'taxTotal',
+  otherChargesTotal: 'otherChargesTotal',
+  grandTotal: 'grandTotal',
+  amountPaid: 'amountPaid',
+  amountDue: 'amountDue',
   totalAmount: 'totalAmount',
   totalCost: 'totalCost',
   profit: 'profit',
   paymentMethod: 'paymentMethod',
-  status: 'status',
+  notes: 'notes',
+  confirmedById: 'confirmedById',
+  confirmedAt: 'confirmedAt',
+  fulfilledById: 'fulfilledById',
+  fulfilledAt: 'fulfilledAt',
+  cancelledById: 'cancelledById',
+  cancelledAt: 'cancelledAt',
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -143,22 +167,96 @@ exports.Prisma.SaleItemScalarFieldEnum = {
   id: 'id',
   saleId: 'saleId',
   productId: 'productId',
+  productName: 'productName',
+  productSku: 'productSku',
+  inventoryItemId: 'inventoryItemId',
   serialNumber: 'serialNumber',
+  imei1: 'imei1',
+  imei2: 'imei2',
   quantity: 'quantity',
   unitCost: 'unitCost',
   unitPrice: 'unitPrice',
-  discount: 'discount',
-  tax: 'tax',
+  discountType: 'discountType',
+  discountAmount: 'discountAmount',
+  taxRate: 'taxRate',
+  taxAmount: 'taxAmount',
+  otherCharges: 'otherCharges',
+  netTotal: 'netTotal',
+  lineTotal: 'lineTotal',
   total: 'total',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SalePaymentScalarFieldEnum = {
   id: 'id',
   saleId: 'saleId',
+  paymentNumber: 'paymentNumber',
   amount: 'amount',
+  currency: 'currency',
+  exchangeRate: 'exchangeRate',
   method: 'method',
   reference: 'reference',
+  accountId: 'accountId',
+  accountName: 'accountName',
+  paidById: 'paidById',
+  paidAt: 'paidAt',
+  notes: 'notes',
+  accountingRef: 'accountingRef',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SaleHistoryScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  eventType: 'eventType',
+  eventData: 'eventData',
+  userId: 'userId',
+  userName: 'userName',
+  traceId: 'traceId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SaleDocumentScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  documentType: 'documentType',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
+  uploadedById: 'uploadedById',
+  uploadedAt: 'uploadedAt',
+  notes: 'notes'
+};
+
+exports.Prisma.SaleWarrantyScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  saleItemId: 'saleItemId',
+  inventoryItemId: 'inventoryItemId',
+  warrantyType: 'warrantyType',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  terms: 'terms',
+  notes: 'notes',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CustomerReceivableScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  customerId: 'customerId',
+  saleId: 'saleId',
+  date: 'date',
+  debit: 'debit',
+  credit: 'credit',
+  balance: 'balance',
+  reference: 'reference',
+  createdById: 'createdById',
   createdAt: 'createdAt'
 };
 
@@ -195,8 +293,15 @@ exports.Prisma.SaleReturnScalarFieldEnum = {
   returnNumber: 'returnNumber',
   saleId: 'saleId',
   customerId: 'customerId',
+  currency: 'currency',
+  exchangeRate: 'exchangeRate',
   totalAmount: 'totalAmount',
+  originalAmount: 'originalAmount',
+  approvedRefund: 'approvedRefund',
+  refundedAmount: 'refundedAmount',
+  retainedAmount: 'retainedAmount',
   refundAmount: 'refundAmount',
+  refundMethod: 'refundMethod',
   reason: 'reason',
   status: 'status',
   createdById: 'createdById',
@@ -207,11 +312,19 @@ exports.Prisma.SaleReturnScalarFieldEnum = {
 exports.Prisma.SaleReturnItemScalarFieldEnum = {
   id: 'id',
   saleReturnId: 'saleReturnId',
+  saleItemId: 'saleItemId',
+  inventoryItemId: 'inventoryItemId',
   productId: 'productId',
   serialNumber: 'serialNumber',
   quantity: 'quantity',
   unitCost: 'unitCost',
+  originalAmount: 'originalAmount',
+  approvedRefund: 'approvedRefund',
+  refundedAmount: 'refundedAmount',
+  retainedAmount: 'retainedAmount',
+  conditionState: 'conditionState',
   refundAmount: 'refundAmount',
+  notes: 'notes',
   createdAt: 'createdAt'
 };
 
@@ -253,12 +366,38 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.SaleCommercialStatus = exports.$Enums.SaleCommercialStatus = {
+  DRAFT: 'DRAFT',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED'
+};
 
+exports.SaleFulfillmentStatus = exports.$Enums.SaleFulfillmentStatus = {
+  NOT_FULFILLED: 'NOT_FULFILLED',
+  PARTIALLY_FULFILLED: 'PARTIALLY_FULFILLED',
+  FULFILLED: 'FULFILLED'
+};
+
+exports.SalePaymentStatus = exports.$Enums.SalePaymentStatus = {
+  UNPAID: 'UNPAID',
+  PARTIALLY_PAID: 'PARTIALLY_PAID',
+  PAID: 'PAID'
+};
+
+exports.SaleAccountingStatus = exports.$Enums.SaleAccountingStatus = {
+  UNPOSTED: 'UNPOSTED',
+  POSTED: 'POSTED',
+  REVERSED: 'REVERSED'
+};
 
 exports.Prisma.ModelName = {
   Sale: 'Sale',
   SaleItem: 'SaleItem',
   SalePayment: 'SalePayment',
+  SaleHistory: 'SaleHistory',
+  SaleDocument: 'SaleDocument',
+  SaleWarranty: 'SaleWarranty',
+  CustomerReceivable: 'CustomerReceivable',
   Quotation: 'Quotation',
   QuotationItem: 'QuotationItem',
   SaleReturn: 'SaleReturn',

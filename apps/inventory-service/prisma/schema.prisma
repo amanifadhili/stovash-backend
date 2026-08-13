@@ -26,6 +26,7 @@ model Product {
   trackingMethod String   @default("SERIALIZED")    // SERIALIZED, NON_SERIALIZED
   status         String   @default("ACTIVE")        // DRAFT, ACTIVE, INACTIVE, DISCONTINUED, ARCHIVED
   specifications Json?                              // [{key, value, type, sortOrder}]
+  quantityOnHand  Float    @default(0) // non-serialized stock level
   createdAt      DateTime @default(now())
   createdBy      String?
   updatedAt      DateTime @updatedAt
@@ -194,7 +195,9 @@ model InventoryMovement {
   id              String   @id @default(uuid())
   tenantId        String
   shopId          String
-  inventoryItemId String
+  inventoryItemId String?  // set for serialized items; null for product-level (non-serialized) movement
+  productId       String?  // set for non-serialized product-level movement
+  customerId      String?  // customer linked to a SALE out-movement
   movementType    String   // IN, OUT, TRANSFER_IN, TRANSFER_OUT, ADJUSTMENT
   quantity        Float    @default(1)
   referenceId     String?
@@ -205,7 +208,9 @@ model InventoryMovement {
   @@index([tenantId])
   @@index([shopId])
   @@index([inventoryItemId])
+  @@index([productId])
   @@index([movementType])
+  @@index([referenceType])
   @@map("inventory_movements")
 }
 

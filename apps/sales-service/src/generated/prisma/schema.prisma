@@ -1,9 +1,11 @@
 // Sales Service Database Schema
 // Handles: Sales, Quotations, Returns, Bonuses, Loan Sales
+// Per sales-pos plan: a Sale is the complete commercial, inventory, customer,
+// payment, receivable, operational, and accounting record of a sale.
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../dist/generated/prisma"
 }
 
 datasource db {
@@ -11,67 +13,228 @@ datasource db {
   url      = env("SALES_DATABASE_URL")
 }
 
-model Sale {
-  id            String   @id @default(uuid())
-  tenantId      String
-  shopId        String
-  workPeriodId  String?
-  orderNumber   String   @unique
-  customerId    String?
-  totalAmount   Float
-  totalCost     Float
-  profit        Float
-  paymentMethod String   @default("CASH") // CASH, CARD, CREDIT, LOAN
-  status        String   @default("COMPLETED") // COMPLETED, CANCELLED, REFUNDED
-  createdById   String? // userId
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+enum SaleCommercialStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
 
-  items    SaleItem[]
-  payments SalePayment[]
-  returns  SaleReturn[]
+enum SaleFulfillmentStatus {
+  NOT_FULFILLED
+  PARTIALLY_FULFILLED
+  FULFILLED
+}
+
+enum SalePaymentStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+}
+
+enum SaleAccountingStatus {
+  UNPOSTED
+  POSTED
+  REVERSED
+}
+
+model Sale {
+  id                String                @id @default(uuid())
+  tenantId          String
+  shopId            String
+  workPeriodId      String?
+  orderNumber       String                @unique
+  customerId        String?
+  customerName      String? // snapshot for walk-in / credit identity
+  sellerId          String? // recorded at sale time, never inferred from later edits
+  sellerName        String?
+  saleDate          DateTime              @default(now())
+  currency          String                @default("RWF")
+  exchangeRate      Float                 @default(1.0)
+  status            String                @default("COMPLETED") // legacy: COMPLETED, CANCELLED, REFUNDED (kept until migration complete)
+  commercialStatus  SaleCommercialStatus  @default(DRAFT)
+  fulfillmentStatus SaleFulfillmentStatus @default(NOT_FULFILLED)
+  paymentStatus     SalePaymentStatus     @default(UNPAID)
+  accountingStatus  SaleAccountingStatus  @default(UNPOSTED)
+  subtotal          Float                 @default(0)
+  discountTotal     Float                 @default(0)
+  taxTotal          Float                 @default(0)
+  otherChargesTotal Float                 @default(0)
+  grandTotal        Float                 @default(0)
+  amountPaid        Float                 @default(0)
+  amountDue         Float                 @default(0)
+  totalAmount       Float                 @default(0) // legacy
+  totalCost         Float                 @default(0) // legacy
+  profit            Float                 @default(0) // legacy
+  paymentMethod     String                @default("CASH") // legacy: CASH, CARD, CREDIT, LOAN, MOMO, BANK
+  notes             String?
+  confirmedById     String?
+  confirmedAt       DateTime?
+  fulfilledById     String?
+  fulfilledAt       DateTime?
+  cancelledById     String?
+  cancelledAt       DateTime?
+  createdById       String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  items      SaleItem[]
+  payments   SalePayment[]
+  returns    SaleReturn[]
+  documents  SaleDocument[]
+  history    SaleHistory[]
+  warranties SaleWarranty[]
 
   @@index([tenantId])
   @@index([shopId])
   @@index([workPeriodId])
   @@index([customerId])
-  @@index([status])
-  @@index([createdAt])
+  @@index([sellerId])
+  @@index([commercialStatus])
+  @@index([fulfillmentStatus])
+  @@index([paymentStatus])
+  @@index([accountingStatus])
+  @@index([saleDate])
   @@map("sales")
 }
 
 model SaleItem {
-  id           String   @id @default(uuid())
-  saleId       String
-  productId    String
-  serialNumber String
-  quantity     Float
-  unitCost     Float
-  unitPrice    Float
-  discount     Float    @default(0)
-  tax          Float    @default(0)
-  total        Float
-  createdAt    DateTime @default(now())
+  id              String   @id @default(uuid())
+  saleId          String
+  productId       String
+  productName     String?
+  productSku      String?
+  inventoryItemId String? // FK to exact inventory item (Specific Identification)
+  serialNumber    String   @default("")
+  imei1           String?
+  imei2           String?
+  quantity        Float    @default(1)
+  unitCost        Float    @default(0) // exact acquisition cost of the sold item
+  unitPrice       Float // actual agreed selling price snapshot (catalog may differ)
+  discountType    String? // FIXED, PERCENTAGE
+  discountAmount  Float    @default(0)
+  taxRate         Float    @default(0)
+  taxAmount       Float    @default(0)
+  otherCharges    Float    @default(0)
+  netTotal        Float    @default(0) // after discount + tax
+  lineTotal       Float    @default(0) // grand line total incl charges
+  total           Float    @default(0) // legacy
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  sale Sale @relation(fields: [saleId], references: [id])
+  sale        Sale             @relation(fields: [saleId], references: [id])
+  returnItems SaleReturnItem[]
+  warranty    SaleWarranty?
 
   @@index([saleId])
   @@index([productId])
+  @@index([inventoryItemId])
   @@map("sale_items")
 }
 
 model SalePayment {
+  id            String   @id @default(uuid())
+  saleId        String
+  paymentNumber String?  @unique
+  amount        Float
+  currency      String   @default("RWF")
+  exchangeRate  Float    @default(1.0)
+  method        String // CASH, CARD, TRANSFER, MOMO, BANK, CREDIT
+  reference     String?
+  accountId     String? // cash register, bank account, mobile money account
+  accountName   String?
+  paidById      String?
+  paidAt        DateTime @default(now())
+  notes         String?
+  accountingRef String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sale Sale @relation(fields: [saleId], references: [id])
+
+  @@index([saleId])
+  @@index([paidById])
+  @@index([paidAt])
+  @@index([method])
+  @@map("sale_payments")
+}
+
+model SaleHistory {
   id        String   @id @default(uuid())
   saleId    String
-  amount    Float
-  method    String // CASH, CARD, TRANSFER
-  reference String?
+  eventType String // CREATED, CONFIRMED, ITEM_ASSIGNED, FULFILLED, PAYMENT_RECEIVED, RETURN_INITIATED, RETURN_COMPLETED, WARRANTY_CREATED, STATUS_CHANGED, CANCELLED, CORRECTED
+  eventData String // JSON
+  userId    String
+  userName  String
+  traceId   String?
   createdAt DateTime @default(now())
 
   sale Sale @relation(fields: [saleId], references: [id])
 
   @@index([saleId])
-  @@map("sale_payments")
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("sale_history")
+}
+
+model SaleDocument {
+  id           String   @id @default(uuid())
+  saleId       String
+  documentType String // INVOICE, RECEIPT, DELIVERY_NOTE, WARRANTY, ACKNOWLEDGMENT, OTHER
+  fileName     String
+  fileUrl      String
+  fileSize     Int?
+  mimeType     String?
+  uploadedById String
+  uploadedAt   DateTime @default(now())
+  notes        String?
+
+  sale Sale @relation(fields: [saleId], references: [id])
+
+  @@index([saleId])
+  @@index([documentType])
+  @@map("sale_documents")
+}
+
+model SaleWarranty {
+  id              String    @id @default(uuid())
+  saleId          String
+  saleItemId      String?   @unique
+  inventoryItemId String?
+  warrantyType    String? // MANUFACTURER, SELLER, EXTENDED
+  startDate       DateTime?
+  endDate         DateTime?
+  terms           String?
+  notes           String?
+  createdById     String?
+  createdAt       DateTime  @default(now())
+
+  sale     Sale      @relation(fields: [saleId], references: [id])
+  saleItem SaleItem? @relation(fields: [saleItemId], references: [id])
+
+  @@index([saleId])
+  @@index([inventoryItemId])
+  @@map("sale_warranties")
+}
+
+model CustomerReceivable {
+  id          String   @id @default(uuid())
+  tenantId    String
+  shopId      String
+  customerId  String
+  saleId      String?
+  date        DateTime @default(now())
+  debit       Float    @default(0)
+  credit      Float    @default(0)
+  balance     Float    @default(0)
+  reference   String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([customerId])
+  @@index([saleId])
+  @@map("customer_receivables")
 }
 
 model Quotation {
@@ -114,20 +277,27 @@ model QuotationItem {
 }
 
 model SaleReturn {
-  id           String   @id @default(uuid())
-  tenantId     String
-  shopId       String
-  workPeriodId String?
-  returnNumber String   @unique
-  saleId       String?
-  customerId   String?
-  totalAmount  Float
-  refundAmount Float
-  reason       String?
-  status       String   @default("PENDING") // PENDING, APPROVED, COMPLETED, REJECTED
-  createdById  String? // userId
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String   @id @default(uuid())
+  tenantId       String
+  shopId         String
+  workPeriodId   String?
+  returnNumber   String   @unique
+  saleId         String?
+  customerId     String?
+  currency       String   @default("RWF")
+  exchangeRate   Float    @default(1.0)
+  totalAmount    Float
+  originalAmount Float    @default(0)
+  approvedRefund Float    @default(0)
+  refundedAmount Float    @default(0)
+  retainedAmount Float    @default(0)
+  refundAmount   Float    @default(0) // legacy: set by existing create-sale-return handler
+  refundMethod   String?
+  reason         String?
+  status         String   @default("PENDING") // PENDING, APPROVED, COMPLETED, REJECTED
+  createdById    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   items SaleReturnItem[]
   Sale  Sale?            @relation(fields: [saleId], references: [id])
@@ -141,18 +311,28 @@ model SaleReturn {
 }
 
 model SaleReturnItem {
-  id           String   @id @default(uuid())
-  saleReturnId String
-  productId    String
-  serialNumber String
-  quantity     Float
-  unitCost     Float
-  refundAmount Float
-  createdAt    DateTime @default(now())
+  id              String   @id @default(uuid())
+  saleReturnId    String
+  saleItemId      String?
+  inventoryItemId String?
+  productId       String
+  serialNumber    String
+  quantity        Float
+  unitCost        Float
+  originalAmount  Float    @default(0)
+  approvedRefund  Float    @default(0)
+  refundedAmount  Float    @default(0)
+  retainedAmount  Float    @default(0)
+  conditionState  String? // SELLABLE, DAMAGED, REQUIRES_REPAIR, DEFECTIVE, QUARANTINED, RETURN_TO_SUPPLIER
+  refundAmount    Float    @default(0) // legacy
+  notes           String?
+  createdAt       DateTime @default(now())
 
   saleReturn SaleReturn @relation(fields: [saleReturnId], references: [id])
+  saleItem   SaleItem?  @relation(fields: [saleItemId], references: [id])
 
   @@index([saleReturnId])
+  @@index([saleItemId])
   @@index([productId])
   @@map("sale_return_items")
 }

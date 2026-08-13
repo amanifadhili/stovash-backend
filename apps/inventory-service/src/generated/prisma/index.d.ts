@@ -1857,10 +1857,12 @@ export namespace Prisma {
   }
 
   export type ProductAvgAggregateOutputType = {
+    quantityOnHand: number | null
     version: number | null
   }
 
   export type ProductSumAggregateOutputType = {
+    quantityOnHand: number | null
     version: number | null
   }
 
@@ -1876,6 +1878,7 @@ export namespace Prisma {
     productType: string | null
     trackingMethod: string | null
     status: string | null
+    quantityOnHand: number | null
     createdAt: Date | null
     createdBy: string | null
     updatedAt: Date | null
@@ -1897,6 +1900,7 @@ export namespace Prisma {
     productType: string | null
     trackingMethod: string | null
     status: string | null
+    quantityOnHand: number | null
     createdAt: Date | null
     createdBy: string | null
     updatedAt: Date | null
@@ -1920,6 +1924,7 @@ export namespace Prisma {
     trackingMethod: number
     status: number
     specifications: number
+    quantityOnHand: number
     createdAt: number
     createdBy: number
     updatedAt: number
@@ -1932,10 +1937,12 @@ export namespace Prisma {
 
 
   export type ProductAvgAggregateInputType = {
+    quantityOnHand?: true
     version?: true
   }
 
   export type ProductSumAggregateInputType = {
+    quantityOnHand?: true
     version?: true
   }
 
@@ -1951,6 +1958,7 @@ export namespace Prisma {
     productType?: true
     trackingMethod?: true
     status?: true
+    quantityOnHand?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -1972,6 +1980,7 @@ export namespace Prisma {
     productType?: true
     trackingMethod?: true
     status?: true
+    quantityOnHand?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -1995,6 +2004,7 @@ export namespace Prisma {
     trackingMethod?: true
     status?: true
     specifications?: true
+    quantityOnHand?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -2105,6 +2115,7 @@ export namespace Prisma {
     trackingMethod: string
     status: string
     specifications: JsonValue | null
+    quantityOnHand: number
     createdAt: Date
     createdBy: string | null
     updatedAt: Date
@@ -2147,6 +2158,7 @@ export namespace Prisma {
     trackingMethod?: boolean
     status?: boolean
     specifications?: boolean
+    quantityOnHand?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -2175,6 +2187,7 @@ export namespace Prisma {
     trackingMethod?: boolean
     status?: boolean
     specifications?: boolean
+    quantityOnHand?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -2200,6 +2213,7 @@ export namespace Prisma {
     trackingMethod?: boolean
     status?: boolean
     specifications?: boolean
+    quantityOnHand?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -2243,6 +2257,7 @@ export namespace Prisma {
       trackingMethod: string
       status: string
       specifications: Prisma.JsonValue | null
+      quantityOnHand: number
       createdAt: Date
       createdBy: string | null
       updatedAt: Date
@@ -2660,6 +2675,7 @@ export namespace Prisma {
     readonly trackingMethod: FieldRef<"Product", 'String'>
     readonly status: FieldRef<"Product", 'String'>
     readonly specifications: FieldRef<"Product", 'Json'>
+    readonly quantityOnHand: FieldRef<"Product", 'Float'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
     readonly createdBy: FieldRef<"Product", 'String'>
     readonly updatedAt: FieldRef<"Product", 'DateTime'>
@@ -10131,6 +10147,8 @@ export namespace Prisma {
     tenantId: string | null
     shopId: string | null
     inventoryItemId: string | null
+    productId: string | null
+    customerId: string | null
     movementType: string | null
     quantity: number | null
     referenceId: string | null
@@ -10144,6 +10162,8 @@ export namespace Prisma {
     tenantId: string | null
     shopId: string | null
     inventoryItemId: string | null
+    productId: string | null
+    customerId: string | null
     movementType: string | null
     quantity: number | null
     referenceId: string | null
@@ -10157,6 +10177,8 @@ export namespace Prisma {
     tenantId: number
     shopId: number
     inventoryItemId: number
+    productId: number
+    customerId: number
     movementType: number
     quantity: number
     referenceId: number
@@ -10180,6 +10202,8 @@ export namespace Prisma {
     tenantId?: true
     shopId?: true
     inventoryItemId?: true
+    productId?: true
+    customerId?: true
     movementType?: true
     quantity?: true
     referenceId?: true
@@ -10193,6 +10217,8 @@ export namespace Prisma {
     tenantId?: true
     shopId?: true
     inventoryItemId?: true
+    productId?: true
+    customerId?: true
     movementType?: true
     quantity?: true
     referenceId?: true
@@ -10206,6 +10232,8 @@ export namespace Prisma {
     tenantId?: true
     shopId?: true
     inventoryItemId?: true
+    productId?: true
+    customerId?: true
     movementType?: true
     quantity?: true
     referenceId?: true
@@ -10305,7 +10333,9 @@ export namespace Prisma {
     id: string
     tenantId: string
     shopId: string
-    inventoryItemId: string
+    inventoryItemId: string | null
+    productId: string | null
+    customerId: string | null
     movementType: string
     quantity: number
     referenceId: string | null
@@ -10338,6 +10368,8 @@ export namespace Prisma {
     tenantId?: boolean
     shopId?: boolean
     inventoryItemId?: boolean
+    productId?: boolean
+    customerId?: boolean
     movementType?: boolean
     quantity?: boolean
     referenceId?: boolean
@@ -10351,6 +10383,8 @@ export namespace Prisma {
     tenantId?: boolean
     shopId?: boolean
     inventoryItemId?: boolean
+    productId?: boolean
+    customerId?: boolean
     movementType?: boolean
     quantity?: boolean
     referenceId?: boolean
@@ -10364,6 +10398,8 @@ export namespace Prisma {
     tenantId?: boolean
     shopId?: boolean
     inventoryItemId?: boolean
+    productId?: boolean
+    customerId?: boolean
     movementType?: boolean
     quantity?: boolean
     referenceId?: boolean
@@ -10380,7 +10416,9 @@ export namespace Prisma {
       id: string
       tenantId: string
       shopId: string
-      inventoryItemId: string
+      inventoryItemId: string | null
+      productId: string | null
+      customerId: string | null
       movementType: string
       quantity: number
       referenceId: string | null
@@ -10784,6 +10822,8 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"InventoryMovement", 'String'>
     readonly shopId: FieldRef<"InventoryMovement", 'String'>
     readonly inventoryItemId: FieldRef<"InventoryMovement", 'String'>
+    readonly productId: FieldRef<"InventoryMovement", 'String'>
+    readonly customerId: FieldRef<"InventoryMovement", 'String'>
     readonly movementType: FieldRef<"InventoryMovement", 'String'>
     readonly quantity: FieldRef<"InventoryMovement", 'Float'>
     readonly referenceId: FieldRef<"InventoryMovement", 'String'>
@@ -13004,6 +13044,7 @@ export namespace Prisma {
     trackingMethod: 'trackingMethod',
     status: 'status',
     specifications: 'specifications',
+    quantityOnHand: 'quantityOnHand',
     createdAt: 'createdAt',
     createdBy: 'createdBy',
     updatedAt: 'updatedAt',
@@ -13132,6 +13173,8 @@ export namespace Prisma {
     tenantId: 'tenantId',
     shopId: 'shopId',
     inventoryItemId: 'inventoryItemId',
+    productId: 'productId',
+    customerId: 'customerId',
     movementType: 'movementType',
     quantity: 'quantity',
     referenceId: 'referenceId',
@@ -13242,6 +13285,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -13267,20 +13324,6 @@ export namespace Prisma {
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
   /**
    * Deep Input Types
    */
@@ -13303,6 +13346,7 @@ export namespace Prisma {
     trackingMethod?: StringFilter<"Product"> | string
     status?: StringFilter<"Product"> | string
     specifications?: JsonNullableFilter<"Product">
+    quantityOnHand?: FloatFilter<"Product"> | number
     createdAt?: DateTimeFilter<"Product"> | Date | string
     createdBy?: StringNullableFilter<"Product"> | string | null
     updatedAt?: DateTimeFilter<"Product"> | Date | string
@@ -13330,6 +13374,7 @@ export namespace Prisma {
     trackingMethod?: SortOrder
     status?: SortOrder
     specifications?: SortOrderInput | SortOrder
+    quantityOnHand?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
@@ -13361,6 +13406,7 @@ export namespace Prisma {
     trackingMethod?: StringFilter<"Product"> | string
     status?: StringFilter<"Product"> | string
     specifications?: JsonNullableFilter<"Product">
+    quantityOnHand?: FloatFilter<"Product"> | number
     createdAt?: DateTimeFilter<"Product"> | Date | string
     createdBy?: StringNullableFilter<"Product"> | string | null
     updatedAt?: DateTimeFilter<"Product"> | Date | string
@@ -13388,6 +13434,7 @@ export namespace Prisma {
     trackingMethod?: SortOrder
     status?: SortOrder
     specifications?: SortOrderInput | SortOrder
+    quantityOnHand?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
@@ -13419,6 +13466,7 @@ export namespace Prisma {
     trackingMethod?: StringWithAggregatesFilter<"Product"> | string
     status?: StringWithAggregatesFilter<"Product"> | string
     specifications?: JsonNullableWithAggregatesFilter<"Product">
+    quantityOnHand?: FloatWithAggregatesFilter<"Product"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
     createdBy?: StringNullableWithAggregatesFilter<"Product"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
@@ -14001,7 +14049,9 @@ export namespace Prisma {
     id?: StringFilter<"InventoryMovement"> | string
     tenantId?: StringFilter<"InventoryMovement"> | string
     shopId?: StringFilter<"InventoryMovement"> | string
-    inventoryItemId?: StringFilter<"InventoryMovement"> | string
+    inventoryItemId?: StringNullableFilter<"InventoryMovement"> | string | null
+    productId?: StringNullableFilter<"InventoryMovement"> | string | null
+    customerId?: StringNullableFilter<"InventoryMovement"> | string | null
     movementType?: StringFilter<"InventoryMovement"> | string
     quantity?: FloatFilter<"InventoryMovement"> | number
     referenceId?: StringNullableFilter<"InventoryMovement"> | string | null
@@ -14014,7 +14064,9 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrder
-    inventoryItemId?: SortOrder
+    inventoryItemId?: SortOrderInput | SortOrder
+    productId?: SortOrderInput | SortOrder
+    customerId?: SortOrderInput | SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrderInput | SortOrder
@@ -14030,7 +14082,9 @@ export namespace Prisma {
     NOT?: InventoryMovementWhereInput | InventoryMovementWhereInput[]
     tenantId?: StringFilter<"InventoryMovement"> | string
     shopId?: StringFilter<"InventoryMovement"> | string
-    inventoryItemId?: StringFilter<"InventoryMovement"> | string
+    inventoryItemId?: StringNullableFilter<"InventoryMovement"> | string | null
+    productId?: StringNullableFilter<"InventoryMovement"> | string | null
+    customerId?: StringNullableFilter<"InventoryMovement"> | string | null
     movementType?: StringFilter<"InventoryMovement"> | string
     quantity?: FloatFilter<"InventoryMovement"> | number
     referenceId?: StringNullableFilter<"InventoryMovement"> | string | null
@@ -14043,7 +14097,9 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrder
-    inventoryItemId?: SortOrder
+    inventoryItemId?: SortOrderInput | SortOrder
+    productId?: SortOrderInput | SortOrder
+    customerId?: SortOrderInput | SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrderInput | SortOrder
@@ -14064,7 +14120,9 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"InventoryMovement"> | string
     tenantId?: StringWithAggregatesFilter<"InventoryMovement"> | string
     shopId?: StringWithAggregatesFilter<"InventoryMovement"> | string
-    inventoryItemId?: StringWithAggregatesFilter<"InventoryMovement"> | string
+    inventoryItemId?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
+    productId?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
+    customerId?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
     movementType?: StringWithAggregatesFilter<"InventoryMovement"> | string
     quantity?: FloatWithAggregatesFilter<"InventoryMovement"> | number
     referenceId?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
@@ -14236,6 +14294,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -14263,6 +14322,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -14286,6 +14346,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14313,6 +14374,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14338,6 +14400,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -14359,6 +14422,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14382,6 +14446,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15037,7 +15102,9 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId: string
-    inventoryItemId: string
+    inventoryItemId?: string | null
+    productId?: string | null
+    customerId?: string | null
     movementType: string
     quantity?: number
     referenceId?: string | null
@@ -15050,7 +15117,9 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId: string
-    inventoryItemId: string
+    inventoryItemId?: string | null
+    productId?: string | null
+    customerId?: string | null
     movementType: string
     quantity?: number
     referenceId?: string | null
@@ -15063,7 +15132,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
-    inventoryItemId?: StringFieldUpdateOperationsInput | string
+    inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
     movementType?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     referenceId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15076,7 +15147,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
-    inventoryItemId?: StringFieldUpdateOperationsInput | string
+    inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
     movementType?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     referenceId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15089,7 +15162,9 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId: string
-    inventoryItemId: string
+    inventoryItemId?: string | null
+    productId?: string | null
+    customerId?: string | null
     movementType: string
     quantity?: number
     referenceId?: string | null
@@ -15102,7 +15177,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
-    inventoryItemId?: StringFieldUpdateOperationsInput | string
+    inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
     movementType?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     referenceId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15115,7 +15192,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
-    inventoryItemId?: StringFieldUpdateOperationsInput | string
+    inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    productId?: NullableStringFieldUpdateOperationsInput | string | null
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
     movementType?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     referenceId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15359,6 +15438,17 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -15446,6 +15536,7 @@ export namespace Prisma {
     trackingMethod?: SortOrder
     status?: SortOrder
     specifications?: SortOrder
+    quantityOnHand?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -15456,6 +15547,7 @@ export namespace Prisma {
   }
 
   export type ProductAvgOrderByAggregateInput = {
+    quantityOnHand?: SortOrder
     version?: SortOrder
   }
 
@@ -15471,6 +15563,7 @@ export namespace Prisma {
     productType?: SortOrder
     trackingMethod?: SortOrder
     status?: SortOrder
+    quantityOnHand?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -15492,6 +15585,7 @@ export namespace Prisma {
     productType?: SortOrder
     trackingMethod?: SortOrder
     status?: SortOrder
+    quantityOnHand?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -15502,6 +15596,7 @@ export namespace Prisma {
   }
 
   export type ProductSumOrderByAggregateInput = {
+    quantityOnHand?: SortOrder
     version?: SortOrder
   }
 
@@ -15566,6 +15661,22 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -15608,17 +15719,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type FloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type ProductRelationFilter = {
@@ -15705,22 +15805,6 @@ export namespace Prisma {
     purchaseCost?: SortOrder
     capitalizedCost?: SortOrder
     version?: SortOrder
-  }
-
-  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type InventoryItemRelationFilter = {
@@ -15986,6 +16070,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     inventoryItemId?: SortOrder
+    productId?: SortOrder
+    customerId?: SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrder
@@ -16003,6 +16089,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     inventoryItemId?: SortOrder
+    productId?: SortOrder
+    customerId?: SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrder
@@ -16016,6 +16104,8 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     inventoryItemId?: SortOrder
+    productId?: SortOrder
+    customerId?: SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrder
@@ -16168,6 +16258,14 @@ export namespace Prisma {
     push?: string | string[]
   }
 
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -16278,14 +16376,6 @@ export namespace Prisma {
     connectOrCreate?: InventoryUpgradeCreateOrConnectWithoutInventoryItemInput | InventoryUpgradeCreateOrConnectWithoutInventoryItemInput[]
     createMany?: InventoryUpgradeCreateManyInventoryItemInputEnvelope
     connect?: InventoryUpgradeWhereUniqueInput | InventoryUpgradeWhereUniqueInput[]
-  }
-
-  export type FloatFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type ProductUpdateOneRequiredWithoutItemsNestedInput = {
@@ -16540,6 +16630,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -16640,6 +16741,22 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -16682,33 +16799,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type BrandCreateWithoutProductsInput = {
@@ -16990,6 +17080,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17016,6 +17107,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17084,6 +17176,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17110,6 +17203,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17313,6 +17407,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17338,6 +17433,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17457,6 +17553,7 @@ export namespace Prisma {
     trackingMethod?: StringFilter<"Product"> | string
     status?: StringFilter<"Product"> | string
     specifications?: JsonNullableFilter<"Product">
+    quantityOnHand?: FloatFilter<"Product"> | number
     createdAt?: DateTimeFilter<"Product"> | Date | string
     createdBy?: StringNullableFilter<"Product"> | string | null
     updatedAt?: DateTimeFilter<"Product"> | Date | string
@@ -17478,6 +17575,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17503,6 +17601,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17552,6 +17651,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17578,6 +17678,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17616,6 +17717,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17642,6 +17744,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17825,6 +17928,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17880,6 +17984,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17905,6 +18010,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17929,6 +18035,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17951,6 +18058,7 @@ export namespace Prisma {
     trackingMethod?: string
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17972,6 +18080,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17997,6 +18106,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18021,6 +18131,7 @@ export namespace Prisma {
     trackingMethod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -1,24 +1,29 @@
 import { BaseCommand } from '@electronic-shop/framework-command';
 import { IRequestContext } from '@electronic-shop/types';
 
-export class SaleReturnItem {
+export class CreateSaleReturnItemInput {
+  saleItemId?: string;
+  inventoryItemId?: string;
   productId!: string;
-  serialNumber!: string;
+  serialNumber?: string;
   quantity!: number;
-  unitCost!: number;
-  refundAmount!: number;
+  unitCost?: number;
+  originalAmount?: number;
+  approvedRefund?: number;
+  refundedAmount?: number;
+  retainedAmount?: number;
+  conditionState?: string; // SELLABLE, DAMAGED, REQUIRES_REPAIR, DEFECTIVE, QUARANTINED, RETURN_TO_SUPPLIER
+  notes?: string;
 }
 
 export class CreateSaleReturnPayload {
-  tenantId!: string;
-  shopId!: string;
   saleId?: string;
   customerId?: string;
-  items!: SaleReturnItem[];
-  totalAmount!: number;
-  refundAmount!: number;
+  currency?: string;
+  exchangeRate?: number;
+  refundMethod?: string;
   reason?: string;
-  status?: string;
+  items!: CreateSaleReturnItemInput[];
 }
 
 export class CreateSaleReturnCommand extends BaseCommand<CreateSaleReturnPayload> {

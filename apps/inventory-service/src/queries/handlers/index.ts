@@ -5,6 +5,7 @@ import { GetBrandsHandler } from './get-brands.handler.js';
 import { GetBrandByIdHandler } from './get-brand-by-id.handler.js';
 import { GetCategoriesHandler } from './get-categories.handler.js';
 import { GetCategoryByIdHandler } from './get-category-by-id.handler.js';
+import { GetAvailableInventoryItemsHandler } from './get-available-inventory-items.handler.js';
 
 export const QueryHandlers = [
   GetProductsHandler,
@@ -13,5 +14,6 @@ export const QueryHandlers = [
   GetBrandsHandler,
   GetBrandByIdHandler,
   GetCategoriesHandler,
-  GetCategoryByIdHandler
+  GetCategoryByIdHandler,
+  GetAvailableInventoryItemsHandler
 ];

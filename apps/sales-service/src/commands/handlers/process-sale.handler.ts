@@ -41,10 +41,12 @@ export class ProcessSaleHandler extends BaseCommandHandler<ProcessSaleCommand> {
       // Validate & normalize items from payload (no cross-service reads)
       const normalizedItems = payload.items.map((item) => ({
         productId: item.productId || 'unknown',
+        inventoryItemId: item.inventoryItemId || null,
         serialNumber: item.serialNumber || item.inventoryItemId || 'unknown',
         unitCost: item.unitCost || 0,
         unitPrice: item.unitPrice,
-        total: item.unitPrice
+        total: item.unitPrice,
+        quantity: item.quantity || 1,
       }));
 
       const totalAmount = normalizedItems.reduce((sum, item) => sum + item.total, 0);
@@ -60,24 +62,61 @@ export class ProcessSaleHandler extends BaseCommandHandler<ProcessSaleCommand> {
             shopId,
             workPeriodId,
             orderNumber,
+            status: 'COMPLETED',
+            commercialStatus: 'CONFIRMED',
+            fulfillmentStatus: 'NOT_FULFILLED',
+            paymentStatus: 'UNPAID',
+            accountingStatus: 'UNPOSTED',
+            subtotal: totalAmount,
+            discountTotal: 0,
+            taxTotal: 0,
+            otherChargesTotal: 0,
+            grandTotal: totalAmount,
+            amountPaid: 0,
+            amountDue: totalAmount,
             totalAmount,
             totalCost,
             profit: totalAmount - totalCost,
             paymentMethod: payload.paymentMethod || 'CASH',
-            status: 'COMPLETED',
+            confirmedById: context.userId || 'system',
+            confirmedAt: new Date(),
             createdById: context.userId || 'system',
             items: {
               create: normalizedItems.map(item => ({
                 productId: item.productId,
+                inventoryItemId: item.inventoryItemId,
                 serialNumber: item.serialNumber,
-                quantity: 1,
+                quantity: item.quantity,
                 unitCost: item.unitCost,
                 unitPrice: item.unitPrice,
-                total: item.total
+                total: item.total,
+                lineTotal: item.total
               }))
             }
           },
           include: { items: true }
+        });
+
+        // History entries for the POS flow
+        await tx.saleHistory.create({
+          data: {
+            saleId: sale.id,
+            eventType: 'CREATED',
+            eventData: JSON.stringify({ orderNumber, createdBy: context.userId || 'system' }),
+            userId: context.userId || 'system',
+            userName: context?.email || context?.userId || 'system',
+            traceId,
+          },
+        });
+        await tx.saleHistory.create({
+          data: {
+            saleId: sale.id,
+            eventType: 'CONFIRMED',
+            eventData: JSON.stringify({ orderNumber, confirmedBy: context?.email || context?.userId || 'system' }),
+            userId: context.userId || 'system',
+            userName: context?.email || context?.userId || 'system',
+            traceId,
+          },
         });
 
         return { sale };
@@ -102,10 +141,10 @@ export class ProcessSaleHandler extends BaseCommandHandler<ProcessSaleCommand> {
             totalCost,
             paymentMethod: payload.paymentMethod || 'CASH',
             items: normalizedItems.map(item => ({
-              inventoryItemId: item.productId,
+              inventoryItemId: item.inventoryItemId,
               serialNumber: item.serialNumber,
               productId: item.productId,
-              quantity: 1,
+              quantity: item.quantity,
               unitCost: item.unitCost,
               unitPrice: item.unitPrice
             }))
