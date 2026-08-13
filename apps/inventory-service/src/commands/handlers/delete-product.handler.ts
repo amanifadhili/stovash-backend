@@ -3,6 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { DeleteProductCommand } from '../impl/delete-product.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleToShopFilter } from '../../common/visibility.js';
 
 const ACTIVE_INVENTORY_STATUSES = ['CREATED', 'RECEIVED', 'AVAILABLE', 'RESERVED'];
 
@@ -33,8 +34,8 @@ export class DeleteProductHandler extends BaseCommandHandler<DeleteProductComman
 
       const product = await prisma.product.findFirst({
         where: {
+          ...visibleToShopFilter(context.tenantId, context.shopId),
           id: payload.productId,
-          tenantId: context.tenantId,
           deletedAt: null
         }
       });

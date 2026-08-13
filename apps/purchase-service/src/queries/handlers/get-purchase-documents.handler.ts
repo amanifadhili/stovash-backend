@@ -12,6 +12,14 @@ export class GetPurchaseDocumentsHandler implements IQueryHandler<GetPurchaseDoc
     try {
       const { purchaseId } = payload;
 
+      const purchase = await prisma.purchase.findFirst({
+        where: { id: purchaseId, tenantId: context?.tenantId, shopId: context?.shopId },
+        select: { id: true },
+      });
+      if (!purchase) {
+        return { status: 'error', traceId, message: 'Purchase not found', errorCode: ErrorCode.NOT_FOUND };
+      }
+
       const documents = await prisma.purchaseDocument.findMany({
         where: { purchaseId },
         orderBy: { uploadedAt: 'desc' },

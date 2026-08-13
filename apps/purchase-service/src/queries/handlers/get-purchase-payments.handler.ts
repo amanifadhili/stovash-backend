@@ -12,6 +12,14 @@ export class GetPurchasePaymentsHandler implements IQueryHandler<GetPurchasePaym
     try {
       const { purchaseId } = payload;
 
+      const purchase = await prisma.purchase.findFirst({
+        where: { id: purchaseId, tenantId: context?.tenantId, shopId: context?.shopId },
+        select: { id: true },
+      });
+      if (!purchase) {
+        return { status: 'error', traceId, message: 'Purchase not found', errorCode: ErrorCode.NOT_FOUND };
+      }
+
       const payments = await prisma.purchasePayment.findMany({
         where: { purchaseId },
         orderBy: { paidAt: 'desc' },

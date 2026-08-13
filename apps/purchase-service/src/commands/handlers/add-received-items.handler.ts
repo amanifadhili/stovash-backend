@@ -9,15 +9,15 @@ import { actorOf } from '../../common/actor.js';
 export class AddReceivedItemsHandler extends BaseCommandHandler<AddReceivedItemsCommand> {
   async execute(command: AddReceivedItemsCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const { userId, userName, traceId } = actorOf(context);
+    const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
 
     try {
       const { receivingId, items } = payload;
       const recordedById = userId;
       const recordedByName = userName;
 
-      const receiving = await prisma.purchaseReceiving.findUnique({
-        where: { id: receivingId },
+      const receiving = await prisma.purchaseReceiving.findFirst({
+        where: { id: receivingId, purchase: { tenantId, shopId } },
         include: { purchase: true },
       });
       if (!receiving) {

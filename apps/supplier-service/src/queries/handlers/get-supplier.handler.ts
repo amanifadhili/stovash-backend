@@ -2,6 +2,7 @@ import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { GetSupplierQuery } from '../impl/get-supplier.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleRecordFilter } from '../../common/visibility.js';
 
 @QueryHandler(GetSupplierQuery)
 export class GetSupplierHandler implements IQueryHandler<GetSupplierQuery> {
@@ -29,8 +30,9 @@ export class GetSupplierHandler implements IQueryHandler<GetSupplierQuery> {
         };
       }
 
+      const activeShopId = context?.shopId || payload?.shopId;
       const supplier = await prisma.supplier.findFirst({
-        where: { id: payload.id, tenantId },
+        where: visibleRecordFilter(tenantId, payload.id, activeShopId),
       });
 
       if (!supplier) {

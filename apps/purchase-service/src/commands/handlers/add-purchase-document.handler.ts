@@ -9,14 +9,14 @@ import { actorOf } from '../../common/actor.js';
 export class AddPurchaseDocumentHandler extends BaseCommandHandler<AddPurchaseDocumentCommand> {
   async execute(command: AddPurchaseDocumentCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const { userId, userName, traceId } = actorOf(context);
+    const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
 
     try {
       const { purchaseId, documentType, fileName, fileUrl, fileSize, mimeType, notes } = payload;
       const uploadedById = userId;
       const uploadedByName = userName;
 
-      const purchase = await prisma.purchase.findUnique({ where: { id: purchaseId } });
+      const purchase = await prisma.purchase.findFirst({ where: { id: purchaseId, tenantId, shopId } });
       if (!purchase) {
         return { status: 'error', traceId, message: 'Purchase not found', errorCode: ErrorCode.NOT_FOUND };
       }

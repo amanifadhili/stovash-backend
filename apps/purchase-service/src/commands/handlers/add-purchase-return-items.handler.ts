@@ -9,14 +9,14 @@ import { actorOf } from '../../common/actor.js';
 export class AddPurchaseReturnItemsHandler extends BaseCommandHandler<AddPurchaseReturnItemsCommand> {
   async execute(command: AddPurchaseReturnItemsCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const { userId, userName, traceId } = actorOf(context);
+    const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
 
     try {
       const { purchaseReturnId, items } = payload;
       const recordedById = userId;
       const recordedByName = userName;
 
-      const returnDoc = await prisma.purchaseReturn.findUnique({ where: { id: purchaseReturnId } });
+      const returnDoc = await prisma.purchaseReturn.findFirst({ where: { id: purchaseReturnId, tenantId, shopId } });
       if (!returnDoc) {
         return { status: 'error', traceId, message: 'Purchase return not found', errorCode: ErrorCode.NOT_FOUND };
       }
@@ -48,9 +48,16 @@ export class AddPurchaseReturnItemsHandler extends BaseCommandHandler<AddPurchas
 
         // If linked to a received item, mark it as returned
         if (item.receivedItemId) {
+          const receivedItem = await prisma.purchaseReceivedItem.findFirst({
+            where: { id: item.receivedItemId, purchaseId: returnDoc.purchaseId },
+            include: { purchase: { select: { tenantId: true, shopId: true } } },
+          });
+          if (!receivedItem || receivedItem.purchase.tenantId !== tenantId || receivedItem.purchase.shopId !== shopId) {
+            return { status: 'error', traceId, message: 'Received item not found', errorCode: ErrorCode.NOT_FOUND };
+          }
           await prisma.purchaseReceivedItem.update({
             where: { id: item.receivedItemId },
-            data: { notes: (await prisma.purchaseReceivedItem.findUnique({ where: { id: item.receivedItemId } })).notes + '\nRETURNED: ' + returnItem.id },
+            data: { notes: receivedItem.notes + '\nRETURNED: ' + returnItem.id },
           });
         }
       }

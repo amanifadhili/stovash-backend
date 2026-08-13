@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "nest build",
+    "postbuild": "rm -rf dist/generated/prisma && cp -r src/generated/prisma dist/generated/prisma",
     "start": "node dist/main.js",
     "dev": "nest start --watch",
     "test": "jest",

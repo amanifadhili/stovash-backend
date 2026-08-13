@@ -2,6 +2,7 @@ import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { GetSuppliersQuery } from '../impl/get-suppliers.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleToShopFilter } from '../../common/visibility.js';
 
 @QueryHandler(GetSuppliersQuery)
 export class GetSuppliersHandler implements IQueryHandler<GetSuppliersQuery> {
@@ -20,9 +21,11 @@ export class GetSuppliersHandler implements IQueryHandler<GetSuppliersQuery> {
         };
       }
 
-      const { shopId, search, status, page = 1, pageSize = 20 } = payload;
-      const where: any = { tenantId };
-      if (shopId) where.shopId = shopId;
+      // Suppliers can be tenant-shared (shopId null) or shop-owned (shopId set).
+      // The active shop sees shared suppliers plus the ones it owns.
+      const activeShopId = context?.shopId || payload?.shopId;
+      const { search, status, page = 1, pageSize = 20 } = payload;
+      const where: any = visibleToShopFilter(tenantId, activeShopId);
       if (status) where.status = status;
       if (search) where.name = { contains: search, mode: 'insensitive' };
 

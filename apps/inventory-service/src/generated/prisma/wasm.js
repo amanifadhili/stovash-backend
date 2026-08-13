@@ -125,6 +125,7 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  shopId: 'shopId',
   sku: 'sku',
   name: 'name',
   description: 'description',
@@ -203,6 +204,7 @@ exports.Prisma.WarrantyClaimScalarFieldEnum = {
 exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  shopId: 'shopId',
   name: 'name',
   parentId: 'parentId',
   createdAt: 'createdAt',
@@ -212,6 +214,7 @@ exports.Prisma.CategoryScalarFieldEnum = {
 exports.Prisma.BrandScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  shopId: 'shopId',
   name: 'name',
   description: 'description',
   createdAt: 'createdAt',

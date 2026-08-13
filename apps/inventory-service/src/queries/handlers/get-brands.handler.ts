@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetBrandsQuery } from '../impl/get-brands.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleToShopFilter } from '../../common/visibility.js';
 
 @QueryHandler(GetBrandsQuery)
 export class GetBrandsHandler implements IQueryHandler<GetBrandsQuery> {
@@ -20,7 +21,7 @@ export class GetBrandsHandler implements IQueryHandler<GetBrandsQuery> {
         };
       }
 
-      const where: any = { tenantId };
+      const where: any = visibleToShopFilter(tenantId, context.shopId);
 
       if (payload.search) {
         where.name = { contains: payload.search, mode: 'insensitive' };

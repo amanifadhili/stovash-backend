@@ -10,10 +10,10 @@ export class GetPurchaseReturnsHandler implements IQueryHandler<GetPurchaseRetur
     const traceId = context?.traceId || 'unknown';
 
     try {
-      const { purchaseId, tenantId, shopId, status, page = 1, pageSize = 20 } = payload;
+      const { purchaseId, status, page = 1, pageSize = 20 } = payload;
 
-      const where: any = { tenantId };
-      if (shopId) where.shopId = shopId;
+      const where: any = { tenantId: context?.tenantId };
+      if (context?.shopId) where.shopId = context?.shopId;
       if (purchaseId) where.purchaseId = purchaseId;
       if (status) where.status = status;
 

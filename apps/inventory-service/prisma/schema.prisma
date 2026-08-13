@@ -4,7 +4,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../dist/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -15,6 +15,7 @@ datasource db {
 model Product {
   id             String   @id @default(uuid())
   tenantId       String
+  shopId         String?  // null = shared at tenant level; set = owned by that shop
   sku            String
   name           String
   description    String?
@@ -39,6 +40,7 @@ model Product {
 
   @@unique([tenantId, sku])
   @@index([tenantId])
+  @@index([shopId])
   @@index([brandId])
   @@index([categoryId])
   @@index([status])
@@ -135,6 +137,7 @@ model WarrantyClaim {
 model Category {
   id        String   @id @default(uuid())
   tenantId  String
+  shopId    String?  // null = shared at tenant level; set = owned by that shop
   name      String
   parentId  String?
   createdAt DateTime @default(now())
@@ -145,6 +148,7 @@ model Category {
   products Product[]
 
   @@index([tenantId])
+  @@index([shopId])
   @@index([parentId])
   @@map("categories")
 }
@@ -152,6 +156,7 @@ model Category {
 model Brand {
   id          String   @id @default(uuid())
   tenantId    String
+  shopId      String?  // null = shared at tenant level; set = owned by that shop
   name        String
   description String?
   createdAt   DateTime @default(now())
@@ -161,6 +166,7 @@ model Brand {
 
   @@unique([tenantId, name])
   @@index([tenantId])
+  @@index([shopId])
   @@map("brands")
 }
 

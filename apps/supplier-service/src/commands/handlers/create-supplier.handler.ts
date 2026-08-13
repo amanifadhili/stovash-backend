@@ -5,6 +5,7 @@ import { CreateSupplierCommand } from '../impl/create-supplier.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { EventBus } from '@electronic-shop/framework-event';
+import { effectiveShopId } from '../../common/visibility.js';
 
 @CommandHandler(CreateSupplierCommand)
 export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierCommand> {
@@ -16,6 +17,9 @@ export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierComm
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
     const tenantId = context?.tenantId || payload?.tenantId;
+    // Explicit null/empty shopId means "shared at tenant level"; otherwise fall
+    // back to the active shop context.
+    const shopId = effectiveShopId(payload?.shopId, context?.shopId);
 
     try {
       if (!tenantId || !payload?.name) {
@@ -30,6 +34,7 @@ export class CreateSupplierHandler extends BaseCommandHandler<CreateSupplierComm
       const supplier = await prisma.supplier.create({
         data: {
           tenantId: tenantId,
+          shopId: shopId || null,
           name: payload.name,
           email: payload.email,
           phone: payload.phone,

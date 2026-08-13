@@ -11,8 +11,8 @@ export class GetPurchasesHandler implements IQueryHandler<GetPurchasesQuery> {
 
     try {
       const {
-        tenantId,
-        shopId,
+        tenantId: payloadTenantId,
+        shopId: payloadShopId,
         supplierId,
         commercialStatus,
         receivingStatus,
@@ -24,8 +24,10 @@ export class GetPurchasesHandler implements IQueryHandler<GetPurchasesQuery> {
         pageSize = 20,
       } = payload;
 
+      const tenantId = context?.tenantId || payloadTenantId;
       const where: any = { tenantId };
-      if (shopId) where.shopId = shopId;
+      if (context?.shopId) where.shopId = context.shopId;
+      else if (payloadShopId) where.shopId = payloadShopId;
       if (supplierId) where.supplierId = supplierId;
       if (commercialStatus) where.commercialStatus = commercialStatus;
       if (receivingStatus) where.receivingStatus = receivingStatus;

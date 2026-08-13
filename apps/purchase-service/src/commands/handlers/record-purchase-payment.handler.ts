@@ -9,7 +9,7 @@ import { actorOf } from '../../common/actor.js';
 export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurchasePaymentCommand> {
   async execute(command: RecordPurchasePaymentCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const { userId, userName, traceId } = actorOf(context);
+    const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
 
     try {
       const {
@@ -29,7 +29,7 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
       const paidById = userId;
       const paidByName = userName;
 
-      const purchase = await prisma.purchase.findUnique({ where: { id: purchaseId } });
+      const purchase = await prisma.purchase.findFirst({ where: { id: purchaseId, tenantId, shopId } });
       if (!purchase) {
         return { status: 'error', traceId, message: 'Purchase not found', errorCode: ErrorCode.NOT_FOUND };
       }

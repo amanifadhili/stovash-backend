@@ -3,6 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { SetProductPriceCommand } from '../impl/set-product-price.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleToShopFilter } from '../../common/visibility.js';
 
 @CommandHandler(SetProductPriceCommand)
 export class SetProductPriceHandler extends BaseCommandHandler<SetProductPriceCommand> {
@@ -40,8 +41,8 @@ export class SetProductPriceHandler extends BaseCommandHandler<SetProductPriceCo
 
       const product = await prisma.product.findFirst({
         where: {
+          ...visibleToShopFilter(context.tenantId, context.shopId),
           id: payload.productId,
-          tenantId: context.tenantId,
           deletedAt: null
         }
       });

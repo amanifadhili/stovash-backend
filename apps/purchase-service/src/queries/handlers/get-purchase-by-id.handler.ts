@@ -12,8 +12,8 @@ export class GetPurchaseByIdHandler implements IQueryHandler<GetPurchaseByIdQuer
     try {
       const { purchaseId } = payload;
 
-      const purchase = await prisma.purchase.findUnique({
-        where: { id: purchaseId },
+      const purchase = await prisma.purchase.findFirst({
+        where: { id: purchaseId, tenantId: context?.tenantId, shopId: context?.shopId },
         include: {
           items: {
             include: {

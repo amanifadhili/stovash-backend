@@ -3,6 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { UpdateProductStatusCommand } from '../impl/update-product-status.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleToShopFilter } from '../../common/visibility.js';
 
 const VALID_STATUSES = ['DRAFT', 'ACTIVE', 'INACTIVE', 'DISCONTINUED', 'ARCHIVED'];
 
@@ -52,8 +53,8 @@ export class UpdateProductStatusHandler extends BaseCommandHandler<UpdateProduct
 
       const product = await prisma.product.findFirst({
         where: {
+          ...visibleToShopFilter(context.tenantId, context.shopId),
           id: payload.productId,
-          tenantId: context.tenantId,
           deletedAt: null
         }
       });

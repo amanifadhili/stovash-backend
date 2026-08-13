@@ -46,7 +46,9 @@ export class ProcessPosSaleHandler extends BaseCommandHandler<ProcessPosSaleComm
       for (const itemInput of payload.items) {
         let invItem = null;
         if (itemInput.inventoryItemId) {
-          invItem = await prisma.inventoryItem.findUnique({ where: { id: itemInput.inventoryItemId } });
+          invItem = await prisma.inventoryItem.findFirst({
+            where: { id: itemInput.inventoryItemId, tenantId, shopId }
+          });
         } else if (itemInput.serialNumber) {
           invItem = await prisma.inventoryItem.findFirst({
             where: { tenantId, shopId, serialNumber: itemInput.serialNumber }

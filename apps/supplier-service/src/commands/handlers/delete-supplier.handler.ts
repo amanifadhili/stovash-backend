@@ -27,7 +27,8 @@ export class DeleteSupplierHandler extends BaseCommandHandler<DeleteSupplierComm
         };
       }
 
-      const existing = await prisma.supplier.findFirst({ where: { id: payload.id, tenantId } });
+      const shopId = context?.shopId;
+      const existing = await prisma.supplier.findFirst({ where: { id: payload.id, tenantId, ...(shopId ? { OR: [{ shopId: null }, { shopId }] } : { shopId: null }) } });
       if (!existing) {
         return { status: 'error', traceId, message: 'Supplier not found', errorCode: ErrorCode.NOT_FOUND };
       }

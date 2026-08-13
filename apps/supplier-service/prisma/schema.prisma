@@ -14,6 +14,7 @@ datasource db {
 model Supplier {
   id        String   @id @default(uuid())
   tenantId  String
+  shopId    String?  // null = shared at tenant level; set = owned by that shop
   name      String
   email     String?
   phone     String?
@@ -29,6 +30,7 @@ model Supplier {
   statements SupplierStatement[]
 
   @@index([tenantId])
+  @@index([shopId])
   @@index([status])
   @@map("suppliers")
 }

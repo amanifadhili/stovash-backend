@@ -27,7 +27,8 @@ export class UpdateSupplierHandler extends BaseCommandHandler<UpdateSupplierComm
         };
       }
 
-      const existing = await prisma.supplier.findFirst({ where: { id: payload.id, tenantId } });
+      const shopId = context?.shopId;
+      const existing = await prisma.supplier.findFirst({ where: { id: payload.id, tenantId, ...(shopId ? { OR: [{ shopId: null }, { shopId }] } : { shopId: null }) } });
       if (!existing) {
         return { status: 'error', traceId, message: 'Supplier not found', errorCode: ErrorCode.NOT_FOUND };
       }
@@ -38,6 +39,7 @@ export class UpdateSupplierHandler extends BaseCommandHandler<UpdateSupplierComm
       if (payload.phone !== undefined) data.phone = payload.phone;
       if (payload.address !== undefined) data.address = payload.address;
       if (payload.status !== undefined) data.status = payload.status;
+      if (payload.shopId !== undefined) data.shopId = payload.shopId || null;
 
       const supplier = await prisma.supplier.update({ where: { id: payload.id }, data });
 

@@ -12,6 +12,14 @@ export class GetPurchaseHistoryHandler implements IQueryHandler<GetPurchaseHisto
     try {
       const { purchaseId } = payload;
 
+      const purchase = await prisma.purchase.findFirst({
+        where: { id: purchaseId, tenantId: context?.tenantId, shopId: context?.shopId },
+        select: { id: true },
+      });
+      if (!purchase) {
+        return { status: 'error', traceId, message: 'Purchase not found', errorCode: ErrorCode.NOT_FOUND };
+      }
+
       const history = await prisma.purchaseHistory.findMany({
         where: { purchaseId },
         orderBy: { createdAt: 'desc' },

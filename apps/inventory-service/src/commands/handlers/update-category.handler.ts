@@ -3,6 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { UpdateCategoryCommand } from '../impl/update-category.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleRecordFilter, visibleToShopFilter } from '../../common/visibility.js';
 
 @CommandHandler(UpdateCategoryCommand)
 export class UpdateCategoryHandler extends BaseCommandHandler<UpdateCategoryCommand> {
@@ -30,10 +31,7 @@ export class UpdateCategoryHandler extends BaseCommandHandler<UpdateCategoryComm
       }
 
       const category = await prisma.category.findFirst({
-        where: {
-          id: payload.categoryId,
-          tenantId: context.tenantId
-        }
+        where: visibleRecordFilter(context.tenantId, payload.categoryId, context.shopId)
       });
 
       if (!category) {
@@ -57,8 +55,8 @@ export class UpdateCategoryHandler extends BaseCommandHandler<UpdateCategoryComm
       if (payload.parentId) {
         const parent = await prisma.category.findFirst({
           where: {
-            id: payload.parentId,
-            tenantId: context.tenantId
+            ...visibleToShopFilter(context.tenantId, context.shopId),
+            id: payload.parentId
           }
         });
 
@@ -113,6 +111,7 @@ export class UpdateCategoryHandler extends BaseCommandHandler<UpdateCategoryComm
       const updated = await prisma.category.update({
         where: { id: payload.categoryId },
         data: {
+          ...(payload.shopId !== undefined && { shopId: payload.shopId || null }),
           ...(payload.name !== undefined && { name: payload.name.trim() }),
           ...(payload.parentId !== undefined && { parentId: payload.parentId || null })
         }

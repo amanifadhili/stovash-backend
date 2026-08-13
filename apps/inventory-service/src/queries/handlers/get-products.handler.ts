@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetProductsQuery } from '../impl/get-products.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleToShopFilter } from '../../common/visibility.js';
 
 const DISPOSED_STATUSES = ['SOLD', 'RETURNED', 'DAMAGED', 'LOST', 'STOLEN', 'DISPOSED'];
 
@@ -28,6 +29,8 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
         deletedAt: null
       };
 
+      const visibility = visibleToShopFilter(tenantId, shopId);
+
       if (payload.search) {
         productWhere.OR = [
           { name: { contains: payload.search, mode: 'insensitive' } },
@@ -50,6 +53,11 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
 
       if (payload.productType) {
         productWhere.productType = payload.productType;
+      }
+
+      productWhere.OR = [...(visibility.OR || []), ...(productWhere.OR || [])];
+      if (visibility.shopId !== undefined) {
+        productWhere.shopId = visibility.shopId;
       }
 
       const products = await prisma.product.findMany({

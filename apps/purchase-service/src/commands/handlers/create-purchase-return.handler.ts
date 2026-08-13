@@ -17,7 +17,7 @@ export class CreatePurchaseReturnHandler extends BaseCommandHandler<CreatePurcha
       const createdByName = userName;
 
       if (purchaseId) {
-        const purchase = await prisma.purchase.findUnique({ where: { id: purchaseId } });
+        const purchase = await prisma.purchase.findFirst({ where: { id: purchaseId, tenantId, shopId } });
         if (!purchase) {
           return { status: 'error', traceId, message: 'Original purchase not found', errorCode: ErrorCode.NOT_FOUND };
         }

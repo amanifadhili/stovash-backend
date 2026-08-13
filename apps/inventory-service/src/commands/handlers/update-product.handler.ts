@@ -3,6 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { UpdateProductCommand } from '../impl/update-product.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleToShopFilter } from '../../common/visibility.js';
 
 const VALID_PRODUCT_TYPES = ['PHYSICAL_GOOD', 'SERVICE'];
 const VALID_TRACKING_METHODS = ['SERIALIZED', 'NON_SERIALIZED'];
@@ -32,10 +33,12 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
         };
       }
 
+      const activeShopId = context.shopId;
+
       const product = await prisma.product.findFirst({
         where: {
+          ...visibleToShopFilter(context.tenantId, activeShopId),
           id: payload.productId,
-          tenantId: context.tenantId,
           deletedAt: null
         }
       });
@@ -69,7 +72,7 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
 
       if (payload.brandId) {
         const brand = await prisma.brand.findFirst({
-          where: { id: payload.brandId, tenantId: context.tenantId }
+          where: { ...visibleToShopFilter(context.tenantId, activeShopId), id: payload.brandId }
         });
         if (!brand) {
           return {
@@ -83,7 +86,7 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
 
       if (payload.categoryId) {
         const category = await prisma.category.findFirst({
-          where: { id: payload.categoryId, tenantId: context.tenantId }
+          where: { ...visibleToShopFilter(context.tenantId, activeShopId), id: payload.categoryId }
         });
         if (!category) {
           return {
@@ -96,6 +99,7 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
       }
 
       const updateData: any = {};
+      if (payload.shopId !== undefined) updateData.shopId = payload.shopId || null;
       if (payload.name !== undefined) updateData.name = payload.name.trim();
       if (payload.description !== undefined) updateData.description = payload.description?.trim() || null;
       if (payload.brandId !== undefined) updateData.brandId = payload.brandId || null;

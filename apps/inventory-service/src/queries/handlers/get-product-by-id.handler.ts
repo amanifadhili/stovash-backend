@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetProductByIdQuery } from '../impl/get-product-by-id.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleToShopFilter } from '../../common/visibility.js';
 
 const DISPOSED_STATUSES = ['SOLD', 'RETURNED', 'DAMAGED', 'LOST', 'STOLEN', 'DISPOSED'];
 
@@ -33,8 +34,8 @@ export class GetProductByIdHandler implements IQueryHandler<GetProductByIdQuery>
 
       const product = await prisma.product.findFirst({
         where: {
+          ...visibleToShopFilter(tenantId, context.shopId),
           id: payload.productId,
-          tenantId,
           deletedAt: null
         },
         include: {

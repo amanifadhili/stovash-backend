@@ -2,6 +2,7 @@ import { IRequestContext } from '@electronic-shop/types';
 
 export class GetSupplierPayload {
   id: string;
+  shopId?: string;
 }
 
 export class GetSupplierQuery {

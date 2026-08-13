@@ -9,7 +9,7 @@ import { actorOf } from '../../common/actor.js';
 export class RemovePurchaseItemHandler extends BaseCommandHandler<RemovePurchaseItemCommand> {
   async execute(command: RemovePurchaseItemCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const { userId, userName, traceId } = actorOf(context);
+    const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
 
     try {
       const { purchaseItemId } = payload;
@@ -21,7 +21,7 @@ export class RemovePurchaseItemHandler extends BaseCommandHandler<RemovePurchase
         return { status: 'error', traceId, message: 'Purchase item not found', errorCode: ErrorCode.NOT_FOUND };
       }
 
-      const purchase = await prisma.purchase.findUnique({ where: { id: item.purchaseId } });
+      const purchase = await prisma.purchase.findFirst({ where: { id: item.purchaseId, tenantId, shopId } });
       if (!purchase || purchase.commercialStatus !== 'DRAFT') {
         return { status: 'error', traceId, message: 'Can only remove items from DRAFT purchases', errorCode: ErrorCode.VALIDATION_ERROR };
       }

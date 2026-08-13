@@ -3,6 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { DeleteBrandCommand } from '../impl/delete-brand.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleRecordFilter } from '../../common/visibility.js';
 
 @CommandHandler(DeleteBrandCommand)
 export class DeleteBrandHandler extends BaseCommandHandler<DeleteBrandCommand> {
@@ -30,10 +31,7 @@ export class DeleteBrandHandler extends BaseCommandHandler<DeleteBrandCommand> {
       }
 
       const brand = await prisma.brand.findFirst({
-        where: {
-          id: payload.brandId,
-          tenantId: context.tenantId
-        }
+        where: visibleRecordFilter(context.tenantId, payload.brandId, context.shopId)
       });
 
       if (!brand) {

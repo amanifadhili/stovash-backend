@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetBrandByIdQuery } from '../impl/get-brand-by-id.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleRecordFilter } from '../../common/visibility.js';
 
 @QueryHandler(GetBrandByIdQuery)
 export class GetBrandByIdHandler implements IQueryHandler<GetBrandByIdQuery> {
@@ -30,10 +31,7 @@ export class GetBrandByIdHandler implements IQueryHandler<GetBrandByIdQuery> {
       }
 
       const brand = await prisma.brand.findFirst({
-        where: {
-          id: payload.brandId,
-          tenantId
-        },
+        where: visibleRecordFilter(tenantId, payload.brandId, context.shopId),
         include: {
           _count: {
             select: { products: { where: { deletedAt: null } } }

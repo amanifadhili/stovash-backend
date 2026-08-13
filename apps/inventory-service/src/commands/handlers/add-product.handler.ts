@@ -3,6 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { AddProductCommand } from '../impl/add-product.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleToShopFilter, effectiveShopId } from '../../common/visibility.js';
 
 const VALID_PRODUCT_TYPES = ['PHYSICAL_GOOD', 'SERVICE'];
 const VALID_TRACKING_METHODS = ['SERIALIZED', 'NON_SERIALIZED'];
@@ -59,6 +60,8 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
         };
       }
 
+      const shopId = effectiveShopId(payload.shopId, context.shopId);
+
       const existingSku = await prisma.product.findFirst({
         where: {
           tenantId: context.tenantId,
@@ -77,7 +80,7 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
 
       if (payload.brandId) {
         const brand = await prisma.brand.findFirst({
-          where: { id: payload.brandId, tenantId: context.tenantId }
+          where: { ...visibleToShopFilter(context.tenantId, shopId), id: payload.brandId }
         });
         if (!brand) {
           return {
@@ -91,7 +94,7 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
 
       if (payload.categoryId) {
         const category = await prisma.category.findFirst({
-          where: { id: payload.categoryId, tenantId: context.tenantId }
+          where: { ...visibleToShopFilter(context.tenantId, shopId), id: payload.categoryId }
         });
         if (!category) {
           return {
@@ -106,6 +109,7 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
       const product = await prisma.product.create({
         data: {
           tenantId: context.tenantId,
+          shopId: shopId || null,
           sku: payload.sku.trim(),
           name: payload.name.trim(),
           description: payload.description?.trim() || null,

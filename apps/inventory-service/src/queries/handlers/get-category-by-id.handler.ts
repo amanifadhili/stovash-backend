@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetCategoryByIdQuery } from '../impl/get-category-by-id.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { visibleRecordFilter } from '../../common/visibility.js';
 
 @QueryHandler(GetCategoryByIdQuery)
 export class GetCategoryByIdHandler implements IQueryHandler<GetCategoryByIdQuery> {
@@ -30,10 +31,7 @@ export class GetCategoryByIdHandler implements IQueryHandler<GetCategoryByIdQuer
       }
 
       const category = await prisma.category.findFirst({
-        where: {
-          id: payload.categoryId,
-          tenantId
-        },
+        where: visibleRecordFilter(tenantId, payload.categoryId, context.shopId),
         include: {
           parent: true,
           children: {

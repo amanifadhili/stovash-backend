@@ -12,6 +12,14 @@ export class GetPurchaseReceivingsHandler implements IQueryHandler<GetPurchaseRe
     try {
       const { purchaseId } = payload;
 
+      const purchase = await prisma.purchase.findFirst({
+        where: { id: purchaseId, tenantId: context?.tenantId, shopId: context?.shopId },
+        select: { id: true },
+      });
+      if (!purchase) {
+        return { status: 'error', traceId, message: 'Purchase not found', errorCode: ErrorCode.NOT_FOUND };
+      }
+
       const receivings = await prisma.purchaseReceiving.findMany({
         where: { purchaseId },
         include: { receivedItems: true },

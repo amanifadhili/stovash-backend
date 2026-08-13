@@ -9,14 +9,14 @@ import { actorOf } from '../../common/actor.js';
 export class ConfirmPurchaseHandler extends BaseCommandHandler<ConfirmPurchaseCommand> {
   async execute(command: ConfirmPurchaseCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
-    const { userId, userName, traceId } = actorOf(context);
+    const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
 
     try {
       const { purchaseId } = payload;
       const approvedById = userId;
       const approvedByName = userName;
 
-      const purchase = await prisma.purchase.findUnique({ where: { id: purchaseId } });
+      const purchase = await prisma.purchase.findFirst({ where: { id: purchaseId, tenantId, shopId } });
       if (!purchase) {
         return { status: 'error', traceId, message: 'Purchase not found', errorCode: ErrorCode.NOT_FOUND };
       }
