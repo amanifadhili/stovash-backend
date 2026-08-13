@@ -81,6 +81,7 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
       }
 
       const purchaseCost = (Number(payload.unitAcquisitionCost) || 0) + (Number(payload.additionalCost) || 0);
+      const imageList = Array.isArray(payload.images) ? payload.images : undefined;
       const invItem = await prisma.inventoryItem.create({
         data: {
           tenantId,
@@ -88,6 +89,7 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
           productId: product.id,
           serialNumber: payload.serialNumber,
           purchaseCost,
+          imageUrl: imageList && imageList.length > 0 ? imageList[0] : undefined,
           status: 'RECEIVED',
           createdBy: userId,
         },

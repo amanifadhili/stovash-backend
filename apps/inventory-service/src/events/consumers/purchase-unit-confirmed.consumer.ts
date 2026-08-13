@@ -81,18 +81,20 @@ export const purchaseUnitConfirmedConsumer = async (event: any): Promise<void> =
       return;
     }
 
-    const purchaseCost = (payload.unitAcquisitionCost || 0) + (payload.additionalCost || 0);
-    const invItem = await prisma.inventoryItem.create({
-      data: {
-        tenantId,
-        shopId,
-        productId,
-        serialNumber,
-        purchaseCost,
-        status: 'RECEIVED',
-        createdBy: payload.createdBy || 'system',
-      },
-    });
+     const purchaseCost = (payload.unitAcquisitionCost || 0) + (payload.additionalCost || 0);
+     const imageList = Array.isArray(payload.images) ? payload.images : undefined;
+     const invItem = await prisma.inventoryItem.create({
+       data: {
+         tenantId,
+         shopId,
+         productId,
+         serialNumber,
+         purchaseCost,
+         imageUrl: imageList && imageList.length > 0 ? imageList[0] : undefined,
+         status: 'RECEIVED',
+         createdBy: payload.createdBy || 'system',
+       },
+     });
 
     await prisma.inventoryItem.update({
       where: { id: invItem.id },

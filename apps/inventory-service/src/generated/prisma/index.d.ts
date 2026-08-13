@@ -3118,6 +3118,7 @@ export namespace Prisma {
     purchaseCost: number | null
     status: string | null
     capitalizedCost: number | null
+    imageUrl: string | null
     createdAt: Date | null
     createdBy: string | null
     updatedAt: Date | null
@@ -3136,6 +3137,7 @@ export namespace Prisma {
     purchaseCost: number | null
     status: string | null
     capitalizedCost: number | null
+    imageUrl: string | null
     createdAt: Date | null
     createdBy: string | null
     updatedAt: Date | null
@@ -3154,6 +3156,7 @@ export namespace Prisma {
     purchaseCost: number
     status: number
     capitalizedCost: number
+    imageUrl: number
     createdAt: number
     createdBy: number
     updatedAt: number
@@ -3186,6 +3189,7 @@ export namespace Prisma {
     purchaseCost?: true
     status?: true
     capitalizedCost?: true
+    imageUrl?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -3204,6 +3208,7 @@ export namespace Prisma {
     purchaseCost?: true
     status?: true
     capitalizedCost?: true
+    imageUrl?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -3222,6 +3227,7 @@ export namespace Prisma {
     purchaseCost?: true
     status?: true
     capitalizedCost?: true
+    imageUrl?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -3327,6 +3333,7 @@ export namespace Prisma {
     purchaseCost: number
     status: string
     capitalizedCost: number
+    imageUrl: string | null
     createdAt: Date
     createdBy: string | null
     updatedAt: Date
@@ -3364,6 +3371,7 @@ export namespace Prisma {
     purchaseCost?: boolean
     status?: boolean
     capitalizedCost?: boolean
+    imageUrl?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -3385,6 +3393,7 @@ export namespace Prisma {
     purchaseCost?: boolean
     status?: boolean
     capitalizedCost?: boolean
+    imageUrl?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -3404,6 +3413,7 @@ export namespace Prisma {
     purchaseCost?: boolean
     status?: boolean
     capitalizedCost?: boolean
+    imageUrl?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -3437,6 +3447,7 @@ export namespace Prisma {
       purchaseCost: number
       status: string
       capitalizedCost: number
+      imageUrl: string | null
       createdAt: Date
       createdBy: string | null
       updatedAt: Date
@@ -3847,6 +3858,7 @@ export namespace Prisma {
     readonly purchaseCost: FieldRef<"InventoryItem", 'Float'>
     readonly status: FieldRef<"InventoryItem", 'String'>
     readonly capitalizedCost: FieldRef<"InventoryItem", 'Float'>
+    readonly imageUrl: FieldRef<"InventoryItem", 'String'>
     readonly createdAt: FieldRef<"InventoryItem", 'DateTime'>
     readonly createdBy: FieldRef<"InventoryItem", 'String'>
     readonly updatedAt: FieldRef<"InventoryItem", 'DateTime'>
@@ -13066,6 +13078,7 @@ export namespace Prisma {
     purchaseCost: 'purchaseCost',
     status: 'status',
     capitalizedCost: 'capitalizedCost',
+    imageUrl: 'imageUrl',
     createdAt: 'createdAt',
     createdBy: 'createdBy',
     updatedAt: 'updatedAt',
@@ -13488,6 +13501,7 @@ export namespace Prisma {
     purchaseCost?: FloatFilter<"InventoryItem"> | number
     status?: StringFilter<"InventoryItem"> | string
     capitalizedCost?: FloatFilter<"InventoryItem"> | number
+    imageUrl?: StringNullableFilter<"InventoryItem"> | string | null
     createdAt?: DateTimeFilter<"InventoryItem"> | Date | string
     createdBy?: StringNullableFilter<"InventoryItem"> | string | null
     updatedAt?: DateTimeFilter<"InventoryItem"> | Date | string
@@ -13508,6 +13522,7 @@ export namespace Prisma {
     purchaseCost?: SortOrder
     status?: SortOrder
     capitalizedCost?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
@@ -13532,6 +13547,7 @@ export namespace Prisma {
     purchaseCost?: FloatFilter<"InventoryItem"> | number
     status?: StringFilter<"InventoryItem"> | string
     capitalizedCost?: FloatFilter<"InventoryItem"> | number
+    imageUrl?: StringNullableFilter<"InventoryItem"> | string | null
     createdAt?: DateTimeFilter<"InventoryItem"> | Date | string
     createdBy?: StringNullableFilter<"InventoryItem"> | string | null
     updatedAt?: DateTimeFilter<"InventoryItem"> | Date | string
@@ -13552,6 +13568,7 @@ export namespace Prisma {
     purchaseCost?: SortOrder
     status?: SortOrder
     capitalizedCost?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
@@ -13578,6 +13595,7 @@ export namespace Prisma {
     purchaseCost?: FloatWithAggregatesFilter<"InventoryItem"> | number
     status?: StringWithAggregatesFilter<"InventoryItem"> | string
     capitalizedCost?: FloatWithAggregatesFilter<"InventoryItem"> | number
+    imageUrl?: StringNullableWithAggregatesFilter<"InventoryItem"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"InventoryItem"> | Date | string
     createdBy?: StringNullableWithAggregatesFilter<"InventoryItem"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"InventoryItem"> | Date | string
@@ -14464,6 +14482,7 @@ export namespace Prisma {
     purchaseCost: number
     status?: string
     capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -14484,6 +14503,7 @@ export namespace Prisma {
     purchaseCost: number
     status?: string
     capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -14502,6 +14522,7 @@ export namespace Prisma {
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14522,6 +14543,7 @@ export namespace Prisma {
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14541,6 +14563,7 @@ export namespace Prisma {
     purchaseCost: number
     status?: string
     capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -14558,6 +14581,7 @@ export namespace Prisma {
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14576,6 +14600,7 @@ export namespace Prisma {
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15750,6 +15775,7 @@ export namespace Prisma {
     purchaseCost?: SortOrder
     status?: SortOrder
     capitalizedCost?: SortOrder
+    imageUrl?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -15774,6 +15800,7 @@ export namespace Prisma {
     purchaseCost?: SortOrder
     status?: SortOrder
     capitalizedCost?: SortOrder
+    imageUrl?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -15792,6 +15819,7 @@ export namespace Prisma {
     purchaseCost?: SortOrder
     status?: SortOrder
     capitalizedCost?: SortOrder
+    imageUrl?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -16865,6 +16893,7 @@ export namespace Prisma {
     purchaseCost: number
     status?: string
     capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -16883,6 +16912,7 @@ export namespace Prisma {
     purchaseCost: number
     status?: string
     capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17029,6 +17059,7 @@ export namespace Prisma {
     purchaseCost?: FloatFilter<"InventoryItem"> | number
     status?: StringFilter<"InventoryItem"> | string
     capitalizedCost?: FloatFilter<"InventoryItem"> | number
+    imageUrl?: StringNullableFilter<"InventoryItem"> | string | null
     createdAt?: DateTimeFilter<"InventoryItem"> | Date | string
     createdBy?: StringNullableFilter<"InventoryItem"> | string | null
     updatedAt?: DateTimeFilter<"InventoryItem"> | Date | string
@@ -17252,6 +17283,7 @@ export namespace Prisma {
     purchaseCost: number
     status?: string
     capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17271,6 +17303,7 @@ export namespace Prisma {
     purchaseCost: number
     status?: string
     capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17304,6 +17337,7 @@ export namespace Prisma {
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17323,6 +17357,7 @@ export namespace Prisma {
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17763,6 +17798,7 @@ export namespace Prisma {
     purchaseCost: number
     status?: string
     capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17790,6 +17826,7 @@ export namespace Prisma {
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17808,6 +17845,7 @@ export namespace Prisma {
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17826,6 +17864,7 @@ export namespace Prisma {
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

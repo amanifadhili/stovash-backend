@@ -10,6 +10,7 @@ export class SyncPurchaseStockPayload {
   unitAcquisitionCost?: number;
   additionalCost?: number;
   condition?: string;
+  images?: string[];
   purchaseId?: string;
   referenceId?: string;
 }

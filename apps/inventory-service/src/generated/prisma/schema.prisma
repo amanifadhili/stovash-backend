@@ -58,6 +58,7 @@ model InventoryItem {
   purchaseCost    Float
   status          String    @default("CREATED") // CREATED, RECEIVED, AVAILABLE, RESERVED, SOLD, RETURNED, DAMAGED, LOST, STOLEN, DISPOSED
   capitalizedCost Float     @default(0) // Total capitalized upgrade costs
+  imageUrl        String? // unit image (URL or base64 data URI), sourced from received-item images at receiving time
   createdAt       DateTime  @default(now())
   createdBy       String?
   updatedAt       DateTime  @updatedAt
