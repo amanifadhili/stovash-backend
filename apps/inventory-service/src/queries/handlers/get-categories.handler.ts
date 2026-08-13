@@ -54,6 +54,8 @@ export class GetCategoriesHandler implements IQueryHandler<GetCategoriesQuery> {
           name: child.name,
           parentId: child.parentId
         })),
+        shopId: c.shopId,
+        sharedShopIds: c.sharedShopIds ?? [],
         createdAt: c.createdAt,
         createdBy: c.createdBy
       }));

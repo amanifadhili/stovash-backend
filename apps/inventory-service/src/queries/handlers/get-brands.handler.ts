@@ -42,6 +42,8 @@ export class GetBrandsHandler implements IQueryHandler<GetBrandsQuery> {
         name: b.name,
         description: b.description,
         productCount: b._count.products,
+        shopId: b.shopId,
+        sharedShopIds: b.sharedShopIds ?? [],
         createdAt: b.createdAt,
         createdBy: b.createdBy
       }));
