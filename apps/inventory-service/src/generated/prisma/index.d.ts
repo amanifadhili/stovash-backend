@@ -1910,6 +1910,7 @@ export namespace Prisma {
     id: number
     tenantId: number
     shopId: number
+    sharedShopIds: number
     sku: number
     name: number
     description: number
@@ -1984,6 +1985,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     shopId?: true
+    sharedShopIds?: true
     sku?: true
     name?: true
     description?: true
@@ -2093,6 +2095,7 @@ export namespace Prisma {
     id: string
     tenantId: string
     shopId: string | null
+    sharedShopIds: string[]
     sku: string
     name: string
     description: string | null
@@ -2134,6 +2137,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     sku?: boolean
     name?: boolean
     description?: boolean
@@ -2161,6 +2165,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     sku?: boolean
     name?: boolean
     description?: boolean
@@ -2185,6 +2190,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     sku?: boolean
     name?: boolean
     description?: boolean
@@ -2227,6 +2233,7 @@ export namespace Prisma {
       id: string
       tenantId: string
       shopId: string | null
+      sharedShopIds: string[]
       sku: string
       name: string
       description: string | null
@@ -2643,6 +2650,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Product", 'String'>
     readonly tenantId: FieldRef<"Product", 'String'>
     readonly shopId: FieldRef<"Product", 'String'>
+    readonly sharedShopIds: FieldRef<"Product", 'String[]'>
     readonly sku: FieldRef<"Product", 'String'>
     readonly name: FieldRef<"Product", 'String'>
     readonly description: FieldRef<"Product", 'String'>
@@ -7119,6 +7127,7 @@ export namespace Prisma {
     id: number
     tenantId: number
     shopId: number
+    sharedShopIds: number
     name: number
     parentId: number
     createdAt: number
@@ -7151,6 +7160,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     shopId?: true
+    sharedShopIds?: true
     name?: true
     parentId?: true
     createdAt?: true
@@ -7234,6 +7244,7 @@ export namespace Prisma {
     id: string
     tenantId: string
     shopId: string | null
+    sharedShopIds: string[]
     name: string
     parentId: string | null
     createdAt: Date
@@ -7261,6 +7272,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     name?: boolean
     parentId?: boolean
     createdAt?: boolean
@@ -7275,6 +7287,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     name?: boolean
     parentId?: boolean
     createdAt?: boolean
@@ -7286,6 +7299,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     name?: boolean
     parentId?: boolean
     createdAt?: boolean
@@ -7313,6 +7327,7 @@ export namespace Prisma {
       id: string
       tenantId: string
       shopId: string | null
+      sharedShopIds: string[]
       name: string
       parentId: string | null
       createdAt: Date
@@ -7716,6 +7731,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Category", 'String'>
     readonly tenantId: FieldRef<"Category", 'String'>
     readonly shopId: FieldRef<"Category", 'String'>
+    readonly sharedShopIds: FieldRef<"Category", 'String[]'>
     readonly name: FieldRef<"Category", 'String'>
     readonly parentId: FieldRef<"Category", 'String'>
     readonly createdAt: FieldRef<"Category", 'DateTime'>
@@ -8141,6 +8157,7 @@ export namespace Prisma {
     id: number
     tenantId: number
     shopId: number
+    sharedShopIds: number
     name: number
     description: number
     createdAt: number
@@ -8173,6 +8190,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     shopId?: true
+    sharedShopIds?: true
     name?: true
     description?: true
     createdAt?: true
@@ -8256,6 +8274,7 @@ export namespace Prisma {
     id: string
     tenantId: string
     shopId: string | null
+    sharedShopIds: string[]
     name: string
     description: string | null
     createdAt: Date
@@ -8283,6 +8302,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     name?: boolean
     description?: boolean
     createdAt?: boolean
@@ -8295,6 +8315,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     name?: boolean
     description?: boolean
     createdAt?: boolean
@@ -8305,6 +8326,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     shopId?: boolean
+    sharedShopIds?: boolean
     name?: boolean
     description?: boolean
     createdAt?: boolean
@@ -8326,6 +8348,7 @@ export namespace Prisma {
       id: string
       tenantId: string
       shopId: string | null
+      sharedShopIds: string[]
       name: string
       description: string | null
       createdAt: Date
@@ -8727,6 +8750,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Brand", 'String'>
     readonly tenantId: FieldRef<"Brand", 'String'>
     readonly shopId: FieldRef<"Brand", 'String'>
+    readonly sharedShopIds: FieldRef<"Brand", 'String[]'>
     readonly name: FieldRef<"Brand", 'String'>
     readonly description: FieldRef<"Brand", 'String'>
     readonly createdAt: FieldRef<"Brand", 'DateTime'>
@@ -12970,6 +12994,7 @@ export namespace Prisma {
     id: 'id',
     tenantId: 'tenantId',
     shopId: 'shopId',
+    sharedShopIds: 'sharedShopIds',
     sku: 'sku',
     name: 'name',
     description: 'description',
@@ -13064,6 +13089,7 @@ export namespace Prisma {
     id: 'id',
     tenantId: 'tenantId',
     shopId: 'shopId',
+    sharedShopIds: 'sharedShopIds',
     name: 'name',
     parentId: 'parentId',
     createdAt: 'createdAt',
@@ -13077,6 +13103,7 @@ export namespace Prisma {
     id: 'id',
     tenantId: 'tenantId',
     shopId: 'shopId',
+    sharedShopIds: 'sharedShopIds',
     name: 'name',
     description: 'description',
     createdAt: 'createdAt',
@@ -13266,6 +13293,7 @@ export namespace Prisma {
     id?: StringFilter<"Product"> | string
     tenantId?: StringFilter<"Product"> | string
     shopId?: StringNullableFilter<"Product"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Product">
     sku?: StringFilter<"Product"> | string
     name?: StringFilter<"Product"> | string
     description?: StringNullableFilter<"Product"> | string | null
@@ -13292,6 +13320,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrderInput | SortOrder
+    sharedShopIds?: SortOrder
     sku?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
@@ -13322,6 +13351,7 @@ export namespace Prisma {
     NOT?: ProductWhereInput | ProductWhereInput[]
     tenantId?: StringFilter<"Product"> | string
     shopId?: StringNullableFilter<"Product"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Product">
     sku?: StringFilter<"Product"> | string
     name?: StringFilter<"Product"> | string
     description?: StringNullableFilter<"Product"> | string | null
@@ -13348,6 +13378,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrderInput | SortOrder
+    sharedShopIds?: SortOrder
     sku?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
@@ -13378,6 +13409,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Product"> | string
     tenantId?: StringWithAggregatesFilter<"Product"> | string
     shopId?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Product">
     sku?: StringWithAggregatesFilter<"Product"> | string
     name?: StringWithAggregatesFilter<"Product"> | string
     description?: StringNullableWithAggregatesFilter<"Product"> | string | null
@@ -13750,6 +13782,7 @@ export namespace Prisma {
     id?: StringFilter<"Category"> | string
     tenantId?: StringFilter<"Category"> | string
     shopId?: StringNullableFilter<"Category"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Category">
     name?: StringFilter<"Category"> | string
     parentId?: StringNullableFilter<"Category"> | string | null
     createdAt?: DateTimeFilter<"Category"> | Date | string
@@ -13763,6 +13796,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrderInput | SortOrder
+    sharedShopIds?: SortOrder
     name?: SortOrder
     parentId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -13779,6 +13813,7 @@ export namespace Prisma {
     NOT?: CategoryWhereInput | CategoryWhereInput[]
     tenantId?: StringFilter<"Category"> | string
     shopId?: StringNullableFilter<"Category"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Category">
     name?: StringFilter<"Category"> | string
     parentId?: StringNullableFilter<"Category"> | string | null
     createdAt?: DateTimeFilter<"Category"> | Date | string
@@ -13792,6 +13827,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrderInput | SortOrder
+    sharedShopIds?: SortOrder
     name?: SortOrder
     parentId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -13808,6 +13844,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Category"> | string
     tenantId?: StringWithAggregatesFilter<"Category"> | string
     shopId?: StringNullableWithAggregatesFilter<"Category"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Category">
     name?: StringWithAggregatesFilter<"Category"> | string
     parentId?: StringNullableWithAggregatesFilter<"Category"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Category"> | Date | string
@@ -13821,6 +13858,7 @@ export namespace Prisma {
     id?: StringFilter<"Brand"> | string
     tenantId?: StringFilter<"Brand"> | string
     shopId?: StringNullableFilter<"Brand"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Brand">
     name?: StringFilter<"Brand"> | string
     description?: StringNullableFilter<"Brand"> | string | null
     createdAt?: DateTimeFilter<"Brand"> | Date | string
@@ -13832,6 +13870,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrderInput | SortOrder
+    sharedShopIds?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -13847,6 +13886,7 @@ export namespace Prisma {
     NOT?: BrandWhereInput | BrandWhereInput[]
     tenantId?: StringFilter<"Brand"> | string
     shopId?: StringNullableFilter<"Brand"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Brand">
     name?: StringFilter<"Brand"> | string
     description?: StringNullableFilter<"Brand"> | string | null
     createdAt?: DateTimeFilter<"Brand"> | Date | string
@@ -13858,6 +13898,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrderInput | SortOrder
+    sharedShopIds?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -13874,6 +13915,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Brand"> | string
     tenantId?: StringWithAggregatesFilter<"Brand"> | string
     shopId?: StringNullableWithAggregatesFilter<"Brand"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Brand">
     name?: StringWithAggregatesFilter<"Brand"> | string
     description?: StringNullableWithAggregatesFilter<"Brand"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Brand"> | Date | string
@@ -14186,6 +14228,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -14210,6 +14253,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -14234,6 +14278,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14258,6 +14303,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14282,6 +14328,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -14304,6 +14351,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14324,6 +14372,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14747,6 +14796,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     createdAt?: Date | string
     createdBy?: string | null
@@ -14759,6 +14809,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     parentId?: string | null
     createdAt?: Date | string
@@ -14771,6 +14822,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14783,6 +14835,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14795,6 +14848,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     parentId?: string | null
     createdAt?: Date | string
@@ -14805,6 +14859,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14814,6 +14869,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14824,6 +14880,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: BrandCreatesharedShopIdsInput | string[]
     name: string
     description?: string | null
     createdAt?: Date | string
@@ -14835,6 +14892,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: BrandCreatesharedShopIdsInput | string[]
     name: string
     description?: string | null
     createdAt?: Date | string
@@ -14846,6 +14904,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: BrandUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14857,6 +14916,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: BrandUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14868,6 +14928,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: BrandCreatesharedShopIdsInput | string[]
     name: string
     description?: string | null
     createdAt?: Date | string
@@ -14878,6 +14939,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: BrandUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14888,6 +14950,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: BrandUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15265,6 +15328,14 @@ export namespace Prisma {
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
   export type JsonNullableFilter<$PrismaModel = never> = 
     | PatchUndefined<
         Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -15365,6 +15436,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrder
+    sharedShopIds?: SortOrder
     sku?: SortOrder
     name?: SortOrder
     description?: SortOrder
@@ -15805,6 +15877,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrder
+    sharedShopIds?: SortOrder
     name?: SortOrder
     parentId?: SortOrder
     createdAt?: SortOrder
@@ -15840,6 +15913,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     shopId?: SortOrder
+    sharedShopIds?: SortOrder
     name?: SortOrder
     description?: SortOrder
     createdAt?: SortOrder
@@ -16037,6 +16111,10 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type ProductCreatesharedShopIdsInput = {
+    set: string[]
+  }
+
   export type BrandCreateNestedOneWithoutProductsInput = {
     create?: XOR<BrandCreateWithoutProductsInput, BrandUncheckedCreateWithoutProductsInput>
     connectOrCreate?: BrandCreateOrConnectWithoutProductsInput
@@ -16083,6 +16161,11 @@ export namespace Prisma {
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type ProductUpdatesharedShopIdsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -16255,6 +16338,10 @@ export namespace Prisma {
     update?: XOR<XOR<InventoryItemUpdateToOneWithWhereWithoutUpgradesInput, InventoryItemUpdateWithoutUpgradesInput>, InventoryItemUncheckedUpdateWithoutUpgradesInput>
   }
 
+  export type CategoryCreatesharedShopIdsInput = {
+    set: string[]
+  }
+
   export type CategoryCreateNestedOneWithoutChildrenInput = {
     create?: XOR<CategoryCreateWithoutChildrenInput, CategoryUncheckedCreateWithoutChildrenInput>
     connectOrCreate?: CategoryCreateOrConnectWithoutChildrenInput
@@ -16287,6 +16374,11 @@ export namespace Prisma {
     connectOrCreate?: ProductCreateOrConnectWithoutCategoryInput | ProductCreateOrConnectWithoutCategoryInput[]
     createMany?: ProductCreateManyCategoryInputEnvelope
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type CategoryUpdatesharedShopIdsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type CategoryUpdateOneWithoutChildrenNestedInput = {
@@ -16355,6 +16447,10 @@ export namespace Prisma {
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
   }
 
+  export type BrandCreatesharedShopIdsInput = {
+    set: string[]
+  }
+
   export type ProductCreateNestedManyWithoutBrandInput = {
     create?: XOR<ProductCreateWithoutBrandInput, ProductUncheckedCreateWithoutBrandInput> | ProductCreateWithoutBrandInput[] | ProductUncheckedCreateWithoutBrandInput[]
     connectOrCreate?: ProductCreateOrConnectWithoutBrandInput | ProductCreateOrConnectWithoutBrandInput[]
@@ -16367,6 +16463,11 @@ export namespace Prisma {
     connectOrCreate?: ProductCreateOrConnectWithoutBrandInput | ProductCreateOrConnectWithoutBrandInput[]
     createMany?: ProductCreateManyBrandInputEnvelope
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type BrandUpdatesharedShopIdsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type ProductUpdateManyWithoutBrandNestedInput = {
@@ -16614,6 +16715,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: BrandCreatesharedShopIdsInput | string[]
     name: string
     description?: string | null
     createdAt?: Date | string
@@ -16624,6 +16726,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: BrandCreatesharedShopIdsInput | string[]
     name: string
     description?: string | null
     createdAt?: Date | string
@@ -16639,6 +16742,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     createdAt?: Date | string
     createdBy?: string | null
@@ -16650,6 +16754,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     parentId?: string | null
     createdAt?: Date | string
@@ -16753,6 +16858,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: BrandUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16763,6 +16869,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: BrandUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16784,6 +16891,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16795,6 +16903,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16873,6 +16982,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -16896,6 +17006,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -16965,6 +17076,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16988,6 +17100,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17129,6 +17242,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     createdAt?: Date | string
     createdBy?: string | null
@@ -17140,6 +17254,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     parentId?: string | null
     createdAt?: Date | string
@@ -17156,6 +17271,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     createdAt?: Date | string
     createdBy?: string | null
@@ -17167,6 +17283,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     createdAt?: Date | string
     createdBy?: string | null
@@ -17188,6 +17305,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -17211,6 +17329,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -17255,6 +17374,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17266,6 +17386,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17296,6 +17417,7 @@ export namespace Prisma {
     id?: StringFilter<"Category"> | string
     tenantId?: StringFilter<"Category"> | string
     shopId?: StringNullableFilter<"Category"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Category">
     name?: StringFilter<"Category"> | string
     parentId?: StringNullableFilter<"Category"> | string | null
     createdAt?: DateTimeFilter<"Category"> | Date | string
@@ -17325,6 +17447,7 @@ export namespace Prisma {
     id?: StringFilter<"Product"> | string
     tenantId?: StringFilter<"Product"> | string
     shopId?: StringNullableFilter<"Product"> | string | null
+    sharedShopIds?: StringNullableListFilter<"Product">
     sku?: StringFilter<"Product"> | string
     name?: StringFilter<"Product"> | string
     description?: StringNullableFilter<"Product"> | string | null
@@ -17347,6 +17470,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -17370,6 +17494,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -17419,6 +17544,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -17442,6 +17568,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -17481,6 +17608,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17504,6 +17632,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17677,6 +17806,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
     name: string
     createdAt?: Date | string
     createdBy?: string | null
@@ -17686,6 +17816,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -17707,6 +17838,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17718,6 +17850,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17729,6 +17862,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17738,6 +17872,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17761,6 +17896,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17784,6 +17920,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17805,6 +17942,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
     sku: string
     name: string
     description?: string | null
@@ -17826,6 +17964,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17849,6 +17988,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17872,6 +18012,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
     sku?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null

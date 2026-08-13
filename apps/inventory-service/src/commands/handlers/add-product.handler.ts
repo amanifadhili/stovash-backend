@@ -3,7 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { AddProductCommand } from '../impl/add-product.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
-import { visibleToShopFilter, effectiveShopId } from '../../common/visibility.js';
+import { visibleToShopFilter, effectiveShopId, resolveSharedConfig } from '../../common/visibility.js';
 
 const VALID_PRODUCT_TYPES = ['PHYSICAL_GOOD', 'SERVICE'];
 const VALID_TRACKING_METHODS = ['SERIALIZED', 'NON_SERIALIZED'];
@@ -60,7 +60,7 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
         };
       }
 
-      const shopId = effectiveShopId(payload.shopId, context.shopId);
+      const { shopId, sharedShopIds } = resolveSharedConfig(payload, context.shopId);
 
       const existingSku = await prisma.product.findFirst({
         where: {
@@ -110,6 +110,7 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
         data: {
           tenantId: context.tenantId,
           shopId: shopId || null,
+          sharedShopIds: sharedShopIds || [],
           sku: payload.sku.trim(),
           name: payload.name.trim(),
           description: payload.description?.trim() || null,

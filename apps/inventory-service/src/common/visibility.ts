@@ -1,21 +1,70 @@
 /**
  * Shared master data (products, brands, categories) can be either:
- * - shared at the tenant level (shopId is null), or
- * - owned by a specific shop (shopId is set).
+ * - owned by a specific shop (shopId set), optionally shared with specific shops
+ *   via sharedShopIds, or
+ * - shared with ALL shops (shopId null).
  *
- * When reading such records the active shop must only see tenant-shared
- * records plus records it owns. This helper builds that Prisma `where`
- * condition.
+ * A shop can see a record if:
+ *   - it is shared with all shops (shopId IS NULL), or
+ *   - the active shop owns it (shopId = active), or
+ *   - the record has been shared with the active shop (sharedShopIds has active).
+ *
+ * This helper builds that Prisma `where` condition.
  */
 export function visibleToShopFilter(tenantId: string, shopId?: string | null): any {
   const where: any = { tenantId };
   if (shopId) {
-    where.OR = [{ shopId: null }, { shopId }];
+    where.OR = [
+      { shopId: null },
+      { shopId },
+      { sharedShopIds: { has: shopId } },
+    ];
   } else {
-    // No active shop context: only tenant-shared records are visible.
+    // No active shop context: only records shared with all shops are visible.
     where.shopId = null;
   }
   return where;
+}
+
+/**
+ * Derive how a record should be persisted based on the explicit visibility
+ * choice from the create/edit form:
+ *   - sharedWithOtherShops === false  → owned by the active shop only
+ *                                       (shopId = current shop, no shares)
+ *   - sharedWithOtherShops === true and sharedShopIds provided
+ *                                   → owned by the active shop, shared with the
+ *                                     chosen shops
+ *   - sharedWithOtherShops === true and NO shops chosen
+ *                                   → shared with ALL shops (shopId = null)
+ *
+ * For backward compatibility, if the flag is absent we keep the current
+ * shopId/shopId-null semantics from the payload.
+ *
+ * Returns { shopId, sharedShopIds }.
+ */
+export function resolveSharedConfig(
+  payload: any,
+  contextShopId?: string | null,
+): { shopId: string | null; sharedShopIds: string[] } {
+  const hasFlag = payload?.sharedWithOtherShops !== undefined;
+  if (!hasFlag) {
+    // Legacy path: derive from shopId as before.
+    const shopId = effectiveShopId(payload?.shopId, contextShopId);
+    return { shopId, sharedShopIds: Array.isArray(payload?.sharedShopIds) ? payload.sharedShopIds : [] };
+  }
+
+  if (payload.sharedWithOtherShops === false) {
+    return { shopId: contextShopId || null, sharedShopIds: [] };
+  }
+
+  // sharedWithOtherShops === true
+  const chosen = Array.isArray(payload?.sharedShopIds) ? payload.sharedShopIds.map((s: any) => String(s)).filter(Boolean) : [];
+  if (chosen.length === 0) {
+    // Share with all shops.
+    return { shopId: null, sharedShopIds: [] };
+  }
+  // Share with chosen shops; owned by the current shop.
+  return { shopId: contextShopId || null, sharedShopIds: chosen };
 }
 
 /**
@@ -38,3 +87,4 @@ export function effectiveShopId(payloadShopId: unknown, contextShopId?: string |
 export function visibleRecordFilter(tenantId: string, id: string, shopId?: string | null): any {
   return { ...visibleToShopFilter(tenantId, shopId), id };
 }
+

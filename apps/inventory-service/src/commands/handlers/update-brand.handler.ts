@@ -3,7 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { UpdateBrandCommand } from '../impl/update-brand.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
-import { visibleRecordFilter } from '../../common/visibility.js';
+import { visibleRecordFilter, resolveSharedConfig } from '../../common/visibility.js';
 
 @CommandHandler(UpdateBrandCommand)
 export class UpdateBrandHandler extends BaseCommandHandler<UpdateBrandCommand> {
@@ -80,13 +80,21 @@ export class UpdateBrandHandler extends BaseCommandHandler<UpdateBrandCommand> {
         }
       }
 
+      const updateData: any = {};
+      if (payload.sharedWithOtherShops !== undefined) {
+        const cfg = resolveSharedConfig(payload, context.shopId);
+        updateData.shopId = cfg.shopId || null;
+        updateData.sharedShopIds = cfg.sharedShopIds || [];
+      } else if (payload.shopId !== undefined) {
+        updateData.shopId = payload.shopId || null;
+        if (payload.sharedShopIds !== undefined) updateData.sharedShopIds = payload.sharedShopIds;
+      }
+      if (payload.name !== undefined) updateData.name = payload.name.trim();
+      if (payload.description !== undefined) updateData.description = payload.description?.trim() || null;
+
       const updated = await prisma.brand.update({
         where: { id: payload.brandId },
-        data: {
-          ...(payload.shopId !== undefined && { shopId: payload.shopId || null }),
-          ...(payload.name !== undefined && { name: payload.name.trim() }),
-          ...(payload.description !== undefined && { description: payload.description?.trim() || null })
-        }
+        data: updateData
       });
 
       return {

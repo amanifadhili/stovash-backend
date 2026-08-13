@@ -3,7 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { UpdateProductCommand } from '../impl/update-product.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
-import { visibleToShopFilter } from '../../common/visibility.js';
+import { visibleToShopFilter, resolveSharedConfig } from '../../common/visibility.js';
 
 const VALID_PRODUCT_TYPES = ['PHYSICAL_GOOD', 'SERVICE'];
 const VALID_TRACKING_METHODS = ['SERIALIZED', 'NON_SERIALIZED'];
@@ -99,7 +99,14 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
       }
 
       const updateData: any = {};
-      if (payload.shopId !== undefined) updateData.shopId = payload.shopId || null;
+      if (payload.sharedWithOtherShops !== undefined) {
+        const cfg = resolveSharedConfig(payload, context.shopId);
+        updateData.shopId = cfg.shopId || null;
+        updateData.sharedShopIds = cfg.sharedShopIds || [];
+      } else if (payload.shopId !== undefined) {
+        updateData.shopId = payload.shopId || null;
+        if (payload.sharedShopIds !== undefined) updateData.sharedShopIds = payload.sharedShopIds;
+      }
       if (payload.name !== undefined) updateData.name = payload.name.trim();
       if (payload.description !== undefined) updateData.description = payload.description?.trim() || null;
       if (payload.brandId !== undefined) updateData.brandId = payload.brandId || null;

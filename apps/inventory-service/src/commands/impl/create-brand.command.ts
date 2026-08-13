@@ -2,7 +2,9 @@ import { BaseCommand } from '@electronic-shop/framework-command';
 import { IRequestContext } from '@electronic-shop/types';
 
 export class CreateBrandPayload {
-  shopId?: string; // null = shared at tenant level; set = owned by that shop
+  shopId?: string; // null = shared with all shops; set = owner shop
+  sharedWithOtherShops?: boolean;
+  sharedShopIds?: string[];
   name!: string;
   description?: string;
 }

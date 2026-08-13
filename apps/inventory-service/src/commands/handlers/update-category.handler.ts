@@ -3,7 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { UpdateCategoryCommand } from '../impl/update-category.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
-import { visibleRecordFilter, visibleToShopFilter } from '../../common/visibility.js';
+import { visibleRecordFilter, visibleToShopFilter, resolveSharedConfig } from '../../common/visibility.js';
 
 @CommandHandler(UpdateCategoryCommand)
 export class UpdateCategoryHandler extends BaseCommandHandler<UpdateCategoryCommand> {
@@ -111,7 +111,9 @@ export class UpdateCategoryHandler extends BaseCommandHandler<UpdateCategoryComm
       const updated = await prisma.category.update({
         where: { id: payload.categoryId },
         data: {
-          ...(payload.shopId !== undefined && { shopId: payload.shopId || null }),
+          ...(payload.sharedWithOtherShops !== undefined
+            ? (() => { const cfg = resolveSharedConfig(payload, context.shopId); return { shopId: cfg.shopId || null, sharedShopIds: cfg.sharedShopIds || [] }; })()
+            : { ...(payload.shopId !== undefined && { shopId: payload.shopId || null }), ...(payload.sharedShopIds !== undefined && { sharedShopIds: payload.sharedShopIds }) }),
           ...(payload.name !== undefined && { name: payload.name.trim() }),
           ...(payload.parentId !== undefined && { parentId: payload.parentId || null })
         }

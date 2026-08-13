@@ -3,7 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { CreateCategoryCommand } from '../impl/create-category.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
-import { visibleToShopFilter, effectiveShopId } from '../../common/visibility.js';
+import { visibleToShopFilter, effectiveShopId, resolveSharedConfig } from '../../common/visibility.js';
 
 @CommandHandler(CreateCategoryCommand)
 export class CreateCategoryHandler extends BaseCommandHandler<CreateCategoryCommand> {
@@ -39,7 +39,7 @@ export class CreateCategoryHandler extends BaseCommandHandler<CreateCategoryComm
         };
       }
 
-      const shopId = effectiveShopId(payload.shopId, context.shopId);
+      const { shopId, sharedShopIds } = resolveSharedConfig(payload, context.shopId);
 
       if (payload.parentId) {
         const parent = await prisma.category.findFirst({
@@ -80,6 +80,7 @@ export class CreateCategoryHandler extends BaseCommandHandler<CreateCategoryComm
         data: {
           tenantId: context.tenantId,
           shopId: shopId || null,
+          sharedShopIds: sharedShopIds || [],
           name: payload.name.trim(),
           parentId: payload.parentId || null,
           createdBy: context.userId || 'system'

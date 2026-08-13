@@ -3,7 +3,9 @@ import { IRequestContext } from '@electronic-shop/types';
 
 export class UpdateCategoryPayload {
   categoryId!: string;
-  shopId?: string | null; // null = shared at tenant level; set = owned by that shop
+  shopId?: string | null; // null = shared with all shops; set = owner shop
+  sharedWithOtherShops?: boolean;
+  sharedShopIds?: string[];
   name?: string;
   parentId?: string | null;
 }
