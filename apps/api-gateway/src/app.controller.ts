@@ -49,6 +49,7 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetCategories': ['inventory:category:read'],
   'GetCategoryById': ['inventory:category:read'],
   'AddInventoryItem': ['inventory:item:create'],
+  'GetAvailableInventoryItems': ['inventory:item:read'],
   'ProcessPosSale': ['inventory:sale:create'],
   'ReceiveGoods': ['inventory:goods:receive'],
   'ProcessSalesReturn': ['inventory:return:process'],
@@ -59,6 +60,14 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   
   // Sales commands
   'ProcessSale': ['sales:sale:create'],
+  'CreateSale': ['sales:sale:create'],
+  'ConfirmSale': ['sales:sale:confirm'],
+  'CancelSale': ['sales:sale:cancel'],
+  'FulfillSale': ['sales:sale:fulfill'],
+  'RecordSalePayment': ['sales:payment:create'],
+  'CreateSaleReturn': ['sales:return:create'],
+  'AssessReturnedItem': ['sales:return:assess'],
+  'CreateWarranty': ['sales:warranty:create'],
   'ConvertQuotationToSale': ['sales:sale:create'],
   'RecordPartialPayment': ['sales:payment:create'],
   'RecordBonus': ['sales:bonus:create'],
@@ -143,6 +152,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'GetCategories': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetCategoryById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'AddInventoryItem': ['ADMIN', 'MANAGER', 'STAFF'],
+  'GetAvailableInventoryItems': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessPosSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'ReceiveGoods': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessSalesReturn': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -153,6 +163,14 @@ const COMMAND_ROLES: Record<string, string[]> = {
   
   // Sales commands
   'ProcessSale': ['ADMIN', 'MANAGER', 'STAFF'],
+  'CreateSale': ['ADMIN', 'MANAGER', 'STAFF'],
+  'ConfirmSale': ['ADMIN', 'MANAGER', 'STAFF'],
+  'CancelSale': ['ADMIN', 'MANAGER'],
+  'FulfillSale': ['ADMIN', 'MANAGER', 'STAFF'],
+  'RecordSalePayment': ['ADMIN', 'MANAGER', 'STAFF'],
+  'CreateSaleReturn': ['ADMIN', 'MANAGER', 'STAFF'],
+  'AssessReturnedItem': ['ADMIN', 'MANAGER'],
+  'CreateWarranty': ['ADMIN', 'MANAGER', 'STAFF'],
   'ConvertQuotationToSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'RecordPartialPayment': ['ADMIN', 'MANAGER', 'STAFF'],
   'RecordBonus': ['ADMIN', 'MANAGER'],
@@ -280,11 +298,11 @@ export class AppController {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 
-      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident'].includes(cmd)) {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
       }
 
-      if (['ProcessSale', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale'].includes(cmd)) {
+      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale'].includes(cmd)) {
         return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
       }
 
