@@ -98,6 +98,12 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
         }
       }
 
+      const currentSpecs = (product.specifications && typeof product.specifications === 'object' && !Array.isArray(product.specifications))
+        ? product.specifications
+        : {};
+      const newDeviceType = payload.deviceType || (currentSpecs as any).deviceType || 'DEVICE';
+      const isAccessory = newDeviceType === 'ACCESSORY';
+
       const updateData: any = {};
       if (payload.sharedWithOtherShops !== undefined) {
         const cfg = resolveSharedConfig(payload, context.shopId);
@@ -109,11 +115,24 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
       }
       if (payload.name !== undefined) updateData.name = payload.name.trim();
       if (payload.description !== undefined) updateData.description = payload.description?.trim() || null;
-      if (payload.brandId !== undefined) updateData.brandId = payload.brandId || null;
-      if (payload.categoryId !== undefined) updateData.categoryId = payload.categoryId || null;
+      if (isAccessory) {
+        updateData.brandId = null;
+        updateData.categoryId = null;
+        updateData.trackingMethod = 'NON_SERIALIZED';
+      } else {
+        if (payload.brandId !== undefined) updateData.brandId = payload.brandId || null;
+        if (payload.categoryId !== undefined) updateData.categoryId = payload.categoryId || null;
+        if (payload.trackingMethod !== undefined) updateData.trackingMethod = payload.trackingMethod;
+      }
       if (payload.productType !== undefined) updateData.productType = payload.productType;
-      if (payload.trackingMethod !== undefined) updateData.trackingMethod = payload.trackingMethod;
-      if (payload.specifications !== undefined) updateData.specifications = payload.specifications;
+
+      const rawPayloadSpecs = payload.specifications && typeof payload.specifications === 'object' && !Array.isArray(payload.specifications) ? payload.specifications : {};
+      updateData.specifications = {
+        ...currentSpecs,
+        ...rawPayloadSpecs,
+        deviceType: newDeviceType
+      };
+
       updateData.updatedBy = context.userId || 'system';
       updateData.version = { increment: 1 };
 

@@ -6,13 +6,14 @@ export class AddProductPayload {
   sharedWithOtherShops?: boolean; // true = share (with sharedShopIds or all); false = this shop only
   sharedShopIds?: string[]; // shops to share with when sharedWithOtherShops is true
   name!: string;
-  sku!: string;
+  sku?: string;
   description?: string;
   brandId?: string;
   categoryId?: string;
   productType?: string;
   trackingMethod?: string;
-  specifications?: any[];
+  deviceType?: string;
+  specifications?: any;
 }
 
 export class AddProductCommand extends BaseCommand<AddProductPayload> {

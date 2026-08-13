@@ -12,7 +12,8 @@ export class UpdateProductPayload {
   categoryId?: string | null;
   productType?: string;
   trackingMethod?: string;
-  specifications?: any[];
+  deviceType?: string;
+  specifications?: any;
 }
 
 export class UpdateProductCommand extends BaseCommand<UpdateProductPayload> {

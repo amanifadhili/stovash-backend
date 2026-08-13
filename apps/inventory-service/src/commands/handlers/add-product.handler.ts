@@ -33,13 +33,15 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
         };
       }
 
-      if (!payload?.sku || payload.sku.trim().length === 0) {
-        return {
-          status: 'error',
-          traceId,
-          message: 'SKU is required',
-          errorCode: ErrorCode.VALIDATION_ERROR
-        };
+      const deviceType = payload.deviceType || 'DEVICE';
+      const isAccessory = deviceType === 'ACCESSORY';
+
+      // Auto-generate SKU if missing
+      let sku = payload.sku?.trim();
+      if (!sku) {
+        const prefix = isAccessory ? 'ACC' : 'DEV';
+        const cleanName = payload.name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 5).toUpperCase() || 'ITEM';
+        sku = `${prefix}-${cleanName}-${Date.now().toString(36).toUpperCase()}`;
       }
 
       if (payload.productType && !VALID_PRODUCT_TYPES.includes(payload.productType)) {
@@ -51,7 +53,8 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
         };
       }
 
-      if (payload.trackingMethod && !VALID_TRACKING_METHODS.includes(payload.trackingMethod)) {
+      const trackingMethod = isAccessory ? 'NON_SERIALIZED' : (payload.trackingMethod || 'SERIALIZED');
+      if (trackingMethod && !VALID_TRACKING_METHODS.includes(trackingMethod)) {
         return {
           status: 'error',
           traceId,
@@ -65,22 +68,20 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
       const existingSku = await prisma.product.findFirst({
         where: {
           tenantId: context.tenantId,
-          sku: payload.sku.trim()
+          sku
         }
       });
 
       if (existingSku) {
-        return {
-          status: 'error',
-          traceId,
-          message: `Product with SKU "${payload.sku}" already exists`,
-          errorCode: "CONFLICT"
-        };
+        sku = `${sku}-${Math.floor(Math.random() * 1000)}`;
       }
 
-      if (payload.brandId) {
+      const brandId = isAccessory ? null : (payload.brandId || null);
+      const categoryId = isAccessory ? null : (payload.categoryId || null);
+
+      if (brandId) {
         const brand = await prisma.brand.findFirst({
-          where: { ...visibleToShopFilter(context.tenantId, shopId), id: payload.brandId }
+          where: { ...visibleToShopFilter(context.tenantId, shopId), id: brandId }
         });
         if (!brand) {
           return {
@@ -92,9 +93,9 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
         }
       }
 
-      if (payload.categoryId) {
+      if (categoryId) {
         const category = await prisma.category.findFirst({
-          where: { ...visibleToShopFilter(context.tenantId, shopId), id: payload.categoryId }
+          where: { ...visibleToShopFilter(context.tenantId, shopId), id: categoryId }
         });
         if (!category) {
           return {
@@ -106,20 +107,24 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
         }
       }
 
+      const rawSpecs = payload.specifications;
+      const specObj = (rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)) ? rawSpecs : {};
+      const specifications = { ...specObj, deviceType };
+
       const product = await prisma.product.create({
         data: {
           tenantId: context.tenantId,
           shopId: shopId || null,
           sharedShopIds: sharedShopIds || [],
-          sku: payload.sku.trim(),
+          sku,
           name: payload.name.trim(),
           description: payload.description?.trim() || null,
-          brandId: payload.brandId || null,
-          categoryId: payload.categoryId || null,
+          brandId,
+          categoryId,
           productType: payload.productType || 'PHYSICAL_GOOD',
-          trackingMethod: payload.trackingMethod || 'SERIALIZED',
+          trackingMethod,
           status: 'ACTIVE',
-          specifications: payload.specifications || null,
+          specifications,
           createdBy: context.userId || 'system'
         },
         include: {
