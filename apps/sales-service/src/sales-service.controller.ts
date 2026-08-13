@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateSaleCommand } from './commands/impl/create-sale.command.js';
 import { ConfirmSaleCommand } from './commands/impl/confirm-sale.command.js';
 import { CancelSaleCommand } from './commands/impl/cancel-sale.command.js';
@@ -14,10 +14,16 @@ import { ConvertQuotationToSaleCommand } from './commands/impl/convert-quotation
 import { RecordPartialPaymentCommand } from './commands/impl/record-partial-payment.command.js';
 import { RecordBonusCommand } from './commands/impl/record-bonus.command.js';
 import { ProcessLoanSaleCommand } from './commands/impl/process-loan-sale.command.js';
+import { GetSalesQuery } from './queries/impl/get-sales.query.js';
+import { GetSaleByIdQuery } from './queries/impl/get-sale-by-id.query.js';
+import { GetSaleHistoryQuery } from './queries/impl/get-sale-history.query.js';
 
 @Controller()
 export class SalesServiceController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
   @MessagePattern({ cmd: 'CreateSale' })
   async handleCreateSale(@Payload() data: { payload: any, context: any }) {
@@ -82,5 +88,21 @@ export class SalesServiceController {
   @MessagePattern({ cmd: 'ProcessLoanSale' })
   async handleProcessLoanSale(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new ProcessLoanSaleCommand(data.payload, data.context));
+  }
+
+  // Queries
+  @MessagePattern({ cmd: 'GetSales' })
+  async handleGetSales(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetSalesQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetSaleById' })
+  async handleGetSaleById(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetSaleByIdQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetSaleHistory' })
+  async handleGetSaleHistory(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetSaleHistoryQuery(data.payload, data.context));
   }
 }

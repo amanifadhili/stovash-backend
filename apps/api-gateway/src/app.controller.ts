@@ -72,6 +72,9 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'RecordPartialPayment': ['sales:payment:create'],
   'RecordBonus': ['sales:bonus:create'],
   'ProcessLoanSale': ['sales:loan:create'],
+  'GetSales': ['sales:sale:read'],
+  'GetSaleById': ['sales:sale:read'],
+  'GetSaleHistory': ['sales:sale:read'],
   
   // Purchase commands
   'CreatePurchase': ['purchase:purchase:create'],
@@ -175,6 +178,9 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'RecordPartialPayment': ['ADMIN', 'MANAGER', 'STAFF'],
   'RecordBonus': ['ADMIN', 'MANAGER'],
   'ProcessLoanSale': ['ADMIN', 'MANAGER'],
+  'GetSales': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetSaleById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetSaleHistory': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   
   // Purchase commands
   'CreatePurchase': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -302,7 +308,7 @@ export class AppController {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
       }
 
-      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale'].includes(cmd)) {
+      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory'].includes(cmd)) {
         return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
       }
 
