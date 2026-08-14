@@ -13,6 +13,7 @@ import { ReceiveGoodsCommand } from './commands/impl/receive-goods.command.js';
 import { ProcessSalesReturnCommand } from './commands/impl/process-sales-return.command.js';
 import { CreateWarrantyClaimCommand } from './commands/impl/create-warranty-claim.command.js';
 import { TransferInventoryCommand } from './commands/impl/transfer-inventory.command.js';
+import { RecordInventoryIncidentCommand } from './commands/impl/record-inventory-incident.command.js';
 import { CreateBrandCommand } from './commands/impl/create-brand.command.js';
 import { UpdateBrandCommand } from './commands/impl/update-brand.command.js';
 import { DeleteBrandCommand } from './commands/impl/delete-brand.command.js';
@@ -96,6 +97,11 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'TransferInventory' })
   async handleTransferInventory(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new TransferInventoryCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'RecordInventoryIncident' })
+  async handleRecordInventoryIncident(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new RecordInventoryIncidentCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'CreateBrand' })

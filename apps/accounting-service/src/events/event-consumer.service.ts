@@ -4,6 +4,7 @@ import { saleCreatedConsumer } from './consumers/sale-created.consumer.js';
 import { purchaseCreatedConsumer } from './consumers/purchase-created.consumer.js';
 import { salePaymentRecordedConsumer } from './consumers/sale-payment-recorded.consumer.js';
 import { purchasePaymentRecordedConsumer } from './consumers/purchase-payment-recorded.consumer.js';
+import { inventoryIncidentRecordedConsumer } from './consumers/inventory-incident-recorded.consumer.js';
 
 @Injectable()
 export class EventConsumerService implements OnModuleInit {
@@ -16,11 +17,13 @@ export class EventConsumerService implements OnModuleInit {
       this.eventBus.createConsumer('accounting-purchases', 'purchase.created');
       this.eventBus.createConsumer('accounting-sale-payments', 'sale-payment.recorded');
       this.eventBus.createConsumer('accounting-purchase-payments', 'purchase-payment.recorded');
+      this.eventBus.createConsumer('accounting-inventory-incidents', 'inventory.incident.recorded');
 
       this.eventBus.registerHandler('accounting-sales', 'SaleCreated', saleCreatedConsumer);
       this.eventBus.registerHandler('accounting-purchases', 'PurchaseCreated', purchaseCreatedConsumer);
       this.eventBus.registerHandler('accounting-sale-payments', 'SalePaymentRecorded', salePaymentRecordedConsumer);
       this.eventBus.registerHandler('accounting-purchase-payments', 'PurchasePaymentRecorded', purchasePaymentRecordedConsumer);
+      this.eventBus.registerHandler('accounting-inventory-incidents', 'InventoryIncidentRecorded', inventoryIncidentRecordedConsumer);
 
       // Now connect (will connect publisher + all consumers)
       await this.eventBus.connect();

@@ -36,8 +36,8 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
       if (payload.status && payload.status.length) {
         where.status = { in: payload.status };
       } else {
-        // On the stock/units view, show everything except disposed/lost/stolen by default.
-        where.status = { notIn: ['DISPOSED', 'LOST', 'STOLEN'] };
+        // Show all live units, including damaged/lost/stolen, so those filters work.
+        where.status = { notIn: ['DISPOSED'] };
       }
       if (payload.search) {
         where.OR = [

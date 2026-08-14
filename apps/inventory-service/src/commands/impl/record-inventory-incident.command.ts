@@ -1,16 +1,17 @@
-import { ICommand } from '@electronic-shop/types';
+import { BaseCommand } from '@electronic-shop/framework-command';
+import { IRequestContext } from '@electronic-shop/types';
 
-export class RecordInventoryIncidentCommand implements ICommand {
-  readonly command = 'RecordInventoryIncident';
-  readonly description = 'Record inventory damage, loss, or theft';
+export class RecordInventoryIncidentPayload {
+  inventoryItemId?: string;
+  productId?: string;
+  quantity?: number;
+  incidentType!: 'DAMAGED' | 'LOST' | 'STOLEN';
+  description?: string;
+  writeOffAmount?: number;
+}
 
-  constructor(
-    public readonly payload: {
-      inventoryItemId: string;
-      incidentType: string; // DAMAGED, LOST, STOLEN
-      description?: string;
-      writeOffAmount?: number;
-    },
-    public readonly context: any
-  ) {}
+export class RecordInventoryIncidentCommand extends BaseCommand<RecordInventoryIncidentPayload> {
+  constructor(payload: RecordInventoryIncidentPayload, context?: IRequestContext) {
+    super(payload, context);
+  }
 }
