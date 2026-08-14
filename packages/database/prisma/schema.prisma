@@ -147,13 +147,15 @@ model InventoryItem {
   productId     String
   serialNumber  String
   purchaseCost  Float
-  status        String   @default("CREATED") // CREATED, RECEIVED, AVAILABLE, RESERVED, SOLD, RETURNED, DAMAGED, LOST, STOLEN, DISPOSED
+  status        String   @default("CREATED") // CREATED, RECEIVED, AVAILABLE, RESERVED, SOLD, RETURNED, DAMAGED, LOST, STOLEN, DISPOSED, RENTED_OUT
   capitalizedCost Float  @default(0) // Total capitalized upgrade costs
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   product       Product  @relation(fields: [productId], references: [id])
   upgrades      InventoryUpgrade[]
+  rentalAgreement RentalAgreement?
+  movements     InventoryMovement[]
 }
 
 model InventoryUpgrade {
@@ -304,6 +306,26 @@ model InventoryTransfer {
   createdById    String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model InventoryMovement {
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  inventoryItemId String
+  movementType  String   // IN, OUT, TRANSFER, ADJUSTMENT
+  quantity      Float    @default(1)
+  referenceId   String?  // PurchaseOrder, SalesOrder, RentalAgreement, etc.
+  referenceType String? // PURCHASE, SALE, RENTAL_CONVERTED_SALE, etc.
+  notes         String?
+  createdBy     String?
+  createdAt     DateTime @default(now())
+
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([inventoryItemId])
+  @@index([referenceId])
 }
 
 model Customer {
@@ -737,5 +759,34 @@ model AuditLog {
   traceId    String?
   details    String?  // JSON or text summary
   createdAt  DateTime @default(now())
+}
+
+model RentalAgreement {
+  id               String   @id @default(uuid())
+  tenantId         String
+  shopId           String
+  inventoryItemId  String?  @unique // Optional: specific serialized item (one-to-one)
+  productId        String?  // Optional: product-level (for non-serialized items)
+  customerId       String?  // Optional: link to existing customer
+  personName       String   // Required: person name (fallback if no customerId)
+  personPhone      String?  // Optional: person phone
+  agreementType    String   // OUTWARD_RENTAL, INWARD_CONSIGNMENT
+  startDate        DateTime @default(now())
+  expectedReturn   DateTime? // Optional: expected return date
+  actualReturn     DateTime? // Set when returned/closed
+  rentalFee        Float    @default(0) // Agreed rental fee (optional)
+  ownerAgreedCost  Float    @default(0) // Owner agreed cost (for consignment)
+  maintenanceCost  Float    @default(0) // Maintenance cost incurred
+  status           String   @default("ACTIVE") // ACTIVE, RETURNED, SOLD, CANCELLED
+  notes            String?
+  createdById      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  inventoryItem    InventoryItem? @relation(fields: [inventoryItemId], references: [id])
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([customerId])
+  @@index([status])
 }
 

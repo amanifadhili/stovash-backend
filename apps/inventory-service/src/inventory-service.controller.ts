@@ -28,6 +28,11 @@ import { GetCategoriesQuery } from './queries/impl/get-categories.query.js';
 import { GetCategoryByIdQuery } from './queries/impl/get-category-by-id.query.js';
 import { GetAvailableInventoryItemsQuery } from './queries/impl/get-available-inventory-items.query.js';
 import { GetStockUnitsQuery } from './queries/impl/get-stock-units.query.js';
+import { CreateRentalCommand } from './commands/impl/create-rental.command.js';
+import { UpdateRentalStatusCommand } from './commands/impl/update-rental-status.command.js';
+import { GetRentalsQuery } from './queries/impl/get-rentals.query.js';
+import { CreateContactCommand } from './commands/impl/create-contact.command.js';
+import { GetContactsQuery } from './queries/impl/get-contacts.query.js';
 
 @Controller()
 export class InventoryServiceController {
@@ -166,5 +171,30 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'GetStockUnits' })
   async handleGetStockUnits(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetStockUnitsQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'CreateRental' })
+  async handleCreateRental(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CreateRentalCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'UpdateRentalStatus' })
+  async handleUpdateRentalStatus(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new UpdateRentalStatusCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetRentals' })
+  async handleGetRentals(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetRentalsQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'CreateContact' })
+  async handleCreateContact(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CreateContactCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetContacts' })
+  async handleGetContacts(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetContactsQuery(data.payload, data.context));
   }
 }

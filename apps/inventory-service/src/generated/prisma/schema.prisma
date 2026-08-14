@@ -12,11 +12,31 @@ datasource db {
   url      = env("INVENTORY_DATABASE_URL")
 }
 
+model Contact {
+  id        String   @id @default(uuid())
+  tenantId  String
+  shopId    String?
+  name      String
+  phone     String?
+  email     String?
+  address   String?
+  type      String   @default("RENTAL") // RENTAL, SUPPLIER, CUSTOMER, GENERAL
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([type])
+  @@map("contacts")
+}
+
 model Product {
   id             String    @id @default(uuid())
   tenantId       String
   shopId         String? // null = shared with ALL shops; set = owner shop
   sharedShopIds  String[]  @default([]) // additional shops chosen to share with
+  type           String    @default("DEVICE") // DEVICE, ACCESSORY
   sku            String
   name           String
   description    String?
@@ -250,4 +270,32 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+model RentalAgreement {
+  id              String    @id @default(uuid())
+  tenantId        String
+  shopId          String
+  inventoryItemId String? // For serialized device rental/consignment
+  productId       String? // For non-serialized accessory
+  personName      String // Renter name (outward) or Owner name (inward)
+  personPhone     String?
+  agreementType   String // OUTWARD_RENTAL, INWARD_CONSIGNMENT
+  startDate       DateTime  @default(now())
+  expectedReturn  DateTime?
+  actualReturn    DateTime?
+  rentalFee       Float? // Agreed fee / rate for outward rental
+  ownerAgreedCost Float? // Agreed payout cost for inward consignment
+  maintenanceCost Float     @default(0) // Capitalized upgrades / maintenance by tenant
+  status          String    @default("ACTIVE") // ACTIVE, RETURNED, SOLD, CANCELLED
+  notes           String?
+  createdById     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([agreementType])
+  @@index([status])
+  @@map("rental_agreements")
 }

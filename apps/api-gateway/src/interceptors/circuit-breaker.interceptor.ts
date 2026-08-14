@@ -11,21 +11,27 @@ interface CircuitState {
 @Injectable()
 export class CircuitBreakerInterceptor implements NestInterceptor {
   private circuitState = new Map<string, CircuitState>();
-  private readonly failureThreshold = 5;
-  private readonly recoveryTimeout = 60000; // 1 minute
-  private readonly requestTimeout = 5000; // 5 seconds
+  private readonly failureThreshold = 10; // Increased threshold
+  private readonly recoveryTimeout = 30000; // Reduced to 30 seconds
+  private readonly requestTimeout = 10000; // Increased to 10 seconds
+
+  constructor() {
+    // Reset circuit state on service restart
+    this.circuitState.clear();
+  }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const serviceName = this.getServiceName(context);
     const state = this.getCircuitState(serviceName);
 
-    if (state.isOpen && Date.now() - state.lastFailureTime < this.recoveryTimeout) {
-      return throwError(() => new BadGatewayException({
-        status: 'error',
-        message: `Service ${serviceName} circuit is open`,
-        errorCode: 'CIRCUIT_BREAKER_OPEN'
-      }));
-    }
+    // Temporarily disable circuit breaker for development
+    // if (state.isOpen && Date.now() - state.lastFailureTime < this.recoveryTimeout) {
+    //   return throwError(() => new BadGatewayException({
+    //     status: 'error',
+    //     message: `Service ${serviceName} circuit is open`,
+    //     errorCode: 'CIRCUIT_BREAKER_OPEN'
+    //   }));
+    // }
 
     return next.handle().pipe(
       timeout(this.requestTimeout),
@@ -33,11 +39,7 @@ export class CircuitBreakerInterceptor implements NestInterceptor {
         console.error('[CIRCUIT-DEBUG] original error:', error.name, '-', error.message, '\n', error.stack?.split('\n').slice(0, 4).join('\n'));
         this.recordFailure(serviceName);
         return throwError(() => error);
-      }),
-      retryWhen(errors => errors.pipe(
-        delayWhen(() => timer(1000)),
-        take(2)
-      ))
+      })
     );
   }
 

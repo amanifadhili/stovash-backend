@@ -38,90 +38,149 @@ export class ProcessPosSaleHandler extends BaseCommandHandler<ProcessPosSaleComm
         };
       }
 
-      // Validate & mark inventory items (own models only)
-      const allocatedItems: Array<{ invItem: any; unitPrice: number; unitCost: number }> = [];
+      // Validate items
+      const allocatedItems: Array<{
+        invItem?: any;
+        product?: any;
+        quantity: number;
+        unitPrice: number;
+        unitCost: number;
+      }> = [];
       let totalAmount = 0;
       let totalCost = 0;
 
       for (const itemInput of payload.items) {
-        let invItem = null;
-        if (itemInput.inventoryItemId) {
-          invItem = await prisma.inventoryItem.findFirst({
-            where: { id: itemInput.inventoryItemId, tenantId, shopId }
+        const qty = itemInput.quantity && itemInput.quantity > 0 ? itemInput.quantity : 1;
+
+        if (itemInput.productId && !itemInput.inventoryItemId && !itemInput.serialNumber) {
+          // Accessory / Non-serialized product sale
+          const prod = await prisma.product.findFirst({
+            where: { id: itemInput.productId, tenantId }
           });
-        } else if (itemInput.serialNumber) {
-          invItem = await prisma.inventoryItem.findFirst({
-            where: { tenantId, shopId, serialNumber: itemInput.serialNumber }
+          if (!prod) {
+            return {
+              status: 'error',
+              traceId,
+              message: `Product ${itemInput.productId} not found`,
+              errorCode: ErrorCode.NOT_FOUND
+            };
+          }
+          if (prod.quantityOnHand < qty) {
+            return {
+              status: 'error',
+              traceId,
+              message: `Insufficient stock for product "${prod.name}" (available: ${prod.quantityOnHand}, requested: ${qty})`,
+              errorCode: ErrorCode.BUSINESS_RULE_VIOLATION
+            };
+          }
+
+          const unitCost = 0; // Average cost if applicable
+          allocatedItems.push({
+            product: prod,
+            quantity: qty,
+            unitPrice: itemInput.unitPrice,
+            unitCost
           });
+
+          totalAmount += itemInput.unitPrice * qty;
+          totalCost += unitCost * qty;
+        } else {
+          // Serialized Device sale
+          let invItem = null;
+          if (itemInput.inventoryItemId) {
+            invItem = await prisma.inventoryItem.findFirst({
+              where: { id: itemInput.inventoryItemId, tenantId, shopId }
+            });
+          } else if (itemInput.serialNumber) {
+            invItem = await prisma.inventoryItem.findFirst({
+              where: { tenantId, shopId, serialNumber: itemInput.serialNumber }
+            });
+          }
+
+          if (!invItem) {
+            return {
+              status: 'error',
+              traceId,
+              message: `Inventory item ${itemInput.inventoryItemId || itemInput.serialNumber} not found`,
+              errorCode: ErrorCode.NOT_FOUND
+            };
+          }
+
+          if (invItem.status !== 'AVAILABLE') {
+            return {
+              status: 'error',
+              traceId,
+              message: `Item ${invItem.serialNumber} is not AVAILABLE (current status: ${invItem.status})`,
+              errorCode: ErrorCode.BUSINESS_RULE_VIOLATION
+            };
+          }
+
+          allocatedItems.push({
+            invItem,
+            quantity: 1,
+            unitPrice: itemInput.unitPrice,
+            unitCost: invItem.purchaseCost
+          });
+
+          totalAmount += itemInput.unitPrice;
+          totalCost += invItem.purchaseCost;
         }
-
-        if (!invItem) {
-          return {
-            status: 'error',
-            traceId,
-            message: `Inventory item ${itemInput.inventoryItemId || itemInput.serialNumber} not found`,
-            errorCode: ErrorCode.NOT_FOUND
-          };
-        }
-
-        if (invItem.status !== 'AVAILABLE') {
-          return {
-            status: 'error',
-            traceId,
-            message: `Item ${invItem.serialNumber} is not AVAILABLE (current status: ${invItem.status})`,
-            errorCode: ErrorCode.BUSINESS_RULE_VIOLATION
-          };
-        }
-
-        allocatedItems.push({
-          invItem,
-          unitPrice: itemInput.unitPrice,
-          unitCost: invItem.purchaseCost
-        });
-
-        totalAmount += itemInput.unitPrice;
-        totalCost += invItem.purchaseCost;
       }
 
       const result = await prisma.$transaction(async (tx) => {
-        // 1. Mark inventory items as RESERVED then SOLD per AD-0016 lifecycle
         for (const item of allocatedItems) {
-          // First transition to RESERVED
-          await tx.inventoryItem.update({
-            where: { id: item.invItem.id },
-            data: { status: 'RESERVED' }
-          });
+          if (item.product) {
+            // Accessory stock deduction
+            await tx.product.update({
+              where: { id: item.product.id },
+              data: {
+                quantityOnHand: { decrement: item.quantity }
+              }
+            });
 
-          // Then transition to SOLD
-          await tx.inventoryItem.update({
-            where: { id: item.invItem.id },
-            data: { status: 'SOLD' }
-          });
+            await tx.inventoryMovement.create({
+              data: {
+                tenantId,
+                shopId,
+                productId: item.product.id,
+                movementType: 'OUT',
+                quantity: item.quantity,
+                referenceId: item.product.id,
+                referenceType: 'SALE',
+                createdBy: context.userId || 'system'
+              }
+            });
+          } else if (item.invItem) {
+            // Device unit sale
+            await tx.inventoryItem.update({
+              where: { id: item.invItem.id },
+              data: { status: 'SOLD' }
+            });
 
-          // Record movement
-          await tx.inventoryMovement.create({
-            data: {
-              tenantId,
-              shopId,
-              inventoryItemId: item.invItem.id,
-              movementType: 'OUT',
-              quantity: 1,
-              referenceId: item.invItem.id,
-              referenceType: 'SALE',
-              createdBy: context.userId || 'system'
-            }
-          });
+            await tx.inventoryMovement.create({
+              data: {
+                tenantId,
+                shopId,
+                inventoryItemId: item.invItem.id,
+                movementType: 'OUT',
+                quantity: 1,
+                referenceId: item.invItem.id,
+                referenceType: 'SALE',
+                createdBy: context.userId || 'system'
+              }
+            });
+          }
         }
 
         return { allocatedItems };
       });
 
-      // Publish SaleCreated event (consumed by accounting service)
+      // Publish SaleCreated event
       const orderNumber = `POS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       await this.eventBus.publish(
         {
           eventType: 'SaleCreated',
-          aggregateId: result.allocatedItems[0]?.invItem.id || 'unknown',
+          aggregateId: orderNumber,
           aggregateType: 'InventorySale',
           tenantId,
           shopId,
@@ -135,10 +194,10 @@ export class ProcessPosSaleHandler extends BaseCommandHandler<ProcessPosSaleComm
             totalCost,
             paymentMethod: payload.paymentMethod || 'CASH',
             items: allocatedItems.map(item => ({
-              inventoryItemId: item.invItem.id,
-              serialNumber: item.invItem.serialNumber,
-              productId: item.invItem.productId,
-              quantity: 1,
+              inventoryItemId: item.invItem?.id || null,
+              productId: item.product?.id || item.invItem?.productId,
+              serialNumber: item.invItem?.serialNumber || null,
+              quantity: item.quantity,
               unitCost: item.unitCost,
               unitPrice: item.unitPrice
             }))
@@ -154,7 +213,7 @@ export class ProcessPosSaleHandler extends BaseCommandHandler<ProcessPosSaleComm
         status: 'success',
         traceId,
         data: {
-          markedSold: allocatedItems.map(item => item.invItem.serialNumber),
+          orderNumber,
           totalAmount,
           totalCost
         }

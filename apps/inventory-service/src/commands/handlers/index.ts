@@ -18,6 +18,9 @@ import { DeleteBrandHandler } from './delete-brand.handler.js';
 import { CreateCategoryHandler } from './create-category.handler.js';
 import { UpdateCategoryHandler } from './update-category.handler.js';
 import { DeleteCategoryHandler } from './delete-category.handler.js';
+import { CreateRentalHandler } from './create-rental.handler.js';
+import { UpdateRentalStatusHandler } from './update-rental-status.handler.js';
+import { CreateContactHandler } from './create-contact.handler.js';
 
 export const CommandHandlers = [
   AddProductHandler,
@@ -39,5 +42,8 @@ export const CommandHandlers = [
   DeleteBrandHandler,
   CreateCategoryHandler,
   UpdateCategoryHandler,
-  DeleteCategoryHandler
+  DeleteCategoryHandler,
+  CreateRentalHandler,
+  UpdateRentalStatusHandler,
+  CreateContactHandler
 ];

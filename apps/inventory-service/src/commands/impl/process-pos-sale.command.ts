@@ -4,6 +4,8 @@ import { IRequestContext } from '@electronic-shop/types';
 export class PosSaleItemInput {
   inventoryItemId?: string;
   serialNumber?: string;
+  productId?: string;
+  quantity?: number; // >1 for non-serialized accessories
   unitPrice!: number;
 }
 

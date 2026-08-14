@@ -122,11 +122,26 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.ContactScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  name: 'name',
+  phone: 'phone',
+  email: 'email',
+  address: 'address',
+  type: 'type',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   shopId: 'shopId',
   sharedShopIds: 'sharedShopIds',
+  type: 'type',
   sku: 'sku',
   name: 'name',
   description: 'description',
@@ -277,6 +292,28 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.RentalAgreementScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  inventoryItemId: 'inventoryItemId',
+  productId: 'productId',
+  personName: 'personName',
+  personPhone: 'personPhone',
+  agreementType: 'agreementType',
+  startDate: 'startDate',
+  expectedReturn: 'expectedReturn',
+  actualReturn: 'actualReturn',
+  rentalFee: 'rentalFee',
+  ownerAgreedCost: 'ownerAgreedCost',
+  maintenanceCost: 'maintenanceCost',
+  status: 'status',
+  notes: 'notes',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -292,19 +329,20 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
 
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
-};
-
 
 exports.Prisma.ModelName = {
+  Contact: 'Contact',
   Product: 'Product',
   InventoryItem: 'InventoryItem',
   InventoryUpgrade: 'InventoryUpgrade',
@@ -315,7 +353,8 @@ exports.Prisma.ModelName = {
   ProductPrice: 'ProductPrice',
   InventoryMovement: 'InventoryMovement',
   InventoryAdjustment: 'InventoryAdjustment',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  RentalAgreement: 'RentalAgreement'
 };
 
 /**

@@ -2,9 +2,15 @@ import { BaseCommand } from '@electronic-shop/framework-command';
 import { IRequestContext } from '@electronic-shop/types';
 
 export class ReceiveGoodsItemInput {
-  productId!: string;
-  serialNumber!: string;
+  productId?: string;
+  name?: string;
+  deviceType?: string; // DEVICE, ACCESSORY
+  brandId?: string;
+  categoryId?: string;
+  serialNumber?: string;
+  quantity?: number; // >1 for Accessories, defaults to 1
   purchaseCost!: number;
+  sellingPrice?: number;
 }
 
 export class ReceiveGoodsPayload {
