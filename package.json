@@ -13,6 +13,7 @@
     "start": "node dist/server.js",
     "build": "npm run build --workspace=packages/types --workspace=packages/database --workspace=frameworks/core --workspace=frameworks/command && npm run build --workspaces --if-present && tsc -p tsconfig.server.json",
     "dev": "tsx server.ts",
+    "seed:phase9": "node scripts/seed-phase9-visual.mjs",
     "test": "tsx ./run-tests.ts",
     "lint": "echo Linting disabled"
   },

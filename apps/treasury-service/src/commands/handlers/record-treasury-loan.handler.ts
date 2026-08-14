@@ -7,6 +7,8 @@ import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { EventBus } from '@electronic-shop/framework-event';
 
 @CommandHandler(RecordTreasuryLoanCommand)
+
+@CommandHandler(RecordTreasuryLoanCommand)
 export class RecordTreasuryLoanHandler extends BaseCommandHandler<RecordTreasuryLoanCommand> {
   constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
     super();

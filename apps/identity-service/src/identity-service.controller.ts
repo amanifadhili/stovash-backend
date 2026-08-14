@@ -3,6 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateTenantCommand } from './commands/impl/create-tenant.command.js';
 import { LoginUserCommand } from './commands/impl/login-user.command.js';
+import { CreateUserCommand } from './commands/impl/create-user.command.js';
 import { VerifyUserCommand } from './commands/impl/verify-user.command.js';
 
 @Controller()
@@ -26,6 +27,6 @@ export class IdentityServiceController {
 
   @MessagePattern({ cmd: 'CreateUser' })
   async handleCreateUser(@Payload() data: { payload: any, context: any }) {
-    return { status: 'success' };
+    return this.commandBus.execute(new CreateUserCommand(data.payload, data.context));
   }
 }
