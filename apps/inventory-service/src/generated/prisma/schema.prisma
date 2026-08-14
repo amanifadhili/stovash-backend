@@ -89,7 +89,7 @@ model InventoryItem {
   images          String[]  @default([])
   serialNumber    String
   purchaseCost    Float
-  status          String    @default("CREATED") // CREATED, RECEIVED, AVAILABLE, RESERVED, SOLD, RETURNED, DAMAGED, LOST, STOLEN, DISPOSED
+  status          String    @default("CREATED") // CREATED, RECEIVED, AVAILABLE, RESERVED, RENTED_IN, RENTED_OUT, SOLD, RETURNED, DAMAGED, LOST, STOLEN, DISPOSED
   capitalizedCost Float     @default(0) // Total capitalized upgrade costs
   imageUrl        String? // unit image (URL or base64 data URI), sourced from received-item images at receiving time
   createdAt       DateTime  @default(now())
@@ -292,25 +292,29 @@ model AuditLog {
 }
 
 model RentalAgreement {
-  id              String    @id @default(uuid())
-  tenantId        String
-  shopId          String
-  inventoryItemId String? // For serialized device rental/consignment
-  productId       String? // For non-serialized accessory
-  personName      String // Renter name (outward) or Owner name (inward)
-  personPhone     String?
-  agreementType   String // OUTWARD_RENTAL, INWARD_CONSIGNMENT
-  startDate       DateTime  @default(now())
-  expectedReturn  DateTime?
-  actualReturn    DateTime?
-  rentalFee       Float? // Agreed fee / rate for outward rental
-  ownerAgreedCost Float? // Agreed payout cost for inward consignment
-  maintenanceCost Float     @default(0) // Capitalized upgrades / maintenance by tenant
-  status          String    @default("ACTIVE") // ACTIVE, RETURNED, SOLD, CANCELLED
-  notes           String?
-  createdById     String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                 String    @id @default(uuid())
+  tenantId           String
+  shopId             String
+  inventoryItemId    String? // For serialized device rental/consignment
+  productId          String? // For non-serialized accessory
+  personName         String // Renter name (outward) or Owner name (inward)
+  personPhone        String?
+  agreementType      String // OUTWARD_RENTAL, INWARD_CONSIGNMENT
+  startDate          DateTime  @default(now())
+  expectedReturn     DateTime?
+  actualReturn       DateTime?
+  rentalFee          Float? // Agreed fee / rate for outward rental
+  ownerAgreedCost    Float? // Agreed payout to owner when inward unit is sold
+  salePrice          Float? // Customer sale price when the rental is sold
+  ownerPayoutTotal   Float? // Amount paid to the owner on sale
+  ownerPayoutDetails Json? // [{ method, amount, reference }]
+  commissionAmount   Float? // Shop share: salePrice - ownerPayoutTotal
+  maintenanceCost    Float     @default(0) // Capitalized upgrades / maintenance by tenant
+  status             String    @default("ACTIVE") // ACTIVE, RETURNED, SOLD, CANCELLED
+  notes              String?
+  createdById        String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   @@index([tenantId])
   @@index([shopId])

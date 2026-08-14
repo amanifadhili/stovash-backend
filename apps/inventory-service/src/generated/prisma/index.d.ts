@@ -14424,12 +14424,18 @@ export namespace Prisma {
   export type RentalAgreementAvgAggregateOutputType = {
     rentalFee: number | null
     ownerAgreedCost: number | null
+    salePrice: number | null
+    ownerPayoutTotal: number | null
+    commissionAmount: number | null
     maintenanceCost: number | null
   }
 
   export type RentalAgreementSumAggregateOutputType = {
     rentalFee: number | null
     ownerAgreedCost: number | null
+    salePrice: number | null
+    ownerPayoutTotal: number | null
+    commissionAmount: number | null
     maintenanceCost: number | null
   }
 
@@ -14447,6 +14453,9 @@ export namespace Prisma {
     actualReturn: Date | null
     rentalFee: number | null
     ownerAgreedCost: number | null
+    salePrice: number | null
+    ownerPayoutTotal: number | null
+    commissionAmount: number | null
     maintenanceCost: number | null
     status: string | null
     notes: string | null
@@ -14469,6 +14478,9 @@ export namespace Prisma {
     actualReturn: Date | null
     rentalFee: number | null
     ownerAgreedCost: number | null
+    salePrice: number | null
+    ownerPayoutTotal: number | null
+    commissionAmount: number | null
     maintenanceCost: number | null
     status: string | null
     notes: string | null
@@ -14491,6 +14503,10 @@ export namespace Prisma {
     actualReturn: number
     rentalFee: number
     ownerAgreedCost: number
+    salePrice: number
+    ownerPayoutTotal: number
+    ownerPayoutDetails: number
+    commissionAmount: number
     maintenanceCost: number
     status: number
     notes: number
@@ -14504,12 +14520,18 @@ export namespace Prisma {
   export type RentalAgreementAvgAggregateInputType = {
     rentalFee?: true
     ownerAgreedCost?: true
+    salePrice?: true
+    ownerPayoutTotal?: true
+    commissionAmount?: true
     maintenanceCost?: true
   }
 
   export type RentalAgreementSumAggregateInputType = {
     rentalFee?: true
     ownerAgreedCost?: true
+    salePrice?: true
+    ownerPayoutTotal?: true
+    commissionAmount?: true
     maintenanceCost?: true
   }
 
@@ -14527,6 +14549,9 @@ export namespace Prisma {
     actualReturn?: true
     rentalFee?: true
     ownerAgreedCost?: true
+    salePrice?: true
+    ownerPayoutTotal?: true
+    commissionAmount?: true
     maintenanceCost?: true
     status?: true
     notes?: true
@@ -14549,6 +14574,9 @@ export namespace Prisma {
     actualReturn?: true
     rentalFee?: true
     ownerAgreedCost?: true
+    salePrice?: true
+    ownerPayoutTotal?: true
+    commissionAmount?: true
     maintenanceCost?: true
     status?: true
     notes?: true
@@ -14571,6 +14599,10 @@ export namespace Prisma {
     actualReturn?: true
     rentalFee?: true
     ownerAgreedCost?: true
+    salePrice?: true
+    ownerPayoutTotal?: true
+    ownerPayoutDetails?: true
+    commissionAmount?: true
     maintenanceCost?: true
     status?: true
     notes?: true
@@ -14680,6 +14712,10 @@ export namespace Prisma {
     actualReturn: Date | null
     rentalFee: number | null
     ownerAgreedCost: number | null
+    salePrice: number | null
+    ownerPayoutTotal: number | null
+    ownerPayoutDetails: JsonValue | null
+    commissionAmount: number | null
     maintenanceCost: number
     status: string
     notes: string | null
@@ -14721,6 +14757,10 @@ export namespace Prisma {
     actualReturn?: boolean
     rentalFee?: boolean
     ownerAgreedCost?: boolean
+    salePrice?: boolean
+    ownerPayoutTotal?: boolean
+    ownerPayoutDetails?: boolean
+    commissionAmount?: boolean
     maintenanceCost?: boolean
     status?: boolean
     notes?: boolean
@@ -14743,6 +14783,10 @@ export namespace Prisma {
     actualReturn?: boolean
     rentalFee?: boolean
     ownerAgreedCost?: boolean
+    salePrice?: boolean
+    ownerPayoutTotal?: boolean
+    ownerPayoutDetails?: boolean
+    commissionAmount?: boolean
     maintenanceCost?: boolean
     status?: boolean
     notes?: boolean
@@ -14765,6 +14809,10 @@ export namespace Prisma {
     actualReturn?: boolean
     rentalFee?: boolean
     ownerAgreedCost?: boolean
+    salePrice?: boolean
+    ownerPayoutTotal?: boolean
+    ownerPayoutDetails?: boolean
+    commissionAmount?: boolean
     maintenanceCost?: boolean
     status?: boolean
     notes?: boolean
@@ -14791,6 +14839,10 @@ export namespace Prisma {
       actualReturn: Date | null
       rentalFee: number | null
       ownerAgreedCost: number | null
+      salePrice: number | null
+      ownerPayoutTotal: number | null
+      ownerPayoutDetails: Prisma.JsonValue | null
+      commissionAmount: number | null
       maintenanceCost: number
       status: string
       notes: string | null
@@ -15203,6 +15255,10 @@ export namespace Prisma {
     readonly actualReturn: FieldRef<"RentalAgreement", 'DateTime'>
     readonly rentalFee: FieldRef<"RentalAgreement", 'Float'>
     readonly ownerAgreedCost: FieldRef<"RentalAgreement", 'Float'>
+    readonly salePrice: FieldRef<"RentalAgreement", 'Float'>
+    readonly ownerPayoutTotal: FieldRef<"RentalAgreement", 'Float'>
+    readonly ownerPayoutDetails: FieldRef<"RentalAgreement", 'Json'>
+    readonly commissionAmount: FieldRef<"RentalAgreement", 'Float'>
     readonly maintenanceCost: FieldRef<"RentalAgreement", 'Float'>
     readonly status: FieldRef<"RentalAgreement", 'String'>
     readonly notes: FieldRef<"RentalAgreement", 'String'>
@@ -15743,6 +15799,10 @@ export namespace Prisma {
     actualReturn: 'actualReturn',
     rentalFee: 'rentalFee',
     ownerAgreedCost: 'ownerAgreedCost',
+    salePrice: 'salePrice',
+    ownerPayoutTotal: 'ownerPayoutTotal',
+    ownerPayoutDetails: 'ownerPayoutDetails',
+    commissionAmount: 'commissionAmount',
     maintenanceCost: 'maintenanceCost',
     status: 'status',
     notes: 'notes',
@@ -17000,6 +17060,10 @@ export namespace Prisma {
     actualReturn?: DateTimeNullableFilter<"RentalAgreement"> | Date | string | null
     rentalFee?: FloatNullableFilter<"RentalAgreement"> | number | null
     ownerAgreedCost?: FloatNullableFilter<"RentalAgreement"> | number | null
+    salePrice?: FloatNullableFilter<"RentalAgreement"> | number | null
+    ownerPayoutTotal?: FloatNullableFilter<"RentalAgreement"> | number | null
+    ownerPayoutDetails?: JsonNullableFilter<"RentalAgreement">
+    commissionAmount?: FloatNullableFilter<"RentalAgreement"> | number | null
     maintenanceCost?: FloatFilter<"RentalAgreement"> | number
     status?: StringFilter<"RentalAgreement"> | string
     notes?: StringNullableFilter<"RentalAgreement"> | string | null
@@ -17022,6 +17086,10 @@ export namespace Prisma {
     actualReturn?: SortOrderInput | SortOrder
     rentalFee?: SortOrderInput | SortOrder
     ownerAgreedCost?: SortOrderInput | SortOrder
+    salePrice?: SortOrderInput | SortOrder
+    ownerPayoutTotal?: SortOrderInput | SortOrder
+    ownerPayoutDetails?: SortOrderInput | SortOrder
+    commissionAmount?: SortOrderInput | SortOrder
     maintenanceCost?: SortOrder
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
@@ -17047,6 +17115,10 @@ export namespace Prisma {
     actualReturn?: DateTimeNullableFilter<"RentalAgreement"> | Date | string | null
     rentalFee?: FloatNullableFilter<"RentalAgreement"> | number | null
     ownerAgreedCost?: FloatNullableFilter<"RentalAgreement"> | number | null
+    salePrice?: FloatNullableFilter<"RentalAgreement"> | number | null
+    ownerPayoutTotal?: FloatNullableFilter<"RentalAgreement"> | number | null
+    ownerPayoutDetails?: JsonNullableFilter<"RentalAgreement">
+    commissionAmount?: FloatNullableFilter<"RentalAgreement"> | number | null
     maintenanceCost?: FloatFilter<"RentalAgreement"> | number
     status?: StringFilter<"RentalAgreement"> | string
     notes?: StringNullableFilter<"RentalAgreement"> | string | null
@@ -17069,6 +17141,10 @@ export namespace Prisma {
     actualReturn?: SortOrderInput | SortOrder
     rentalFee?: SortOrderInput | SortOrder
     ownerAgreedCost?: SortOrderInput | SortOrder
+    salePrice?: SortOrderInput | SortOrder
+    ownerPayoutTotal?: SortOrderInput | SortOrder
+    ownerPayoutDetails?: SortOrderInput | SortOrder
+    commissionAmount?: SortOrderInput | SortOrder
     maintenanceCost?: SortOrder
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
@@ -17099,6 +17175,10 @@ export namespace Prisma {
     actualReturn?: DateTimeNullableWithAggregatesFilter<"RentalAgreement"> | Date | string | null
     rentalFee?: FloatNullableWithAggregatesFilter<"RentalAgreement"> | number | null
     ownerAgreedCost?: FloatNullableWithAggregatesFilter<"RentalAgreement"> | number | null
+    salePrice?: FloatNullableWithAggregatesFilter<"RentalAgreement"> | number | null
+    ownerPayoutTotal?: FloatNullableWithAggregatesFilter<"RentalAgreement"> | number | null
+    ownerPayoutDetails?: JsonNullableWithAggregatesFilter<"RentalAgreement">
+    commissionAmount?: FloatNullableWithAggregatesFilter<"RentalAgreement"> | number | null
     maintenanceCost?: FloatWithAggregatesFilter<"RentalAgreement"> | number
     status?: StringWithAggregatesFilter<"RentalAgreement"> | string
     notes?: StringNullableWithAggregatesFilter<"RentalAgreement"> | string | null
@@ -18419,6 +18499,10 @@ export namespace Prisma {
     actualReturn?: Date | string | null
     rentalFee?: number | null
     ownerAgreedCost?: number | null
+    salePrice?: number | null
+    ownerPayoutTotal?: number | null
+    ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
+    commissionAmount?: number | null
     maintenanceCost?: number
     status?: string
     notes?: string | null
@@ -18441,6 +18525,10 @@ export namespace Prisma {
     actualReturn?: Date | string | null
     rentalFee?: number | null
     ownerAgreedCost?: number | null
+    salePrice?: number | null
+    ownerPayoutTotal?: number | null
+    ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
+    commissionAmount?: number | null
     maintenanceCost?: number
     status?: string
     notes?: string | null
@@ -18463,6 +18551,10 @@ export namespace Prisma {
     actualReturn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rentalFee?: NullableFloatFieldUpdateOperationsInput | number | null
     ownerAgreedCost?: NullableFloatFieldUpdateOperationsInput | number | null
+    salePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    ownerPayoutTotal?: NullableFloatFieldUpdateOperationsInput | number | null
+    ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
+    commissionAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     maintenanceCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18485,6 +18577,10 @@ export namespace Prisma {
     actualReturn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rentalFee?: NullableFloatFieldUpdateOperationsInput | number | null
     ownerAgreedCost?: NullableFloatFieldUpdateOperationsInput | number | null
+    salePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    ownerPayoutTotal?: NullableFloatFieldUpdateOperationsInput | number | null
+    ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
+    commissionAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     maintenanceCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18507,6 +18603,10 @@ export namespace Prisma {
     actualReturn?: Date | string | null
     rentalFee?: number | null
     ownerAgreedCost?: number | null
+    salePrice?: number | null
+    ownerPayoutTotal?: number | null
+    ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
+    commissionAmount?: number | null
     maintenanceCost?: number
     status?: string
     notes?: string | null
@@ -18529,6 +18629,10 @@ export namespace Prisma {
     actualReturn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rentalFee?: NullableFloatFieldUpdateOperationsInput | number | null
     ownerAgreedCost?: NullableFloatFieldUpdateOperationsInput | number | null
+    salePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    ownerPayoutTotal?: NullableFloatFieldUpdateOperationsInput | number | null
+    ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
+    commissionAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     maintenanceCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18551,6 +18655,10 @@ export namespace Prisma {
     actualReturn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rentalFee?: NullableFloatFieldUpdateOperationsInput | number | null
     ownerAgreedCost?: NullableFloatFieldUpdateOperationsInput | number | null
+    salePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    ownerPayoutTotal?: NullableFloatFieldUpdateOperationsInput | number | null
+    ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
+    commissionAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     maintenanceCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19503,6 +19611,10 @@ export namespace Prisma {
     actualReturn?: SortOrder
     rentalFee?: SortOrder
     ownerAgreedCost?: SortOrder
+    salePrice?: SortOrder
+    ownerPayoutTotal?: SortOrder
+    ownerPayoutDetails?: SortOrder
+    commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
     status?: SortOrder
     notes?: SortOrder
@@ -19514,6 +19626,9 @@ export namespace Prisma {
   export type RentalAgreementAvgOrderByAggregateInput = {
     rentalFee?: SortOrder
     ownerAgreedCost?: SortOrder
+    salePrice?: SortOrder
+    ownerPayoutTotal?: SortOrder
+    commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
   }
 
@@ -19531,6 +19646,9 @@ export namespace Prisma {
     actualReturn?: SortOrder
     rentalFee?: SortOrder
     ownerAgreedCost?: SortOrder
+    salePrice?: SortOrder
+    ownerPayoutTotal?: SortOrder
+    commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
     status?: SortOrder
     notes?: SortOrder
@@ -19553,6 +19671,9 @@ export namespace Prisma {
     actualReturn?: SortOrder
     rentalFee?: SortOrder
     ownerAgreedCost?: SortOrder
+    salePrice?: SortOrder
+    ownerPayoutTotal?: SortOrder
+    commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
     status?: SortOrder
     notes?: SortOrder
@@ -19564,6 +19685,9 @@ export namespace Prisma {
   export type RentalAgreementSumOrderByAggregateInput = {
     rentalFee?: SortOrder
     ownerAgreedCost?: SortOrder
+    salePrice?: SortOrder
+    ownerPayoutTotal?: SortOrder
+    commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
   }
 

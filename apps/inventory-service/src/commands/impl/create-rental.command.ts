@@ -1,15 +1,33 @@
 import { BaseCommand } from '@electronic-shop/framework-command';
 import { IRequestContext } from '@electronic-shop/types';
 
+export class CreateInwardInventoryInput {
+  productId!: string;
+  name?: string;
+  brandId?: string;
+  categoryId?: string;
+  sellingPrice?: number;
+  specifications?: any;
+  serialNumber!: string;
+  condition?: string;
+  notes?: string;
+  images?: string[];
+  unitAcquisitionCost?: number;
+}
+
 export class CreateRentalPayload {
   inventoryItemId?: string;
   productId?: string;
-  customerId?: string;          // preferred: link to existing customer/contact
-  personName?: string;          // fallback if no customerId
+  customerId?: string;
+  personName?: string;
   personPhone?: string;
   agreementType!: 'OUTWARD_RENTAL' | 'INWARD_CONSIGNMENT';
   startDate?: string;
   notes?: string;
+  rentalFee?: number;
+  ownerAgreedCost?: number;
+  /** When set with INWARD_CONSIGNMENT, create a RENTED_IN inventory unit in the same transaction. */
+  createInventory?: CreateInwardInventoryInput;
 }
 
 export class CreateRentalCommand extends BaseCommand<CreateRentalPayload> {

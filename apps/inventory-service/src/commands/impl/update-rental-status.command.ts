@@ -1,11 +1,20 @@
 import { BaseCommand } from '@electronic-shop/framework-command';
 import { IRequestContext } from '@electronic-shop/types';
 
+export class OwnerPayoutLine {
+  method!: string;
+  amount!: number;
+  reference?: string;
+}
+
 export class UpdateRentalStatusPayload {
   rentalId!: string;
   status!: 'RETURNED' | 'SOLD' | 'CANCELLED';
-  salePrice?: number; // Needed if status === 'SOLD'
-  maintenanceCost?: number; // Optional maintenance cost billed/incurred
+  salePrice?: number;
+  ownerPayoutTotal?: number;
+  ownerPayoutDetails?: OwnerPayoutLine[];
+  commissionAmount?: number;
+  maintenanceCost?: number;
   notes?: string;
 }
 

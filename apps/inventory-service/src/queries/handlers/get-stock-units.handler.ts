@@ -106,7 +106,12 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
           purchaseCost: Number(item.purchaseCost || 0),
           totalCost,
           status: item.status,
-          imageUrl: item.imageUrl || (Array.isArray(item.images) && item.images[0]) || undefined,
+          imageUrl:
+            item.imageUrl ||
+            (Array.isArray(item.images) && item.images[0]) ||
+            item.product?.imageUrl ||
+            (Array.isArray((item.product as any)?.images) && (item.product as any).images[0]) ||
+            undefined,
           images: [],
           brand,
           category,

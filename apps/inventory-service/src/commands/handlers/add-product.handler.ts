@@ -111,6 +111,8 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
       const specObj = (rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)) ? rawSpecs : {};
       const specifications = { ...specObj, deviceType };
 
+      const imageList = Array.isArray(payload.images) ? payload.images.filter(Boolean).slice(0, 5) : [];
+
       const product = await prisma.product.create({
         data: {
           tenantId: context.tenantId,
@@ -126,6 +128,8 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
           trackingMethod,
           status: 'ACTIVE',
           specifications,
+          images: imageList,
+          imageUrl: payload.imageUrl || imageList[0] || null,
           createdBy: context.userId || 'system'
         },
         include: {

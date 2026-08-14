@@ -29,7 +29,7 @@ export const saleFulfilledConsumer = async (event: any): Promise<void> => {
 
         if (invItem.status === 'SOLD') continue; // idempotent re-delivery
 
-        if (invItem.status !== 'AVAILABLE' && invItem.status !== 'RESERVED') {
+        if (invItem.status !== 'AVAILABLE' && invItem.status !== 'RESERVED' && invItem.status !== 'RENTED_IN') {
           console.log(`Item ${invItem.serialNumber} cannot be sold (status: ${invItem.status})`);
           continue;
         }

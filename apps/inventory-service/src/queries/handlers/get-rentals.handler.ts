@@ -38,10 +38,47 @@ export class GetRentalsHandler implements IQueryHandler<GetRentalsQuery> {
         orderBy: { createdAt: 'desc' }
       });
 
+      const itemIds = rentals.map((r: any) => r.inventoryItemId).filter(Boolean);
+      const items = itemIds.length
+        ? await prisma.inventoryItem.findMany({
+            where: { tenantId, id: { in: itemIds } },
+            include: {
+              brand: { select: { id: true, name: true } },
+              category: { select: { id: true, name: true } },
+              product: { select: { id: true, name: true, sku: true, imageUrl: true, images: true } },
+            },
+          })
+        : [];
+      const itemById = new Map(items.map((i: any) => [i.id, i]));
+
+      const data = rentals.map((r: any) => {
+        const item = r.inventoryItemId ? itemById.get(r.inventoryItemId) : null;
+        return {
+          ...r,
+          inventoryItem: item
+            ? {
+                id: item.id,
+                productId: item.productId,
+                name: item.name || item.product?.name || null,
+                productName: item.name || item.product?.name || null,
+                productSku: item.product?.sku || null,
+                serialNumber: item.serialNumber,
+                purchaseCost: Number(item.purchaseCost || 0),
+                sellingPrice: item.sellingPrice,
+                status: item.status,
+                imageUrl: item.imageUrl || item.images?.[0] || item.product?.imageUrl || item.product?.images?.[0] || null,
+                brand: item.brand,
+                category: item.category,
+                specifications: item.specifications,
+              }
+            : null,
+        };
+      });
+
       return {
         status: 'success',
         traceId,
-        data: rentals
+        data
       };
     } catch (error: any) {
       return {

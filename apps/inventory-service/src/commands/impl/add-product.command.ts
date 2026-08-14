@@ -14,6 +14,8 @@ export class AddProductPayload {
   trackingMethod?: string;
   deviceType?: string;
   specifications?: any;
+  images?: string[];
+  imageUrl?: string;
 }
 
 export class AddProductCommand extends BaseCommand<AddProductPayload> {
