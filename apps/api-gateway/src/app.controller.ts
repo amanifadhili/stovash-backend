@@ -28,6 +28,8 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetBalanceSheet': ['accounting:report:read'],
   'CreatePostingBatch': ['accounting:batch:create'],
   'PostBatch': ['accounting:batch:post'],
+  'RecordExpense': [],
+  'GetExpenses': [],
   
   // Inventory commands
   'AddProduct': ['inventory:product:create'],
@@ -139,6 +141,8 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'GetBalanceSheet': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'CreatePostingBatch': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'PostBatch': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'RecordExpense': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetExpenses': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   
   // Inventory commands
   'AddProduct': ['ADMIN', 'MANAGER'],
@@ -312,7 +316,7 @@ export class AppController {
         return await firstValueFrom(this.tenantClient.send({ cmd }, { payload, context }));
       }
 
-      if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod', 'GetAccountTransactions', 'GetTrialBalance', 'GetIncomeStatement', 'GetBalanceSheet', 'CreatePostingBatch', 'PostBatch'].includes(cmd)) {
+      if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod', 'GetAccountTransactions', 'GetTrialBalance', 'GetIncomeStatement', 'GetBalanceSheet', 'CreatePostingBatch', 'PostBatch', 'RecordExpense', 'GetExpenses'].includes(cmd)) {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 

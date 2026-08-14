@@ -9,6 +9,8 @@ import { GetTrialBalanceQuery } from './queries/impl/get-trial-balance.query.js'
 import { GetIncomeStatementQuery } from './queries/impl/get-income-statement.query.js';
 import { GetBalanceSheetQuery } from './queries/impl/get-balance-sheet.query.js';
 import { GetAccountTransactionsQuery } from './queries/impl/get-account-transactions.query.js';
+import { RecordExpenseCommand } from './commands/impl/record-expense.command.js';
+import { GetExpensesQuery } from './queries/impl/get-expenses.query.js';
 
 @Controller()
 export class AccountingServiceController {
@@ -55,6 +57,16 @@ export class AccountingServiceController {
   @MessagePattern({ cmd: 'GetAccountTransactions' })
   async handleGetAccountTransactions(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetAccountTransactionsQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'RecordExpense' })
+  async handleRecordExpense(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new RecordExpenseCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetExpenses' })
+  async handleGetExpenses(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetExpensesQuery(data.payload, data.context));
   }
 }
 
