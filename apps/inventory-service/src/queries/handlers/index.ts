@@ -7,6 +7,7 @@ import { GetCategoriesHandler } from './get-categories.handler.js';
 import { GetCategoryByIdHandler } from './get-category-by-id.handler.js';
 import { GetAvailableInventoryItemsHandler } from './get-available-inventory-items.handler.js';
 import { GetStockUnitsHandler } from './get-stock-units.handler.js';
+import { GetDeviceLifeHandler } from './get-device-life.handler.js';
 import { GetRentalsHandler } from './get-rentals.handler.js';
 import { GetContactsHandler } from './get-contacts.handler.js';
 
@@ -20,6 +21,7 @@ export const QueryHandlers = [
   GetCategoryByIdHandler,
   GetAvailableInventoryItemsHandler,
   GetStockUnitsHandler,
+  GetDeviceLifeHandler,
   GetRentalsHandler,
   GetContactsHandler,
 ];

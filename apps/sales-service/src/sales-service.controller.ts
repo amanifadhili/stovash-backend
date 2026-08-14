@@ -17,6 +17,7 @@ import { ProcessLoanSaleCommand } from './commands/impl/process-loan-sale.comman
 import { GetSalesQuery } from './queries/impl/get-sales.query.js';
 import { GetSaleByIdQuery } from './queries/impl/get-sale-by-id.query.js';
 import { GetSaleHistoryQuery } from './queries/impl/get-sale-history.query.js';
+import { GetDeviceSalesQuery } from './queries/impl/get-device-sales.query.js';
 
 @Controller()
 export class SalesServiceController {
@@ -104,5 +105,10 @@ export class SalesServiceController {
   @MessagePattern({ cmd: 'GetSaleHistory' })
   async handleGetSaleHistory(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetSaleHistoryQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetDeviceSales' })
+  async handleGetDeviceSales(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetDeviceSalesQuery(data.payload, data.context));
   }
 }

@@ -53,6 +53,7 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetCategoryById': ['inventory:category:read'],
   'AddInventoryItem': ['inventory:item:create'],
   'GetStockUnits': ['inventory:item:read'],
+  'GetDeviceLife': ['inventory:item:read'],
   'GetAvailableInventoryItems': ['inventory:item:read'],
   'ProcessPosSale': ['inventory:sale:create'],
   'ReceiveGoods': ['inventory:goods:receive'],
@@ -82,6 +83,7 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetSales': ['sales:sale:read'],
   'GetSaleById': ['sales:sale:read'],
   'GetSaleHistory': ['sales:sale:read'],
+  'GetDeviceSales': ['sales:sale:read'],
   
   // Purchase commands
   'CreatePurchase': ['purchase:purchase:create'],
@@ -174,6 +176,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'GetCategoryById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'AddInventoryItem': ['ADMIN', 'MANAGER', 'STAFF'],
   'GetStockUnits': ['ADMIN', 'MANAGER', 'STAFF'],
+  'GetDeviceLife': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetAvailableInventoryItems': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessPosSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'ReceiveGoods': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -205,6 +208,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'GetSales': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetSaleById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetSaleHistory': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetDeviceSales': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   
   // Purchase commands
   'CreatePurchase': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -336,11 +340,11 @@ export class AppController {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 
-      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
       }
 
-      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory'].includes(cmd)) {
+      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales'].includes(cmd)) {
         return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
       }
 
