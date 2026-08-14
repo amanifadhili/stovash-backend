@@ -50,16 +50,25 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
         }
 
         const quantityOnHand = (product.quantityOnHand || 0) + qty;
-        const updateData: any = { quantityOnHand, updatedBy: userId };
+        const productSpecs =
+          product.specifications && typeof product.specifications === 'object'
+            ? (product.specifications as Record<string, unknown>)
+            : {};
+        const payloadSpecs =
+          payload.specifications && typeof payload.specifications === 'object'
+            ? payload.specifications
+            : {};
+        const updateData: any = {
+          quantityOnHand,
+          updatedBy: userId,
+          type: 'ACCESSORY',
+          trackingMethod: 'NON_SERIALIZED',
+          specifications: { ...productSpecs, ...payloadSpecs, deviceType: 'ACCESSORY' },
+        };
         // Persist package images when provided (first purchase photo becomes primary).
         if (imageList.length > 0) {
           updateData.images = imageList;
           updateData.imageUrl = imageList[0];
-        } else if (payload.name || payload.specifications) {
-          // still allow identity enrichment without images
-        }
-        if (payload.specifications) {
-          updateData.specifications = payload.specifications;
         }
 
         const updated = await prisma.product.update({
@@ -96,6 +105,21 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
 
       const purchaseCost = (Number(payload.unitAcquisitionCost) || 0) + (Number(payload.additionalCost) || 0);
       const imageList = Array.isArray(payload.images) ? payload.images.slice(0, 5) : [];
+      const productSpecs =
+        product.specifications && typeof product.specifications === 'object'
+          ? (product.specifications as Record<string, unknown>)
+          : {};
+      const mergedSpecs = {
+        ...productSpecs,
+        ...(payload.specifications && typeof payload.specifications === 'object'
+          ? payload.specifications
+          : {}),
+        deviceType:
+          productSpecs.deviceType ||
+          (product.type === 'ACCESSORY' || product.type === 'DEVICE' ? product.type : null) ||
+          'DEVICE',
+      };
+
       const invItem = await prisma.inventoryItem.create({
         data: {
           tenantId,
@@ -105,7 +129,7 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
           brandId: payload.brandId || product.brandId || null,
           categoryId: payload.categoryId || product.categoryId || null,
           sellingPrice: payload.sellingPrice != null ? Number(payload.sellingPrice) : null,
-          specifications: payload.specifications ?? product.specifications ?? undefined,
+          specifications: mergedSpecs,
           imei1: payload.imei1 || null,
           imei2: payload.imei2 || null,
           condition: payload.condition || null,

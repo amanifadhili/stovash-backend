@@ -204,6 +204,9 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
           });
           if (!purchaseItem) continue;
 
+          const lineImages =
+            Array.isArray(it.images) && it.images.length > 0 ? it.images.slice(0, 5) : undefined;
+
           for (const unit of it.units) {
             if (unit.serialNumber) {
               const existing = await prisma.purchaseReceivedItem.findFirst({
@@ -238,7 +241,10 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
                 receivedAt: new Date(),
                 receivedById: createdById,
                 notes: unit.notes,
-                images: Array.isArray(unit.images) && unit.images.length > 0 ? unit.images.slice(0, 5) : undefined,
+                images:
+                  Array.isArray(unit.images) && unit.images.length > 0
+                    ? unit.images.slice(0, 5)
+                    : lineImages,
               },
             });
 

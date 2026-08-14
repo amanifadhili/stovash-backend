@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { json, urlencoded } from 'express';
 import { AppModule } from './app.module.js';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -15,7 +16,12 @@ async function bootstrap() {
   logger.info('Starting API Gateway...');
 
   process.setMaxListeners(50);
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
+
+  // Purchase photos travel as data URLs. Default Express JSON limit is 100kb.
+  const bodyLimit = process.env.GATEWAY_BODY_LIMIT || '25mb';
+  app.use(json({ limit: bodyLimit }));
+  app.use(urlencoded({ extended: true, limit: bodyLimit }));
   
   const httpServer = app.getHttpServer();
   if (httpServer) {

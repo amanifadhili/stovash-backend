@@ -27,6 +27,8 @@ export interface CreatePurchaseItemInput {
   otherCosts?: number;
   purchaseSpecs?: string;
   notes?: string;
+  /** Shared photos for every unit on this line (avoids duplicating data URLs N times). */
+  images?: string[];
   units?: CreatePurchaseUnitInput[];
 }
 

@@ -62,8 +62,11 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
         data: {
           commercialStatus: 'CONFIRMED',
           status: 'COMPLETED',
+          fulfillmentStatus: 'FULFILLED',
           confirmedById: createdById,
           confirmedAt: new Date(),
+          fulfilledById: createdById,
+          fulfilledAt: new Date(),
         },
       });
 
@@ -108,6 +111,40 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
           createdBy: createdById,
         },
         'sale.confirmed',
+      );
+
+      // Walk-in POS confirms and hands over in one step. Inventory listens to
+      // SaleFulfilled to decrement accessory quantityOnHand / mark device units sold.
+      await this.eventBus.publish(
+        {
+          eventType: 'SaleFulfilled',
+          aggregateId: sale.id,
+          aggregateType: 'Sale',
+          tenantId,
+          shopId: sale.shopId,
+          payload: {
+            tenantId,
+            shopId: sale.shopId,
+            saleId: sale.id,
+            orderNumber: sale.orderNumber,
+            customerId: sale.customerId || null,
+            fulfillmentStatus: 'FULFILLED',
+            fulfilledBy: createdById,
+            items: (sale.items ?? []).map((i: any) => ({
+              saleItemId: i.id,
+              productId: i.productId,
+              inventoryItemId: i.inventoryItemId,
+              serialNumber: i.serialNumber,
+              quantity: i.quantity,
+              unitCost: i.unitCost,
+              unitPrice: i.unitPrice,
+            })),
+          },
+          timestamp: new Date().toISOString(),
+          correlationId: traceId,
+          createdBy: createdById,
+        },
+        'sale.fulfilled',
       );
 
       return { status: 'success', traceId, data: updated };

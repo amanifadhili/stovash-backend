@@ -9,8 +9,9 @@ export const saleFulfilledConsumer = async (event: any): Promise<void> => {
       return;
     }
 
-    const tenantId = payload.tenantId;
-    const shopId = payload.shopId;
+    const tenantId = payload.tenantId || event.tenantId;
+    const shopId = payload.shopId || event.shopId;
+    const saleRef = payload.saleId || aggregateId;
 
     for (const item of payload.items) {
       // Serialized path: transition the EXACT inventory item AVAILABLE -> SOLD.
@@ -45,7 +46,7 @@ export const saleFulfilledConsumer = async (event: any): Promise<void> => {
             customerId: payload.customerId || null,
             movementType: 'OUT',
             quantity: item.quantity || 1,
-            referenceId: payload.saleId || aggregateId,
+            referenceId: saleRef,
             referenceType: 'SALE',
             createdBy: payload.fulfilledBy || 'system',
           },
@@ -64,6 +65,17 @@ export const saleFulfilledConsumer = async (event: any): Promise<void> => {
         }
 
         const qty = item.quantity || 1;
+        const existingOut = await prisma.inventoryMovement.findFirst({
+          where: {
+            tenantId,
+            productId: product.id,
+            referenceId: saleRef,
+            referenceType: 'SALE',
+            movementType: 'OUT',
+          },
+        });
+        if (existingOut) continue;
+
         const quantityOnHand = Math.max(0, (product.quantityOnHand || 0) - qty);
         await prisma.product.update({
           where: { id: product.id },
@@ -79,7 +91,7 @@ export const saleFulfilledConsumer = async (event: any): Promise<void> => {
             customerId: payload.customerId || null,
             movementType: 'OUT',
             quantity: qty,
-            referenceId: payload.saleId || aggregateId,
+            referenceId: saleRef,
             referenceType: 'SALE',
             createdBy: payload.fulfilledBy || 'system',
           },

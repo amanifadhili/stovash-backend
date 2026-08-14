@@ -83,10 +83,12 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
         const productSpecs = (item.product?.specifications && typeof item.product.specifications === 'object')
           ? (item.product.specifications as Record<string, unknown>)
           : null;
+        const sku = item.product?.sku || '';
         const deviceType =
           (item.specifications as any)?.deviceType ||
           productSpecs?.deviceType ||
-          (item.product as any)?.type ||
+          (sku.startsWith('ACC-') ? 'ACCESSORY' : null) ||
+          ((item.product as any)?.type === 'ACCESSORY' ? 'ACCESSORY' : null) ||
           'DEVICE';
 
         return {
@@ -105,7 +107,7 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
           totalCost,
           status: item.status,
           imageUrl: item.imageUrl || (Array.isArray(item.images) && item.images[0]) || undefined,
-          images: Array.isArray(item.images) ? item.images : [],
+          images: [],
           brand,
           category,
           sellingPrice: item.sellingPrice ?? item.product?.prices?.[0]?.sellingPrice ?? 0,
