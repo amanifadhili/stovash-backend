@@ -13,6 +13,8 @@ export const saleFulfilledConsumer = async (event: any): Promise<void> => {
     const shopId = payload.shopId || event.shopId;
     const saleRef = payload.saleId || aggregateId;
 
+    const accessoryQtyByProduct = new Map<string, number>();
+
     for (const item of payload.items) {
       // Serialized path: transition the EXACT inventory item AVAILABLE -> SOLD.
       if (item.inventoryItemId) {
@@ -54,49 +56,59 @@ export const saleFulfilledConsumer = async (event: any): Promise<void> => {
         continue;
       }
 
-      // Non-serialized path: decrement the product-level quantity on hand.
       if (item.productId) {
-        const product = await prisma.product.findFirst({
-          where: { tenantId, id: item.productId },
-        });
-        if (!product) {
-          console.log(`Product ${item.productId} not found (tenant ${tenantId})`);
-          continue;
-        }
-
-        const qty = item.quantity || 1;
-        const existingOut = await prisma.inventoryMovement.findFirst({
-          where: {
-            tenantId,
-            productId: product.id,
-            referenceId: saleRef,
-            referenceType: 'SALE',
-            movementType: 'OUT',
-          },
-        });
-        if (existingOut) continue;
-
-        const quantityOnHand = Math.max(0, (product.quantityOnHand || 0) - qty);
-        await prisma.product.update({
-          where: { id: product.id },
-          data: { quantityOnHand, updatedBy: payload.fulfilledBy || 'system' },
-        });
-
-        await prisma.inventoryMovement.create({
-          data: {
-            tenantId,
-            shopId,
-            inventoryItemId: null,
-            productId: product.id,
-            customerId: payload.customerId || null,
-            movementType: 'OUT',
-            quantity: qty,
-            referenceId: saleRef,
-            referenceType: 'SALE',
-            createdBy: payload.fulfilledBy || 'system',
-          },
-        });
+        const qty = Number(item.quantity) || 1;
+        accessoryQtyByProduct.set(item.productId, (accessoryQtyByProduct.get(item.productId) || 0) + qty);
       }
+    }
+
+    for (const [productId, qty] of accessoryQtyByProduct) {
+      const product = await prisma.product.findFirst({
+        where: { tenantId, id: productId },
+      });
+      if (!product) {
+        console.log(`Product ${productId} not found (tenant ${tenantId})`);
+        continue;
+      }
+
+      const existingOut = await prisma.inventoryMovement.findFirst({
+        where: {
+          tenantId,
+          productId: product.id,
+          referenceId: saleRef,
+          referenceType: 'SALE',
+          movementType: 'OUT',
+        },
+      });
+      if (existingOut) continue;
+
+      const onHand = Number(product.quantityOnHand || 0);
+      if (onHand < qty) {
+        console.error(
+          `Insufficient accessory stock for ${product.name} (${product.id}): have ${onHand}, need ${qty} (sale ${saleRef})`,
+        );
+        continue;
+      }
+
+      await prisma.product.update({
+        where: { id: product.id },
+        data: { quantityOnHand: onHand - qty, updatedBy: payload.fulfilledBy || 'system' },
+      });
+
+      await prisma.inventoryMovement.create({
+        data: {
+          tenantId,
+          shopId,
+          inventoryItemId: null,
+          productId: product.id,
+          customerId: payload.customerId || null,
+          movementType: 'OUT',
+          quantity: qty,
+          referenceId: saleRef,
+          referenceType: 'SALE',
+          createdBy: payload.fulfilledBy || 'system',
+        },
+      });
     }
 
     console.log(`SaleFulfilled event processed: ${aggregateId} (correlationId: ${correlationId})`);

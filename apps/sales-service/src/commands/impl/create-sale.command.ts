@@ -16,7 +16,7 @@ export class CreateSaleItemInput {
   discountAmount?: number;
   taxRate?: number;
   otherCharges?: number;
-  additionalCost?: number; // bonus/commission/extra SPENT on this line (not charged to customer) — reduces profit
+  additionalCost?: number; // extra cost on this line, folded into unitCost. Bundled accessories are separate items so stock deducts.
   additionalCostPaymentMethod?: string; // CASH, MOMO, BANK_TRANSFER, CARD, CREDIT, CHECK, OTHER
   notes?: string;
 }

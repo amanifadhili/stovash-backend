@@ -65,6 +65,8 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
           : 0;
         const otherCharges = Number(it.otherCharges) || 0;
         const additionalCost = Number(it.additionalCost) || 0;
+        const baseCost = Number(it.unitCost) || 0;
+        const unitCost = baseCost + additionalCost / qty;
         const lineTotal = net + tax + otherCharges;
         subtotal += gross;
         discountTotal += discount;
@@ -92,7 +94,7 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
           netTotal: net,
           lineTotal,
           total: lineTotal,
-          unitCost: Number(it.unitCost) || 0,
+          unitCost,
         };
       });
       const totalCost = lines.reduce((s, l) => s + l.unitCost * l.quantity, 0);
@@ -140,7 +142,7 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
               amountDue: grandTotal,
               totalAmount: grandTotal,
               totalCost,
-              profit: grandTotal - totalCost - additionalCostTotal,
+              profit: grandTotal - totalCost,
               paymentMethod: 'CASH',
               notes: payload.notes || null,
               createdById,
