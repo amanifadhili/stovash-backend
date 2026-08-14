@@ -17,25 +17,28 @@ export class CreatePaymentMethodHandler extends BaseCommandHandler<CreatePayment
     const traceId = context?.traceId || 'unknown';
 
     try {
-      if (!payload?.tenantId || !payload?.shopId || !payload?.name || !payload?.type) {
+      const tenantId = payload?.tenantId || context?.tenantId;
+      const shopId = payload?.shopId || context?.shopId;
+
+      if (!tenantId || !shopId || !payload?.name || !payload?.type) {
         return {
           status: 'error',
           traceId,
-          message: 'Tenant ID, shop ID, name, and type are required',
+          message: 'Name and type are required',
           errorCode: ErrorCode.VALIDATION_ERROR
         };
       }
 
       const paymentMethod = await prisma.paymentMethod.create({
         data: {
-          tenantId: payload.tenantId,
-          shopId: payload.shopId,
+          tenantId,
+          shopId,
           name: payload.name,
           type: payload.type,
           accountNumber: payload.accountNumber,
           bankName: payload.bankName,
           balance: payload.balance || 0,
-          currency: payload.currency || 'USD',
+          currency: payload.currency || 'RWF',
           isActive: payload.isActive !== undefined ? payload.isActive : true,
         }
       });

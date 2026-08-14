@@ -15,14 +15,27 @@ export class CreateTransferHandler extends BaseCommandHandler<CreateTransferComm
   async execute(command: CreateTransferCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
+    const tenantId = payload?.tenantId || context?.tenantId;
+    const shopId = payload?.shopId || context?.shopId;
+    const userId = context?.userId || 'system';
 
     try {
-      if (!payload?.tenantId || !payload?.shopId || !payload?.fromMethodId || !payload?.toMethodId || !payload?.amount) {
+      if (!tenantId || !shopId || !payload?.fromMethodId || !payload?.toMethodId || !payload?.amount) {
         return {
           status: 'error',
           traceId,
-          message: 'Tenant ID, shop ID, from method ID, to method ID, and amount are required',
-          errorCode: ErrorCode.VALIDATION_ERROR
+          message: 'From method, to method, and amount are required',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
+      const amount = Number(payload.amount);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Amount must be greater than zero',
+          errorCode: ErrorCode.VALIDATION_ERROR,
         };
       }
 
@@ -31,60 +44,90 @@ export class CreateTransferHandler extends BaseCommandHandler<CreateTransferComm
           status: 'error',
           traceId,
           message: 'Cannot transfer to the same payment method',
-          errorCode: ErrorCode.VALIDATION_ERROR
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
+      const from = await prisma.paymentMethod.findFirst({
+        where: { id: payload.fromMethodId, tenantId, shopId },
+      });
+      const to = await prisma.paymentMethod.findFirst({
+        where: { id: payload.toMethodId, tenantId, shopId },
+      });
+      if (!from || !to) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Payment method not found',
+          errorCode: ErrorCode.NOT_FOUND,
+        };
+      }
+      if (Number(from.balance) < amount) {
+        return {
+          status: 'error',
+          traceId,
+          message: `Not enough ${from.name} balance (have RWF ${from.balance})`,
+          errorCode: ErrorCode.VALIDATION_ERROR,
         };
       }
 
       const transfer = await prisma.$transaction(async (tx) => {
-        // Deduct from source
         await tx.paymentMethod.update({
-          where: { id: payload.fromMethodId },
-          data: { balance: { decrement: payload.amount } }
+          where: { id: from.id },
+          data: { balance: { decrement: amount } },
         });
-
-        // Add to destination
         await tx.paymentMethod.update({
-          where: { id: payload.toMethodId },
-          data: { balance: { increment: payload.amount } }
+          where: { id: to.id },
+          data: { balance: { increment: amount } },
         });
-
-        return await tx.transfer.create({
+        return tx.transfer.create({
           data: {
-            tenantId: payload.tenantId,
-            shopId: payload.shopId,
-            fromMethodId: payload.fromMethodId,
-            toMethodId: payload.toMethodId,
-            amount: payload.amount,
-            reference: payload.reference,
-            status: payload.status || 'COMPLETED',
-          }
+            tenantId,
+            shopId,
+            fromMethodId: from.id,
+            toMethodId: to.id,
+            amount,
+            reference: payload.reference || null,
+            status: 'COMPLETED',
+            approvedBy: userId,
+            approvedAt: new Date(),
+          },
         });
       });
 
-      // Publish TransferCreated event
       await this.eventBus.publish(
         {
-          eventType: 'TransferCreated',
+          eventType: 'TreasuryTransferCreated',
           aggregateId: transfer.id,
           aggregateType: 'Transfer',
-          payload: transfer,
+          tenantId,
+          shopId,
+          payload: {
+            tenantId,
+            shopId,
+            amount,
+            fromMethodId: from.id,
+            toMethodId: to.id,
+            fromType: from.type,
+            toType: to.type,
+            fromName: from.name,
+            toName: to.name,
+            reference: payload.reference || null,
+          },
           timestamp: new Date().toISOString(),
           correlationId: traceId,
+          createdBy: userId,
         },
-        'transfer.created'
+        'treasury.transfer.created',
       );
 
-      return {
-        status: 'success',
-        traceId,
-        data: transfer
-      };
+      return { status: 'success', traceId, data: transfer };
     } catch (error: any) {
       return {
         status: 'error',
         traceId,
         message: error.message || 'Failed to create transfer',
-        errorCode: error.code || ErrorCode.INTERNAL_ERROR
+        errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }
   }

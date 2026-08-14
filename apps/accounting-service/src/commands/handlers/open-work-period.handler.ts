@@ -37,8 +37,10 @@ export class OpenWorkPeriodHandler extends BaseCommandHandler<OpenWorkPeriodComm
 
       const newWorkPeriod = await prisma.workPeriod.create({
         data: {
+          tenantId: context?.tenantId || null,
           shopId: targetShopId,
           openedBy: context.userId,
+          createdBy: context.userId,
           status: 'OPEN'
         }
       });

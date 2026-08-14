@@ -39,6 +39,16 @@ export type OperationalDeposit = $Result.DefaultSelection<Prisma.$OperationalDep
  */
 export type Reconciliation = $Result.DefaultSelection<Prisma.$ReconciliationPayload>
 /**
+ * Model TreasuryLoan
+ * 
+ */
+export type TreasuryLoan = $Result.DefaultSelection<Prisma.$TreasuryLoanPayload>
+/**
+ * Model TreasuryLoanRepayment
+ * 
+ */
+export type TreasuryLoanRepayment = $Result.DefaultSelection<Prisma.$TreasuryLoanRepaymentPayload>
+/**
  * Model AuditLog
  * 
  */
@@ -216,6 +226,26 @@ export class PrismaClient<
     * ```
     */
   get reconciliation(): Prisma.ReconciliationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.treasuryLoan`: Exposes CRUD operations for the **TreasuryLoan** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TreasuryLoans
+    * const treasuryLoans = await prisma.treasuryLoan.findMany()
+    * ```
+    */
+  get treasuryLoan(): Prisma.TreasuryLoanDelegate<ExtArgs>;
+
+  /**
+   * `prisma.treasuryLoanRepayment`: Exposes CRUD operations for the **TreasuryLoanRepayment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TreasuryLoanRepayments
+    * const treasuryLoanRepayments = await prisma.treasuryLoanRepayment.findMany()
+    * ```
+    */
+  get treasuryLoanRepayment(): Prisma.TreasuryLoanRepaymentDelegate<ExtArgs>;
 
   /**
    * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
@@ -672,6 +702,8 @@ export namespace Prisma {
     PhysicalConfirmation: 'PhysicalConfirmation',
     OperationalDeposit: 'OperationalDeposit',
     Reconciliation: 'Reconciliation',
+    TreasuryLoan: 'TreasuryLoan',
+    TreasuryLoanRepayment: 'TreasuryLoanRepayment',
     AuditLog: 'AuditLog'
   };
 
@@ -688,7 +720,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "paymentMethod" | "transfer" | "physicalConfirmation" | "operationalDeposit" | "reconciliation" | "auditLog"
+      modelProps: "paymentMethod" | "transfer" | "physicalConfirmation" | "operationalDeposit" | "reconciliation" | "treasuryLoan" | "treasuryLoanRepayment" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1042,6 +1074,146 @@ export namespace Prisma {
           }
         }
       }
+      TreasuryLoan: {
+        payload: Prisma.$TreasuryLoanPayload<ExtArgs>
+        fields: Prisma.TreasuryLoanFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TreasuryLoanFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TreasuryLoanFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload>
+          }
+          findFirst: {
+            args: Prisma.TreasuryLoanFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TreasuryLoanFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload>
+          }
+          findMany: {
+            args: Prisma.TreasuryLoanFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload>[]
+          }
+          create: {
+            args: Prisma.TreasuryLoanCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload>
+          }
+          createMany: {
+            args: Prisma.TreasuryLoanCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TreasuryLoanCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload>[]
+          }
+          delete: {
+            args: Prisma.TreasuryLoanDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload>
+          }
+          update: {
+            args: Prisma.TreasuryLoanUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload>
+          }
+          deleteMany: {
+            args: Prisma.TreasuryLoanDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TreasuryLoanUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TreasuryLoanUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanPayload>
+          }
+          aggregate: {
+            args: Prisma.TreasuryLoanAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTreasuryLoan>
+          }
+          groupBy: {
+            args: Prisma.TreasuryLoanGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TreasuryLoanGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TreasuryLoanCountArgs<ExtArgs>
+            result: $Utils.Optional<TreasuryLoanCountAggregateOutputType> | number
+          }
+        }
+      }
+      TreasuryLoanRepayment: {
+        payload: Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>
+        fields: Prisma.TreasuryLoanRepaymentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TreasuryLoanRepaymentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TreasuryLoanRepaymentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload>
+          }
+          findFirst: {
+            args: Prisma.TreasuryLoanRepaymentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TreasuryLoanRepaymentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload>
+          }
+          findMany: {
+            args: Prisma.TreasuryLoanRepaymentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload>[]
+          }
+          create: {
+            args: Prisma.TreasuryLoanRepaymentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload>
+          }
+          createMany: {
+            args: Prisma.TreasuryLoanRepaymentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TreasuryLoanRepaymentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload>[]
+          }
+          delete: {
+            args: Prisma.TreasuryLoanRepaymentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload>
+          }
+          update: {
+            args: Prisma.TreasuryLoanRepaymentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload>
+          }
+          deleteMany: {
+            args: Prisma.TreasuryLoanRepaymentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TreasuryLoanRepaymentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TreasuryLoanRepaymentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryLoanRepaymentPayload>
+          }
+          aggregate: {
+            args: Prisma.TreasuryLoanRepaymentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTreasuryLoanRepayment>
+          }
+          groupBy: {
+            args: Prisma.TreasuryLoanRepaymentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TreasuryLoanRepaymentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TreasuryLoanRepaymentCountArgs<ExtArgs>
+            result: $Utils.Optional<TreasuryLoanRepaymentCountAggregateOutputType> | number
+          }
+        }
+      }
       AuditLog: {
         payload: Prisma.$AuditLogPayload<ExtArgs>
         fields: Prisma.AuditLogFieldRefs
@@ -1278,6 +1450,8 @@ export namespace Prisma {
     confirmations: number
     deposits: number
     reconciliations: number
+    loans: number
+    loanRepayments: number
   }
 
   export type PaymentMethodCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1286,6 +1460,8 @@ export namespace Prisma {
     confirmations?: boolean | PaymentMethodCountOutputTypeCountConfirmationsArgs
     deposits?: boolean | PaymentMethodCountOutputTypeCountDepositsArgs
     reconciliations?: boolean | PaymentMethodCountOutputTypeCountReconciliationsArgs
+    loans?: boolean | PaymentMethodCountOutputTypeCountLoansArgs
+    loanRepayments?: boolean | PaymentMethodCountOutputTypeCountLoanRepaymentsArgs
   }
 
   // Custom InputTypes
@@ -1332,6 +1508,51 @@ export namespace Prisma {
    */
   export type PaymentMethodCountOutputTypeCountReconciliationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ReconciliationWhereInput
+  }
+
+  /**
+   * PaymentMethodCountOutputType without action
+   */
+  export type PaymentMethodCountOutputTypeCountLoansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreasuryLoanWhereInput
+  }
+
+  /**
+   * PaymentMethodCountOutputType without action
+   */
+  export type PaymentMethodCountOutputTypeCountLoanRepaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreasuryLoanRepaymentWhereInput
+  }
+
+
+  /**
+   * Count Type TreasuryLoanCountOutputType
+   */
+
+  export type TreasuryLoanCountOutputType = {
+    repayments: number
+  }
+
+  export type TreasuryLoanCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    repayments?: boolean | TreasuryLoanCountOutputTypeCountRepaymentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TreasuryLoanCountOutputType without action
+   */
+  export type TreasuryLoanCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanCountOutputType
+     */
+    select?: TreasuryLoanCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TreasuryLoanCountOutputType without action
+   */
+  export type TreasuryLoanCountOutputTypeCountRepaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreasuryLoanRepaymentWhereInput
   }
 
 
@@ -1598,6 +1819,8 @@ export namespace Prisma {
     confirmations?: boolean | PaymentMethod$confirmationsArgs<ExtArgs>
     deposits?: boolean | PaymentMethod$depositsArgs<ExtArgs>
     reconciliations?: boolean | PaymentMethod$reconciliationsArgs<ExtArgs>
+    loans?: boolean | PaymentMethod$loansArgs<ExtArgs>
+    loanRepayments?: boolean | PaymentMethod$loanRepaymentsArgs<ExtArgs>
     _count?: boolean | PaymentMethodCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["paymentMethod"]>
 
@@ -1637,6 +1860,8 @@ export namespace Prisma {
     confirmations?: boolean | PaymentMethod$confirmationsArgs<ExtArgs>
     deposits?: boolean | PaymentMethod$depositsArgs<ExtArgs>
     reconciliations?: boolean | PaymentMethod$reconciliationsArgs<ExtArgs>
+    loans?: boolean | PaymentMethod$loansArgs<ExtArgs>
+    loanRepayments?: boolean | PaymentMethod$loanRepaymentsArgs<ExtArgs>
     _count?: boolean | PaymentMethodCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PaymentMethodIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1649,6 +1874,8 @@ export namespace Prisma {
       confirmations: Prisma.$PhysicalConfirmationPayload<ExtArgs>[]
       deposits: Prisma.$OperationalDepositPayload<ExtArgs>[]
       reconciliations: Prisma.$ReconciliationPayload<ExtArgs>[]
+      loans: Prisma.$TreasuryLoanPayload<ExtArgs>[]
+      loanRepayments: Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2032,6 +2259,8 @@ export namespace Prisma {
     confirmations<T extends PaymentMethod$confirmationsArgs<ExtArgs> = {}>(args?: Subset<T, PaymentMethod$confirmationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PhysicalConfirmationPayload<ExtArgs>, T, "findMany"> | Null>
     deposits<T extends PaymentMethod$depositsArgs<ExtArgs> = {}>(args?: Subset<T, PaymentMethod$depositsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OperationalDepositPayload<ExtArgs>, T, "findMany"> | Null>
     reconciliations<T extends PaymentMethod$reconciliationsArgs<ExtArgs> = {}>(args?: Subset<T, PaymentMethod$reconciliationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReconciliationPayload<ExtArgs>, T, "findMany"> | Null>
+    loans<T extends PaymentMethod$loansArgs<ExtArgs> = {}>(args?: Subset<T, PaymentMethod$loansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "findMany"> | Null>
+    loanRepayments<T extends PaymentMethod$loanRepaymentsArgs<ExtArgs> = {}>(args?: Subset<T, PaymentMethod$loanRepaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2484,6 +2713,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ReconciliationScalarFieldEnum | ReconciliationScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentMethod.loans
+   */
+  export type PaymentMethod$loansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    where?: TreasuryLoanWhereInput
+    orderBy?: TreasuryLoanOrderByWithRelationInput | TreasuryLoanOrderByWithRelationInput[]
+    cursor?: TreasuryLoanWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TreasuryLoanScalarFieldEnum | TreasuryLoanScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentMethod.loanRepayments
+   */
+  export type PaymentMethod$loanRepaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    where?: TreasuryLoanRepaymentWhereInput
+    orderBy?: TreasuryLoanRepaymentOrderByWithRelationInput | TreasuryLoanRepaymentOrderByWithRelationInput[]
+    cursor?: TreasuryLoanRepaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TreasuryLoanRepaymentScalarFieldEnum | TreasuryLoanRepaymentScalarFieldEnum[]
   }
 
   /**
@@ -6600,6 +6869,2120 @@ export namespace Prisma {
 
 
   /**
+   * Model TreasuryLoan
+   */
+
+  export type AggregateTreasuryLoan = {
+    _count: TreasuryLoanCountAggregateOutputType | null
+    _avg: TreasuryLoanAvgAggregateOutputType | null
+    _sum: TreasuryLoanSumAggregateOutputType | null
+    _min: TreasuryLoanMinAggregateOutputType | null
+    _max: TreasuryLoanMaxAggregateOutputType | null
+  }
+
+  export type TreasuryLoanAvgAggregateOutputType = {
+    principal: number | null
+    outstanding: number | null
+  }
+
+  export type TreasuryLoanSumAggregateOutputType = {
+    principal: number | null
+    outstanding: number | null
+  }
+
+  export type TreasuryLoanMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    direction: string | null
+    counterparty: string | null
+    principal: number | null
+    outstanding: number | null
+    methodId: string | null
+    status: string | null
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TreasuryLoanMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    direction: string | null
+    counterparty: string | null
+    principal: number | null
+    outstanding: number | null
+    methodId: string | null
+    status: string | null
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TreasuryLoanCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    direction: number
+    counterparty: number
+    principal: number
+    outstanding: number
+    methodId: number
+    status: number
+    notes: number
+    createdBy: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TreasuryLoanAvgAggregateInputType = {
+    principal?: true
+    outstanding?: true
+  }
+
+  export type TreasuryLoanSumAggregateInputType = {
+    principal?: true
+    outstanding?: true
+  }
+
+  export type TreasuryLoanMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    direction?: true
+    counterparty?: true
+    principal?: true
+    outstanding?: true
+    methodId?: true
+    status?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TreasuryLoanMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    direction?: true
+    counterparty?: true
+    principal?: true
+    outstanding?: true
+    methodId?: true
+    status?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TreasuryLoanCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    direction?: true
+    counterparty?: true
+    principal?: true
+    outstanding?: true
+    methodId?: true
+    status?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TreasuryLoanAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TreasuryLoan to aggregate.
+     */
+    where?: TreasuryLoanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryLoans to fetch.
+     */
+    orderBy?: TreasuryLoanOrderByWithRelationInput | TreasuryLoanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TreasuryLoanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryLoans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryLoans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TreasuryLoans
+    **/
+    _count?: true | TreasuryLoanCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TreasuryLoanAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TreasuryLoanSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TreasuryLoanMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TreasuryLoanMaxAggregateInputType
+  }
+
+  export type GetTreasuryLoanAggregateType<T extends TreasuryLoanAggregateArgs> = {
+        [P in keyof T & keyof AggregateTreasuryLoan]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTreasuryLoan[P]>
+      : GetScalarType<T[P], AggregateTreasuryLoan[P]>
+  }
+
+
+
+
+  export type TreasuryLoanGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreasuryLoanWhereInput
+    orderBy?: TreasuryLoanOrderByWithAggregationInput | TreasuryLoanOrderByWithAggregationInput[]
+    by: TreasuryLoanScalarFieldEnum[] | TreasuryLoanScalarFieldEnum
+    having?: TreasuryLoanScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TreasuryLoanCountAggregateInputType | true
+    _avg?: TreasuryLoanAvgAggregateInputType
+    _sum?: TreasuryLoanSumAggregateInputType
+    _min?: TreasuryLoanMinAggregateInputType
+    _max?: TreasuryLoanMaxAggregateInputType
+  }
+
+  export type TreasuryLoanGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    direction: string
+    counterparty: string
+    principal: number
+    outstanding: number
+    methodId: string
+    status: string
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: TreasuryLoanCountAggregateOutputType | null
+    _avg: TreasuryLoanAvgAggregateOutputType | null
+    _sum: TreasuryLoanSumAggregateOutputType | null
+    _min: TreasuryLoanMinAggregateOutputType | null
+    _max: TreasuryLoanMaxAggregateOutputType | null
+  }
+
+  type GetTreasuryLoanGroupByPayload<T extends TreasuryLoanGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TreasuryLoanGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TreasuryLoanGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TreasuryLoanGroupByOutputType[P]>
+            : GetScalarType<T[P], TreasuryLoanGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TreasuryLoanSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    direction?: boolean
+    counterparty?: boolean
+    principal?: boolean
+    outstanding?: boolean
+    methodId?: boolean
+    status?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    method?: boolean | PaymentMethodDefaultArgs<ExtArgs>
+    repayments?: boolean | TreasuryLoan$repaymentsArgs<ExtArgs>
+    _count?: boolean | TreasuryLoanCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["treasuryLoan"]>
+
+  export type TreasuryLoanSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    direction?: boolean
+    counterparty?: boolean
+    principal?: boolean
+    outstanding?: boolean
+    methodId?: boolean
+    status?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    method?: boolean | PaymentMethodDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["treasuryLoan"]>
+
+  export type TreasuryLoanSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    direction?: boolean
+    counterparty?: boolean
+    principal?: boolean
+    outstanding?: boolean
+    methodId?: boolean
+    status?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TreasuryLoanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    method?: boolean | PaymentMethodDefaultArgs<ExtArgs>
+    repayments?: boolean | TreasuryLoan$repaymentsArgs<ExtArgs>
+    _count?: boolean | TreasuryLoanCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type TreasuryLoanIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    method?: boolean | PaymentMethodDefaultArgs<ExtArgs>
+  }
+
+  export type $TreasuryLoanPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TreasuryLoan"
+    objects: {
+      method: Prisma.$PaymentMethodPayload<ExtArgs>
+      repayments: Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      direction: string
+      counterparty: string
+      principal: number
+      outstanding: number
+      methodId: string
+      status: string
+      notes: string | null
+      createdBy: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["treasuryLoan"]>
+    composites: {}
+  }
+
+  type TreasuryLoanGetPayload<S extends boolean | null | undefined | TreasuryLoanDefaultArgs> = $Result.GetResult<Prisma.$TreasuryLoanPayload, S>
+
+  type TreasuryLoanCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TreasuryLoanFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TreasuryLoanCountAggregateInputType | true
+    }
+
+  export interface TreasuryLoanDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TreasuryLoan'], meta: { name: 'TreasuryLoan' } }
+    /**
+     * Find zero or one TreasuryLoan that matches the filter.
+     * @param {TreasuryLoanFindUniqueArgs} args - Arguments to find a TreasuryLoan
+     * @example
+     * // Get one TreasuryLoan
+     * const treasuryLoan = await prisma.treasuryLoan.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TreasuryLoanFindUniqueArgs>(args: SelectSubset<T, TreasuryLoanFindUniqueArgs<ExtArgs>>): Prisma__TreasuryLoanClient<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TreasuryLoan that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TreasuryLoanFindUniqueOrThrowArgs} args - Arguments to find a TreasuryLoan
+     * @example
+     * // Get one TreasuryLoan
+     * const treasuryLoan = await prisma.treasuryLoan.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TreasuryLoanFindUniqueOrThrowArgs>(args: SelectSubset<T, TreasuryLoanFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TreasuryLoanClient<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TreasuryLoan that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanFindFirstArgs} args - Arguments to find a TreasuryLoan
+     * @example
+     * // Get one TreasuryLoan
+     * const treasuryLoan = await prisma.treasuryLoan.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TreasuryLoanFindFirstArgs>(args?: SelectSubset<T, TreasuryLoanFindFirstArgs<ExtArgs>>): Prisma__TreasuryLoanClient<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TreasuryLoan that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanFindFirstOrThrowArgs} args - Arguments to find a TreasuryLoan
+     * @example
+     * // Get one TreasuryLoan
+     * const treasuryLoan = await prisma.treasuryLoan.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TreasuryLoanFindFirstOrThrowArgs>(args?: SelectSubset<T, TreasuryLoanFindFirstOrThrowArgs<ExtArgs>>): Prisma__TreasuryLoanClient<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TreasuryLoans that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TreasuryLoans
+     * const treasuryLoans = await prisma.treasuryLoan.findMany()
+     * 
+     * // Get first 10 TreasuryLoans
+     * const treasuryLoans = await prisma.treasuryLoan.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const treasuryLoanWithIdOnly = await prisma.treasuryLoan.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TreasuryLoanFindManyArgs>(args?: SelectSubset<T, TreasuryLoanFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TreasuryLoan.
+     * @param {TreasuryLoanCreateArgs} args - Arguments to create a TreasuryLoan.
+     * @example
+     * // Create one TreasuryLoan
+     * const TreasuryLoan = await prisma.treasuryLoan.create({
+     *   data: {
+     *     // ... data to create a TreasuryLoan
+     *   }
+     * })
+     * 
+     */
+    create<T extends TreasuryLoanCreateArgs>(args: SelectSubset<T, TreasuryLoanCreateArgs<ExtArgs>>): Prisma__TreasuryLoanClient<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TreasuryLoans.
+     * @param {TreasuryLoanCreateManyArgs} args - Arguments to create many TreasuryLoans.
+     * @example
+     * // Create many TreasuryLoans
+     * const treasuryLoan = await prisma.treasuryLoan.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TreasuryLoanCreateManyArgs>(args?: SelectSubset<T, TreasuryLoanCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TreasuryLoans and returns the data saved in the database.
+     * @param {TreasuryLoanCreateManyAndReturnArgs} args - Arguments to create many TreasuryLoans.
+     * @example
+     * // Create many TreasuryLoans
+     * const treasuryLoan = await prisma.treasuryLoan.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TreasuryLoans and only return the `id`
+     * const treasuryLoanWithIdOnly = await prisma.treasuryLoan.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TreasuryLoanCreateManyAndReturnArgs>(args?: SelectSubset<T, TreasuryLoanCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a TreasuryLoan.
+     * @param {TreasuryLoanDeleteArgs} args - Arguments to delete one TreasuryLoan.
+     * @example
+     * // Delete one TreasuryLoan
+     * const TreasuryLoan = await prisma.treasuryLoan.delete({
+     *   where: {
+     *     // ... filter to delete one TreasuryLoan
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TreasuryLoanDeleteArgs>(args: SelectSubset<T, TreasuryLoanDeleteArgs<ExtArgs>>): Prisma__TreasuryLoanClient<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TreasuryLoan.
+     * @param {TreasuryLoanUpdateArgs} args - Arguments to update one TreasuryLoan.
+     * @example
+     * // Update one TreasuryLoan
+     * const treasuryLoan = await prisma.treasuryLoan.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TreasuryLoanUpdateArgs>(args: SelectSubset<T, TreasuryLoanUpdateArgs<ExtArgs>>): Prisma__TreasuryLoanClient<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TreasuryLoans.
+     * @param {TreasuryLoanDeleteManyArgs} args - Arguments to filter TreasuryLoans to delete.
+     * @example
+     * // Delete a few TreasuryLoans
+     * const { count } = await prisma.treasuryLoan.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TreasuryLoanDeleteManyArgs>(args?: SelectSubset<T, TreasuryLoanDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TreasuryLoans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TreasuryLoans
+     * const treasuryLoan = await prisma.treasuryLoan.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TreasuryLoanUpdateManyArgs>(args: SelectSubset<T, TreasuryLoanUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TreasuryLoan.
+     * @param {TreasuryLoanUpsertArgs} args - Arguments to update or create a TreasuryLoan.
+     * @example
+     * // Update or create a TreasuryLoan
+     * const treasuryLoan = await prisma.treasuryLoan.upsert({
+     *   create: {
+     *     // ... data to create a TreasuryLoan
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TreasuryLoan we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TreasuryLoanUpsertArgs>(args: SelectSubset<T, TreasuryLoanUpsertArgs<ExtArgs>>): Prisma__TreasuryLoanClient<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TreasuryLoans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanCountArgs} args - Arguments to filter TreasuryLoans to count.
+     * @example
+     * // Count the number of TreasuryLoans
+     * const count = await prisma.treasuryLoan.count({
+     *   where: {
+     *     // ... the filter for the TreasuryLoans we want to count
+     *   }
+     * })
+    **/
+    count<T extends TreasuryLoanCountArgs>(
+      args?: Subset<T, TreasuryLoanCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TreasuryLoanCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TreasuryLoan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TreasuryLoanAggregateArgs>(args: Subset<T, TreasuryLoanAggregateArgs>): Prisma.PrismaPromise<GetTreasuryLoanAggregateType<T>>
+
+    /**
+     * Group by TreasuryLoan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TreasuryLoanGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TreasuryLoanGroupByArgs['orderBy'] }
+        : { orderBy?: TreasuryLoanGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TreasuryLoanGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTreasuryLoanGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TreasuryLoan model
+   */
+  readonly fields: TreasuryLoanFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TreasuryLoan.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TreasuryLoanClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    method<T extends PaymentMethodDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PaymentMethodDefaultArgs<ExtArgs>>): Prisma__PaymentMethodClient<$Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    repayments<T extends TreasuryLoan$repaymentsArgs<ExtArgs> = {}>(args?: Subset<T, TreasuryLoan$repaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TreasuryLoan model
+   */ 
+  interface TreasuryLoanFieldRefs {
+    readonly id: FieldRef<"TreasuryLoan", 'String'>
+    readonly tenantId: FieldRef<"TreasuryLoan", 'String'>
+    readonly shopId: FieldRef<"TreasuryLoan", 'String'>
+    readonly direction: FieldRef<"TreasuryLoan", 'String'>
+    readonly counterparty: FieldRef<"TreasuryLoan", 'String'>
+    readonly principal: FieldRef<"TreasuryLoan", 'Float'>
+    readonly outstanding: FieldRef<"TreasuryLoan", 'Float'>
+    readonly methodId: FieldRef<"TreasuryLoan", 'String'>
+    readonly status: FieldRef<"TreasuryLoan", 'String'>
+    readonly notes: FieldRef<"TreasuryLoan", 'String'>
+    readonly createdBy: FieldRef<"TreasuryLoan", 'String'>
+    readonly createdAt: FieldRef<"TreasuryLoan", 'DateTime'>
+    readonly updatedAt: FieldRef<"TreasuryLoan", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TreasuryLoan findUnique
+   */
+  export type TreasuryLoanFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoan to fetch.
+     */
+    where: TreasuryLoanWhereUniqueInput
+  }
+
+  /**
+   * TreasuryLoan findUniqueOrThrow
+   */
+  export type TreasuryLoanFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoan to fetch.
+     */
+    where: TreasuryLoanWhereUniqueInput
+  }
+
+  /**
+   * TreasuryLoan findFirst
+   */
+  export type TreasuryLoanFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoan to fetch.
+     */
+    where?: TreasuryLoanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryLoans to fetch.
+     */
+    orderBy?: TreasuryLoanOrderByWithRelationInput | TreasuryLoanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TreasuryLoans.
+     */
+    cursor?: TreasuryLoanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryLoans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryLoans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TreasuryLoans.
+     */
+    distinct?: TreasuryLoanScalarFieldEnum | TreasuryLoanScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryLoan findFirstOrThrow
+   */
+  export type TreasuryLoanFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoan to fetch.
+     */
+    where?: TreasuryLoanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryLoans to fetch.
+     */
+    orderBy?: TreasuryLoanOrderByWithRelationInput | TreasuryLoanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TreasuryLoans.
+     */
+    cursor?: TreasuryLoanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryLoans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryLoans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TreasuryLoans.
+     */
+    distinct?: TreasuryLoanScalarFieldEnum | TreasuryLoanScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryLoan findMany
+   */
+  export type TreasuryLoanFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoans to fetch.
+     */
+    where?: TreasuryLoanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryLoans to fetch.
+     */
+    orderBy?: TreasuryLoanOrderByWithRelationInput | TreasuryLoanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TreasuryLoans.
+     */
+    cursor?: TreasuryLoanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryLoans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryLoans.
+     */
+    skip?: number
+    distinct?: TreasuryLoanScalarFieldEnum | TreasuryLoanScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryLoan create
+   */
+  export type TreasuryLoanCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TreasuryLoan.
+     */
+    data: XOR<TreasuryLoanCreateInput, TreasuryLoanUncheckedCreateInput>
+  }
+
+  /**
+   * TreasuryLoan createMany
+   */
+  export type TreasuryLoanCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TreasuryLoans.
+     */
+    data: TreasuryLoanCreateManyInput | TreasuryLoanCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TreasuryLoan createManyAndReturn
+   */
+  export type TreasuryLoanCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many TreasuryLoans.
+     */
+    data: TreasuryLoanCreateManyInput | TreasuryLoanCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TreasuryLoan update
+   */
+  export type TreasuryLoanUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TreasuryLoan.
+     */
+    data: XOR<TreasuryLoanUpdateInput, TreasuryLoanUncheckedUpdateInput>
+    /**
+     * Choose, which TreasuryLoan to update.
+     */
+    where: TreasuryLoanWhereUniqueInput
+  }
+
+  /**
+   * TreasuryLoan updateMany
+   */
+  export type TreasuryLoanUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TreasuryLoans.
+     */
+    data: XOR<TreasuryLoanUpdateManyMutationInput, TreasuryLoanUncheckedUpdateManyInput>
+    /**
+     * Filter which TreasuryLoans to update
+     */
+    where?: TreasuryLoanWhereInput
+  }
+
+  /**
+   * TreasuryLoan upsert
+   */
+  export type TreasuryLoanUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TreasuryLoan to update in case it exists.
+     */
+    where: TreasuryLoanWhereUniqueInput
+    /**
+     * In case the TreasuryLoan found by the `where` argument doesn't exist, create a new TreasuryLoan with this data.
+     */
+    create: XOR<TreasuryLoanCreateInput, TreasuryLoanUncheckedCreateInput>
+    /**
+     * In case the TreasuryLoan was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TreasuryLoanUpdateInput, TreasuryLoanUncheckedUpdateInput>
+  }
+
+  /**
+   * TreasuryLoan delete
+   */
+  export type TreasuryLoanDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+    /**
+     * Filter which TreasuryLoan to delete.
+     */
+    where: TreasuryLoanWhereUniqueInput
+  }
+
+  /**
+   * TreasuryLoan deleteMany
+   */
+  export type TreasuryLoanDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TreasuryLoans to delete
+     */
+    where?: TreasuryLoanWhereInput
+  }
+
+  /**
+   * TreasuryLoan.repayments
+   */
+  export type TreasuryLoan$repaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    where?: TreasuryLoanRepaymentWhereInput
+    orderBy?: TreasuryLoanRepaymentOrderByWithRelationInput | TreasuryLoanRepaymentOrderByWithRelationInput[]
+    cursor?: TreasuryLoanRepaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TreasuryLoanRepaymentScalarFieldEnum | TreasuryLoanRepaymentScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryLoan without action
+   */
+  export type TreasuryLoanDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoan
+     */
+    select?: TreasuryLoanSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TreasuryLoanRepayment
+   */
+
+  export type AggregateTreasuryLoanRepayment = {
+    _count: TreasuryLoanRepaymentCountAggregateOutputType | null
+    _avg: TreasuryLoanRepaymentAvgAggregateOutputType | null
+    _sum: TreasuryLoanRepaymentSumAggregateOutputType | null
+    _min: TreasuryLoanRepaymentMinAggregateOutputType | null
+    _max: TreasuryLoanRepaymentMaxAggregateOutputType | null
+  }
+
+  export type TreasuryLoanRepaymentAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type TreasuryLoanRepaymentSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type TreasuryLoanRepaymentMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    loanId: string | null
+    methodId: string | null
+    amount: number | null
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type TreasuryLoanRepaymentMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    loanId: string | null
+    methodId: string | null
+    amount: number | null
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type TreasuryLoanRepaymentCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    loanId: number
+    methodId: number
+    amount: number
+    notes: number
+    createdBy: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type TreasuryLoanRepaymentAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type TreasuryLoanRepaymentSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type TreasuryLoanRepaymentMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    loanId?: true
+    methodId?: true
+    amount?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type TreasuryLoanRepaymentMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    loanId?: true
+    methodId?: true
+    amount?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type TreasuryLoanRepaymentCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    loanId?: true
+    methodId?: true
+    amount?: true
+    notes?: true
+    createdBy?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type TreasuryLoanRepaymentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TreasuryLoanRepayment to aggregate.
+     */
+    where?: TreasuryLoanRepaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryLoanRepayments to fetch.
+     */
+    orderBy?: TreasuryLoanRepaymentOrderByWithRelationInput | TreasuryLoanRepaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TreasuryLoanRepaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryLoanRepayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryLoanRepayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TreasuryLoanRepayments
+    **/
+    _count?: true | TreasuryLoanRepaymentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TreasuryLoanRepaymentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TreasuryLoanRepaymentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TreasuryLoanRepaymentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TreasuryLoanRepaymentMaxAggregateInputType
+  }
+
+  export type GetTreasuryLoanRepaymentAggregateType<T extends TreasuryLoanRepaymentAggregateArgs> = {
+        [P in keyof T & keyof AggregateTreasuryLoanRepayment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTreasuryLoanRepayment[P]>
+      : GetScalarType<T[P], AggregateTreasuryLoanRepayment[P]>
+  }
+
+
+
+
+  export type TreasuryLoanRepaymentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreasuryLoanRepaymentWhereInput
+    orderBy?: TreasuryLoanRepaymentOrderByWithAggregationInput | TreasuryLoanRepaymentOrderByWithAggregationInput[]
+    by: TreasuryLoanRepaymentScalarFieldEnum[] | TreasuryLoanRepaymentScalarFieldEnum
+    having?: TreasuryLoanRepaymentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TreasuryLoanRepaymentCountAggregateInputType | true
+    _avg?: TreasuryLoanRepaymentAvgAggregateInputType
+    _sum?: TreasuryLoanRepaymentSumAggregateInputType
+    _min?: TreasuryLoanRepaymentMinAggregateInputType
+    _max?: TreasuryLoanRepaymentMaxAggregateInputType
+  }
+
+  export type TreasuryLoanRepaymentGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    loanId: string
+    methodId: string
+    amount: number
+    notes: string | null
+    createdBy: string | null
+    createdAt: Date
+    _count: TreasuryLoanRepaymentCountAggregateOutputType | null
+    _avg: TreasuryLoanRepaymentAvgAggregateOutputType | null
+    _sum: TreasuryLoanRepaymentSumAggregateOutputType | null
+    _min: TreasuryLoanRepaymentMinAggregateOutputType | null
+    _max: TreasuryLoanRepaymentMaxAggregateOutputType | null
+  }
+
+  type GetTreasuryLoanRepaymentGroupByPayload<T extends TreasuryLoanRepaymentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TreasuryLoanRepaymentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TreasuryLoanRepaymentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TreasuryLoanRepaymentGroupByOutputType[P]>
+            : GetScalarType<T[P], TreasuryLoanRepaymentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TreasuryLoanRepaymentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    loanId?: boolean
+    methodId?: boolean
+    amount?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    loan?: boolean | TreasuryLoanDefaultArgs<ExtArgs>
+    method?: boolean | PaymentMethodDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["treasuryLoanRepayment"]>
+
+  export type TreasuryLoanRepaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    loanId?: boolean
+    methodId?: boolean
+    amount?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    loan?: boolean | TreasuryLoanDefaultArgs<ExtArgs>
+    method?: boolean | PaymentMethodDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["treasuryLoanRepayment"]>
+
+  export type TreasuryLoanRepaymentSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    loanId?: boolean
+    methodId?: boolean
+    amount?: boolean
+    notes?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+  }
+
+  export type TreasuryLoanRepaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    loan?: boolean | TreasuryLoanDefaultArgs<ExtArgs>
+    method?: boolean | PaymentMethodDefaultArgs<ExtArgs>
+  }
+  export type TreasuryLoanRepaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    loan?: boolean | TreasuryLoanDefaultArgs<ExtArgs>
+    method?: boolean | PaymentMethodDefaultArgs<ExtArgs>
+  }
+
+  export type $TreasuryLoanRepaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TreasuryLoanRepayment"
+    objects: {
+      loan: Prisma.$TreasuryLoanPayload<ExtArgs>
+      method: Prisma.$PaymentMethodPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      loanId: string
+      methodId: string
+      amount: number
+      notes: string | null
+      createdBy: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["treasuryLoanRepayment"]>
+    composites: {}
+  }
+
+  type TreasuryLoanRepaymentGetPayload<S extends boolean | null | undefined | TreasuryLoanRepaymentDefaultArgs> = $Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload, S>
+
+  type TreasuryLoanRepaymentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TreasuryLoanRepaymentFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TreasuryLoanRepaymentCountAggregateInputType | true
+    }
+
+  export interface TreasuryLoanRepaymentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TreasuryLoanRepayment'], meta: { name: 'TreasuryLoanRepayment' } }
+    /**
+     * Find zero or one TreasuryLoanRepayment that matches the filter.
+     * @param {TreasuryLoanRepaymentFindUniqueArgs} args - Arguments to find a TreasuryLoanRepayment
+     * @example
+     * // Get one TreasuryLoanRepayment
+     * const treasuryLoanRepayment = await prisma.treasuryLoanRepayment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TreasuryLoanRepaymentFindUniqueArgs>(args: SelectSubset<T, TreasuryLoanRepaymentFindUniqueArgs<ExtArgs>>): Prisma__TreasuryLoanRepaymentClient<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TreasuryLoanRepayment that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TreasuryLoanRepaymentFindUniqueOrThrowArgs} args - Arguments to find a TreasuryLoanRepayment
+     * @example
+     * // Get one TreasuryLoanRepayment
+     * const treasuryLoanRepayment = await prisma.treasuryLoanRepayment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TreasuryLoanRepaymentFindUniqueOrThrowArgs>(args: SelectSubset<T, TreasuryLoanRepaymentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TreasuryLoanRepaymentClient<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TreasuryLoanRepayment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanRepaymentFindFirstArgs} args - Arguments to find a TreasuryLoanRepayment
+     * @example
+     * // Get one TreasuryLoanRepayment
+     * const treasuryLoanRepayment = await prisma.treasuryLoanRepayment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TreasuryLoanRepaymentFindFirstArgs>(args?: SelectSubset<T, TreasuryLoanRepaymentFindFirstArgs<ExtArgs>>): Prisma__TreasuryLoanRepaymentClient<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TreasuryLoanRepayment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanRepaymentFindFirstOrThrowArgs} args - Arguments to find a TreasuryLoanRepayment
+     * @example
+     * // Get one TreasuryLoanRepayment
+     * const treasuryLoanRepayment = await prisma.treasuryLoanRepayment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TreasuryLoanRepaymentFindFirstOrThrowArgs>(args?: SelectSubset<T, TreasuryLoanRepaymentFindFirstOrThrowArgs<ExtArgs>>): Prisma__TreasuryLoanRepaymentClient<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TreasuryLoanRepayments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanRepaymentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TreasuryLoanRepayments
+     * const treasuryLoanRepayments = await prisma.treasuryLoanRepayment.findMany()
+     * 
+     * // Get first 10 TreasuryLoanRepayments
+     * const treasuryLoanRepayments = await prisma.treasuryLoanRepayment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const treasuryLoanRepaymentWithIdOnly = await prisma.treasuryLoanRepayment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TreasuryLoanRepaymentFindManyArgs>(args?: SelectSubset<T, TreasuryLoanRepaymentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TreasuryLoanRepayment.
+     * @param {TreasuryLoanRepaymentCreateArgs} args - Arguments to create a TreasuryLoanRepayment.
+     * @example
+     * // Create one TreasuryLoanRepayment
+     * const TreasuryLoanRepayment = await prisma.treasuryLoanRepayment.create({
+     *   data: {
+     *     // ... data to create a TreasuryLoanRepayment
+     *   }
+     * })
+     * 
+     */
+    create<T extends TreasuryLoanRepaymentCreateArgs>(args: SelectSubset<T, TreasuryLoanRepaymentCreateArgs<ExtArgs>>): Prisma__TreasuryLoanRepaymentClient<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TreasuryLoanRepayments.
+     * @param {TreasuryLoanRepaymentCreateManyArgs} args - Arguments to create many TreasuryLoanRepayments.
+     * @example
+     * // Create many TreasuryLoanRepayments
+     * const treasuryLoanRepayment = await prisma.treasuryLoanRepayment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TreasuryLoanRepaymentCreateManyArgs>(args?: SelectSubset<T, TreasuryLoanRepaymentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TreasuryLoanRepayments and returns the data saved in the database.
+     * @param {TreasuryLoanRepaymentCreateManyAndReturnArgs} args - Arguments to create many TreasuryLoanRepayments.
+     * @example
+     * // Create many TreasuryLoanRepayments
+     * const treasuryLoanRepayment = await prisma.treasuryLoanRepayment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TreasuryLoanRepayments and only return the `id`
+     * const treasuryLoanRepaymentWithIdOnly = await prisma.treasuryLoanRepayment.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TreasuryLoanRepaymentCreateManyAndReturnArgs>(args?: SelectSubset<T, TreasuryLoanRepaymentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a TreasuryLoanRepayment.
+     * @param {TreasuryLoanRepaymentDeleteArgs} args - Arguments to delete one TreasuryLoanRepayment.
+     * @example
+     * // Delete one TreasuryLoanRepayment
+     * const TreasuryLoanRepayment = await prisma.treasuryLoanRepayment.delete({
+     *   where: {
+     *     // ... filter to delete one TreasuryLoanRepayment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TreasuryLoanRepaymentDeleteArgs>(args: SelectSubset<T, TreasuryLoanRepaymentDeleteArgs<ExtArgs>>): Prisma__TreasuryLoanRepaymentClient<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TreasuryLoanRepayment.
+     * @param {TreasuryLoanRepaymentUpdateArgs} args - Arguments to update one TreasuryLoanRepayment.
+     * @example
+     * // Update one TreasuryLoanRepayment
+     * const treasuryLoanRepayment = await prisma.treasuryLoanRepayment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TreasuryLoanRepaymentUpdateArgs>(args: SelectSubset<T, TreasuryLoanRepaymentUpdateArgs<ExtArgs>>): Prisma__TreasuryLoanRepaymentClient<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TreasuryLoanRepayments.
+     * @param {TreasuryLoanRepaymentDeleteManyArgs} args - Arguments to filter TreasuryLoanRepayments to delete.
+     * @example
+     * // Delete a few TreasuryLoanRepayments
+     * const { count } = await prisma.treasuryLoanRepayment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TreasuryLoanRepaymentDeleteManyArgs>(args?: SelectSubset<T, TreasuryLoanRepaymentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TreasuryLoanRepayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanRepaymentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TreasuryLoanRepayments
+     * const treasuryLoanRepayment = await prisma.treasuryLoanRepayment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TreasuryLoanRepaymentUpdateManyArgs>(args: SelectSubset<T, TreasuryLoanRepaymentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TreasuryLoanRepayment.
+     * @param {TreasuryLoanRepaymentUpsertArgs} args - Arguments to update or create a TreasuryLoanRepayment.
+     * @example
+     * // Update or create a TreasuryLoanRepayment
+     * const treasuryLoanRepayment = await prisma.treasuryLoanRepayment.upsert({
+     *   create: {
+     *     // ... data to create a TreasuryLoanRepayment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TreasuryLoanRepayment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TreasuryLoanRepaymentUpsertArgs>(args: SelectSubset<T, TreasuryLoanRepaymentUpsertArgs<ExtArgs>>): Prisma__TreasuryLoanRepaymentClient<$Result.GetResult<Prisma.$TreasuryLoanRepaymentPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TreasuryLoanRepayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanRepaymentCountArgs} args - Arguments to filter TreasuryLoanRepayments to count.
+     * @example
+     * // Count the number of TreasuryLoanRepayments
+     * const count = await prisma.treasuryLoanRepayment.count({
+     *   where: {
+     *     // ... the filter for the TreasuryLoanRepayments we want to count
+     *   }
+     * })
+    **/
+    count<T extends TreasuryLoanRepaymentCountArgs>(
+      args?: Subset<T, TreasuryLoanRepaymentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TreasuryLoanRepaymentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TreasuryLoanRepayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanRepaymentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TreasuryLoanRepaymentAggregateArgs>(args: Subset<T, TreasuryLoanRepaymentAggregateArgs>): Prisma.PrismaPromise<GetTreasuryLoanRepaymentAggregateType<T>>
+
+    /**
+     * Group by TreasuryLoanRepayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryLoanRepaymentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TreasuryLoanRepaymentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TreasuryLoanRepaymentGroupByArgs['orderBy'] }
+        : { orderBy?: TreasuryLoanRepaymentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TreasuryLoanRepaymentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTreasuryLoanRepaymentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TreasuryLoanRepayment model
+   */
+  readonly fields: TreasuryLoanRepaymentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TreasuryLoanRepayment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TreasuryLoanRepaymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    loan<T extends TreasuryLoanDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TreasuryLoanDefaultArgs<ExtArgs>>): Prisma__TreasuryLoanClient<$Result.GetResult<Prisma.$TreasuryLoanPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    method<T extends PaymentMethodDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PaymentMethodDefaultArgs<ExtArgs>>): Prisma__PaymentMethodClient<$Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TreasuryLoanRepayment model
+   */ 
+  interface TreasuryLoanRepaymentFieldRefs {
+    readonly id: FieldRef<"TreasuryLoanRepayment", 'String'>
+    readonly tenantId: FieldRef<"TreasuryLoanRepayment", 'String'>
+    readonly shopId: FieldRef<"TreasuryLoanRepayment", 'String'>
+    readonly loanId: FieldRef<"TreasuryLoanRepayment", 'String'>
+    readonly methodId: FieldRef<"TreasuryLoanRepayment", 'String'>
+    readonly amount: FieldRef<"TreasuryLoanRepayment", 'Float'>
+    readonly notes: FieldRef<"TreasuryLoanRepayment", 'String'>
+    readonly createdBy: FieldRef<"TreasuryLoanRepayment", 'String'>
+    readonly createdAt: FieldRef<"TreasuryLoanRepayment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TreasuryLoanRepayment findUnique
+   */
+  export type TreasuryLoanRepaymentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoanRepayment to fetch.
+     */
+    where: TreasuryLoanRepaymentWhereUniqueInput
+  }
+
+  /**
+   * TreasuryLoanRepayment findUniqueOrThrow
+   */
+  export type TreasuryLoanRepaymentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoanRepayment to fetch.
+     */
+    where: TreasuryLoanRepaymentWhereUniqueInput
+  }
+
+  /**
+   * TreasuryLoanRepayment findFirst
+   */
+  export type TreasuryLoanRepaymentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoanRepayment to fetch.
+     */
+    where?: TreasuryLoanRepaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryLoanRepayments to fetch.
+     */
+    orderBy?: TreasuryLoanRepaymentOrderByWithRelationInput | TreasuryLoanRepaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TreasuryLoanRepayments.
+     */
+    cursor?: TreasuryLoanRepaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryLoanRepayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryLoanRepayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TreasuryLoanRepayments.
+     */
+    distinct?: TreasuryLoanRepaymentScalarFieldEnum | TreasuryLoanRepaymentScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryLoanRepayment findFirstOrThrow
+   */
+  export type TreasuryLoanRepaymentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoanRepayment to fetch.
+     */
+    where?: TreasuryLoanRepaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryLoanRepayments to fetch.
+     */
+    orderBy?: TreasuryLoanRepaymentOrderByWithRelationInput | TreasuryLoanRepaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TreasuryLoanRepayments.
+     */
+    cursor?: TreasuryLoanRepaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryLoanRepayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryLoanRepayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TreasuryLoanRepayments.
+     */
+    distinct?: TreasuryLoanRepaymentScalarFieldEnum | TreasuryLoanRepaymentScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryLoanRepayment findMany
+   */
+  export type TreasuryLoanRepaymentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryLoanRepayments to fetch.
+     */
+    where?: TreasuryLoanRepaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryLoanRepayments to fetch.
+     */
+    orderBy?: TreasuryLoanRepaymentOrderByWithRelationInput | TreasuryLoanRepaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TreasuryLoanRepayments.
+     */
+    cursor?: TreasuryLoanRepaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryLoanRepayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryLoanRepayments.
+     */
+    skip?: number
+    distinct?: TreasuryLoanRepaymentScalarFieldEnum | TreasuryLoanRepaymentScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryLoanRepayment create
+   */
+  export type TreasuryLoanRepaymentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TreasuryLoanRepayment.
+     */
+    data: XOR<TreasuryLoanRepaymentCreateInput, TreasuryLoanRepaymentUncheckedCreateInput>
+  }
+
+  /**
+   * TreasuryLoanRepayment createMany
+   */
+  export type TreasuryLoanRepaymentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TreasuryLoanRepayments.
+     */
+    data: TreasuryLoanRepaymentCreateManyInput | TreasuryLoanRepaymentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TreasuryLoanRepayment createManyAndReturn
+   */
+  export type TreasuryLoanRepaymentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many TreasuryLoanRepayments.
+     */
+    data: TreasuryLoanRepaymentCreateManyInput | TreasuryLoanRepaymentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TreasuryLoanRepayment update
+   */
+  export type TreasuryLoanRepaymentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TreasuryLoanRepayment.
+     */
+    data: XOR<TreasuryLoanRepaymentUpdateInput, TreasuryLoanRepaymentUncheckedUpdateInput>
+    /**
+     * Choose, which TreasuryLoanRepayment to update.
+     */
+    where: TreasuryLoanRepaymentWhereUniqueInput
+  }
+
+  /**
+   * TreasuryLoanRepayment updateMany
+   */
+  export type TreasuryLoanRepaymentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TreasuryLoanRepayments.
+     */
+    data: XOR<TreasuryLoanRepaymentUpdateManyMutationInput, TreasuryLoanRepaymentUncheckedUpdateManyInput>
+    /**
+     * Filter which TreasuryLoanRepayments to update
+     */
+    where?: TreasuryLoanRepaymentWhereInput
+  }
+
+  /**
+   * TreasuryLoanRepayment upsert
+   */
+  export type TreasuryLoanRepaymentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TreasuryLoanRepayment to update in case it exists.
+     */
+    where: TreasuryLoanRepaymentWhereUniqueInput
+    /**
+     * In case the TreasuryLoanRepayment found by the `where` argument doesn't exist, create a new TreasuryLoanRepayment with this data.
+     */
+    create: XOR<TreasuryLoanRepaymentCreateInput, TreasuryLoanRepaymentUncheckedCreateInput>
+    /**
+     * In case the TreasuryLoanRepayment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TreasuryLoanRepaymentUpdateInput, TreasuryLoanRepaymentUncheckedUpdateInput>
+  }
+
+  /**
+   * TreasuryLoanRepayment delete
+   */
+  export type TreasuryLoanRepaymentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+    /**
+     * Filter which TreasuryLoanRepayment to delete.
+     */
+    where: TreasuryLoanRepaymentWhereUniqueInput
+  }
+
+  /**
+   * TreasuryLoanRepayment deleteMany
+   */
+  export type TreasuryLoanRepaymentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TreasuryLoanRepayments to delete
+     */
+    where?: TreasuryLoanRepaymentWhereInput
+  }
+
+  /**
+   * TreasuryLoanRepayment without action
+   */
+  export type TreasuryLoanRepaymentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryLoanRepayment
+     */
+    select?: TreasuryLoanRepaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryLoanRepaymentInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model AuditLog
    */
 
@@ -7631,6 +10014,40 @@ export namespace Prisma {
   export type ReconciliationScalarFieldEnum = (typeof ReconciliationScalarFieldEnum)[keyof typeof ReconciliationScalarFieldEnum]
 
 
+  export const TreasuryLoanScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    direction: 'direction',
+    counterparty: 'counterparty',
+    principal: 'principal',
+    outstanding: 'outstanding',
+    methodId: 'methodId',
+    status: 'status',
+    notes: 'notes',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TreasuryLoanScalarFieldEnum = (typeof TreasuryLoanScalarFieldEnum)[keyof typeof TreasuryLoanScalarFieldEnum]
+
+
+  export const TreasuryLoanRepaymentScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    loanId: 'loanId',
+    methodId: 'methodId',
+    amount: 'amount',
+    notes: 'notes',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt'
+  };
+
+  export type TreasuryLoanRepaymentScalarFieldEnum = (typeof TreasuryLoanRepaymentScalarFieldEnum)[keyof typeof TreasuryLoanRepaymentScalarFieldEnum]
+
+
   export const AuditLogScalarFieldEnum: {
     id: 'id',
     tenantId: 'tenantId',
@@ -7763,6 +10180,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationListRelationFilter
     deposits?: OperationalDepositListRelationFilter
     reconciliations?: ReconciliationListRelationFilter
+    loans?: TreasuryLoanListRelationFilter
+    loanRepayments?: TreasuryLoanRepaymentListRelationFilter
   }
 
   export type PaymentMethodOrderByWithRelationInput = {
@@ -7783,6 +10202,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationOrderByRelationAggregateInput
     deposits?: OperationalDepositOrderByRelationAggregateInput
     reconciliations?: ReconciliationOrderByRelationAggregateInput
+    loans?: TreasuryLoanOrderByRelationAggregateInput
+    loanRepayments?: TreasuryLoanRepaymentOrderByRelationAggregateInput
   }
 
   export type PaymentMethodWhereUniqueInput = Prisma.AtLeast<{
@@ -7806,6 +10227,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationListRelationFilter
     deposits?: OperationalDepositListRelationFilter
     reconciliations?: ReconciliationListRelationFilter
+    loans?: TreasuryLoanListRelationFilter
+    loanRepayments?: TreasuryLoanRepaymentListRelationFilter
   }, "id">
 
   export type PaymentMethodOrderByWithAggregationInput = {
@@ -8167,6 +10590,186 @@ export namespace Prisma {
     notes?: StringNullableWithAggregatesFilter<"Reconciliation"> | string | null
   }
 
+  export type TreasuryLoanWhereInput = {
+    AND?: TreasuryLoanWhereInput | TreasuryLoanWhereInput[]
+    OR?: TreasuryLoanWhereInput[]
+    NOT?: TreasuryLoanWhereInput | TreasuryLoanWhereInput[]
+    id?: StringFilter<"TreasuryLoan"> | string
+    tenantId?: StringFilter<"TreasuryLoan"> | string
+    shopId?: StringFilter<"TreasuryLoan"> | string
+    direction?: StringFilter<"TreasuryLoan"> | string
+    counterparty?: StringFilter<"TreasuryLoan"> | string
+    principal?: FloatFilter<"TreasuryLoan"> | number
+    outstanding?: FloatFilter<"TreasuryLoan"> | number
+    methodId?: StringFilter<"TreasuryLoan"> | string
+    status?: StringFilter<"TreasuryLoan"> | string
+    notes?: StringNullableFilter<"TreasuryLoan"> | string | null
+    createdBy?: StringNullableFilter<"TreasuryLoan"> | string | null
+    createdAt?: DateTimeFilter<"TreasuryLoan"> | Date | string
+    updatedAt?: DateTimeFilter<"TreasuryLoan"> | Date | string
+    method?: XOR<PaymentMethodRelationFilter, PaymentMethodWhereInput>
+    repayments?: TreasuryLoanRepaymentListRelationFilter
+  }
+
+  export type TreasuryLoanOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    direction?: SortOrder
+    counterparty?: SortOrder
+    principal?: SortOrder
+    outstanding?: SortOrder
+    methodId?: SortOrder
+    status?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    method?: PaymentMethodOrderByWithRelationInput
+    repayments?: TreasuryLoanRepaymentOrderByRelationAggregateInput
+  }
+
+  export type TreasuryLoanWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TreasuryLoanWhereInput | TreasuryLoanWhereInput[]
+    OR?: TreasuryLoanWhereInput[]
+    NOT?: TreasuryLoanWhereInput | TreasuryLoanWhereInput[]
+    tenantId?: StringFilter<"TreasuryLoan"> | string
+    shopId?: StringFilter<"TreasuryLoan"> | string
+    direction?: StringFilter<"TreasuryLoan"> | string
+    counterparty?: StringFilter<"TreasuryLoan"> | string
+    principal?: FloatFilter<"TreasuryLoan"> | number
+    outstanding?: FloatFilter<"TreasuryLoan"> | number
+    methodId?: StringFilter<"TreasuryLoan"> | string
+    status?: StringFilter<"TreasuryLoan"> | string
+    notes?: StringNullableFilter<"TreasuryLoan"> | string | null
+    createdBy?: StringNullableFilter<"TreasuryLoan"> | string | null
+    createdAt?: DateTimeFilter<"TreasuryLoan"> | Date | string
+    updatedAt?: DateTimeFilter<"TreasuryLoan"> | Date | string
+    method?: XOR<PaymentMethodRelationFilter, PaymentMethodWhereInput>
+    repayments?: TreasuryLoanRepaymentListRelationFilter
+  }, "id">
+
+  export type TreasuryLoanOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    direction?: SortOrder
+    counterparty?: SortOrder
+    principal?: SortOrder
+    outstanding?: SortOrder
+    methodId?: SortOrder
+    status?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TreasuryLoanCountOrderByAggregateInput
+    _avg?: TreasuryLoanAvgOrderByAggregateInput
+    _max?: TreasuryLoanMaxOrderByAggregateInput
+    _min?: TreasuryLoanMinOrderByAggregateInput
+    _sum?: TreasuryLoanSumOrderByAggregateInput
+  }
+
+  export type TreasuryLoanScalarWhereWithAggregatesInput = {
+    AND?: TreasuryLoanScalarWhereWithAggregatesInput | TreasuryLoanScalarWhereWithAggregatesInput[]
+    OR?: TreasuryLoanScalarWhereWithAggregatesInput[]
+    NOT?: TreasuryLoanScalarWhereWithAggregatesInput | TreasuryLoanScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TreasuryLoan"> | string
+    tenantId?: StringWithAggregatesFilter<"TreasuryLoan"> | string
+    shopId?: StringWithAggregatesFilter<"TreasuryLoan"> | string
+    direction?: StringWithAggregatesFilter<"TreasuryLoan"> | string
+    counterparty?: StringWithAggregatesFilter<"TreasuryLoan"> | string
+    principal?: FloatWithAggregatesFilter<"TreasuryLoan"> | number
+    outstanding?: FloatWithAggregatesFilter<"TreasuryLoan"> | number
+    methodId?: StringWithAggregatesFilter<"TreasuryLoan"> | string
+    status?: StringWithAggregatesFilter<"TreasuryLoan"> | string
+    notes?: StringNullableWithAggregatesFilter<"TreasuryLoan"> | string | null
+    createdBy?: StringNullableWithAggregatesFilter<"TreasuryLoan"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TreasuryLoan"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TreasuryLoan"> | Date | string
+  }
+
+  export type TreasuryLoanRepaymentWhereInput = {
+    AND?: TreasuryLoanRepaymentWhereInput | TreasuryLoanRepaymentWhereInput[]
+    OR?: TreasuryLoanRepaymentWhereInput[]
+    NOT?: TreasuryLoanRepaymentWhereInput | TreasuryLoanRepaymentWhereInput[]
+    id?: StringFilter<"TreasuryLoanRepayment"> | string
+    tenantId?: StringFilter<"TreasuryLoanRepayment"> | string
+    shopId?: StringFilter<"TreasuryLoanRepayment"> | string
+    loanId?: StringFilter<"TreasuryLoanRepayment"> | string
+    methodId?: StringFilter<"TreasuryLoanRepayment"> | string
+    amount?: FloatFilter<"TreasuryLoanRepayment"> | number
+    notes?: StringNullableFilter<"TreasuryLoanRepayment"> | string | null
+    createdBy?: StringNullableFilter<"TreasuryLoanRepayment"> | string | null
+    createdAt?: DateTimeFilter<"TreasuryLoanRepayment"> | Date | string
+    loan?: XOR<TreasuryLoanRelationFilter, TreasuryLoanWhereInput>
+    method?: XOR<PaymentMethodRelationFilter, PaymentMethodWhereInput>
+  }
+
+  export type TreasuryLoanRepaymentOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    loanId?: SortOrder
+    methodId?: SortOrder
+    amount?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    loan?: TreasuryLoanOrderByWithRelationInput
+    method?: PaymentMethodOrderByWithRelationInput
+  }
+
+  export type TreasuryLoanRepaymentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TreasuryLoanRepaymentWhereInput | TreasuryLoanRepaymentWhereInput[]
+    OR?: TreasuryLoanRepaymentWhereInput[]
+    NOT?: TreasuryLoanRepaymentWhereInput | TreasuryLoanRepaymentWhereInput[]
+    tenantId?: StringFilter<"TreasuryLoanRepayment"> | string
+    shopId?: StringFilter<"TreasuryLoanRepayment"> | string
+    loanId?: StringFilter<"TreasuryLoanRepayment"> | string
+    methodId?: StringFilter<"TreasuryLoanRepayment"> | string
+    amount?: FloatFilter<"TreasuryLoanRepayment"> | number
+    notes?: StringNullableFilter<"TreasuryLoanRepayment"> | string | null
+    createdBy?: StringNullableFilter<"TreasuryLoanRepayment"> | string | null
+    createdAt?: DateTimeFilter<"TreasuryLoanRepayment"> | Date | string
+    loan?: XOR<TreasuryLoanRelationFilter, TreasuryLoanWhereInput>
+    method?: XOR<PaymentMethodRelationFilter, PaymentMethodWhereInput>
+  }, "id">
+
+  export type TreasuryLoanRepaymentOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    loanId?: SortOrder
+    methodId?: SortOrder
+    amount?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: TreasuryLoanRepaymentCountOrderByAggregateInput
+    _avg?: TreasuryLoanRepaymentAvgOrderByAggregateInput
+    _max?: TreasuryLoanRepaymentMaxOrderByAggregateInput
+    _min?: TreasuryLoanRepaymentMinOrderByAggregateInput
+    _sum?: TreasuryLoanRepaymentSumOrderByAggregateInput
+  }
+
+  export type TreasuryLoanRepaymentScalarWhereWithAggregatesInput = {
+    AND?: TreasuryLoanRepaymentScalarWhereWithAggregatesInput | TreasuryLoanRepaymentScalarWhereWithAggregatesInput[]
+    OR?: TreasuryLoanRepaymentScalarWhereWithAggregatesInput[]
+    NOT?: TreasuryLoanRepaymentScalarWhereWithAggregatesInput | TreasuryLoanRepaymentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TreasuryLoanRepayment"> | string
+    tenantId?: StringWithAggregatesFilter<"TreasuryLoanRepayment"> | string
+    shopId?: StringWithAggregatesFilter<"TreasuryLoanRepayment"> | string
+    loanId?: StringWithAggregatesFilter<"TreasuryLoanRepayment"> | string
+    methodId?: StringWithAggregatesFilter<"TreasuryLoanRepayment"> | string
+    amount?: FloatWithAggregatesFilter<"TreasuryLoanRepayment"> | number
+    notes?: StringNullableWithAggregatesFilter<"TreasuryLoanRepayment"> | string | null
+    createdBy?: StringNullableWithAggregatesFilter<"TreasuryLoanRepayment"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TreasuryLoanRepayment"> | Date | string
+  }
+
   export type AuditLogWhereInput = {
     AND?: AuditLogWhereInput | AuditLogWhereInput[]
     OR?: AuditLogWhereInput[]
@@ -8262,6 +10865,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationCreateNestedManyWithoutMethodInput
     deposits?: OperationalDepositCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodUncheckedCreateInput = {
@@ -8282,6 +10887,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationUncheckedCreateNestedManyWithoutMethodInput
     deposits?: OperationalDepositUncheckedCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationUncheckedCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanUncheckedCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodUpdateInput = {
@@ -8302,6 +10909,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationUpdateManyWithoutMethodNestedInput
     deposits?: OperationalDepositUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodUncheckedUpdateInput = {
@@ -8322,6 +10931,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationUncheckedUpdateManyWithoutMethodNestedInput
     deposits?: OperationalDepositUncheckedUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUncheckedUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUncheckedUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodCreateManyInput = {
@@ -8714,6 +11325,203 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type TreasuryLoanCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    direction: string
+    counterparty: string
+    principal: number
+    outstanding: number
+    status?: string
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    method: PaymentMethodCreateNestedOneWithoutLoansInput
+    repayments?: TreasuryLoanRepaymentCreateNestedManyWithoutLoanInput
+  }
+
+  export type TreasuryLoanUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    direction: string
+    counterparty: string
+    principal: number
+    outstanding: number
+    methodId: string
+    status?: string
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    repayments?: TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutLoanInput
+  }
+
+  export type TreasuryLoanUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    counterparty?: StringFieldUpdateOperationsInput | string
+    principal?: FloatFieldUpdateOperationsInput | number
+    outstanding?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    method?: PaymentMethodUpdateOneRequiredWithoutLoansNestedInput
+    repayments?: TreasuryLoanRepaymentUpdateManyWithoutLoanNestedInput
+  }
+
+  export type TreasuryLoanUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    counterparty?: StringFieldUpdateOperationsInput | string
+    principal?: FloatFieldUpdateOperationsInput | number
+    outstanding?: FloatFieldUpdateOperationsInput | number
+    methodId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repayments?: TreasuryLoanRepaymentUncheckedUpdateManyWithoutLoanNestedInput
+  }
+
+  export type TreasuryLoanCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    direction: string
+    counterparty: string
+    principal: number
+    outstanding: number
+    methodId: string
+    status?: string
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TreasuryLoanUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    counterparty?: StringFieldUpdateOperationsInput | string
+    principal?: FloatFieldUpdateOperationsInput | number
+    outstanding?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryLoanUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    counterparty?: StringFieldUpdateOperationsInput | string
+    principal?: FloatFieldUpdateOperationsInput | number
+    outstanding?: FloatFieldUpdateOperationsInput | number
+    methodId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryLoanRepaymentCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    amount: number
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    loan: TreasuryLoanCreateNestedOneWithoutRepaymentsInput
+    method: PaymentMethodCreateNestedOneWithoutLoanRepaymentsInput
+  }
+
+  export type TreasuryLoanRepaymentUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    loanId: string
+    methodId: string
+    amount: number
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryLoanRepaymentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    loan?: TreasuryLoanUpdateOneRequiredWithoutRepaymentsNestedInput
+    method?: PaymentMethodUpdateOneRequiredWithoutLoanRepaymentsNestedInput
+  }
+
+  export type TreasuryLoanRepaymentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    loanId?: StringFieldUpdateOperationsInput | string
+    methodId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryLoanRepaymentCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    loanId: string
+    methodId: string
+    amount: number
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryLoanRepaymentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryLoanRepaymentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    loanId?: StringFieldUpdateOperationsInput | string
+    methodId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AuditLogCreateInput = {
     id?: string
     tenantId: string
@@ -8886,6 +11694,18 @@ export namespace Prisma {
     none?: ReconciliationWhereInput
   }
 
+  export type TreasuryLoanListRelationFilter = {
+    every?: TreasuryLoanWhereInput
+    some?: TreasuryLoanWhereInput
+    none?: TreasuryLoanWhereInput
+  }
+
+  export type TreasuryLoanRepaymentListRelationFilter = {
+    every?: TreasuryLoanRepaymentWhereInput
+    some?: TreasuryLoanRepaymentWhereInput
+    none?: TreasuryLoanRepaymentWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -8904,6 +11724,14 @@ export namespace Prisma {
   }
 
   export type ReconciliationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TreasuryLoanOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TreasuryLoanRepaymentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9250,6 +12078,113 @@ export namespace Prisma {
     difference?: SortOrder
   }
 
+  export type TreasuryLoanCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    direction?: SortOrder
+    counterparty?: SortOrder
+    principal?: SortOrder
+    outstanding?: SortOrder
+    methodId?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TreasuryLoanAvgOrderByAggregateInput = {
+    principal?: SortOrder
+    outstanding?: SortOrder
+  }
+
+  export type TreasuryLoanMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    direction?: SortOrder
+    counterparty?: SortOrder
+    principal?: SortOrder
+    outstanding?: SortOrder
+    methodId?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TreasuryLoanMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    direction?: SortOrder
+    counterparty?: SortOrder
+    principal?: SortOrder
+    outstanding?: SortOrder
+    methodId?: SortOrder
+    status?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TreasuryLoanSumOrderByAggregateInput = {
+    principal?: SortOrder
+    outstanding?: SortOrder
+  }
+
+  export type TreasuryLoanRelationFilter = {
+    is?: TreasuryLoanWhereInput
+    isNot?: TreasuryLoanWhereInput
+  }
+
+  export type TreasuryLoanRepaymentCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    loanId?: SortOrder
+    methodId?: SortOrder
+    amount?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TreasuryLoanRepaymentAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type TreasuryLoanRepaymentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    loanId?: SortOrder
+    methodId?: SortOrder
+    amount?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TreasuryLoanRepaymentMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    loanId?: SortOrder
+    methodId?: SortOrder
+    amount?: SortOrder
+    notes?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TreasuryLoanRepaymentSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
   export type AuditLogCountOrderByAggregateInput = {
     id?: SortOrder
     tenantId?: SortOrder
@@ -9324,6 +12259,20 @@ export namespace Prisma {
     connect?: ReconciliationWhereUniqueInput | ReconciliationWhereUniqueInput[]
   }
 
+  export type TreasuryLoanCreateNestedManyWithoutMethodInput = {
+    create?: XOR<TreasuryLoanCreateWithoutMethodInput, TreasuryLoanUncheckedCreateWithoutMethodInput> | TreasuryLoanCreateWithoutMethodInput[] | TreasuryLoanUncheckedCreateWithoutMethodInput[]
+    connectOrCreate?: TreasuryLoanCreateOrConnectWithoutMethodInput | TreasuryLoanCreateOrConnectWithoutMethodInput[]
+    createMany?: TreasuryLoanCreateManyMethodInputEnvelope
+    connect?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+  }
+
+  export type TreasuryLoanRepaymentCreateNestedManyWithoutMethodInput = {
+    create?: XOR<TreasuryLoanRepaymentCreateWithoutMethodInput, TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput> | TreasuryLoanRepaymentCreateWithoutMethodInput[] | TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput[]
+    connectOrCreate?: TreasuryLoanRepaymentCreateOrConnectWithoutMethodInput | TreasuryLoanRepaymentCreateOrConnectWithoutMethodInput[]
+    createMany?: TreasuryLoanRepaymentCreateManyMethodInputEnvelope
+    connect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+  }
+
   export type TransferUncheckedCreateNestedManyWithoutFromMethodInput = {
     create?: XOR<TransferCreateWithoutFromMethodInput, TransferUncheckedCreateWithoutFromMethodInput> | TransferCreateWithoutFromMethodInput[] | TransferUncheckedCreateWithoutFromMethodInput[]
     connectOrCreate?: TransferCreateOrConnectWithoutFromMethodInput | TransferCreateOrConnectWithoutFromMethodInput[]
@@ -9357,6 +12306,20 @@ export namespace Prisma {
     connectOrCreate?: ReconciliationCreateOrConnectWithoutMethodInput | ReconciliationCreateOrConnectWithoutMethodInput[]
     createMany?: ReconciliationCreateManyMethodInputEnvelope
     connect?: ReconciliationWhereUniqueInput | ReconciliationWhereUniqueInput[]
+  }
+
+  export type TreasuryLoanUncheckedCreateNestedManyWithoutMethodInput = {
+    create?: XOR<TreasuryLoanCreateWithoutMethodInput, TreasuryLoanUncheckedCreateWithoutMethodInput> | TreasuryLoanCreateWithoutMethodInput[] | TreasuryLoanUncheckedCreateWithoutMethodInput[]
+    connectOrCreate?: TreasuryLoanCreateOrConnectWithoutMethodInput | TreasuryLoanCreateOrConnectWithoutMethodInput[]
+    createMany?: TreasuryLoanCreateManyMethodInputEnvelope
+    connect?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+  }
+
+  export type TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutMethodInput = {
+    create?: XOR<TreasuryLoanRepaymentCreateWithoutMethodInput, TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput> | TreasuryLoanRepaymentCreateWithoutMethodInput[] | TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput[]
+    connectOrCreate?: TreasuryLoanRepaymentCreateOrConnectWithoutMethodInput | TreasuryLoanRepaymentCreateOrConnectWithoutMethodInput[]
+    createMany?: TreasuryLoanRepaymentCreateManyMethodInputEnvelope
+    connect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -9453,6 +12416,34 @@ export namespace Prisma {
     deleteMany?: ReconciliationScalarWhereInput | ReconciliationScalarWhereInput[]
   }
 
+  export type TreasuryLoanUpdateManyWithoutMethodNestedInput = {
+    create?: XOR<TreasuryLoanCreateWithoutMethodInput, TreasuryLoanUncheckedCreateWithoutMethodInput> | TreasuryLoanCreateWithoutMethodInput[] | TreasuryLoanUncheckedCreateWithoutMethodInput[]
+    connectOrCreate?: TreasuryLoanCreateOrConnectWithoutMethodInput | TreasuryLoanCreateOrConnectWithoutMethodInput[]
+    upsert?: TreasuryLoanUpsertWithWhereUniqueWithoutMethodInput | TreasuryLoanUpsertWithWhereUniqueWithoutMethodInput[]
+    createMany?: TreasuryLoanCreateManyMethodInputEnvelope
+    set?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+    disconnect?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+    delete?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+    connect?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+    update?: TreasuryLoanUpdateWithWhereUniqueWithoutMethodInput | TreasuryLoanUpdateWithWhereUniqueWithoutMethodInput[]
+    updateMany?: TreasuryLoanUpdateManyWithWhereWithoutMethodInput | TreasuryLoanUpdateManyWithWhereWithoutMethodInput[]
+    deleteMany?: TreasuryLoanScalarWhereInput | TreasuryLoanScalarWhereInput[]
+  }
+
+  export type TreasuryLoanRepaymentUpdateManyWithoutMethodNestedInput = {
+    create?: XOR<TreasuryLoanRepaymentCreateWithoutMethodInput, TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput> | TreasuryLoanRepaymentCreateWithoutMethodInput[] | TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput[]
+    connectOrCreate?: TreasuryLoanRepaymentCreateOrConnectWithoutMethodInput | TreasuryLoanRepaymentCreateOrConnectWithoutMethodInput[]
+    upsert?: TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutMethodInput | TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutMethodInput[]
+    createMany?: TreasuryLoanRepaymentCreateManyMethodInputEnvelope
+    set?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    disconnect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    delete?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    connect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    update?: TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutMethodInput | TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutMethodInput[]
+    updateMany?: TreasuryLoanRepaymentUpdateManyWithWhereWithoutMethodInput | TreasuryLoanRepaymentUpdateManyWithWhereWithoutMethodInput[]
+    deleteMany?: TreasuryLoanRepaymentScalarWhereInput | TreasuryLoanRepaymentScalarWhereInput[]
+  }
+
   export type TransferUncheckedUpdateManyWithoutFromMethodNestedInput = {
     create?: XOR<TransferCreateWithoutFromMethodInput, TransferUncheckedCreateWithoutFromMethodInput> | TransferCreateWithoutFromMethodInput[] | TransferUncheckedCreateWithoutFromMethodInput[]
     connectOrCreate?: TransferCreateOrConnectWithoutFromMethodInput | TransferCreateOrConnectWithoutFromMethodInput[]
@@ -9521,6 +12512,34 @@ export namespace Prisma {
     update?: ReconciliationUpdateWithWhereUniqueWithoutMethodInput | ReconciliationUpdateWithWhereUniqueWithoutMethodInput[]
     updateMany?: ReconciliationUpdateManyWithWhereWithoutMethodInput | ReconciliationUpdateManyWithWhereWithoutMethodInput[]
     deleteMany?: ReconciliationScalarWhereInput | ReconciliationScalarWhereInput[]
+  }
+
+  export type TreasuryLoanUncheckedUpdateManyWithoutMethodNestedInput = {
+    create?: XOR<TreasuryLoanCreateWithoutMethodInput, TreasuryLoanUncheckedCreateWithoutMethodInput> | TreasuryLoanCreateWithoutMethodInput[] | TreasuryLoanUncheckedCreateWithoutMethodInput[]
+    connectOrCreate?: TreasuryLoanCreateOrConnectWithoutMethodInput | TreasuryLoanCreateOrConnectWithoutMethodInput[]
+    upsert?: TreasuryLoanUpsertWithWhereUniqueWithoutMethodInput | TreasuryLoanUpsertWithWhereUniqueWithoutMethodInput[]
+    createMany?: TreasuryLoanCreateManyMethodInputEnvelope
+    set?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+    disconnect?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+    delete?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+    connect?: TreasuryLoanWhereUniqueInput | TreasuryLoanWhereUniqueInput[]
+    update?: TreasuryLoanUpdateWithWhereUniqueWithoutMethodInput | TreasuryLoanUpdateWithWhereUniqueWithoutMethodInput[]
+    updateMany?: TreasuryLoanUpdateManyWithWhereWithoutMethodInput | TreasuryLoanUpdateManyWithWhereWithoutMethodInput[]
+    deleteMany?: TreasuryLoanScalarWhereInput | TreasuryLoanScalarWhereInput[]
+  }
+
+  export type TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodNestedInput = {
+    create?: XOR<TreasuryLoanRepaymentCreateWithoutMethodInput, TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput> | TreasuryLoanRepaymentCreateWithoutMethodInput[] | TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput[]
+    connectOrCreate?: TreasuryLoanRepaymentCreateOrConnectWithoutMethodInput | TreasuryLoanRepaymentCreateOrConnectWithoutMethodInput[]
+    upsert?: TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutMethodInput | TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutMethodInput[]
+    createMany?: TreasuryLoanRepaymentCreateManyMethodInputEnvelope
+    set?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    disconnect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    delete?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    connect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    update?: TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutMethodInput | TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutMethodInput[]
+    updateMany?: TreasuryLoanRepaymentUpdateManyWithWhereWithoutMethodInput | TreasuryLoanRepaymentUpdateManyWithWhereWithoutMethodInput[]
+    deleteMany?: TreasuryLoanRepaymentScalarWhereInput | TreasuryLoanRepaymentScalarWhereInput[]
   }
 
   export type PaymentMethodCreateNestedOneWithoutOutgoingTransfersInput = {
@@ -9595,6 +12614,90 @@ export namespace Prisma {
     upsert?: PaymentMethodUpsertWithoutReconciliationsInput
     connect?: PaymentMethodWhereUniqueInput
     update?: XOR<XOR<PaymentMethodUpdateToOneWithWhereWithoutReconciliationsInput, PaymentMethodUpdateWithoutReconciliationsInput>, PaymentMethodUncheckedUpdateWithoutReconciliationsInput>
+  }
+
+  export type PaymentMethodCreateNestedOneWithoutLoansInput = {
+    create?: XOR<PaymentMethodCreateWithoutLoansInput, PaymentMethodUncheckedCreateWithoutLoansInput>
+    connectOrCreate?: PaymentMethodCreateOrConnectWithoutLoansInput
+    connect?: PaymentMethodWhereUniqueInput
+  }
+
+  export type TreasuryLoanRepaymentCreateNestedManyWithoutLoanInput = {
+    create?: XOR<TreasuryLoanRepaymentCreateWithoutLoanInput, TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput> | TreasuryLoanRepaymentCreateWithoutLoanInput[] | TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput[]
+    connectOrCreate?: TreasuryLoanRepaymentCreateOrConnectWithoutLoanInput | TreasuryLoanRepaymentCreateOrConnectWithoutLoanInput[]
+    createMany?: TreasuryLoanRepaymentCreateManyLoanInputEnvelope
+    connect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+  }
+
+  export type TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutLoanInput = {
+    create?: XOR<TreasuryLoanRepaymentCreateWithoutLoanInput, TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput> | TreasuryLoanRepaymentCreateWithoutLoanInput[] | TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput[]
+    connectOrCreate?: TreasuryLoanRepaymentCreateOrConnectWithoutLoanInput | TreasuryLoanRepaymentCreateOrConnectWithoutLoanInput[]
+    createMany?: TreasuryLoanRepaymentCreateManyLoanInputEnvelope
+    connect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+  }
+
+  export type PaymentMethodUpdateOneRequiredWithoutLoansNestedInput = {
+    create?: XOR<PaymentMethodCreateWithoutLoansInput, PaymentMethodUncheckedCreateWithoutLoansInput>
+    connectOrCreate?: PaymentMethodCreateOrConnectWithoutLoansInput
+    upsert?: PaymentMethodUpsertWithoutLoansInput
+    connect?: PaymentMethodWhereUniqueInput
+    update?: XOR<XOR<PaymentMethodUpdateToOneWithWhereWithoutLoansInput, PaymentMethodUpdateWithoutLoansInput>, PaymentMethodUncheckedUpdateWithoutLoansInput>
+  }
+
+  export type TreasuryLoanRepaymentUpdateManyWithoutLoanNestedInput = {
+    create?: XOR<TreasuryLoanRepaymentCreateWithoutLoanInput, TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput> | TreasuryLoanRepaymentCreateWithoutLoanInput[] | TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput[]
+    connectOrCreate?: TreasuryLoanRepaymentCreateOrConnectWithoutLoanInput | TreasuryLoanRepaymentCreateOrConnectWithoutLoanInput[]
+    upsert?: TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutLoanInput | TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutLoanInput[]
+    createMany?: TreasuryLoanRepaymentCreateManyLoanInputEnvelope
+    set?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    disconnect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    delete?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    connect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    update?: TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutLoanInput | TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutLoanInput[]
+    updateMany?: TreasuryLoanRepaymentUpdateManyWithWhereWithoutLoanInput | TreasuryLoanRepaymentUpdateManyWithWhereWithoutLoanInput[]
+    deleteMany?: TreasuryLoanRepaymentScalarWhereInput | TreasuryLoanRepaymentScalarWhereInput[]
+  }
+
+  export type TreasuryLoanRepaymentUncheckedUpdateManyWithoutLoanNestedInput = {
+    create?: XOR<TreasuryLoanRepaymentCreateWithoutLoanInput, TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput> | TreasuryLoanRepaymentCreateWithoutLoanInput[] | TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput[]
+    connectOrCreate?: TreasuryLoanRepaymentCreateOrConnectWithoutLoanInput | TreasuryLoanRepaymentCreateOrConnectWithoutLoanInput[]
+    upsert?: TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutLoanInput | TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutLoanInput[]
+    createMany?: TreasuryLoanRepaymentCreateManyLoanInputEnvelope
+    set?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    disconnect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    delete?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    connect?: TreasuryLoanRepaymentWhereUniqueInput | TreasuryLoanRepaymentWhereUniqueInput[]
+    update?: TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutLoanInput | TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutLoanInput[]
+    updateMany?: TreasuryLoanRepaymentUpdateManyWithWhereWithoutLoanInput | TreasuryLoanRepaymentUpdateManyWithWhereWithoutLoanInput[]
+    deleteMany?: TreasuryLoanRepaymentScalarWhereInput | TreasuryLoanRepaymentScalarWhereInput[]
+  }
+
+  export type TreasuryLoanCreateNestedOneWithoutRepaymentsInput = {
+    create?: XOR<TreasuryLoanCreateWithoutRepaymentsInput, TreasuryLoanUncheckedCreateWithoutRepaymentsInput>
+    connectOrCreate?: TreasuryLoanCreateOrConnectWithoutRepaymentsInput
+    connect?: TreasuryLoanWhereUniqueInput
+  }
+
+  export type PaymentMethodCreateNestedOneWithoutLoanRepaymentsInput = {
+    create?: XOR<PaymentMethodCreateWithoutLoanRepaymentsInput, PaymentMethodUncheckedCreateWithoutLoanRepaymentsInput>
+    connectOrCreate?: PaymentMethodCreateOrConnectWithoutLoanRepaymentsInput
+    connect?: PaymentMethodWhereUniqueInput
+  }
+
+  export type TreasuryLoanUpdateOneRequiredWithoutRepaymentsNestedInput = {
+    create?: XOR<TreasuryLoanCreateWithoutRepaymentsInput, TreasuryLoanUncheckedCreateWithoutRepaymentsInput>
+    connectOrCreate?: TreasuryLoanCreateOrConnectWithoutRepaymentsInput
+    upsert?: TreasuryLoanUpsertWithoutRepaymentsInput
+    connect?: TreasuryLoanWhereUniqueInput
+    update?: XOR<XOR<TreasuryLoanUpdateToOneWithWhereWithoutRepaymentsInput, TreasuryLoanUpdateWithoutRepaymentsInput>, TreasuryLoanUncheckedUpdateWithoutRepaymentsInput>
+  }
+
+  export type PaymentMethodUpdateOneRequiredWithoutLoanRepaymentsNestedInput = {
+    create?: XOR<PaymentMethodCreateWithoutLoanRepaymentsInput, PaymentMethodUncheckedCreateWithoutLoanRepaymentsInput>
+    connectOrCreate?: PaymentMethodCreateOrConnectWithoutLoanRepaymentsInput
+    upsert?: PaymentMethodUpsertWithoutLoanRepaymentsInput
+    connect?: PaymentMethodWhereUniqueInput
+    update?: XOR<XOR<PaymentMethodUpdateToOneWithWhereWithoutLoanRepaymentsInput, PaymentMethodUpdateWithoutLoanRepaymentsInput>, PaymentMethodUncheckedUpdateWithoutLoanRepaymentsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -9941,6 +13044,80 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TreasuryLoanCreateWithoutMethodInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    direction: string
+    counterparty: string
+    principal: number
+    outstanding: number
+    status?: string
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    repayments?: TreasuryLoanRepaymentCreateNestedManyWithoutLoanInput
+  }
+
+  export type TreasuryLoanUncheckedCreateWithoutMethodInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    direction: string
+    counterparty: string
+    principal: number
+    outstanding: number
+    status?: string
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    repayments?: TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutLoanInput
+  }
+
+  export type TreasuryLoanCreateOrConnectWithoutMethodInput = {
+    where: TreasuryLoanWhereUniqueInput
+    create: XOR<TreasuryLoanCreateWithoutMethodInput, TreasuryLoanUncheckedCreateWithoutMethodInput>
+  }
+
+  export type TreasuryLoanCreateManyMethodInputEnvelope = {
+    data: TreasuryLoanCreateManyMethodInput | TreasuryLoanCreateManyMethodInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TreasuryLoanRepaymentCreateWithoutMethodInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    amount: number
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    loan: TreasuryLoanCreateNestedOneWithoutRepaymentsInput
+  }
+
+  export type TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    loanId: string
+    amount: number
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryLoanRepaymentCreateOrConnectWithoutMethodInput = {
+    where: TreasuryLoanRepaymentWhereUniqueInput
+    create: XOR<TreasuryLoanRepaymentCreateWithoutMethodInput, TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput>
+  }
+
+  export type TreasuryLoanRepaymentCreateManyMethodInputEnvelope = {
+    data: TreasuryLoanRepaymentCreateManyMethodInput | TreasuryLoanRepaymentCreateManyMethodInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TransferUpsertWithWhereUniqueWithoutFromMethodInput = {
     where: TransferWhereUniqueInput
     update: XOR<TransferUpdateWithoutFromMethodInput, TransferUncheckedUpdateWithoutFromMethodInput>
@@ -10083,6 +13260,72 @@ export namespace Prisma {
     notes?: StringNullableFilter<"Reconciliation"> | string | null
   }
 
+  export type TreasuryLoanUpsertWithWhereUniqueWithoutMethodInput = {
+    where: TreasuryLoanWhereUniqueInput
+    update: XOR<TreasuryLoanUpdateWithoutMethodInput, TreasuryLoanUncheckedUpdateWithoutMethodInput>
+    create: XOR<TreasuryLoanCreateWithoutMethodInput, TreasuryLoanUncheckedCreateWithoutMethodInput>
+  }
+
+  export type TreasuryLoanUpdateWithWhereUniqueWithoutMethodInput = {
+    where: TreasuryLoanWhereUniqueInput
+    data: XOR<TreasuryLoanUpdateWithoutMethodInput, TreasuryLoanUncheckedUpdateWithoutMethodInput>
+  }
+
+  export type TreasuryLoanUpdateManyWithWhereWithoutMethodInput = {
+    where: TreasuryLoanScalarWhereInput
+    data: XOR<TreasuryLoanUpdateManyMutationInput, TreasuryLoanUncheckedUpdateManyWithoutMethodInput>
+  }
+
+  export type TreasuryLoanScalarWhereInput = {
+    AND?: TreasuryLoanScalarWhereInput | TreasuryLoanScalarWhereInput[]
+    OR?: TreasuryLoanScalarWhereInput[]
+    NOT?: TreasuryLoanScalarWhereInput | TreasuryLoanScalarWhereInput[]
+    id?: StringFilter<"TreasuryLoan"> | string
+    tenantId?: StringFilter<"TreasuryLoan"> | string
+    shopId?: StringFilter<"TreasuryLoan"> | string
+    direction?: StringFilter<"TreasuryLoan"> | string
+    counterparty?: StringFilter<"TreasuryLoan"> | string
+    principal?: FloatFilter<"TreasuryLoan"> | number
+    outstanding?: FloatFilter<"TreasuryLoan"> | number
+    methodId?: StringFilter<"TreasuryLoan"> | string
+    status?: StringFilter<"TreasuryLoan"> | string
+    notes?: StringNullableFilter<"TreasuryLoan"> | string | null
+    createdBy?: StringNullableFilter<"TreasuryLoan"> | string | null
+    createdAt?: DateTimeFilter<"TreasuryLoan"> | Date | string
+    updatedAt?: DateTimeFilter<"TreasuryLoan"> | Date | string
+  }
+
+  export type TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutMethodInput = {
+    where: TreasuryLoanRepaymentWhereUniqueInput
+    update: XOR<TreasuryLoanRepaymentUpdateWithoutMethodInput, TreasuryLoanRepaymentUncheckedUpdateWithoutMethodInput>
+    create: XOR<TreasuryLoanRepaymentCreateWithoutMethodInput, TreasuryLoanRepaymentUncheckedCreateWithoutMethodInput>
+  }
+
+  export type TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutMethodInput = {
+    where: TreasuryLoanRepaymentWhereUniqueInput
+    data: XOR<TreasuryLoanRepaymentUpdateWithoutMethodInput, TreasuryLoanRepaymentUncheckedUpdateWithoutMethodInput>
+  }
+
+  export type TreasuryLoanRepaymentUpdateManyWithWhereWithoutMethodInput = {
+    where: TreasuryLoanRepaymentScalarWhereInput
+    data: XOR<TreasuryLoanRepaymentUpdateManyMutationInput, TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodInput>
+  }
+
+  export type TreasuryLoanRepaymentScalarWhereInput = {
+    AND?: TreasuryLoanRepaymentScalarWhereInput | TreasuryLoanRepaymentScalarWhereInput[]
+    OR?: TreasuryLoanRepaymentScalarWhereInput[]
+    NOT?: TreasuryLoanRepaymentScalarWhereInput | TreasuryLoanRepaymentScalarWhereInput[]
+    id?: StringFilter<"TreasuryLoanRepayment"> | string
+    tenantId?: StringFilter<"TreasuryLoanRepayment"> | string
+    shopId?: StringFilter<"TreasuryLoanRepayment"> | string
+    loanId?: StringFilter<"TreasuryLoanRepayment"> | string
+    methodId?: StringFilter<"TreasuryLoanRepayment"> | string
+    amount?: FloatFilter<"TreasuryLoanRepayment"> | number
+    notes?: StringNullableFilter<"TreasuryLoanRepayment"> | string | null
+    createdBy?: StringNullableFilter<"TreasuryLoanRepayment"> | string | null
+    createdAt?: DateTimeFilter<"TreasuryLoanRepayment"> | Date | string
+  }
+
   export type PaymentMethodCreateWithoutOutgoingTransfersInput = {
     id?: string
     tenantId: string
@@ -10100,6 +13343,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationCreateNestedManyWithoutMethodInput
     deposits?: OperationalDepositCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodUncheckedCreateWithoutOutgoingTransfersInput = {
@@ -10119,6 +13364,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationUncheckedCreateNestedManyWithoutMethodInput
     deposits?: OperationalDepositUncheckedCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationUncheckedCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanUncheckedCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodCreateOrConnectWithoutOutgoingTransfersInput = {
@@ -10143,6 +13390,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationCreateNestedManyWithoutMethodInput
     deposits?: OperationalDepositCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodUncheckedCreateWithoutIncomingTransfersInput = {
@@ -10162,6 +13411,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationUncheckedCreateNestedManyWithoutMethodInput
     deposits?: OperationalDepositUncheckedCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationUncheckedCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanUncheckedCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodCreateOrConnectWithoutIncomingTransfersInput = {
@@ -10197,6 +13448,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationUpdateManyWithoutMethodNestedInput
     deposits?: OperationalDepositUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodUncheckedUpdateWithoutOutgoingTransfersInput = {
@@ -10216,6 +13469,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationUncheckedUpdateManyWithoutMethodNestedInput
     deposits?: OperationalDepositUncheckedUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUncheckedUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUncheckedUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodUpsertWithoutIncomingTransfersInput = {
@@ -10246,6 +13501,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationUpdateManyWithoutMethodNestedInput
     deposits?: OperationalDepositUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodUncheckedUpdateWithoutIncomingTransfersInput = {
@@ -10265,6 +13522,8 @@ export namespace Prisma {
     confirmations?: PhysicalConfirmationUncheckedUpdateManyWithoutMethodNestedInput
     deposits?: OperationalDepositUncheckedUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUncheckedUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUncheckedUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodCreateWithoutConfirmationsInput = {
@@ -10284,6 +13543,8 @@ export namespace Prisma {
     incomingTransfers?: TransferCreateNestedManyWithoutToMethodInput
     deposits?: OperationalDepositCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodUncheckedCreateWithoutConfirmationsInput = {
@@ -10303,6 +13564,8 @@ export namespace Prisma {
     incomingTransfers?: TransferUncheckedCreateNestedManyWithoutToMethodInput
     deposits?: OperationalDepositUncheckedCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationUncheckedCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanUncheckedCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodCreateOrConnectWithoutConfirmationsInput = {
@@ -10338,6 +13601,8 @@ export namespace Prisma {
     incomingTransfers?: TransferUpdateManyWithoutToMethodNestedInput
     deposits?: OperationalDepositUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodUncheckedUpdateWithoutConfirmationsInput = {
@@ -10357,6 +13622,8 @@ export namespace Prisma {
     incomingTransfers?: TransferUncheckedUpdateManyWithoutToMethodNestedInput
     deposits?: OperationalDepositUncheckedUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUncheckedUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUncheckedUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodCreateWithoutDepositsInput = {
@@ -10376,6 +13643,8 @@ export namespace Prisma {
     incomingTransfers?: TransferCreateNestedManyWithoutToMethodInput
     confirmations?: PhysicalConfirmationCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodUncheckedCreateWithoutDepositsInput = {
@@ -10395,6 +13664,8 @@ export namespace Prisma {
     incomingTransfers?: TransferUncheckedCreateNestedManyWithoutToMethodInput
     confirmations?: PhysicalConfirmationUncheckedCreateNestedManyWithoutMethodInput
     reconciliations?: ReconciliationUncheckedCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanUncheckedCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodCreateOrConnectWithoutDepositsInput = {
@@ -10430,6 +13701,8 @@ export namespace Prisma {
     incomingTransfers?: TransferUpdateManyWithoutToMethodNestedInput
     confirmations?: PhysicalConfirmationUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodUncheckedUpdateWithoutDepositsInput = {
@@ -10449,6 +13722,8 @@ export namespace Prisma {
     incomingTransfers?: TransferUncheckedUpdateManyWithoutToMethodNestedInput
     confirmations?: PhysicalConfirmationUncheckedUpdateManyWithoutMethodNestedInput
     reconciliations?: ReconciliationUncheckedUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUncheckedUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodCreateWithoutReconciliationsInput = {
@@ -10468,6 +13743,8 @@ export namespace Prisma {
     incomingTransfers?: TransferCreateNestedManyWithoutToMethodInput
     confirmations?: PhysicalConfirmationCreateNestedManyWithoutMethodInput
     deposits?: OperationalDepositCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodUncheckedCreateWithoutReconciliationsInput = {
@@ -10487,6 +13764,8 @@ export namespace Prisma {
     incomingTransfers?: TransferUncheckedCreateNestedManyWithoutToMethodInput
     confirmations?: PhysicalConfirmationUncheckedCreateNestedManyWithoutMethodInput
     deposits?: OperationalDepositUncheckedCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanUncheckedCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutMethodInput
   }
 
   export type PaymentMethodCreateOrConnectWithoutReconciliationsInput = {
@@ -10522,6 +13801,8 @@ export namespace Prisma {
     incomingTransfers?: TransferUpdateManyWithoutToMethodNestedInput
     confirmations?: PhysicalConfirmationUpdateManyWithoutMethodNestedInput
     deposits?: OperationalDepositUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUpdateManyWithoutMethodNestedInput
   }
 
   export type PaymentMethodUncheckedUpdateWithoutReconciliationsInput = {
@@ -10541,6 +13822,336 @@ export namespace Prisma {
     incomingTransfers?: TransferUncheckedUpdateManyWithoutToMethodNestedInput
     confirmations?: PhysicalConfirmationUncheckedUpdateManyWithoutMethodNestedInput
     deposits?: OperationalDepositUncheckedUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUncheckedUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodNestedInput
+  }
+
+  export type PaymentMethodCreateWithoutLoansInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    name: string
+    type: string
+    accountNumber?: string | null
+    bankName?: string | null
+    balance?: number
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    outgoingTransfers?: TransferCreateNestedManyWithoutFromMethodInput
+    incomingTransfers?: TransferCreateNestedManyWithoutToMethodInput
+    confirmations?: PhysicalConfirmationCreateNestedManyWithoutMethodInput
+    deposits?: OperationalDepositCreateNestedManyWithoutMethodInput
+    reconciliations?: ReconciliationCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentCreateNestedManyWithoutMethodInput
+  }
+
+  export type PaymentMethodUncheckedCreateWithoutLoansInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    name: string
+    type: string
+    accountNumber?: string | null
+    bankName?: string | null
+    balance?: number
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    outgoingTransfers?: TransferUncheckedCreateNestedManyWithoutFromMethodInput
+    incomingTransfers?: TransferUncheckedCreateNestedManyWithoutToMethodInput
+    confirmations?: PhysicalConfirmationUncheckedCreateNestedManyWithoutMethodInput
+    deposits?: OperationalDepositUncheckedCreateNestedManyWithoutMethodInput
+    reconciliations?: ReconciliationUncheckedCreateNestedManyWithoutMethodInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedCreateNestedManyWithoutMethodInput
+  }
+
+  export type PaymentMethodCreateOrConnectWithoutLoansInput = {
+    where: PaymentMethodWhereUniqueInput
+    create: XOR<PaymentMethodCreateWithoutLoansInput, PaymentMethodUncheckedCreateWithoutLoansInput>
+  }
+
+  export type TreasuryLoanRepaymentCreateWithoutLoanInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    amount: number
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    method: PaymentMethodCreateNestedOneWithoutLoanRepaymentsInput
+  }
+
+  export type TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    methodId: string
+    amount: number
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryLoanRepaymentCreateOrConnectWithoutLoanInput = {
+    where: TreasuryLoanRepaymentWhereUniqueInput
+    create: XOR<TreasuryLoanRepaymentCreateWithoutLoanInput, TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput>
+  }
+
+  export type TreasuryLoanRepaymentCreateManyLoanInputEnvelope = {
+    data: TreasuryLoanRepaymentCreateManyLoanInput | TreasuryLoanRepaymentCreateManyLoanInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PaymentMethodUpsertWithoutLoansInput = {
+    update: XOR<PaymentMethodUpdateWithoutLoansInput, PaymentMethodUncheckedUpdateWithoutLoansInput>
+    create: XOR<PaymentMethodCreateWithoutLoansInput, PaymentMethodUncheckedCreateWithoutLoansInput>
+    where?: PaymentMethodWhereInput
+  }
+
+  export type PaymentMethodUpdateToOneWithWhereWithoutLoansInput = {
+    where?: PaymentMethodWhereInput
+    data: XOR<PaymentMethodUpdateWithoutLoansInput, PaymentMethodUncheckedUpdateWithoutLoansInput>
+  }
+
+  export type PaymentMethodUpdateWithoutLoansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    balance?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    outgoingTransfers?: TransferUpdateManyWithoutFromMethodNestedInput
+    incomingTransfers?: TransferUpdateManyWithoutToMethodNestedInput
+    confirmations?: PhysicalConfirmationUpdateManyWithoutMethodNestedInput
+    deposits?: OperationalDepositUpdateManyWithoutMethodNestedInput
+    reconciliations?: ReconciliationUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUpdateManyWithoutMethodNestedInput
+  }
+
+  export type PaymentMethodUncheckedUpdateWithoutLoansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    balance?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    outgoingTransfers?: TransferUncheckedUpdateManyWithoutFromMethodNestedInput
+    incomingTransfers?: TransferUncheckedUpdateManyWithoutToMethodNestedInput
+    confirmations?: PhysicalConfirmationUncheckedUpdateManyWithoutMethodNestedInput
+    deposits?: OperationalDepositUncheckedUpdateManyWithoutMethodNestedInput
+    reconciliations?: ReconciliationUncheckedUpdateManyWithoutMethodNestedInput
+    loanRepayments?: TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodNestedInput
+  }
+
+  export type TreasuryLoanRepaymentUpsertWithWhereUniqueWithoutLoanInput = {
+    where: TreasuryLoanRepaymentWhereUniqueInput
+    update: XOR<TreasuryLoanRepaymentUpdateWithoutLoanInput, TreasuryLoanRepaymentUncheckedUpdateWithoutLoanInput>
+    create: XOR<TreasuryLoanRepaymentCreateWithoutLoanInput, TreasuryLoanRepaymentUncheckedCreateWithoutLoanInput>
+  }
+
+  export type TreasuryLoanRepaymentUpdateWithWhereUniqueWithoutLoanInput = {
+    where: TreasuryLoanRepaymentWhereUniqueInput
+    data: XOR<TreasuryLoanRepaymentUpdateWithoutLoanInput, TreasuryLoanRepaymentUncheckedUpdateWithoutLoanInput>
+  }
+
+  export type TreasuryLoanRepaymentUpdateManyWithWhereWithoutLoanInput = {
+    where: TreasuryLoanRepaymentScalarWhereInput
+    data: XOR<TreasuryLoanRepaymentUpdateManyMutationInput, TreasuryLoanRepaymentUncheckedUpdateManyWithoutLoanInput>
+  }
+
+  export type TreasuryLoanCreateWithoutRepaymentsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    direction: string
+    counterparty: string
+    principal: number
+    outstanding: number
+    status?: string
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    method: PaymentMethodCreateNestedOneWithoutLoansInput
+  }
+
+  export type TreasuryLoanUncheckedCreateWithoutRepaymentsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    direction: string
+    counterparty: string
+    principal: number
+    outstanding: number
+    methodId: string
+    status?: string
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TreasuryLoanCreateOrConnectWithoutRepaymentsInput = {
+    where: TreasuryLoanWhereUniqueInput
+    create: XOR<TreasuryLoanCreateWithoutRepaymentsInput, TreasuryLoanUncheckedCreateWithoutRepaymentsInput>
+  }
+
+  export type PaymentMethodCreateWithoutLoanRepaymentsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    name: string
+    type: string
+    accountNumber?: string | null
+    bankName?: string | null
+    balance?: number
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    outgoingTransfers?: TransferCreateNestedManyWithoutFromMethodInput
+    incomingTransfers?: TransferCreateNestedManyWithoutToMethodInput
+    confirmations?: PhysicalConfirmationCreateNestedManyWithoutMethodInput
+    deposits?: OperationalDepositCreateNestedManyWithoutMethodInput
+    reconciliations?: ReconciliationCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanCreateNestedManyWithoutMethodInput
+  }
+
+  export type PaymentMethodUncheckedCreateWithoutLoanRepaymentsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    name: string
+    type: string
+    accountNumber?: string | null
+    bankName?: string | null
+    balance?: number
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    outgoingTransfers?: TransferUncheckedCreateNestedManyWithoutFromMethodInput
+    incomingTransfers?: TransferUncheckedCreateNestedManyWithoutToMethodInput
+    confirmations?: PhysicalConfirmationUncheckedCreateNestedManyWithoutMethodInput
+    deposits?: OperationalDepositUncheckedCreateNestedManyWithoutMethodInput
+    reconciliations?: ReconciliationUncheckedCreateNestedManyWithoutMethodInput
+    loans?: TreasuryLoanUncheckedCreateNestedManyWithoutMethodInput
+  }
+
+  export type PaymentMethodCreateOrConnectWithoutLoanRepaymentsInput = {
+    where: PaymentMethodWhereUniqueInput
+    create: XOR<PaymentMethodCreateWithoutLoanRepaymentsInput, PaymentMethodUncheckedCreateWithoutLoanRepaymentsInput>
+  }
+
+  export type TreasuryLoanUpsertWithoutRepaymentsInput = {
+    update: XOR<TreasuryLoanUpdateWithoutRepaymentsInput, TreasuryLoanUncheckedUpdateWithoutRepaymentsInput>
+    create: XOR<TreasuryLoanCreateWithoutRepaymentsInput, TreasuryLoanUncheckedCreateWithoutRepaymentsInput>
+    where?: TreasuryLoanWhereInput
+  }
+
+  export type TreasuryLoanUpdateToOneWithWhereWithoutRepaymentsInput = {
+    where?: TreasuryLoanWhereInput
+    data: XOR<TreasuryLoanUpdateWithoutRepaymentsInput, TreasuryLoanUncheckedUpdateWithoutRepaymentsInput>
+  }
+
+  export type TreasuryLoanUpdateWithoutRepaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    counterparty?: StringFieldUpdateOperationsInput | string
+    principal?: FloatFieldUpdateOperationsInput | number
+    outstanding?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    method?: PaymentMethodUpdateOneRequiredWithoutLoansNestedInput
+  }
+
+  export type TreasuryLoanUncheckedUpdateWithoutRepaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    counterparty?: StringFieldUpdateOperationsInput | string
+    principal?: FloatFieldUpdateOperationsInput | number
+    outstanding?: FloatFieldUpdateOperationsInput | number
+    methodId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentMethodUpsertWithoutLoanRepaymentsInput = {
+    update: XOR<PaymentMethodUpdateWithoutLoanRepaymentsInput, PaymentMethodUncheckedUpdateWithoutLoanRepaymentsInput>
+    create: XOR<PaymentMethodCreateWithoutLoanRepaymentsInput, PaymentMethodUncheckedCreateWithoutLoanRepaymentsInput>
+    where?: PaymentMethodWhereInput
+  }
+
+  export type PaymentMethodUpdateToOneWithWhereWithoutLoanRepaymentsInput = {
+    where?: PaymentMethodWhereInput
+    data: XOR<PaymentMethodUpdateWithoutLoanRepaymentsInput, PaymentMethodUncheckedUpdateWithoutLoanRepaymentsInput>
+  }
+
+  export type PaymentMethodUpdateWithoutLoanRepaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    balance?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    outgoingTransfers?: TransferUpdateManyWithoutFromMethodNestedInput
+    incomingTransfers?: TransferUpdateManyWithoutToMethodNestedInput
+    confirmations?: PhysicalConfirmationUpdateManyWithoutMethodNestedInput
+    deposits?: OperationalDepositUpdateManyWithoutMethodNestedInput
+    reconciliations?: ReconciliationUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUpdateManyWithoutMethodNestedInput
+  }
+
+  export type PaymentMethodUncheckedUpdateWithoutLoanRepaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    balance?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    outgoingTransfers?: TransferUncheckedUpdateManyWithoutFromMethodNestedInput
+    incomingTransfers?: TransferUncheckedUpdateManyWithoutToMethodNestedInput
+    confirmations?: PhysicalConfirmationUncheckedUpdateManyWithoutMethodNestedInput
+    deposits?: OperationalDepositUncheckedUpdateManyWithoutMethodNestedInput
+    reconciliations?: ReconciliationUncheckedUpdateManyWithoutMethodNestedInput
+    loans?: TreasuryLoanUncheckedUpdateManyWithoutMethodNestedInput
   }
 
   export type TransferCreateManyFromMethodInput = {
@@ -10601,6 +14212,32 @@ export namespace Prisma {
     reconciledBy: string
     reconciledAt?: Date | string
     notes?: string | null
+  }
+
+  export type TreasuryLoanCreateManyMethodInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    direction: string
+    counterparty: string
+    principal: number
+    outstanding: number
+    status?: string
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TreasuryLoanRepaymentCreateManyMethodInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    loanId: string
+    amount: number
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
   }
 
   export type TransferUpdateWithoutFromMethodInput = {
@@ -10783,6 +14420,130 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type TreasuryLoanUpdateWithoutMethodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    counterparty?: StringFieldUpdateOperationsInput | string
+    principal?: FloatFieldUpdateOperationsInput | number
+    outstanding?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repayments?: TreasuryLoanRepaymentUpdateManyWithoutLoanNestedInput
+  }
+
+  export type TreasuryLoanUncheckedUpdateWithoutMethodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    counterparty?: StringFieldUpdateOperationsInput | string
+    principal?: FloatFieldUpdateOperationsInput | number
+    outstanding?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repayments?: TreasuryLoanRepaymentUncheckedUpdateManyWithoutLoanNestedInput
+  }
+
+  export type TreasuryLoanUncheckedUpdateManyWithoutMethodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    counterparty?: StringFieldUpdateOperationsInput | string
+    principal?: FloatFieldUpdateOperationsInput | number
+    outstanding?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryLoanRepaymentUpdateWithoutMethodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    loan?: TreasuryLoanUpdateOneRequiredWithoutRepaymentsNestedInput
+  }
+
+  export type TreasuryLoanRepaymentUncheckedUpdateWithoutMethodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    loanId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryLoanRepaymentUncheckedUpdateManyWithoutMethodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    loanId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryLoanRepaymentCreateManyLoanInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    methodId: string
+    amount: number
+    notes?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryLoanRepaymentUpdateWithoutLoanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    method?: PaymentMethodUpdateOneRequiredWithoutLoanRepaymentsNestedInput
+  }
+
+  export type TreasuryLoanRepaymentUncheckedUpdateWithoutLoanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    methodId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryLoanRepaymentUncheckedUpdateManyWithoutLoanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    methodId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -10792,6 +14553,10 @@ export namespace Prisma {
      * @deprecated Use PaymentMethodCountOutputTypeDefaultArgs instead
      */
     export type PaymentMethodCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PaymentMethodCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TreasuryLoanCountOutputTypeDefaultArgs instead
+     */
+    export type TreasuryLoanCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TreasuryLoanCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use PaymentMethodDefaultArgs instead
      */
@@ -10812,6 +14577,14 @@ export namespace Prisma {
      * @deprecated Use ReconciliationDefaultArgs instead
      */
     export type ReconciliationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ReconciliationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TreasuryLoanDefaultArgs instead
+     */
+    export type TreasuryLoanArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TreasuryLoanDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TreasuryLoanRepaymentDefaultArgs instead
+     */
+    export type TreasuryLoanRepaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TreasuryLoanRepaymentDefaultArgs<ExtArgs>
     /**
      * @deprecated Use AuditLogDefaultArgs instead
      */

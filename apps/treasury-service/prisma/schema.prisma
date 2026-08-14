@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../dist/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -30,6 +30,8 @@ model PaymentMethod {
   confirmations PhysicalConfirmation[]
   deposits    OperationalDeposit[]
   reconciliations Reconciliation[]
+  loans       TreasuryLoan[]
+  loanRepayments TreasuryLoanRepayment[]
 
   @@index([tenantId])
   @@index([shopId])
@@ -119,6 +121,51 @@ model Reconciliation {
   @@index([methodId])
   @@index([reconciledAt])
   @@map("reconciliations")
+}
+
+model TreasuryLoan {
+  id            String   @id @default(uuid())
+  tenantId      String
+  shopId        String
+  direction     String   // BORROWED (business borrows), LENT (business lends)
+  counterparty  String
+  principal     Float
+  outstanding   Float
+  methodId      String
+  status        String   @default("ACTIVE") // ACTIVE, REPAID
+  notes         String?
+  createdBy     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  method      PaymentMethod @relation(fields: [methodId], references: [id])
+  repayments  TreasuryLoanRepayment[]
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([direction])
+  @@index([status])
+  @@map("treasury_loans")
+}
+
+model TreasuryLoanRepayment {
+  id        String   @id @default(uuid())
+  tenantId  String
+  shopId    String
+  loanId    String
+  methodId  String
+  amount    Float
+  notes     String?
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  loan   TreasuryLoan  @relation(fields: [loanId], references: [id])
+  method PaymentMethod @relation(fields: [methodId], references: [id])
+
+  @@index([tenantId])
+  @@index([shopId])
+  @@index([loanId])
+  @@map("treasury_loan_repayments")
 }
 
 model AuditLog {

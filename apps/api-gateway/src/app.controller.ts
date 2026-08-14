@@ -19,17 +19,18 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   // Accounting commands
   'PostJournalEntry': ['accounting:journal:post'],
   'CreateLedgerAccount': ['accounting:account:create'],
-  'OpenWorkPeriod': ['accounting:workperiod:open'],
-  'CloseWorkPeriod': ['accounting:workperiod:close'],
-  'GetActiveWorkPeriod': ['accounting:workperiod:read'],
-  'GetAccountTransactions': ['accounting:journal:read'],
-  'GetTrialBalance': ['accounting:report:read'],
-  'GetIncomeStatement': ['accounting:report:read'],
-  'GetBalanceSheet': ['accounting:report:read'],
+  'OpenWorkPeriod': [],
+  'CloseWorkPeriod': [],
+  'GetActiveWorkPeriod': [],
+  'GetAccountTransactions': [],
+  'GetTrialBalance': [],
+  'GetIncomeStatement': [],
+  'GetBalanceSheet': [],
   'CreatePostingBatch': ['accounting:batch:create'],
   'PostBatch': ['accounting:batch:post'],
   'RecordExpense': [],
   'GetExpenses': [],
+  'GetChartOfAccounts': [],
   
   // Inventory commands
   'AddProduct': ['inventory:product:create'],
@@ -116,8 +117,15 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'DeleteSupplier': ['supplier:delete'],
   
   // Treasury commands
-  'RecordOperationalDeposit': ['treasury:deposit:create'],
-  'ReconcilePaymentMethod': ['treasury:reconcile:create'],
+  'RecordOperationalDeposit': [],
+  'ReconcilePaymentMethod': [],
+  'CreatePaymentMethod': [],
+  'GetPaymentMethods': [],
+  'CreateTransfer': [],
+  'CreatePhysicalConfirmation': [],
+  'GetTreasuryActivity': [],
+  'RecordTreasuryLoan': [],
+  'RecordLoanRepayment': [],
 };
 
 // Command to role mapping (role-based access control)
@@ -143,6 +151,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'PostBatch': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'RecordExpense': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetExpenses': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetChartOfAccounts': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   
   // Inventory commands
   'AddProduct': ['ADMIN', 'MANAGER'],
@@ -233,6 +242,13 @@ const COMMAND_ROLES: Record<string, string[]> = {
   // Treasury commands
   'RecordOperationalDeposit': ['ADMIN', 'MANAGER', 'STAFF'],
   'ReconcilePaymentMethod': ['ADMIN', 'MANAGER'],
+  'CreatePaymentMethod': ['ADMIN', 'MANAGER'],
+  'GetPaymentMethods': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'CreateTransfer': ['ADMIN', 'MANAGER'],
+  'CreatePhysicalConfirmation': ['ADMIN', 'MANAGER', 'STAFF'],
+  'GetTreasuryActivity': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'RecordTreasuryLoan': ['ADMIN', 'MANAGER'],
+  'RecordLoanRepayment': ['ADMIN', 'MANAGER'],
 };
 
 // Commands that are public (no authenticated user required). Their role/permission
@@ -316,7 +332,7 @@ export class AppController {
         return await firstValueFrom(this.tenantClient.send({ cmd }, { payload, context }));
       }
 
-      if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod', 'GetAccountTransactions', 'GetTrialBalance', 'GetIncomeStatement', 'GetBalanceSheet', 'CreatePostingBatch', 'PostBatch', 'RecordExpense', 'GetExpenses'].includes(cmd)) {
+      if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod', 'GetAccountTransactions', 'GetTrialBalance', 'GetIncomeStatement', 'GetBalanceSheet', 'CreatePostingBatch', 'PostBatch', 'RecordExpense', 'GetExpenses', 'GetChartOfAccounts'].includes(cmd)) {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 
@@ -336,7 +352,7 @@ export class AppController {
         return await firstValueFrom(this.supplierClient.send({ cmd }, { payload, context }));
       }
 
-      if (['RecordOperationalDeposit', 'ReconcilePaymentMethod'].includes(cmd)) {
+      if (['RecordOperationalDeposit', 'ReconcilePaymentMethod', 'CreatePaymentMethod', 'GetPaymentMethods', 'CreateTransfer', 'CreatePhysicalConfirmation', 'GetTreasuryActivity', 'RecordTreasuryLoan', 'RecordLoanRepayment'].includes(cmd)) {
         return await firstValueFrom(this.treasuryClient.send({ cmd }, { payload, context }));
       }
 

@@ -187,6 +187,34 @@ exports.Prisma.ReconciliationScalarFieldEnum = {
   notes: 'notes'
 };
 
+exports.Prisma.TreasuryLoanScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  direction: 'direction',
+  counterparty: 'counterparty',
+  principal: 'principal',
+  outstanding: 'outstanding',
+  methodId: 'methodId',
+  status: 'status',
+  notes: 'notes',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TreasuryLoanRepaymentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  loanId: 'loanId',
+  methodId: 'methodId',
+  amount: 'amount',
+  notes: 'notes',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.AuditLogScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -222,6 +250,8 @@ exports.Prisma.ModelName = {
   PhysicalConfirmation: 'PhysicalConfirmation',
   OperationalDeposit: 'OperationalDeposit',
   Reconciliation: 'Reconciliation',
+  TreasuryLoan: 'TreasuryLoan',
+  TreasuryLoanRepayment: 'TreasuryLoanRepayment',
   AuditLog: 'AuditLog'
 };
 

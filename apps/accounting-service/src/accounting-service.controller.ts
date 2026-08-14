@@ -11,6 +11,8 @@ import { GetBalanceSheetQuery } from './queries/impl/get-balance-sheet.query.js'
 import { GetAccountTransactionsQuery } from './queries/impl/get-account-transactions.query.js';
 import { RecordExpenseCommand } from './commands/impl/record-expense.command.js';
 import { GetExpensesQuery } from './queries/impl/get-expenses.query.js';
+import { GetChartOfAccountsQuery } from './queries/impl/get-chart-of-accounts.query.js';
+import { GetActiveWorkPeriodQuery } from './queries/impl/get-active-work-period.query.js';
 
 @Controller()
 export class AccountingServiceController {
@@ -67,6 +69,16 @@ export class AccountingServiceController {
   @MessagePattern({ cmd: 'GetExpenses' })
   async handleGetExpenses(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetExpensesQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetChartOfAccounts' })
+  async handleGetChartOfAccounts(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetChartOfAccountsQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetActiveWorkPeriod' })
+  async handleGetActiveWorkPeriod(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetActiveWorkPeriodQuery(data.payload, data.context));
   }
 }
 

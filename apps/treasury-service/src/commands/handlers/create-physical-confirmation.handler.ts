@@ -15,74 +15,106 @@ export class CreatePhysicalConfirmationHandler extends BaseCommandHandler<Create
   async execute(command: CreatePhysicalConfirmationCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
+    const tenantId = payload?.tenantId || context?.tenantId;
+    const shopId = payload?.shopId || context?.shopId;
+    const userId = payload?.confirmedBy || context?.userId || 'system';
 
     try {
-      if (!payload?.tenantId || !payload?.shopId || !payload?.methodId || !payload?.confirmedBy || !payload?.amount) {
+      if (!tenantId || !shopId || !payload?.methodId || payload?.amount == null) {
         return {
           status: 'error',
           traceId,
-          message: 'Tenant ID, shop ID, method ID, confirmed by, and amount are required',
-          errorCode: ErrorCode.VALIDATION_ERROR
+          message: 'Method and counted amount are required',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
+      const amount = Number(payload.amount);
+      if (!Number.isFinite(amount) || amount < 0) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Counted amount must be 0 or more',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
+      const method = await prisma.paymentMethod.findFirst({
+        where: { id: payload.methodId, tenantId, shopId },
+      });
+      if (!method) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Payment method not found',
+          errorCode: ErrorCode.NOT_FOUND,
         };
       }
 
       const confirmation = await prisma.physicalConfirmation.create({
         data: {
-          tenantId: payload.tenantId,
-          shopId: payload.shopId,
-          methodId: payload.methodId,
-          confirmedBy: payload.confirmedBy,
-          amount: payload.amount,
-          notes: payload.notes,
-        }
+          tenantId,
+          shopId,
+          methodId: method.id,
+          confirmedBy: userId,
+          amount,
+          notes: payload.notes || null,
+        },
       });
 
-      // Log audit action
       try {
         await prisma.auditLog.create({
           data: {
-            tenantId: payload.tenantId,
-            shopId: payload.shopId,
-            userId: payload.confirmedBy,
+            tenantId,
+            shopId,
+            userId,
             action: 'CreatePhysicalConfirmation',
             resource: 'PhysicalConfirmation',
             resourceId: confirmation.id,
-            traceId: context?.traceId || null,
+            traceId,
             details: JSON.stringify({
-              methodId: payload.methodId,
-              amount: payload.amount,
-              notes: payload.notes
-            })
-          }
+              methodId: method.id,
+              systemBalance: method.balance,
+              counted: amount,
+              difference: amount - Number(method.balance),
+              notes: payload.notes,
+            }),
+          },
         });
       } catch (auditError) {
         console.error('Failed to log audit action:', auditError);
       }
 
-      // Publish PhysicalConfirmationCreated event
       await this.eventBus.publish(
         {
           eventType: 'PhysicalConfirmationCreated',
           aggregateId: confirmation.id,
           aggregateType: 'PhysicalConfirmation',
+          tenantId,
+          shopId,
           payload: confirmation,
           timestamp: new Date().toISOString(),
           correlationId: traceId,
+          createdBy: userId,
         },
-        'physical-confirmation.created'
+        'physical-confirmation.created',
       );
 
       return {
         status: 'success',
         traceId,
-        data: confirmation
+        data: {
+          ...confirmation,
+          systemBalance: method.balance,
+          difference: amount - Number(method.balance),
+        },
       };
     } catch (error: any) {
       return {
         status: 'error',
         traceId,
         message: error.message || 'Failed to create physical confirmation',
-        errorCode: error.code || ErrorCode.INTERNAL_ERROR
+        errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }
   }

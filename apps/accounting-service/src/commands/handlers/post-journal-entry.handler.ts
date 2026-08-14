@@ -59,26 +59,22 @@ export class PostJournalEntryHandler extends BaseCommandHandler<PostJournalEntry
           };
         }
       } else {
-        const activeWp = await prisma.workPeriod.findFirst({
+        let activeWp = await prisma.workPeriod.findFirst({
           where: { shopId: context.shopId, status: 'OPEN' },
           orderBy: { openedAt: 'desc' }
         });
         if (!activeWp) {
-          const closedWp = await prisma.workPeriod.findFirst({
-            where: { shopId: context.shopId },
-            orderBy: { openedAt: 'desc' }
+          activeWp = await prisma.workPeriod.create({
+            data: {
+              tenantId: context.tenantId!,
+              shopId: context.shopId!,
+              openedBy: context.userId!,
+              createdBy: context.userId,
+              status: 'OPEN',
+            },
           });
-          if (closedWp) {
-            return {
-              status: 'error',
-              traceId,
-              message: `Shop ${context.shopId} work period is ${closedWp.status}. New journal entries are locked out.`,
-              errorCode: ErrorCode.WORK_PERIOD_CLOSED
-            };
-          }
-        } else {
-          activeWorkPeriodId = activeWp.id;
         }
+        activeWorkPeriodId = activeWp.id;
       }
 
       const result = await prisma.$transaction(async (tx) => {
@@ -114,7 +110,7 @@ export class PostJournalEntryHandler extends BaseCommandHandler<PostJournalEntry
           data: {
             tenantId: context.tenantId!,
             shopId: context.shopId!,
-            workPeriodId: context.workPeriodId || 'default-work-period',
+            workPeriodId: activeWorkPeriodId,
             description: payload.description || 'Journal Entry',
             postedBy: context.userId!,
             status: payload.postImmediately === true ? 'POSTED' : 'DRAFT',

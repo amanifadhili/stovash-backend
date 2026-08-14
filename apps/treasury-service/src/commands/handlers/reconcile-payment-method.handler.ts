@@ -9,68 +9,76 @@ export class ReconcilePaymentMethodHandler extends BaseCommandHandler<ReconcileP
   async execute(command: ReconcilePaymentMethodCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const traceId = context?.traceId || 'unknown';
+    const tenantId = context?.tenantId;
+    const shopId = context?.shopId;
+    const userId = context?.userId || 'system';
 
     try {
-      if (!payload?.methodId || payload?.physicalBalance === undefined || payload?.physicalBalance === null) {
+      if (!tenantId || !shopId || !payload?.methodId || payload?.physicalBalance === undefined || payload?.physicalBalance === null) {
         return {
           status: 'error',
           traceId,
-          message: 'Payment method ID and physical balance are required',
-          errorCode: ErrorCode.VALIDATION_ERROR
+          message: 'Payment method and counted balance are required',
+          errorCode: ErrorCode.VALIDATION_ERROR,
         };
       }
 
-      // Verify payment method exists
-      const paymentMethod = await prisma.paymentMethod.findUnique({
-        where: { id: payload.methodId }
-      });
+      const physicalBalance = Number(payload.physicalBalance);
+      if (!Number.isFinite(physicalBalance) || physicalBalance < 0) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Counted balance must be 0 or more',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
 
+      const paymentMethod = await prisma.paymentMethod.findFirst({
+        where: { id: payload.methodId, tenantId, shopId },
+      });
       if (!paymentMethod) {
         return {
           status: 'error',
           traceId,
           message: 'Payment method not found',
-          errorCode: ErrorCode.NOT_FOUND
+          errorCode: ErrorCode.NOT_FOUND,
         };
       }
 
-      const systemBalance = paymentMethod.balance;
-      const physicalBalance = payload.physicalBalance;
+      const systemBalance = Number(paymentMethod.balance);
       const difference = physicalBalance - systemBalance;
 
-      // Create reconciliation record
       const reconciliation = await prisma.reconciliation.create({
         data: {
-          tenantId: paymentMethod.tenantId,
-          shopId: paymentMethod.shopId,
+          tenantId,
+          shopId,
           methodId: payload.methodId,
           systemBalance,
           physicalBalance,
           difference,
-          reconciledBy: context?.userId || 'system',
-          notes: payload.notes
-        }
+          reconciledBy: userId,
+          notes: payload.notes || null,
+        },
       });
 
-      // Log audit action
       try {
         await prisma.auditLog.create({
           data: {
-            tenantId: paymentMethod.tenantId,
-            shopId: paymentMethod.shopId,
-            userId: context?.userId || null,
+            tenantId,
+            shopId,
+            userId,
             action: 'ReconcilePaymentMethod',
             resource: 'Reconciliation',
             resourceId: reconciliation.id,
-            traceId: context?.traceId || null,
+            traceId,
             details: JSON.stringify({
               methodId: payload.methodId,
               systemBalance,
               physicalBalance,
               difference,
-              notes: payload.notes
-            })
-          }
+              notes: payload.notes,
+            }),
+          },
         });
       } catch (auditError) {
         console.error('Failed to log audit action:', auditError);
@@ -81,15 +89,15 @@ export class ReconcilePaymentMethodHandler extends BaseCommandHandler<ReconcileP
         traceId,
         data: {
           ...reconciliation,
-          isBalanced: difference === 0
-        }
+          isBalanced: Math.abs(difference) < 0.01,
+        },
       };
     } catch (error: any) {
       return {
         status: 'error',
         traceId,
         message: error.message || 'Failed to reconcile payment method',
-        errorCode: error.code || ErrorCode.INTERNAL_ERROR
+        errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }
   }
