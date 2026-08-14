@@ -39,6 +39,7 @@ export class GetRentalsHandler implements IQueryHandler<GetRentalsQuery> {
       });
 
       const itemIds = rentals.map((r: any) => r.inventoryItemId).filter(Boolean);
+      const productIds = [...new Set(rentals.map((r: any) => r.productId).filter(Boolean))];
       const items = itemIds.length
         ? await prisma.inventoryItem.findMany({
             where: { tenantId, id: { in: itemIds } },
@@ -50,11 +51,28 @@ export class GetRentalsHandler implements IQueryHandler<GetRentalsQuery> {
           })
         : [];
       const itemById = new Map(items.map((i: any) => [i.id, i]));
+      const products = productIds.length
+        ? await prisma.product.findMany({
+            where: { tenantId, id: { in: productIds } },
+            select: { id: true, name: true, sku: true, imageUrl: true, quantityOnHand: true, type: true, trackingMethod: true },
+          })
+        : [];
+      const productById = new Map(products.map((p: any) => [p.id, p]));
 
       const data = rentals.map((r: any) => {
         const item = r.inventoryItemId ? itemById.get(r.inventoryItemId) : null;
+        const product = r.productId ? productById.get(r.productId) : null;
         return {
           ...r,
+          product: product
+            ? {
+                id: product.id,
+                name: product.name,
+                sku: product.sku,
+                imageUrl: product.imageUrl,
+                quantityOnHand: Number(product.quantityOnHand || 0),
+              }
+            : null,
           inventoryItem: item
             ? {
                 id: item.id,

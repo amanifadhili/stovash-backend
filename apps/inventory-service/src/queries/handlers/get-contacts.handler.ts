@@ -22,8 +22,12 @@ export class GetContactsHandler implements IQueryHandler<GetContactsQuery> {
       }
 
       const where: any = { tenantId };
-      if (shopId) where.shopId = shopId;
-      if (payload.type) where.type = payload.type;
+      if (payload.type === 'SHOP') {
+        where.type = 'SHOP';
+      } else {
+        if (shopId) where.shopId = shopId;
+        if (payload.type) where.type = payload.type;
+      }
       if (payload.search) {
         where.OR = [
           { name: { contains: payload.search, mode: 'insensitive' } },

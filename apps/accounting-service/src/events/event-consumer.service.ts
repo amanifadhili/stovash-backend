@@ -9,6 +9,8 @@ import { treasuryTransferCreatedConsumer } from './consumers/treasury-transfer-c
 import { treasuryLoanRecordedConsumer } from './consumers/treasury-loan-recorded.consumer.js';
 import { treasuryLoanRepaidConsumer } from './consumers/treasury-loan-repaid.consumer.js';
 import { treasuryDepositRecordedConsumer } from './consumers/treasury-deposit-recorded.consumer.js';
+import { lendInSoldConsumer } from './consumers/lend-in-sold.consumer.js';
+import { lendOutSettledConsumer } from './consumers/lend-out-settled.consumer.js';
 
 @Injectable()
 export class EventConsumerService implements OnModuleInit {
@@ -26,6 +28,8 @@ export class EventConsumerService implements OnModuleInit {
       this.eventBus.createConsumer('accounting-treasury-loans', 'treasury.loan.recorded');
       this.eventBus.createConsumer('accounting-treasury-loan-repayments', 'treasury.loan.repaid');
       this.eventBus.createConsumer('accounting-treasury-deposits', 'treasury.deposit.recorded');
+      this.eventBus.createConsumer('accounting-lend-in-sold', 'inventory.lend-in.sold');
+      this.eventBus.createConsumer('accounting-lend-out-settled', 'inventory.lend-out.settled');
 
       this.eventBus.registerHandler('accounting-sales', 'SaleCreated', saleCreatedConsumer);
       this.eventBus.registerHandler('accounting-purchases', 'PurchaseCreated', purchaseCreatedConsumer);
@@ -36,6 +40,8 @@ export class EventConsumerService implements OnModuleInit {
       this.eventBus.registerHandler('accounting-treasury-loans', 'TreasuryLoanRecorded', treasuryLoanRecordedConsumer);
       this.eventBus.registerHandler('accounting-treasury-loan-repayments', 'TreasuryLoanRepaymentRecorded', treasuryLoanRepaidConsumer);
       this.eventBus.registerHandler('accounting-treasury-deposits', 'TreasuryDepositRecorded', treasuryDepositRecordedConsumer);
+      this.eventBus.registerHandler('accounting-lend-in-sold', 'LendInSold', lendInSoldConsumer);
+      this.eventBus.registerHandler('accounting-lend-out-settled', 'LendOutSettled', lendOutSettledConsumer);
 
       // Now connect (will connect publisher + all consumers)
       await this.eventBus.connect();

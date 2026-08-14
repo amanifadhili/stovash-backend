@@ -9,12 +9,15 @@ export class OwnerPayoutLine {
 
 export class UpdateRentalStatusPayload {
   rentalId!: string;
-  status!: 'RETURNED' | 'SOLD' | 'CANCELLED';
+  status!: 'RETURNED' | 'SOLD' | 'SETTLED' | 'CANCELLED';
   salePrice?: number;
   ownerPayoutTotal?: number;
   ownerPayoutDetails?: OwnerPayoutLine[];
   commissionAmount?: number;
   maintenanceCost?: number;
+  /** True when extras were a cash out (not accessory qty from our stock). */
+  extrasCash?: boolean;
+  extrasPaymentMethod?: string;
   notes?: string;
 }
 

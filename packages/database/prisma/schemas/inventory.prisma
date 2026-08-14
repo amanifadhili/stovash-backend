@@ -18,7 +18,7 @@ model Contact {
   phone      String?
   email      String?
   address    String?
-  type       String   @default("RENTAL") // RENTAL, SUPPLIER, CUSTOMER, GENERAL
+  type       String   @default("RENTAL") // RENTAL, SUPPLIER, CUSTOMER, GENERAL, SHOP
   notes      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -202,7 +202,8 @@ model RentalAgreement {
   inventoryItemId  String?  // Optional: specific serialized item
   productId        String?  // Optional: product-level (for non-serialized items)
   customerId       String?  // Optional: link to existing customer
-  personName       String   // Required: person name (fallback if no customerId)
+  contactId        String?  // Neighbor shop (Contact type SHOP)
+  personName       String   // Shop name (or person name for legacy rows)
   personPhone      String?  // Optional: person phone
   agreementType    String   // OUTWARD_RENTAL, INWARD_CONSIGNMENT
   startDate        DateTime @default(now())
@@ -222,6 +223,7 @@ model RentalAgreement {
   @@index([shopId])
   @@index([inventoryItemId])
   @@index([customerId])
+  @@index([contactId])
   @@index([status])
   @@map("rental_agreements")
 }

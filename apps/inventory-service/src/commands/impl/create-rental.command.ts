@@ -19,13 +19,17 @@ export class CreateRentalPayload {
   inventoryItemId?: string;
   productId?: string;
   customerId?: string;
+  contactId?: string;
   personName?: string;
   personPhone?: string;
   agreementType!: 'OUTWARD_RENTAL' | 'INWARD_CONSIGNMENT';
   startDate?: string;
   notes?: string;
   rentalFee?: number;
+  /** Locked floor at collect: Store B min (Lend-IN) or our min (Lend-OUT). */
   ownerAgreedCost?: number;
+  /** Accessory qty. Devices omit this (treated as 1). */
+  quantity?: number;
   /** When set with INWARD_CONSIGNMENT, create a RENTED_IN inventory unit in the same transaction. */
   createInventory?: CreateInwardInventoryInput;
 }

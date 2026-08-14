@@ -20,7 +20,7 @@ model Contact {
   phone      String?
   email      String?
   address    String?
-  type       String   @default("RENTAL") // RENTAL, SUPPLIER, CUSTOMER, GENERAL
+  type       String   @default("RENTAL") // RENTAL, SUPPLIER, CUSTOMER, GENERAL, SHOP
   notes      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -297,20 +297,22 @@ model RentalAgreement {
   shopId           String
   inventoryItemId  String?   // For serialized device rental/consignment
   productId        String?   // For non-serialized accessory
-  personName       String    // Renter name (outward) or Owner name (inward)
+  contactId        String?   // Neighbor shop (Contact type SHOP)
+  personName       String    // Shop name (or person name for legacy rows)
   personPhone      String?
   agreementType    String    // OUTWARD_RENTAL, INWARD_CONSIGNMENT
   startDate        DateTime  @default(now())
   expectedReturn   DateTime?
   actualReturn     DateTime?
   rentalFee        Float?    // Agreed fee / rate for outward rental
-  ownerAgreedCost  Float?    // Agreed payout to owner when inward unit is sold
+  ownerAgreedCost  Float?    // Locked floor price spoken at collect (Store B min / our min)
   salePrice        Float?    // Customer sale price when the rental is sold
   ownerPayoutTotal Float?    // Amount paid to the owner on sale
   ownerPayoutDetails Json?   // [{ method, amount, reference }]
-  commissionAmount Float?    // Shop share: salePrice - ownerPayoutTotal
-  maintenanceCost  Float     @default(0) // Capitalized upgrades / maintenance by tenant
-  status           String    @default("ACTIVE") // ACTIVE, RETURNED, SOLD, CANCELLED
+  commissionAmount Float?    // Lend-IN: salePrice - floor - extras. Lend-OUT settle: floor - our cost.
+  maintenanceCost  Float     @default(0) // Extras at sale (bag/charger/cash), not added to floor
+  quantity         Float     @default(1) // Accessory qty hold; devices stay 1
+  status           String    @default("ACTIVE") // ACTIVE, RETURNED, SOLD, SETTLED, CANCELLED
   notes            String?
   createdById      String?
   createdAt        DateTime  @default(now())
@@ -320,5 +322,6 @@ model RentalAgreement {
   @@index([shopId])
   @@index([agreementType])
   @@index([status])
+  @@index([contactId])
   @@map("rental_agreements")
 }

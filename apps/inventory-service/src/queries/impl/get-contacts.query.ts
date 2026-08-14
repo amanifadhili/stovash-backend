@@ -1,7 +1,7 @@
 import { IRequestContext } from '@electronic-shop/types';
 
 export class GetContactsPayload {
-  type?: string; // RENTAL, SUPPLIER, CUSTOMER, GENERAL
+  type?: string; // RENTAL, SUPPLIER, CUSTOMER, GENERAL, SHOP
   search?: string;
 }
 

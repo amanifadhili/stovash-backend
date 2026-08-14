@@ -5,7 +5,7 @@ export class CreateContactPayload {
   phone?: string;
   email?: string;
   address?: string;
-  type?: string; // RENTAL, SUPPLIER, CUSTOMER, GENERAL
+  type?: string; // RENTAL, SUPPLIER, CUSTOMER, GENERAL, SHOP
   notes?: string;
 }
 

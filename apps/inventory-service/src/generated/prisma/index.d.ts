@@ -14428,6 +14428,7 @@ export namespace Prisma {
     ownerPayoutTotal: number | null
     commissionAmount: number | null
     maintenanceCost: number | null
+    quantity: number | null
   }
 
   export type RentalAgreementSumAggregateOutputType = {
@@ -14437,6 +14438,7 @@ export namespace Prisma {
     ownerPayoutTotal: number | null
     commissionAmount: number | null
     maintenanceCost: number | null
+    quantity: number | null
   }
 
   export type RentalAgreementMinAggregateOutputType = {
@@ -14445,6 +14447,7 @@ export namespace Prisma {
     shopId: string | null
     inventoryItemId: string | null
     productId: string | null
+    contactId: string | null
     personName: string | null
     personPhone: string | null
     agreementType: string | null
@@ -14457,6 +14460,7 @@ export namespace Prisma {
     ownerPayoutTotal: number | null
     commissionAmount: number | null
     maintenanceCost: number | null
+    quantity: number | null
     status: string | null
     notes: string | null
     createdById: string | null
@@ -14470,6 +14474,7 @@ export namespace Prisma {
     shopId: string | null
     inventoryItemId: string | null
     productId: string | null
+    contactId: string | null
     personName: string | null
     personPhone: string | null
     agreementType: string | null
@@ -14482,6 +14487,7 @@ export namespace Prisma {
     ownerPayoutTotal: number | null
     commissionAmount: number | null
     maintenanceCost: number | null
+    quantity: number | null
     status: string | null
     notes: string | null
     createdById: string | null
@@ -14495,6 +14501,7 @@ export namespace Prisma {
     shopId: number
     inventoryItemId: number
     productId: number
+    contactId: number
     personName: number
     personPhone: number
     agreementType: number
@@ -14508,6 +14515,7 @@ export namespace Prisma {
     ownerPayoutDetails: number
     commissionAmount: number
     maintenanceCost: number
+    quantity: number
     status: number
     notes: number
     createdById: number
@@ -14524,6 +14532,7 @@ export namespace Prisma {
     ownerPayoutTotal?: true
     commissionAmount?: true
     maintenanceCost?: true
+    quantity?: true
   }
 
   export type RentalAgreementSumAggregateInputType = {
@@ -14533,6 +14542,7 @@ export namespace Prisma {
     ownerPayoutTotal?: true
     commissionAmount?: true
     maintenanceCost?: true
+    quantity?: true
   }
 
   export type RentalAgreementMinAggregateInputType = {
@@ -14541,6 +14551,7 @@ export namespace Prisma {
     shopId?: true
     inventoryItemId?: true
     productId?: true
+    contactId?: true
     personName?: true
     personPhone?: true
     agreementType?: true
@@ -14553,6 +14564,7 @@ export namespace Prisma {
     ownerPayoutTotal?: true
     commissionAmount?: true
     maintenanceCost?: true
+    quantity?: true
     status?: true
     notes?: true
     createdById?: true
@@ -14566,6 +14578,7 @@ export namespace Prisma {
     shopId?: true
     inventoryItemId?: true
     productId?: true
+    contactId?: true
     personName?: true
     personPhone?: true
     agreementType?: true
@@ -14578,6 +14591,7 @@ export namespace Prisma {
     ownerPayoutTotal?: true
     commissionAmount?: true
     maintenanceCost?: true
+    quantity?: true
     status?: true
     notes?: true
     createdById?: true
@@ -14591,6 +14605,7 @@ export namespace Prisma {
     shopId?: true
     inventoryItemId?: true
     productId?: true
+    contactId?: true
     personName?: true
     personPhone?: true
     agreementType?: true
@@ -14604,6 +14619,7 @@ export namespace Prisma {
     ownerPayoutDetails?: true
     commissionAmount?: true
     maintenanceCost?: true
+    quantity?: true
     status?: true
     notes?: true
     createdById?: true
@@ -14704,6 +14720,7 @@ export namespace Prisma {
     shopId: string
     inventoryItemId: string | null
     productId: string | null
+    contactId: string | null
     personName: string
     personPhone: string | null
     agreementType: string
@@ -14717,6 +14734,7 @@ export namespace Prisma {
     ownerPayoutDetails: JsonValue | null
     commissionAmount: number | null
     maintenanceCost: number
+    quantity: number
     status: string
     notes: string | null
     createdById: string | null
@@ -14749,6 +14767,7 @@ export namespace Prisma {
     shopId?: boolean
     inventoryItemId?: boolean
     productId?: boolean
+    contactId?: boolean
     personName?: boolean
     personPhone?: boolean
     agreementType?: boolean
@@ -14762,6 +14781,7 @@ export namespace Prisma {
     ownerPayoutDetails?: boolean
     commissionAmount?: boolean
     maintenanceCost?: boolean
+    quantity?: boolean
     status?: boolean
     notes?: boolean
     createdById?: boolean
@@ -14775,6 +14795,7 @@ export namespace Prisma {
     shopId?: boolean
     inventoryItemId?: boolean
     productId?: boolean
+    contactId?: boolean
     personName?: boolean
     personPhone?: boolean
     agreementType?: boolean
@@ -14788,6 +14809,7 @@ export namespace Prisma {
     ownerPayoutDetails?: boolean
     commissionAmount?: boolean
     maintenanceCost?: boolean
+    quantity?: boolean
     status?: boolean
     notes?: boolean
     createdById?: boolean
@@ -14801,6 +14823,7 @@ export namespace Prisma {
     shopId?: boolean
     inventoryItemId?: boolean
     productId?: boolean
+    contactId?: boolean
     personName?: boolean
     personPhone?: boolean
     agreementType?: boolean
@@ -14814,6 +14837,7 @@ export namespace Prisma {
     ownerPayoutDetails?: boolean
     commissionAmount?: boolean
     maintenanceCost?: boolean
+    quantity?: boolean
     status?: boolean
     notes?: boolean
     createdById?: boolean
@@ -14831,6 +14855,7 @@ export namespace Prisma {
       shopId: string
       inventoryItemId: string | null
       productId: string | null
+      contactId: string | null
       personName: string
       personPhone: string | null
       agreementType: string
@@ -14844,6 +14869,7 @@ export namespace Prisma {
       ownerPayoutDetails: Prisma.JsonValue | null
       commissionAmount: number | null
       maintenanceCost: number
+      quantity: number
       status: string
       notes: string | null
       createdById: string | null
@@ -15247,6 +15273,7 @@ export namespace Prisma {
     readonly shopId: FieldRef<"RentalAgreement", 'String'>
     readonly inventoryItemId: FieldRef<"RentalAgreement", 'String'>
     readonly productId: FieldRef<"RentalAgreement", 'String'>
+    readonly contactId: FieldRef<"RentalAgreement", 'String'>
     readonly personName: FieldRef<"RentalAgreement", 'String'>
     readonly personPhone: FieldRef<"RentalAgreement", 'String'>
     readonly agreementType: FieldRef<"RentalAgreement", 'String'>
@@ -15260,6 +15287,7 @@ export namespace Prisma {
     readonly ownerPayoutDetails: FieldRef<"RentalAgreement", 'Json'>
     readonly commissionAmount: FieldRef<"RentalAgreement", 'Float'>
     readonly maintenanceCost: FieldRef<"RentalAgreement", 'Float'>
+    readonly quantity: FieldRef<"RentalAgreement", 'Float'>
     readonly status: FieldRef<"RentalAgreement", 'String'>
     readonly notes: FieldRef<"RentalAgreement", 'String'>
     readonly createdById: FieldRef<"RentalAgreement", 'String'>
@@ -15791,6 +15819,7 @@ export namespace Prisma {
     shopId: 'shopId',
     inventoryItemId: 'inventoryItemId',
     productId: 'productId',
+    contactId: 'contactId',
     personName: 'personName',
     personPhone: 'personPhone',
     agreementType: 'agreementType',
@@ -15804,6 +15833,7 @@ export namespace Prisma {
     ownerPayoutDetails: 'ownerPayoutDetails',
     commissionAmount: 'commissionAmount',
     maintenanceCost: 'maintenanceCost',
+    quantity: 'quantity',
     status: 'status',
     notes: 'notes',
     createdById: 'createdById',
@@ -17052,6 +17082,7 @@ export namespace Prisma {
     shopId?: StringFilter<"RentalAgreement"> | string
     inventoryItemId?: StringNullableFilter<"RentalAgreement"> | string | null
     productId?: StringNullableFilter<"RentalAgreement"> | string | null
+    contactId?: StringNullableFilter<"RentalAgreement"> | string | null
     personName?: StringFilter<"RentalAgreement"> | string
     personPhone?: StringNullableFilter<"RentalAgreement"> | string | null
     agreementType?: StringFilter<"RentalAgreement"> | string
@@ -17065,6 +17096,7 @@ export namespace Prisma {
     ownerPayoutDetails?: JsonNullableFilter<"RentalAgreement">
     commissionAmount?: FloatNullableFilter<"RentalAgreement"> | number | null
     maintenanceCost?: FloatFilter<"RentalAgreement"> | number
+    quantity?: FloatFilter<"RentalAgreement"> | number
     status?: StringFilter<"RentalAgreement"> | string
     notes?: StringNullableFilter<"RentalAgreement"> | string | null
     createdById?: StringNullableFilter<"RentalAgreement"> | string | null
@@ -17078,6 +17110,7 @@ export namespace Prisma {
     shopId?: SortOrder
     inventoryItemId?: SortOrderInput | SortOrder
     productId?: SortOrderInput | SortOrder
+    contactId?: SortOrderInput | SortOrder
     personName?: SortOrder
     personPhone?: SortOrderInput | SortOrder
     agreementType?: SortOrder
@@ -17091,6 +17124,7 @@ export namespace Prisma {
     ownerPayoutDetails?: SortOrderInput | SortOrder
     commissionAmount?: SortOrderInput | SortOrder
     maintenanceCost?: SortOrder
+    quantity?: SortOrder
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
@@ -17107,6 +17141,7 @@ export namespace Prisma {
     shopId?: StringFilter<"RentalAgreement"> | string
     inventoryItemId?: StringNullableFilter<"RentalAgreement"> | string | null
     productId?: StringNullableFilter<"RentalAgreement"> | string | null
+    contactId?: StringNullableFilter<"RentalAgreement"> | string | null
     personName?: StringFilter<"RentalAgreement"> | string
     personPhone?: StringNullableFilter<"RentalAgreement"> | string | null
     agreementType?: StringFilter<"RentalAgreement"> | string
@@ -17120,6 +17155,7 @@ export namespace Prisma {
     ownerPayoutDetails?: JsonNullableFilter<"RentalAgreement">
     commissionAmount?: FloatNullableFilter<"RentalAgreement"> | number | null
     maintenanceCost?: FloatFilter<"RentalAgreement"> | number
+    quantity?: FloatFilter<"RentalAgreement"> | number
     status?: StringFilter<"RentalAgreement"> | string
     notes?: StringNullableFilter<"RentalAgreement"> | string | null
     createdById?: StringNullableFilter<"RentalAgreement"> | string | null
@@ -17133,6 +17169,7 @@ export namespace Prisma {
     shopId?: SortOrder
     inventoryItemId?: SortOrderInput | SortOrder
     productId?: SortOrderInput | SortOrder
+    contactId?: SortOrderInput | SortOrder
     personName?: SortOrder
     personPhone?: SortOrderInput | SortOrder
     agreementType?: SortOrder
@@ -17146,6 +17183,7 @@ export namespace Prisma {
     ownerPayoutDetails?: SortOrderInput | SortOrder
     commissionAmount?: SortOrderInput | SortOrder
     maintenanceCost?: SortOrder
+    quantity?: SortOrder
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
@@ -17167,6 +17205,7 @@ export namespace Prisma {
     shopId?: StringWithAggregatesFilter<"RentalAgreement"> | string
     inventoryItemId?: StringNullableWithAggregatesFilter<"RentalAgreement"> | string | null
     productId?: StringNullableWithAggregatesFilter<"RentalAgreement"> | string | null
+    contactId?: StringNullableWithAggregatesFilter<"RentalAgreement"> | string | null
     personName?: StringWithAggregatesFilter<"RentalAgreement"> | string
     personPhone?: StringNullableWithAggregatesFilter<"RentalAgreement"> | string | null
     agreementType?: StringWithAggregatesFilter<"RentalAgreement"> | string
@@ -17180,6 +17219,7 @@ export namespace Prisma {
     ownerPayoutDetails?: JsonNullableWithAggregatesFilter<"RentalAgreement">
     commissionAmount?: FloatNullableWithAggregatesFilter<"RentalAgreement"> | number | null
     maintenanceCost?: FloatWithAggregatesFilter<"RentalAgreement"> | number
+    quantity?: FloatWithAggregatesFilter<"RentalAgreement"> | number
     status?: StringWithAggregatesFilter<"RentalAgreement"> | string
     notes?: StringNullableWithAggregatesFilter<"RentalAgreement"> | string | null
     createdById?: StringNullableWithAggregatesFilter<"RentalAgreement"> | string | null
@@ -18491,6 +18531,7 @@ export namespace Prisma {
     shopId: string
     inventoryItemId?: string | null
     productId?: string | null
+    contactId?: string | null
     personName: string
     personPhone?: string | null
     agreementType: string
@@ -18504,6 +18545,7 @@ export namespace Prisma {
     ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
     commissionAmount?: number | null
     maintenanceCost?: number
+    quantity?: number
     status?: string
     notes?: string | null
     createdById?: string | null
@@ -18517,6 +18559,7 @@ export namespace Prisma {
     shopId: string
     inventoryItemId?: string | null
     productId?: string | null
+    contactId?: string | null
     personName: string
     personPhone?: string | null
     agreementType: string
@@ -18530,6 +18573,7 @@ export namespace Prisma {
     ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
     commissionAmount?: number | null
     maintenanceCost?: number
+    quantity?: number
     status?: string
     notes?: string | null
     createdById?: string | null
@@ -18543,6 +18587,7 @@ export namespace Prisma {
     shopId?: StringFieldUpdateOperationsInput | string
     inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
     productId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     personName?: StringFieldUpdateOperationsInput | string
     personPhone?: NullableStringFieldUpdateOperationsInput | string | null
     agreementType?: StringFieldUpdateOperationsInput | string
@@ -18556,6 +18601,7 @@ export namespace Prisma {
     ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
     commissionAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     maintenanceCost?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18569,6 +18615,7 @@ export namespace Prisma {
     shopId?: StringFieldUpdateOperationsInput | string
     inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
     productId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     personName?: StringFieldUpdateOperationsInput | string
     personPhone?: NullableStringFieldUpdateOperationsInput | string | null
     agreementType?: StringFieldUpdateOperationsInput | string
@@ -18582,6 +18629,7 @@ export namespace Prisma {
     ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
     commissionAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     maintenanceCost?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18595,6 +18643,7 @@ export namespace Prisma {
     shopId: string
     inventoryItemId?: string | null
     productId?: string | null
+    contactId?: string | null
     personName: string
     personPhone?: string | null
     agreementType: string
@@ -18608,6 +18657,7 @@ export namespace Prisma {
     ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
     commissionAmount?: number | null
     maintenanceCost?: number
+    quantity?: number
     status?: string
     notes?: string | null
     createdById?: string | null
@@ -18621,6 +18671,7 @@ export namespace Prisma {
     shopId?: StringFieldUpdateOperationsInput | string
     inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
     productId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     personName?: StringFieldUpdateOperationsInput | string
     personPhone?: NullableStringFieldUpdateOperationsInput | string | null
     agreementType?: StringFieldUpdateOperationsInput | string
@@ -18634,6 +18685,7 @@ export namespace Prisma {
     ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
     commissionAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     maintenanceCost?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18647,6 +18699,7 @@ export namespace Prisma {
     shopId?: StringFieldUpdateOperationsInput | string
     inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
     productId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
     personName?: StringFieldUpdateOperationsInput | string
     personPhone?: NullableStringFieldUpdateOperationsInput | string | null
     agreementType?: StringFieldUpdateOperationsInput | string
@@ -18660,6 +18713,7 @@ export namespace Prisma {
     ownerPayoutDetails?: NullableJsonNullValueInput | InputJsonValue
     commissionAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     maintenanceCost?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19603,6 +19657,7 @@ export namespace Prisma {
     shopId?: SortOrder
     inventoryItemId?: SortOrder
     productId?: SortOrder
+    contactId?: SortOrder
     personName?: SortOrder
     personPhone?: SortOrder
     agreementType?: SortOrder
@@ -19616,6 +19671,7 @@ export namespace Prisma {
     ownerPayoutDetails?: SortOrder
     commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
+    quantity?: SortOrder
     status?: SortOrder
     notes?: SortOrder
     createdById?: SortOrder
@@ -19630,6 +19686,7 @@ export namespace Prisma {
     ownerPayoutTotal?: SortOrder
     commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
+    quantity?: SortOrder
   }
 
   export type RentalAgreementMaxOrderByAggregateInput = {
@@ -19638,6 +19695,7 @@ export namespace Prisma {
     shopId?: SortOrder
     inventoryItemId?: SortOrder
     productId?: SortOrder
+    contactId?: SortOrder
     personName?: SortOrder
     personPhone?: SortOrder
     agreementType?: SortOrder
@@ -19650,6 +19708,7 @@ export namespace Prisma {
     ownerPayoutTotal?: SortOrder
     commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
+    quantity?: SortOrder
     status?: SortOrder
     notes?: SortOrder
     createdById?: SortOrder
@@ -19663,6 +19722,7 @@ export namespace Prisma {
     shopId?: SortOrder
     inventoryItemId?: SortOrder
     productId?: SortOrder
+    contactId?: SortOrder
     personName?: SortOrder
     personPhone?: SortOrder
     agreementType?: SortOrder
@@ -19675,6 +19735,7 @@ export namespace Prisma {
     ownerPayoutTotal?: SortOrder
     commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
+    quantity?: SortOrder
     status?: SortOrder
     notes?: SortOrder
     createdById?: SortOrder
@@ -19689,6 +19750,7 @@ export namespace Prisma {
     ownerPayoutTotal?: SortOrder
     commissionAmount?: SortOrder
     maintenanceCost?: SortOrder
+    quantity?: SortOrder
   }
 
   export type StringFieldUpdateOperationsInput = {

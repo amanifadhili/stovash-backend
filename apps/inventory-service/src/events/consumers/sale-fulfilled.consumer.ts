@@ -57,6 +57,36 @@ export const saleFulfilledConsumer = async (event: any): Promise<void> => {
       }
 
       if (item.productId) {
+        const serial = String(item.serialNumber || '');
+        if (serial.startsWith('HOLD:')) {
+          const qty = Number(item.quantity) || 1;
+          const existingHold = await prisma.inventoryMovement.findFirst({
+            where: {
+              tenantId,
+              productId: item.productId,
+              referenceId: saleRef,
+              referenceType: 'INWARD_RENTAL_SALE',
+              movementType: 'OUT',
+            },
+          });
+          if (!existingHold) {
+            await prisma.inventoryMovement.create({
+              data: {
+                tenantId,
+                shopId,
+                inventoryItemId: null,
+                productId: item.productId,
+                customerId: payload.customerId || null,
+                movementType: 'OUT',
+                quantity: qty,
+                referenceId: saleRef,
+                referenceType: 'INWARD_RENTAL_SALE',
+                createdBy: payload.fulfilledBy || 'system',
+              },
+            });
+          }
+          continue;
+        }
         const qty = Number(item.quantity) || 1;
         accessoryQtyByProduct.set(item.productId, (accessoryQtyByProduct.get(item.productId) || 0) + qty);
       }

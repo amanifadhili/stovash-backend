@@ -54,6 +54,15 @@ export class RecordInventoryUpgradeHandler extends BaseCommandHandler<RecordInve
         };
       }
 
+      if (invItem.status === 'RENTED_IN' || invItem.status === 'RENTED_OUT') {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Cannot capitalize extras on a borrowed unit. Add extras at sale instead.',
+          errorCode: ErrorCode.BUSINESS_RULE_VIOLATION,
+        };
+      }
+
       const result = await prisma.$transaction(async (tx) => {
         // Create inventory upgrade record
         const upgrade = await tx.inventoryUpgrade.create({

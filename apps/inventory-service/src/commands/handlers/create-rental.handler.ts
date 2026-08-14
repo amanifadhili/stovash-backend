@@ -4,6 +4,11 @@ import { CreateRentalCommand } from '../impl/create-rental.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 
+function isAccessoryProduct(product: { type?: string | null; trackingMethod?: string | null; sku?: string | null }) {
+  const typed = String(product.type || '').toUpperCase();
+  return typed === 'ACCESSORY' || product.trackingMethod === 'NON_SERIALIZED' || String(product.sku || '').startsWith('ACC-');
+}
+
 @CommandHandler(CreateRentalCommand)
 export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand> {
   async execute(command: CreateRentalCommand): Promise<ICommandResponse<any>> {
@@ -39,18 +44,37 @@ export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand>
         return {
           status: 'error',
           traceId,
-          message: 'personName or customer name is required',
+          message: 'Shop is required',
           errorCode: ErrorCode.VALIDATION_ERROR,
         };
       }
 
+      const ownerAgreedCost = Number(payload.ownerAgreedCost) || 0;
+      if (!(ownerAgreedCost > 0)) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Floor price is required',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
+      const quantity = Math.max(1, Number(payload.quantity) || 1);
+      const accessoryProductId = payload.productId && !payload.inventoryItemId && !payload.createInventory
+        ? payload.productId
+        : null;
+
       const rental = await prisma.$transaction(async (tx) => {
         let inventoryItemId = payload.inventoryItemId || null;
         let productId = payload.productId || null;
-        const ownerAgreedCost = Number(payload.ownerAgreedCost) || 0;
 
-        if (payload.agreementType === 'INWARD_CONSIGNMENT' && !payload.createInventory && !payload.inventoryItemId) {
-          throw new Error('Lend-IN requires device details (serial) so it can be added to stock');
+        if (
+          payload.agreementType === 'INWARD_CONSIGNMENT' &&
+          !payload.createInventory &&
+          !payload.inventoryItemId &&
+          !accessoryProductId
+        ) {
+          throw new Error('Lend-IN requires a device serial or an accessory');
         }
 
         if (payload.agreementType === 'INWARD_CONSIGNMENT' && payload.createInventory) {
@@ -80,7 +104,7 @@ export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand>
             ...(inv.specifications && typeof inv.specifications === 'object' ? inv.specifications : {}),
             deviceType: productSpecs.deviceType || product.type || 'DEVICE',
           };
-          const purchaseCost = Number(inv.unitAcquisitionCost) || ownerAgreedCost || 0;
+          const purchaseCost = ownerAgreedCost;
 
           const item = await tx.inventoryItem.create({
             data: {
@@ -133,11 +157,55 @@ export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand>
             where: { id: payload.inventoryItemId },
             data: { status: 'RENTED_OUT', updatedBy: userId },
           });
+          if (!productId && item?.productId) productId = item.productId;
         } else if (payload.agreementType === 'INWARD_CONSIGNMENT' && payload.inventoryItemId) {
           await tx.inventoryItem.update({
             where: { id: payload.inventoryItemId },
             data: { status: 'RENTED_IN', updatedBy: userId },
           });
+        } else if (accessoryProductId) {
+          const product = await tx.product.findFirst({ where: { id: accessoryProductId, tenantId } });
+          if (!product) throw new Error('Accessory not found for this tenant');
+          if (!isAccessoryProduct(product)) {
+            throw new Error('Quantity lend is for accessories, not serialized devices');
+          }
+          productId = product.id;
+          inventoryItemId = null;
+
+          if (payload.agreementType === 'OUTWARD_RENTAL') {
+            const onHand = Number(product.quantityOnHand || 0);
+            if (onHand < quantity) {
+              throw new Error(`Not enough stock to lend (${product.name}: ${onHand} in shop, need ${quantity})`);
+            }
+            await tx.product.update({
+              where: { id: product.id },
+              data: { quantityOnHand: onHand - quantity, updatedBy: userId },
+            });
+            await tx.inventoryMovement.create({
+              data: {
+                tenantId,
+                shopId,
+                productId: product.id,
+                movementType: 'OUT',
+                quantity,
+                referenceType: 'OUTWARD_RENTAL',
+                createdBy: userId,
+              },
+            });
+          } else {
+            // Lend-IN hold: do not add to quantityOnHand as owned stock.
+            await tx.inventoryMovement.create({
+              data: {
+                tenantId,
+                shopId,
+                productId: product.id,
+                movementType: 'IN',
+                quantity,
+                referenceType: 'INWARD_RENTAL_HOLD',
+                createdBy: userId,
+              },
+            });
+          }
         }
 
         return await tx.rentalAgreement.create({
@@ -148,12 +216,14 @@ export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand>
             productId,
             personName: resolvedName,
             personPhone: resolvedPhone,
+            contactId: payload.contactId || payload.customerId || null,
             agreementType: payload.agreementType,
             startDate: payload.startDate ? new Date(payload.startDate) : new Date(),
             expectedReturn: null,
             rentalFee: Number(payload.rentalFee) || 0,
             ownerAgreedCost,
             maintenanceCost: 0,
+            quantity,
             status: 'ACTIVE',
             notes: payload.notes?.trim() || null,
             createdById: userId,

@@ -31,15 +31,16 @@ export class CreateContactHandler extends BaseCommandHandler<CreateContactComman
         };
       }
 
+      const contactType = payload.type || 'RENTAL';
       const contact = await prisma.contact.create({
         data: {
           tenantId,
-          shopId,
+          shopId: contactType === 'SHOP' ? null : shopId,
           name: payload.name.trim(),
           phone: payload.phone?.trim() || null,
           email: payload.email?.trim() || null,
           address: payload.address?.trim() || null,
-          type: payload.type || 'RENTAL',
+          type: contactType,
           notes: payload.notes?.trim() || null
         }
       });
