@@ -30,7 +30,7 @@ export class UpdateRentalStatusHandler extends BaseCommandHandler<UpdateRentalSt
         return {
           status: 'error',
           traceId,
-          message: 'Rental agreement not found',
+          message: 'Lending agreement not found',
           errorCode: ErrorCode.NOT_FOUND,
         };
       }
@@ -39,7 +39,7 @@ export class UpdateRentalStatusHandler extends BaseCommandHandler<UpdateRentalSt
         return {
           status: 'error',
           traceId,
-          message: `Rental is already ${rental.status}`,
+          message: `Lending is already ${rental.status}`,
           errorCode: ErrorCode.VALIDATION_ERROR,
         };
       }
@@ -156,7 +156,7 @@ export class UpdateRentalStatusHandler extends BaseCommandHandler<UpdateRentalSt
       return {
         status: 'error',
         traceId,
-        message: error.message || 'Failed to update rental status',
+        message: error.message || 'Failed to update lending status',
         errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }

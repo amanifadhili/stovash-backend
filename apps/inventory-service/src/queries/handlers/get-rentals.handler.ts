@@ -84,7 +84,7 @@ export class GetRentalsHandler implements IQueryHandler<GetRentalsQuery> {
       return {
         status: 'error',
         traceId,
-        message: error.message || 'Failed to fetch rentals',
+        message: error.message || 'Failed to fetch lendings',
         errorCode: error.code || ErrorCode.INTERNAL_ERROR
       };
     }

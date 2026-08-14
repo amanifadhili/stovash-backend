@@ -50,13 +50,13 @@ export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand>
         const ownerAgreedCost = Number(payload.ownerAgreedCost) || 0;
 
         if (payload.agreementType === 'INWARD_CONSIGNMENT' && !payload.createInventory && !payload.inventoryItemId) {
-          throw new Error('Rent-in requires device details (serial) so it can be added to stock');
+          throw new Error('Lend-IN requires device details (serial) so it can be added to stock');
         }
 
         if (payload.agreementType === 'INWARD_CONSIGNMENT' && payload.createInventory) {
           const inv = payload.createInventory;
           if (!inv.productId || !inv.serialNumber?.trim()) {
-            throw new Error('productId and serialNumber are required to rent a device in');
+            throw new Error('productId and serialNumber are required to record a Lend-IN device');
           }
 
           const product = await tx.product.findFirst({ where: { id: inv.productId, tenantId } });
@@ -170,7 +170,7 @@ export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand>
       return {
         status: 'error',
         traceId,
-        message: error.message || 'Failed to create rental agreement',
+        message: error.message || 'Failed to create lending agreement',
         errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }
