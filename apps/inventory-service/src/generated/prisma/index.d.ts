@@ -1948,11 +1948,13 @@ export namespace Prisma {
   export type CategoryCountOutputType = {
     children: number
     products: number
+    stockItems: number
   }
 
   export type CategoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     children?: boolean | CategoryCountOutputTypeCountChildrenArgs
     products?: boolean | CategoryCountOutputTypeCountProductsArgs
+    stockItems?: boolean | CategoryCountOutputTypeCountStockItemsArgs
   }
 
   // Custom InputTypes
@@ -1980,6 +1982,13 @@ export namespace Prisma {
     where?: ProductWhereInput
   }
 
+  /**
+   * CategoryCountOutputType without action
+   */
+  export type CategoryCountOutputTypeCountStockItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InventoryItemWhereInput
+  }
+
 
   /**
    * Count Type BrandCountOutputType
@@ -1987,10 +1996,12 @@ export namespace Prisma {
 
   export type BrandCountOutputType = {
     products: number
+    stockItems: number
   }
 
   export type BrandCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     products?: boolean | BrandCountOutputTypeCountProductsArgs
+    stockItems?: boolean | BrandCountOutputTypeCountStockItemsArgs
   }
 
   // Custom InputTypes
@@ -2009,6 +2020,13 @@ export namespace Prisma {
    */
   export type BrandCountOutputTypeCountProductsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProductWhereInput
+  }
+
+  /**
+   * BrandCountOutputType without action
+   */
+  export type BrandCountOutputTypeCountStockItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InventoryItemWhereInput
   }
 
 
@@ -3002,6 +3020,7 @@ export namespace Prisma {
     trackingMethod: string | null
     status: string | null
     quantityOnHand: number | null
+    imageUrl: string | null
     createdAt: Date | null
     createdBy: string | null
     updatedAt: Date | null
@@ -3025,6 +3044,7 @@ export namespace Prisma {
     trackingMethod: string | null
     status: string | null
     quantityOnHand: number | null
+    imageUrl: string | null
     createdAt: Date | null
     createdBy: string | null
     updatedAt: Date | null
@@ -3050,6 +3070,8 @@ export namespace Prisma {
     status: number
     specifications: number
     quantityOnHand: number
+    imageUrl: number
+    images: number
     createdAt: number
     createdBy: number
     updatedAt: number
@@ -3085,6 +3107,7 @@ export namespace Prisma {
     trackingMethod?: true
     status?: true
     quantityOnHand?: true
+    imageUrl?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -3108,6 +3131,7 @@ export namespace Prisma {
     trackingMethod?: true
     status?: true
     quantityOnHand?: true
+    imageUrl?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -3133,6 +3157,8 @@ export namespace Prisma {
     status?: true
     specifications?: true
     quantityOnHand?: true
+    imageUrl?: true
+    images?: true
     createdAt?: true
     createdBy?: true
     updatedAt?: true
@@ -3245,6 +3271,8 @@ export namespace Prisma {
     status: string
     specifications: JsonValue | null
     quantityOnHand: number
+    imageUrl: string | null
+    images: string[]
     createdAt: Date
     createdBy: string | null
     updatedAt: Date
@@ -3289,6 +3317,8 @@ export namespace Prisma {
     status?: boolean
     specifications?: boolean
     quantityOnHand?: boolean
+    imageUrl?: boolean
+    images?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -3319,6 +3349,8 @@ export namespace Prisma {
     status?: boolean
     specifications?: boolean
     quantityOnHand?: boolean
+    imageUrl?: boolean
+    images?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -3346,6 +3378,8 @@ export namespace Prisma {
     status?: boolean
     specifications?: boolean
     quantityOnHand?: boolean
+    imageUrl?: boolean
+    images?: boolean
     createdAt?: boolean
     createdBy?: boolean
     updatedAt?: boolean
@@ -3391,6 +3425,8 @@ export namespace Prisma {
       status: string
       specifications: Prisma.JsonValue | null
       quantityOnHand: number
+      imageUrl: string | null
+      images: string[]
       createdAt: Date
       createdBy: string | null
       updatedAt: Date
@@ -3810,6 +3846,8 @@ export namespace Prisma {
     readonly status: FieldRef<"Product", 'String'>
     readonly specifications: FieldRef<"Product", 'Json'>
     readonly quantityOnHand: FieldRef<"Product", 'Float'>
+    readonly imageUrl: FieldRef<"Product", 'String'>
+    readonly images: FieldRef<"Product", 'String[]'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
     readonly createdBy: FieldRef<"Product", 'String'>
     readonly updatedAt: FieldRef<"Product", 'DateTime'>
@@ -4232,12 +4270,14 @@ export namespace Prisma {
   }
 
   export type InventoryItemAvgAggregateOutputType = {
+    sellingPrice: number | null
     purchaseCost: number | null
     capitalizedCost: number | null
     version: number | null
   }
 
   export type InventoryItemSumAggregateOutputType = {
+    sellingPrice: number | null
     purchaseCost: number | null
     capitalizedCost: number | null
     version: number | null
@@ -4248,6 +4288,14 @@ export namespace Prisma {
     tenantId: string | null
     shopId: string | null
     productId: string | null
+    name: string | null
+    brandId: string | null
+    categoryId: string | null
+    sellingPrice: number | null
+    imei1: string | null
+    imei2: string | null
+    condition: string | null
+    notes: string | null
     serialNumber: string | null
     purchaseCost: number | null
     status: string | null
@@ -4267,6 +4315,14 @@ export namespace Prisma {
     tenantId: string | null
     shopId: string | null
     productId: string | null
+    name: string | null
+    brandId: string | null
+    categoryId: string | null
+    sellingPrice: number | null
+    imei1: string | null
+    imei2: string | null
+    condition: string | null
+    notes: string | null
     serialNumber: string | null
     purchaseCost: number | null
     status: string | null
@@ -4286,6 +4342,16 @@ export namespace Prisma {
     tenantId: number
     shopId: number
     productId: number
+    name: number
+    brandId: number
+    categoryId: number
+    sellingPrice: number
+    specifications: number
+    imei1: number
+    imei2: number
+    condition: number
+    notes: number
+    images: number
     serialNumber: number
     purchaseCost: number
     status: number
@@ -4303,12 +4369,14 @@ export namespace Prisma {
 
 
   export type InventoryItemAvgAggregateInputType = {
+    sellingPrice?: true
     purchaseCost?: true
     capitalizedCost?: true
     version?: true
   }
 
   export type InventoryItemSumAggregateInputType = {
+    sellingPrice?: true
     purchaseCost?: true
     capitalizedCost?: true
     version?: true
@@ -4319,6 +4387,14 @@ export namespace Prisma {
     tenantId?: true
     shopId?: true
     productId?: true
+    name?: true
+    brandId?: true
+    categoryId?: true
+    sellingPrice?: true
+    imei1?: true
+    imei2?: true
+    condition?: true
+    notes?: true
     serialNumber?: true
     purchaseCost?: true
     status?: true
@@ -4338,6 +4414,14 @@ export namespace Prisma {
     tenantId?: true
     shopId?: true
     productId?: true
+    name?: true
+    brandId?: true
+    categoryId?: true
+    sellingPrice?: true
+    imei1?: true
+    imei2?: true
+    condition?: true
+    notes?: true
     serialNumber?: true
     purchaseCost?: true
     status?: true
@@ -4357,6 +4441,16 @@ export namespace Prisma {
     tenantId?: true
     shopId?: true
     productId?: true
+    name?: true
+    brandId?: true
+    categoryId?: true
+    sellingPrice?: true
+    specifications?: true
+    imei1?: true
+    imei2?: true
+    condition?: true
+    notes?: true
+    images?: true
     serialNumber?: true
     purchaseCost?: true
     status?: true
@@ -4463,6 +4557,16 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     productId: string
+    name: string | null
+    brandId: string | null
+    categoryId: string | null
+    sellingPrice: number | null
+    specifications: JsonValue | null
+    imei1: string | null
+    imei2: string | null
+    condition: string | null
+    notes: string | null
+    images: string[]
     serialNumber: string
     purchaseCost: number
     status: string
@@ -4501,6 +4605,16 @@ export namespace Prisma {
     tenantId?: boolean
     shopId?: boolean
     productId?: boolean
+    name?: boolean
+    brandId?: boolean
+    categoryId?: boolean
+    sellingPrice?: boolean
+    specifications?: boolean
+    imei1?: boolean
+    imei2?: boolean
+    condition?: boolean
+    notes?: boolean
+    images?: boolean
     serialNumber?: boolean
     purchaseCost?: boolean
     status?: boolean
@@ -4514,6 +4628,8 @@ export namespace Prisma {
     deletedBy?: boolean
     version?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    brand?: boolean | InventoryItem$brandArgs<ExtArgs>
+    category?: boolean | InventoryItem$categoryArgs<ExtArgs>
     upgrades?: boolean | InventoryItem$upgradesArgs<ExtArgs>
     _count?: boolean | InventoryItemCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["inventoryItem"]>
@@ -4523,6 +4639,16 @@ export namespace Prisma {
     tenantId?: boolean
     shopId?: boolean
     productId?: boolean
+    name?: boolean
+    brandId?: boolean
+    categoryId?: boolean
+    sellingPrice?: boolean
+    specifications?: boolean
+    imei1?: boolean
+    imei2?: boolean
+    condition?: boolean
+    notes?: boolean
+    images?: boolean
     serialNumber?: boolean
     purchaseCost?: boolean
     status?: boolean
@@ -4536,6 +4662,8 @@ export namespace Prisma {
     deletedBy?: boolean
     version?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    brand?: boolean | InventoryItem$brandArgs<ExtArgs>
+    category?: boolean | InventoryItem$categoryArgs<ExtArgs>
   }, ExtArgs["result"]["inventoryItem"]>
 
   export type InventoryItemSelectScalar = {
@@ -4543,6 +4671,16 @@ export namespace Prisma {
     tenantId?: boolean
     shopId?: boolean
     productId?: boolean
+    name?: boolean
+    brandId?: boolean
+    categoryId?: boolean
+    sellingPrice?: boolean
+    specifications?: boolean
+    imei1?: boolean
+    imei2?: boolean
+    condition?: boolean
+    notes?: boolean
+    images?: boolean
     serialNumber?: boolean
     purchaseCost?: boolean
     status?: boolean
@@ -4559,17 +4697,23 @@ export namespace Prisma {
 
   export type InventoryItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    brand?: boolean | InventoryItem$brandArgs<ExtArgs>
+    category?: boolean | InventoryItem$categoryArgs<ExtArgs>
     upgrades?: boolean | InventoryItem$upgradesArgs<ExtArgs>
     _count?: boolean | InventoryItemCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type InventoryItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | ProductDefaultArgs<ExtArgs>
+    brand?: boolean | InventoryItem$brandArgs<ExtArgs>
+    category?: boolean | InventoryItem$categoryArgs<ExtArgs>
   }
 
   export type $InventoryItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "InventoryItem"
     objects: {
       product: Prisma.$ProductPayload<ExtArgs>
+      brand: Prisma.$BrandPayload<ExtArgs> | null
+      category: Prisma.$CategoryPayload<ExtArgs> | null
       upgrades: Prisma.$InventoryUpgradePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -4577,6 +4721,19 @@ export namespace Prisma {
       tenantId: string
       shopId: string
       productId: string
+      /**
+       * Stock-owned display fields (not shared catalog). Prefer these over Product.*.
+       */
+      name: string | null
+      brandId: string | null
+      categoryId: string | null
+      sellingPrice: number | null
+      specifications: Prisma.JsonValue | null
+      imei1: string | null
+      imei2: string | null
+      condition: string | null
+      notes: string | null
+      images: string[]
       serialNumber: string
       purchaseCost: number
       status: string
@@ -4954,6 +5111,8 @@ export namespace Prisma {
   export interface Prisma__InventoryItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     product<T extends ProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProductDefaultArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    brand<T extends InventoryItem$brandArgs<ExtArgs> = {}>(args?: Subset<T, InventoryItem$brandArgs<ExtArgs>>): Prisma__BrandClient<$Result.GetResult<Prisma.$BrandPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    category<T extends InventoryItem$categoryArgs<ExtArgs> = {}>(args?: Subset<T, InventoryItem$categoryArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     upgrades<T extends InventoryItem$upgradesArgs<ExtArgs> = {}>(args?: Subset<T, InventoryItem$upgradesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InventoryUpgradePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4988,6 +5147,16 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"InventoryItem", 'String'>
     readonly shopId: FieldRef<"InventoryItem", 'String'>
     readonly productId: FieldRef<"InventoryItem", 'String'>
+    readonly name: FieldRef<"InventoryItem", 'String'>
+    readonly brandId: FieldRef<"InventoryItem", 'String'>
+    readonly categoryId: FieldRef<"InventoryItem", 'String'>
+    readonly sellingPrice: FieldRef<"InventoryItem", 'Float'>
+    readonly specifications: FieldRef<"InventoryItem", 'Json'>
+    readonly imei1: FieldRef<"InventoryItem", 'String'>
+    readonly imei2: FieldRef<"InventoryItem", 'String'>
+    readonly condition: FieldRef<"InventoryItem", 'String'>
+    readonly notes: FieldRef<"InventoryItem", 'String'>
+    readonly images: FieldRef<"InventoryItem", 'String[]'>
     readonly serialNumber: FieldRef<"InventoryItem", 'String'>
     readonly purchaseCost: FieldRef<"InventoryItem", 'Float'>
     readonly status: FieldRef<"InventoryItem", 'String'>
@@ -5315,6 +5484,36 @@ export namespace Prisma {
      * Filter which InventoryItems to delete
      */
     where?: InventoryItemWhereInput
+  }
+
+  /**
+   * InventoryItem.brand
+   */
+  export type InventoryItem$brandArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Brand
+     */
+    select?: BrandSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrandInclude<ExtArgs> | null
+    where?: BrandWhereInput
+  }
+
+  /**
+   * InventoryItem.category
+   */
+  export type InventoryItem$categoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Category
+     */
+    select?: CategorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryInclude<ExtArgs> | null
+    where?: CategoryWhereInput
   }
 
   /**
@@ -8442,6 +8641,7 @@ export namespace Prisma {
     parent?: boolean | Category$parentArgs<ExtArgs>
     children?: boolean | Category$childrenArgs<ExtArgs>
     products?: boolean | Category$productsArgs<ExtArgs>
+    stockItems?: boolean | Category$stockItemsArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["category"]>
 
@@ -8472,6 +8672,7 @@ export namespace Prisma {
     parent?: boolean | Category$parentArgs<ExtArgs>
     children?: boolean | Category$childrenArgs<ExtArgs>
     products?: boolean | Category$productsArgs<ExtArgs>
+    stockItems?: boolean | Category$stockItemsArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CategoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8484,6 +8685,7 @@ export namespace Prisma {
       parent: Prisma.$CategoryPayload<ExtArgs> | null
       children: Prisma.$CategoryPayload<ExtArgs>[]
       products: Prisma.$ProductPayload<ExtArgs>[]
+      stockItems: Prisma.$InventoryItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8861,6 +9063,7 @@ export namespace Prisma {
     parent<T extends Category$parentArgs<ExtArgs> = {}>(args?: Subset<T, Category$parentArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     children<T extends Category$childrenArgs<ExtArgs> = {}>(args?: Subset<T, Category$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findMany"> | Null>
     products<T extends Category$productsArgs<ExtArgs> = {}>(args?: Subset<T, Category$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany"> | Null>
+    stockItems<T extends Category$stockItemsArgs<ExtArgs> = {}>(args?: Subset<T, Category$stockItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9271,6 +9474,26 @@ export namespace Prisma {
   }
 
   /**
+   * Category.stockItems
+   */
+  export type Category$stockItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InventoryItem
+     */
+    select?: InventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InventoryItemInclude<ExtArgs> | null
+    where?: InventoryItemWhereInput
+    orderBy?: InventoryItemOrderByWithRelationInput | InventoryItemOrderByWithRelationInput[]
+    cursor?: InventoryItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InventoryItemScalarFieldEnum | InventoryItemScalarFieldEnum[]
+  }
+
+  /**
    * Category without action
    */
   export type CategoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9470,6 +9693,7 @@ export namespace Prisma {
     createdAt?: boolean
     createdBy?: boolean
     products?: boolean | Brand$productsArgs<ExtArgs>
+    stockItems?: boolean | Brand$stockItemsArgs<ExtArgs>
     _count?: boolean | BrandCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["brand"]>
 
@@ -9497,6 +9721,7 @@ export namespace Prisma {
 
   export type BrandInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     products?: boolean | Brand$productsArgs<ExtArgs>
+    stockItems?: boolean | Brand$stockItemsArgs<ExtArgs>
     _count?: boolean | BrandCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BrandIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -9505,6 +9730,7 @@ export namespace Prisma {
     name: "Brand"
     objects: {
       products: Prisma.$ProductPayload<ExtArgs>[]
+      stockItems: Prisma.$InventoryItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9880,6 +10106,7 @@ export namespace Prisma {
   export interface Prisma__BrandClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     products<T extends Brand$productsArgs<ExtArgs> = {}>(args?: Subset<T, Brand$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany"> | Null>
+    stockItems<T extends Brand$stockItemsArgs<ExtArgs> = {}>(args?: Subset<T, Brand$stockItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10248,6 +10475,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
+  }
+
+  /**
+   * Brand.stockItems
+   */
+  export type Brand$stockItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InventoryItem
+     */
+    select?: InventoryItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InventoryItemInclude<ExtArgs> | null
+    where?: InventoryItemWhereInput
+    orderBy?: InventoryItemOrderByWithRelationInput | InventoryItemOrderByWithRelationInput[]
+    cursor?: InventoryItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InventoryItemScalarFieldEnum | InventoryItemScalarFieldEnum[]
   }
 
   /**
@@ -15297,6 +15544,8 @@ export namespace Prisma {
     status: 'status',
     specifications: 'specifications',
     quantityOnHand: 'quantityOnHand',
+    imageUrl: 'imageUrl',
+    images: 'images',
     createdAt: 'createdAt',
     createdBy: 'createdBy',
     updatedAt: 'updatedAt',
@@ -15314,6 +15563,16 @@ export namespace Prisma {
     tenantId: 'tenantId',
     shopId: 'shopId',
     productId: 'productId',
+    name: 'name',
+    brandId: 'brandId',
+    categoryId: 'categoryId',
+    sellingPrice: 'sellingPrice',
+    specifications: 'specifications',
+    imei1: 'imei1',
+    imei2: 'imei2',
+    condition: 'condition',
+    notes: 'notes',
+    images: 'images',
     serialNumber: 'serialNumber',
     purchaseCost: 'purchaseCost',
     status: 'status',
@@ -15708,6 +15967,8 @@ export namespace Prisma {
     status?: StringFilter<"Product"> | string
     specifications?: JsonNullableFilter<"Product">
     quantityOnHand?: FloatFilter<"Product"> | number
+    imageUrl?: StringNullableFilter<"Product"> | string | null
+    images?: StringNullableListFilter<"Product">
     createdAt?: DateTimeFilter<"Product"> | Date | string
     createdBy?: StringNullableFilter<"Product"> | string | null
     updatedAt?: DateTimeFilter<"Product"> | Date | string
@@ -15737,6 +15998,8 @@ export namespace Prisma {
     status?: SortOrder
     specifications?: SortOrderInput | SortOrder
     quantityOnHand?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    images?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
@@ -15770,6 +16033,8 @@ export namespace Prisma {
     status?: StringFilter<"Product"> | string
     specifications?: JsonNullableFilter<"Product">
     quantityOnHand?: FloatFilter<"Product"> | number
+    imageUrl?: StringNullableFilter<"Product"> | string | null
+    images?: StringNullableListFilter<"Product">
     createdAt?: DateTimeFilter<"Product"> | Date | string
     createdBy?: StringNullableFilter<"Product"> | string | null
     updatedAt?: DateTimeFilter<"Product"> | Date | string
@@ -15799,6 +16064,8 @@ export namespace Prisma {
     status?: SortOrder
     specifications?: SortOrderInput | SortOrder
     quantityOnHand?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    images?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
@@ -15832,6 +16099,8 @@ export namespace Prisma {
     status?: StringWithAggregatesFilter<"Product"> | string
     specifications?: JsonNullableWithAggregatesFilter<"Product">
     quantityOnHand?: FloatWithAggregatesFilter<"Product"> | number
+    imageUrl?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    images?: StringNullableListFilter<"Product">
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
     createdBy?: StringNullableWithAggregatesFilter<"Product"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
@@ -15849,6 +16118,16 @@ export namespace Prisma {
     tenantId?: StringFilter<"InventoryItem"> | string
     shopId?: StringFilter<"InventoryItem"> | string
     productId?: StringFilter<"InventoryItem"> | string
+    name?: StringNullableFilter<"InventoryItem"> | string | null
+    brandId?: StringNullableFilter<"InventoryItem"> | string | null
+    categoryId?: StringNullableFilter<"InventoryItem"> | string | null
+    sellingPrice?: FloatNullableFilter<"InventoryItem"> | number | null
+    specifications?: JsonNullableFilter<"InventoryItem">
+    imei1?: StringNullableFilter<"InventoryItem"> | string | null
+    imei2?: StringNullableFilter<"InventoryItem"> | string | null
+    condition?: StringNullableFilter<"InventoryItem"> | string | null
+    notes?: StringNullableFilter<"InventoryItem"> | string | null
+    images?: StringNullableListFilter<"InventoryItem">
     serialNumber?: StringFilter<"InventoryItem"> | string
     purchaseCost?: FloatFilter<"InventoryItem"> | number
     status?: StringFilter<"InventoryItem"> | string
@@ -15862,6 +16141,8 @@ export namespace Prisma {
     deletedBy?: StringNullableFilter<"InventoryItem"> | string | null
     version?: IntFilter<"InventoryItem"> | number
     product?: XOR<ProductRelationFilter, ProductWhereInput>
+    brand?: XOR<BrandNullableRelationFilter, BrandWhereInput> | null
+    category?: XOR<CategoryNullableRelationFilter, CategoryWhereInput> | null
     upgrades?: InventoryUpgradeListRelationFilter
   }
 
@@ -15870,6 +16151,16 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     productId?: SortOrder
+    name?: SortOrderInput | SortOrder
+    brandId?: SortOrderInput | SortOrder
+    categoryId?: SortOrderInput | SortOrder
+    sellingPrice?: SortOrderInput | SortOrder
+    specifications?: SortOrderInput | SortOrder
+    imei1?: SortOrderInput | SortOrder
+    imei2?: SortOrderInput | SortOrder
+    condition?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    images?: SortOrder
     serialNumber?: SortOrder
     purchaseCost?: SortOrder
     status?: SortOrder
@@ -15883,6 +16174,8 @@ export namespace Prisma {
     deletedBy?: SortOrderInput | SortOrder
     version?: SortOrder
     product?: ProductOrderByWithRelationInput
+    brand?: BrandOrderByWithRelationInput
+    category?: CategoryOrderByWithRelationInput
     upgrades?: InventoryUpgradeOrderByRelationAggregateInput
   }
 
@@ -15895,6 +16188,16 @@ export namespace Prisma {
     tenantId?: StringFilter<"InventoryItem"> | string
     shopId?: StringFilter<"InventoryItem"> | string
     productId?: StringFilter<"InventoryItem"> | string
+    name?: StringNullableFilter<"InventoryItem"> | string | null
+    brandId?: StringNullableFilter<"InventoryItem"> | string | null
+    categoryId?: StringNullableFilter<"InventoryItem"> | string | null
+    sellingPrice?: FloatNullableFilter<"InventoryItem"> | number | null
+    specifications?: JsonNullableFilter<"InventoryItem">
+    imei1?: StringNullableFilter<"InventoryItem"> | string | null
+    imei2?: StringNullableFilter<"InventoryItem"> | string | null
+    condition?: StringNullableFilter<"InventoryItem"> | string | null
+    notes?: StringNullableFilter<"InventoryItem"> | string | null
+    images?: StringNullableListFilter<"InventoryItem">
     serialNumber?: StringFilter<"InventoryItem"> | string
     purchaseCost?: FloatFilter<"InventoryItem"> | number
     status?: StringFilter<"InventoryItem"> | string
@@ -15908,6 +16211,8 @@ export namespace Prisma {
     deletedBy?: StringNullableFilter<"InventoryItem"> | string | null
     version?: IntFilter<"InventoryItem"> | number
     product?: XOR<ProductRelationFilter, ProductWhereInput>
+    brand?: XOR<BrandNullableRelationFilter, BrandWhereInput> | null
+    category?: XOR<CategoryNullableRelationFilter, CategoryWhereInput> | null
     upgrades?: InventoryUpgradeListRelationFilter
   }, "id" | "tenantId_serialNumber">
 
@@ -15916,6 +16221,16 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     productId?: SortOrder
+    name?: SortOrderInput | SortOrder
+    brandId?: SortOrderInput | SortOrder
+    categoryId?: SortOrderInput | SortOrder
+    sellingPrice?: SortOrderInput | SortOrder
+    specifications?: SortOrderInput | SortOrder
+    imei1?: SortOrderInput | SortOrder
+    imei2?: SortOrderInput | SortOrder
+    condition?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    images?: SortOrder
     serialNumber?: SortOrder
     purchaseCost?: SortOrder
     status?: SortOrder
@@ -15943,6 +16258,16 @@ export namespace Prisma {
     tenantId?: StringWithAggregatesFilter<"InventoryItem"> | string
     shopId?: StringWithAggregatesFilter<"InventoryItem"> | string
     productId?: StringWithAggregatesFilter<"InventoryItem"> | string
+    name?: StringNullableWithAggregatesFilter<"InventoryItem"> | string | null
+    brandId?: StringNullableWithAggregatesFilter<"InventoryItem"> | string | null
+    categoryId?: StringNullableWithAggregatesFilter<"InventoryItem"> | string | null
+    sellingPrice?: FloatNullableWithAggregatesFilter<"InventoryItem"> | number | null
+    specifications?: JsonNullableWithAggregatesFilter<"InventoryItem">
+    imei1?: StringNullableWithAggregatesFilter<"InventoryItem"> | string | null
+    imei2?: StringNullableWithAggregatesFilter<"InventoryItem"> | string | null
+    condition?: StringNullableWithAggregatesFilter<"InventoryItem"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"InventoryItem"> | string | null
+    images?: StringNullableListFilter<"InventoryItem">
     serialNumber?: StringWithAggregatesFilter<"InventoryItem"> | string
     purchaseCost?: FloatWithAggregatesFilter<"InventoryItem"> | number
     status?: StringWithAggregatesFilter<"InventoryItem"> | string
@@ -16208,6 +16533,7 @@ export namespace Prisma {
     parent?: XOR<CategoryNullableRelationFilter, CategoryWhereInput> | null
     children?: CategoryListRelationFilter
     products?: ProductListRelationFilter
+    stockItems?: InventoryItemListRelationFilter
   }
 
   export type CategoryOrderByWithRelationInput = {
@@ -16222,6 +16548,7 @@ export namespace Prisma {
     parent?: CategoryOrderByWithRelationInput
     children?: CategoryOrderByRelationAggregateInput
     products?: ProductOrderByRelationAggregateInput
+    stockItems?: InventoryItemOrderByRelationAggregateInput
   }
 
   export type CategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -16239,6 +16566,7 @@ export namespace Prisma {
     parent?: XOR<CategoryNullableRelationFilter, CategoryWhereInput> | null
     children?: CategoryListRelationFilter
     products?: ProductListRelationFilter
+    stockItems?: InventoryItemListRelationFilter
   }, "id">
 
   export type CategoryOrderByWithAggregationInput = {
@@ -16282,6 +16610,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Brand"> | Date | string
     createdBy?: StringNullableFilter<"Brand"> | string | null
     products?: ProductListRelationFilter
+    stockItems?: InventoryItemListRelationFilter
   }
 
   export type BrandOrderByWithRelationInput = {
@@ -16294,6 +16623,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     createdBy?: SortOrderInput | SortOrder
     products?: ProductOrderByRelationAggregateInput
+    stockItems?: InventoryItemOrderByRelationAggregateInput
   }
 
   export type BrandWhereUniqueInput = Prisma.AtLeast<{
@@ -16310,6 +16640,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Brand"> | Date | string
     createdBy?: StringNullableFilter<"Brand"> | string | null
     products?: ProductListRelationFilter
+    stockItems?: InventoryItemListRelationFilter
   }, "id" | "tenantId_name">
 
   export type BrandOrderByWithAggregationInput = {
@@ -16888,6 +17219,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -16917,6 +17250,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -16942,6 +17277,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16971,6 +17308,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16998,6 +17337,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -17021,6 +17362,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17046,6 +17389,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17059,6 +17404,14 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId: string
+    name?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
     serialNumber: string
     purchaseCost: number
     status?: string
@@ -17072,6 +17425,8 @@ export namespace Prisma {
     deletedBy?: string | null
     version?: number
     product: ProductCreateNestedOneWithoutItemsInput
+    brand?: BrandCreateNestedOneWithoutStockItemsInput
+    category?: CategoryCreateNestedOneWithoutStockItemsInput
     upgrades?: InventoryUpgradeCreateNestedManyWithoutInventoryItemInput
   }
 
@@ -17080,6 +17435,16 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     productId: string
+    name?: string | null
+    brandId?: string | null
+    categoryId?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
     serialNumber: string
     purchaseCost: number
     status?: string
@@ -17099,6 +17464,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
     serialNumber?: StringFieldUpdateOperationsInput | string
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -17112,6 +17485,8 @@ export namespace Prisma {
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
     product?: ProductUpdateOneRequiredWithoutItemsNestedInput
+    brand?: BrandUpdateOneWithoutStockItemsNestedInput
+    category?: CategoryUpdateOneWithoutStockItemsNestedInput
     upgrades?: InventoryUpgradeUpdateManyWithoutInventoryItemNestedInput
   }
 
@@ -17120,6 +17495,16 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     productId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    brandId?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
     serialNumber?: StringFieldUpdateOperationsInput | string
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -17140,6 +17525,16 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     productId: string
+    name?: string | null
+    brandId?: string | null
+    categoryId?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
     serialNumber: string
     purchaseCost: number
     status?: string
@@ -17158,6 +17553,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
     serialNumber?: StringFieldUpdateOperationsInput | string
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -17177,6 +17580,16 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     productId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    brandId?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
     serialNumber?: StringFieldUpdateOperationsInput | string
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -17474,6 +17887,7 @@ export namespace Prisma {
     parent?: CategoryCreateNestedOneWithoutChildrenInput
     children?: CategoryCreateNestedManyWithoutParentInput
     products?: ProductCreateNestedManyWithoutCategoryInput
+    stockItems?: InventoryItemCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateInput = {
@@ -17487,6 +17901,7 @@ export namespace Prisma {
     createdBy?: string | null
     children?: CategoryUncheckedCreateNestedManyWithoutParentInput
     products?: ProductUncheckedCreateNestedManyWithoutCategoryInput
+    stockItems?: InventoryItemUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUpdateInput = {
@@ -17500,6 +17915,7 @@ export namespace Prisma {
     parent?: CategoryUpdateOneWithoutChildrenNestedInput
     children?: CategoryUpdateManyWithoutParentNestedInput
     products?: ProductUpdateManyWithoutCategoryNestedInput
+    stockItems?: InventoryItemUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateInput = {
@@ -17513,6 +17929,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     children?: CategoryUncheckedUpdateManyWithoutParentNestedInput
     products?: ProductUncheckedUpdateManyWithoutCategoryNestedInput
+    stockItems?: InventoryItemUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryCreateManyInput = {
@@ -17557,6 +17974,7 @@ export namespace Prisma {
     createdAt?: Date | string
     createdBy?: string | null
     products?: ProductCreateNestedManyWithoutBrandInput
+    stockItems?: InventoryItemCreateNestedManyWithoutBrandInput
   }
 
   export type BrandUncheckedCreateInput = {
@@ -17569,6 +17987,7 @@ export namespace Prisma {
     createdAt?: Date | string
     createdBy?: string | null
     products?: ProductUncheckedCreateNestedManyWithoutBrandInput
+    stockItems?: InventoryItemUncheckedCreateNestedManyWithoutBrandInput
   }
 
   export type BrandUpdateInput = {
@@ -17581,6 +18000,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     products?: ProductUpdateManyWithoutBrandNestedInput
+    stockItems?: InventoryItemUpdateManyWithoutBrandNestedInput
   }
 
   export type BrandUncheckedUpdateInput = {
@@ -17593,6 +18013,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     products?: ProductUncheckedUpdateManyWithoutBrandNestedInput
+    stockItems?: InventoryItemUncheckedUpdateManyWithoutBrandNestedInput
   }
 
   export type BrandCreateManyInput = {
@@ -18390,6 +18811,8 @@ export namespace Prisma {
     status?: SortOrder
     specifications?: SortOrder
     quantityOnHand?: SortOrder
+    imageUrl?: SortOrder
+    images?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -18418,6 +18841,7 @@ export namespace Prisma {
     trackingMethod?: SortOrder
     status?: SortOrder
     quantityOnHand?: SortOrder
+    imageUrl?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -18441,6 +18865,7 @@ export namespace Prisma {
     trackingMethod?: SortOrder
     status?: SortOrder
     quantityOnHand?: SortOrder
+    imageUrl?: SortOrder
     createdAt?: SortOrder
     createdBy?: SortOrder
     updatedAt?: SortOrder
@@ -18526,6 +18951,17 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type ProductRelationFilter = {
     is?: ProductWhereInput
     isNot?: ProductWhereInput
@@ -18551,6 +18987,16 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     productId?: SortOrder
+    name?: SortOrder
+    brandId?: SortOrder
+    categoryId?: SortOrder
+    sellingPrice?: SortOrder
+    specifications?: SortOrder
+    imei1?: SortOrder
+    imei2?: SortOrder
+    condition?: SortOrder
+    notes?: SortOrder
+    images?: SortOrder
     serialNumber?: SortOrder
     purchaseCost?: SortOrder
     status?: SortOrder
@@ -18566,6 +19012,7 @@ export namespace Prisma {
   }
 
   export type InventoryItemAvgOrderByAggregateInput = {
+    sellingPrice?: SortOrder
     purchaseCost?: SortOrder
     capitalizedCost?: SortOrder
     version?: SortOrder
@@ -18576,6 +19023,14 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     productId?: SortOrder
+    name?: SortOrder
+    brandId?: SortOrder
+    categoryId?: SortOrder
+    sellingPrice?: SortOrder
+    imei1?: SortOrder
+    imei2?: SortOrder
+    condition?: SortOrder
+    notes?: SortOrder
     serialNumber?: SortOrder
     purchaseCost?: SortOrder
     status?: SortOrder
@@ -18595,6 +19050,14 @@ export namespace Prisma {
     tenantId?: SortOrder
     shopId?: SortOrder
     productId?: SortOrder
+    name?: SortOrder
+    brandId?: SortOrder
+    categoryId?: SortOrder
+    sellingPrice?: SortOrder
+    imei1?: SortOrder
+    imei2?: SortOrder
+    condition?: SortOrder
+    notes?: SortOrder
     serialNumber?: SortOrder
     purchaseCost?: SortOrder
     status?: SortOrder
@@ -18610,9 +19073,26 @@ export namespace Prisma {
   }
 
   export type InventoryItemSumOrderByAggregateInput = {
+    sellingPrice?: SortOrder
     purchaseCost?: SortOrder
     capitalizedCost?: SortOrder
     version?: SortOrder
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type InventoryItemRelationFilter = {
@@ -19009,17 +19489,6 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type FloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
   export type RentalAgreementCountOrderByAggregateInput = {
     id?: SortOrder
     tenantId?: SortOrder
@@ -19098,22 +19567,6 @@ export namespace Prisma {
     maintenanceCost?: SortOrder
   }
 
-  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
-  }
-
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -19127,6 +19580,10 @@ export namespace Prisma {
   }
 
   export type ProductCreatesharedShopIdsInput = {
+    set: string[]
+  }
+
+  export type ProductCreateimagesInput = {
     set: string[]
   }
 
@@ -19181,6 +19638,11 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type ProductUpdateimagesInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -19271,10 +19733,26 @@ export namespace Prisma {
     deleteMany?: ProductPriceScalarWhereInput | ProductPriceScalarWhereInput[]
   }
 
+  export type InventoryItemCreateimagesInput = {
+    set: string[]
+  }
+
   export type ProductCreateNestedOneWithoutItemsInput = {
     create?: XOR<ProductCreateWithoutItemsInput, ProductUncheckedCreateWithoutItemsInput>
     connectOrCreate?: ProductCreateOrConnectWithoutItemsInput
     connect?: ProductWhereUniqueInput
+  }
+
+  export type BrandCreateNestedOneWithoutStockItemsInput = {
+    create?: XOR<BrandCreateWithoutStockItemsInput, BrandUncheckedCreateWithoutStockItemsInput>
+    connectOrCreate?: BrandCreateOrConnectWithoutStockItemsInput
+    connect?: BrandWhereUniqueInput
+  }
+
+  export type CategoryCreateNestedOneWithoutStockItemsInput = {
+    create?: XOR<CategoryCreateWithoutStockItemsInput, CategoryUncheckedCreateWithoutStockItemsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutStockItemsInput
+    connect?: CategoryWhereUniqueInput
   }
 
   export type InventoryUpgradeCreateNestedManyWithoutInventoryItemInput = {
@@ -19291,12 +19769,45 @@ export namespace Prisma {
     connect?: InventoryUpgradeWhereUniqueInput | InventoryUpgradeWhereUniqueInput[]
   }
 
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type InventoryItemUpdateimagesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
   export type ProductUpdateOneRequiredWithoutItemsNestedInput = {
     create?: XOR<ProductCreateWithoutItemsInput, ProductUncheckedCreateWithoutItemsInput>
     connectOrCreate?: ProductCreateOrConnectWithoutItemsInput
     upsert?: ProductUpsertWithoutItemsInput
     connect?: ProductWhereUniqueInput
     update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutItemsInput, ProductUpdateWithoutItemsInput>, ProductUncheckedUpdateWithoutItemsInput>
+  }
+
+  export type BrandUpdateOneWithoutStockItemsNestedInput = {
+    create?: XOR<BrandCreateWithoutStockItemsInput, BrandUncheckedCreateWithoutStockItemsInput>
+    connectOrCreate?: BrandCreateOrConnectWithoutStockItemsInput
+    upsert?: BrandUpsertWithoutStockItemsInput
+    disconnect?: BrandWhereInput | boolean
+    delete?: BrandWhereInput | boolean
+    connect?: BrandWhereUniqueInput
+    update?: XOR<XOR<BrandUpdateToOneWithWhereWithoutStockItemsInput, BrandUpdateWithoutStockItemsInput>, BrandUncheckedUpdateWithoutStockItemsInput>
+  }
+
+  export type CategoryUpdateOneWithoutStockItemsNestedInput = {
+    create?: XOR<CategoryCreateWithoutStockItemsInput, CategoryUncheckedCreateWithoutStockItemsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutStockItemsInput
+    upsert?: CategoryUpsertWithoutStockItemsInput
+    disconnect?: CategoryWhereInput | boolean
+    delete?: CategoryWhereInput | boolean
+    connect?: CategoryWhereUniqueInput
+    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutStockItemsInput, CategoryUpdateWithoutStockItemsInput>, CategoryUncheckedUpdateWithoutStockItemsInput>
   }
 
   export type InventoryUpgradeUpdateManyWithoutInventoryItemNestedInput = {
@@ -19365,6 +19876,13 @@ export namespace Prisma {
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
   }
 
+  export type InventoryItemCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<InventoryItemCreateWithoutCategoryInput, InventoryItemUncheckedCreateWithoutCategoryInput> | InventoryItemCreateWithoutCategoryInput[] | InventoryItemUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: InventoryItemCreateOrConnectWithoutCategoryInput | InventoryItemCreateOrConnectWithoutCategoryInput[]
+    createMany?: InventoryItemCreateManyCategoryInputEnvelope
+    connect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+  }
+
   export type CategoryUncheckedCreateNestedManyWithoutParentInput = {
     create?: XOR<CategoryCreateWithoutParentInput, CategoryUncheckedCreateWithoutParentInput> | CategoryCreateWithoutParentInput[] | CategoryUncheckedCreateWithoutParentInput[]
     connectOrCreate?: CategoryCreateOrConnectWithoutParentInput | CategoryCreateOrConnectWithoutParentInput[]
@@ -19377,6 +19895,13 @@ export namespace Prisma {
     connectOrCreate?: ProductCreateOrConnectWithoutCategoryInput | ProductCreateOrConnectWithoutCategoryInput[]
     createMany?: ProductCreateManyCategoryInputEnvelope
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type InventoryItemUncheckedCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<InventoryItemCreateWithoutCategoryInput, InventoryItemUncheckedCreateWithoutCategoryInput> | InventoryItemCreateWithoutCategoryInput[] | InventoryItemUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: InventoryItemCreateOrConnectWithoutCategoryInput | InventoryItemCreateOrConnectWithoutCategoryInput[]
+    createMany?: InventoryItemCreateManyCategoryInputEnvelope
+    connect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
   }
 
   export type CategoryUpdatesharedShopIdsInput = {
@@ -19422,6 +19947,20 @@ export namespace Prisma {
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
   }
 
+  export type InventoryItemUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<InventoryItemCreateWithoutCategoryInput, InventoryItemUncheckedCreateWithoutCategoryInput> | InventoryItemCreateWithoutCategoryInput[] | InventoryItemUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: InventoryItemCreateOrConnectWithoutCategoryInput | InventoryItemCreateOrConnectWithoutCategoryInput[]
+    upsert?: InventoryItemUpsertWithWhereUniqueWithoutCategoryInput | InventoryItemUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: InventoryItemCreateManyCategoryInputEnvelope
+    set?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    disconnect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    delete?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    connect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    update?: InventoryItemUpdateWithWhereUniqueWithoutCategoryInput | InventoryItemUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: InventoryItemUpdateManyWithWhereWithoutCategoryInput | InventoryItemUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: InventoryItemScalarWhereInput | InventoryItemScalarWhereInput[]
+  }
+
   export type CategoryUncheckedUpdateManyWithoutParentNestedInput = {
     create?: XOR<CategoryCreateWithoutParentInput, CategoryUncheckedCreateWithoutParentInput> | CategoryCreateWithoutParentInput[] | CategoryUncheckedCreateWithoutParentInput[]
     connectOrCreate?: CategoryCreateOrConnectWithoutParentInput | CategoryCreateOrConnectWithoutParentInput[]
@@ -19450,6 +19989,20 @@ export namespace Prisma {
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
   }
 
+  export type InventoryItemUncheckedUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<InventoryItemCreateWithoutCategoryInput, InventoryItemUncheckedCreateWithoutCategoryInput> | InventoryItemCreateWithoutCategoryInput[] | InventoryItemUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: InventoryItemCreateOrConnectWithoutCategoryInput | InventoryItemCreateOrConnectWithoutCategoryInput[]
+    upsert?: InventoryItemUpsertWithWhereUniqueWithoutCategoryInput | InventoryItemUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: InventoryItemCreateManyCategoryInputEnvelope
+    set?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    disconnect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    delete?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    connect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    update?: InventoryItemUpdateWithWhereUniqueWithoutCategoryInput | InventoryItemUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: InventoryItemUpdateManyWithWhereWithoutCategoryInput | InventoryItemUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: InventoryItemScalarWhereInput | InventoryItemScalarWhereInput[]
+  }
+
   export type BrandCreatesharedShopIdsInput = {
     set: string[]
   }
@@ -19461,11 +20014,25 @@ export namespace Prisma {
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
   }
 
+  export type InventoryItemCreateNestedManyWithoutBrandInput = {
+    create?: XOR<InventoryItemCreateWithoutBrandInput, InventoryItemUncheckedCreateWithoutBrandInput> | InventoryItemCreateWithoutBrandInput[] | InventoryItemUncheckedCreateWithoutBrandInput[]
+    connectOrCreate?: InventoryItemCreateOrConnectWithoutBrandInput | InventoryItemCreateOrConnectWithoutBrandInput[]
+    createMany?: InventoryItemCreateManyBrandInputEnvelope
+    connect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+  }
+
   export type ProductUncheckedCreateNestedManyWithoutBrandInput = {
     create?: XOR<ProductCreateWithoutBrandInput, ProductUncheckedCreateWithoutBrandInput> | ProductCreateWithoutBrandInput[] | ProductUncheckedCreateWithoutBrandInput[]
     connectOrCreate?: ProductCreateOrConnectWithoutBrandInput | ProductCreateOrConnectWithoutBrandInput[]
     createMany?: ProductCreateManyBrandInputEnvelope
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type InventoryItemUncheckedCreateNestedManyWithoutBrandInput = {
+    create?: XOR<InventoryItemCreateWithoutBrandInput, InventoryItemUncheckedCreateWithoutBrandInput> | InventoryItemCreateWithoutBrandInput[] | InventoryItemUncheckedCreateWithoutBrandInput[]
+    connectOrCreate?: InventoryItemCreateOrConnectWithoutBrandInput | InventoryItemCreateOrConnectWithoutBrandInput[]
+    createMany?: InventoryItemCreateManyBrandInputEnvelope
+    connect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
   }
 
   export type BrandUpdatesharedShopIdsInput = {
@@ -19487,6 +20054,20 @@ export namespace Prisma {
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
   }
 
+  export type InventoryItemUpdateManyWithoutBrandNestedInput = {
+    create?: XOR<InventoryItemCreateWithoutBrandInput, InventoryItemUncheckedCreateWithoutBrandInput> | InventoryItemCreateWithoutBrandInput[] | InventoryItemUncheckedCreateWithoutBrandInput[]
+    connectOrCreate?: InventoryItemCreateOrConnectWithoutBrandInput | InventoryItemCreateOrConnectWithoutBrandInput[]
+    upsert?: InventoryItemUpsertWithWhereUniqueWithoutBrandInput | InventoryItemUpsertWithWhereUniqueWithoutBrandInput[]
+    createMany?: InventoryItemCreateManyBrandInputEnvelope
+    set?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    disconnect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    delete?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    connect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    update?: InventoryItemUpdateWithWhereUniqueWithoutBrandInput | InventoryItemUpdateWithWhereUniqueWithoutBrandInput[]
+    updateMany?: InventoryItemUpdateManyWithWhereWithoutBrandInput | InventoryItemUpdateManyWithWhereWithoutBrandInput[]
+    deleteMany?: InventoryItemScalarWhereInput | InventoryItemScalarWhereInput[]
+  }
+
   export type ProductUncheckedUpdateManyWithoutBrandNestedInput = {
     create?: XOR<ProductCreateWithoutBrandInput, ProductUncheckedCreateWithoutBrandInput> | ProductCreateWithoutBrandInput[] | ProductUncheckedCreateWithoutBrandInput[]
     connectOrCreate?: ProductCreateOrConnectWithoutBrandInput | ProductCreateOrConnectWithoutBrandInput[]
@@ -19501,6 +20082,20 @@ export namespace Prisma {
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
   }
 
+  export type InventoryItemUncheckedUpdateManyWithoutBrandNestedInput = {
+    create?: XOR<InventoryItemCreateWithoutBrandInput, InventoryItemUncheckedCreateWithoutBrandInput> | InventoryItemCreateWithoutBrandInput[] | InventoryItemUncheckedCreateWithoutBrandInput[]
+    connectOrCreate?: InventoryItemCreateOrConnectWithoutBrandInput | InventoryItemCreateOrConnectWithoutBrandInput[]
+    upsert?: InventoryItemUpsertWithWhereUniqueWithoutBrandInput | InventoryItemUpsertWithWhereUniqueWithoutBrandInput[]
+    createMany?: InventoryItemCreateManyBrandInputEnvelope
+    set?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    disconnect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    delete?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    connect?: InventoryItemWhereUniqueInput | InventoryItemWhereUniqueInput[]
+    update?: InventoryItemUpdateWithWhereUniqueWithoutBrandInput | InventoryItemUpdateWithWhereUniqueWithoutBrandInput[]
+    updateMany?: InventoryItemUpdateManyWithWhereWithoutBrandInput | InventoryItemUpdateManyWithWhereWithoutBrandInput[]
+    deleteMany?: InventoryItemScalarWhereInput | InventoryItemScalarWhereInput[]
+  }
+
   export type ProductCreateNestedOneWithoutPricesInput = {
     create?: XOR<ProductCreateWithoutPricesInput, ProductUncheckedCreateWithoutPricesInput>
     connectOrCreate?: ProductCreateOrConnectWithoutPricesInput
@@ -19513,14 +20108,6 @@ export namespace Prisma {
     upsert?: ProductUpsertWithoutPricesInput
     connect?: ProductWhereUniqueInput
     update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutPricesInput, ProductUpdateWithoutPricesInput>, ProductUncheckedUpdateWithoutPricesInput>
-  }
-
-  export type NullableFloatFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -19758,6 +20345,7 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     createdBy?: string | null
+    stockItems?: InventoryItemCreateNestedManyWithoutBrandInput
   }
 
   export type BrandUncheckedCreateWithoutProductsInput = {
@@ -19769,6 +20357,7 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     createdBy?: string | null
+    stockItems?: InventoryItemUncheckedCreateNestedManyWithoutBrandInput
   }
 
   export type BrandCreateOrConnectWithoutProductsInput = {
@@ -19786,6 +20375,7 @@ export namespace Prisma {
     createdBy?: string | null
     parent?: CategoryCreateNestedOneWithoutChildrenInput
     children?: CategoryCreateNestedManyWithoutParentInput
+    stockItems?: InventoryItemCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateWithoutProductsInput = {
@@ -19798,6 +20388,7 @@ export namespace Prisma {
     createdAt?: Date | string
     createdBy?: string | null
     children?: CategoryUncheckedCreateNestedManyWithoutParentInput
+    stockItems?: InventoryItemUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryCreateOrConnectWithoutProductsInput = {
@@ -19809,6 +20400,14 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId: string
+    name?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
     serialNumber: string
     purchaseCost: number
     status?: string
@@ -19821,6 +20420,8 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     deletedBy?: string | null
     version?: number
+    brand?: BrandCreateNestedOneWithoutStockItemsInput
+    category?: CategoryCreateNestedOneWithoutStockItemsInput
     upgrades?: InventoryUpgradeCreateNestedManyWithoutInventoryItemInput
   }
 
@@ -19828,6 +20429,16 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId: string
+    name?: string | null
+    brandId?: string | null
+    categoryId?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
     serialNumber: string
     purchaseCost: number
     status?: string
@@ -19903,6 +20514,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    stockItems?: InventoryItemUpdateManyWithoutBrandNestedInput
   }
 
   export type BrandUncheckedUpdateWithoutProductsInput = {
@@ -19914,6 +20526,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    stockItems?: InventoryItemUncheckedUpdateManyWithoutBrandNestedInput
   }
 
   export type CategoryUpsertWithoutProductsInput = {
@@ -19937,6 +20550,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     parent?: CategoryUpdateOneWithoutChildrenNestedInput
     children?: CategoryUpdateManyWithoutParentNestedInput
+    stockItems?: InventoryItemUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateWithoutProductsInput = {
@@ -19949,6 +20563,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     children?: CategoryUncheckedUpdateManyWithoutParentNestedInput
+    stockItems?: InventoryItemUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type InventoryItemUpsertWithWhereUniqueWithoutProductInput = {
@@ -19975,6 +20590,16 @@ export namespace Prisma {
     tenantId?: StringFilter<"InventoryItem"> | string
     shopId?: StringFilter<"InventoryItem"> | string
     productId?: StringFilter<"InventoryItem"> | string
+    name?: StringNullableFilter<"InventoryItem"> | string | null
+    brandId?: StringNullableFilter<"InventoryItem"> | string | null
+    categoryId?: StringNullableFilter<"InventoryItem"> | string | null
+    sellingPrice?: FloatNullableFilter<"InventoryItem"> | number | null
+    specifications?: JsonNullableFilter<"InventoryItem">
+    imei1?: StringNullableFilter<"InventoryItem"> | string | null
+    imei2?: StringNullableFilter<"InventoryItem"> | string | null
+    condition?: StringNullableFilter<"InventoryItem"> | string | null
+    notes?: StringNullableFilter<"InventoryItem"> | string | null
+    images?: StringNullableListFilter<"InventoryItem">
     serialNumber?: StringFilter<"InventoryItem"> | string
     purchaseCost?: FloatFilter<"InventoryItem"> | number
     status?: StringFilter<"InventoryItem"> | string
@@ -20033,6 +20658,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -20061,6 +20688,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -20074,6 +20703,66 @@ export namespace Prisma {
   export type ProductCreateOrConnectWithoutItemsInput = {
     where: ProductWhereUniqueInput
     create: XOR<ProductCreateWithoutItemsInput, ProductUncheckedCreateWithoutItemsInput>
+  }
+
+  export type BrandCreateWithoutStockItemsInput = {
+    id?: string
+    tenantId: string
+    shopId?: string | null
+    sharedShopIds?: BrandCreatesharedShopIdsInput | string[]
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+    createdBy?: string | null
+    products?: ProductCreateNestedManyWithoutBrandInput
+  }
+
+  export type BrandUncheckedCreateWithoutStockItemsInput = {
+    id?: string
+    tenantId: string
+    shopId?: string | null
+    sharedShopIds?: BrandCreatesharedShopIdsInput | string[]
+    name: string
+    description?: string | null
+    createdAt?: Date | string
+    createdBy?: string | null
+    products?: ProductUncheckedCreateNestedManyWithoutBrandInput
+  }
+
+  export type BrandCreateOrConnectWithoutStockItemsInput = {
+    where: BrandWhereUniqueInput
+    create: XOR<BrandCreateWithoutStockItemsInput, BrandUncheckedCreateWithoutStockItemsInput>
+  }
+
+  export type CategoryCreateWithoutStockItemsInput = {
+    id?: string
+    tenantId: string
+    shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
+    name: string
+    createdAt?: Date | string
+    createdBy?: string | null
+    parent?: CategoryCreateNestedOneWithoutChildrenInput
+    children?: CategoryCreateNestedManyWithoutParentInput
+    products?: ProductCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryUncheckedCreateWithoutStockItemsInput = {
+    id?: string
+    tenantId: string
+    shopId?: string | null
+    sharedShopIds?: CategoryCreatesharedShopIdsInput | string[]
+    name: string
+    parentId?: string | null
+    createdAt?: Date | string
+    createdBy?: string | null
+    children?: CategoryUncheckedCreateNestedManyWithoutParentInput
+    products?: ProductUncheckedCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryCreateOrConnectWithoutStockItemsInput = {
+    where: CategoryWhereUniqueInput
+    create: XOR<CategoryCreateWithoutStockItemsInput, CategoryUncheckedCreateWithoutStockItemsInput>
   }
 
   export type InventoryUpgradeCreateWithoutInventoryItemInput = {
@@ -20131,6 +20820,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20159,6 +20850,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20167,6 +20860,78 @@ export namespace Prisma {
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
     prices?: ProductPriceUncheckedUpdateManyWithoutProductNestedInput
+  }
+
+  export type BrandUpsertWithoutStockItemsInput = {
+    update: XOR<BrandUpdateWithoutStockItemsInput, BrandUncheckedUpdateWithoutStockItemsInput>
+    create: XOR<BrandCreateWithoutStockItemsInput, BrandUncheckedCreateWithoutStockItemsInput>
+    where?: BrandWhereInput
+  }
+
+  export type BrandUpdateToOneWithWhereWithoutStockItemsInput = {
+    where?: BrandWhereInput
+    data: XOR<BrandUpdateWithoutStockItemsInput, BrandUncheckedUpdateWithoutStockItemsInput>
+  }
+
+  export type BrandUpdateWithoutStockItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: BrandUpdatesharedShopIdsInput | string[]
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    products?: ProductUpdateManyWithoutBrandNestedInput
+  }
+
+  export type BrandUncheckedUpdateWithoutStockItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: BrandUpdatesharedShopIdsInput | string[]
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    products?: ProductUncheckedUpdateManyWithoutBrandNestedInput
+  }
+
+  export type CategoryUpsertWithoutStockItemsInput = {
+    update: XOR<CategoryUpdateWithoutStockItemsInput, CategoryUncheckedUpdateWithoutStockItemsInput>
+    create: XOR<CategoryCreateWithoutStockItemsInput, CategoryUncheckedCreateWithoutStockItemsInput>
+    where?: CategoryWhereInput
+  }
+
+  export type CategoryUpdateToOneWithWhereWithoutStockItemsInput = {
+    where?: CategoryWhereInput
+    data: XOR<CategoryUpdateWithoutStockItemsInput, CategoryUncheckedUpdateWithoutStockItemsInput>
+  }
+
+  export type CategoryUpdateWithoutStockItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    parent?: CategoryUpdateOneWithoutChildrenNestedInput
+    children?: CategoryUpdateManyWithoutParentNestedInput
+    products?: ProductUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type CategoryUncheckedUpdateWithoutStockItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: CategoryUpdatesharedShopIdsInput | string[]
+    name?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    children?: CategoryUncheckedUpdateManyWithoutParentNestedInput
+    products?: ProductUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type InventoryUpgradeUpsertWithWhereUniqueWithoutInventoryItemInput = {
@@ -20203,6 +20968,14 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId: string
+    name?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
     serialNumber: string
     purchaseCost: number
     status?: string
@@ -20216,6 +20989,8 @@ export namespace Prisma {
     deletedBy?: string | null
     version?: number
     product: ProductCreateNestedOneWithoutItemsInput
+    brand?: BrandCreateNestedOneWithoutStockItemsInput
+    category?: CategoryCreateNestedOneWithoutStockItemsInput
   }
 
   export type InventoryItemUncheckedCreateWithoutUpgradesInput = {
@@ -20223,6 +20998,16 @@ export namespace Prisma {
     tenantId: string
     shopId: string
     productId: string
+    name?: string | null
+    brandId?: string | null
+    categoryId?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
     serialNumber: string
     purchaseCost: number
     status?: string
@@ -20257,6 +21042,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
     serialNumber?: StringFieldUpdateOperationsInput | string
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -20270,6 +21063,8 @@ export namespace Prisma {
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
     product?: ProductUpdateOneRequiredWithoutItemsNestedInput
+    brand?: BrandUpdateOneWithoutStockItemsNestedInput
+    category?: CategoryUpdateOneWithoutStockItemsNestedInput
   }
 
   export type InventoryItemUncheckedUpdateWithoutUpgradesInput = {
@@ -20277,6 +21072,16 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
     productId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    brandId?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
     serialNumber?: StringFieldUpdateOperationsInput | string
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -20301,6 +21106,7 @@ export namespace Prisma {
     createdBy?: string | null
     parent?: CategoryCreateNestedOneWithoutChildrenInput
     products?: ProductCreateNestedManyWithoutCategoryInput
+    stockItems?: InventoryItemCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateWithoutChildrenInput = {
@@ -20313,6 +21119,7 @@ export namespace Prisma {
     createdAt?: Date | string
     createdBy?: string | null
     products?: ProductUncheckedCreateNestedManyWithoutCategoryInput
+    stockItems?: InventoryItemUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryCreateOrConnectWithoutChildrenInput = {
@@ -20330,6 +21137,7 @@ export namespace Prisma {
     createdBy?: string | null
     children?: CategoryCreateNestedManyWithoutParentInput
     products?: ProductCreateNestedManyWithoutCategoryInput
+    stockItems?: InventoryItemCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateWithoutParentInput = {
@@ -20342,6 +21150,7 @@ export namespace Prisma {
     createdBy?: string | null
     children?: CategoryUncheckedCreateNestedManyWithoutParentInput
     products?: ProductUncheckedCreateNestedManyWithoutCategoryInput
+    stockItems?: InventoryItemUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryCreateOrConnectWithoutParentInput = {
@@ -20368,6 +21177,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -20395,6 +21206,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -20413,6 +21226,74 @@ export namespace Prisma {
 
   export type ProductCreateManyCategoryInputEnvelope = {
     data: ProductCreateManyCategoryInput | ProductCreateManyCategoryInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type InventoryItemCreateWithoutCategoryInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    name?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
+    serialNumber: string
+    purchaseCost: number
+    status?: string
+    capitalizedCost?: number
+    imageUrl?: string | null
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+    product: ProductCreateNestedOneWithoutItemsInput
+    brand?: BrandCreateNestedOneWithoutStockItemsInput
+    upgrades?: InventoryUpgradeCreateNestedManyWithoutInventoryItemInput
+  }
+
+  export type InventoryItemUncheckedCreateWithoutCategoryInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    productId: string
+    name?: string | null
+    brandId?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
+    serialNumber: string
+    purchaseCost: number
+    status?: string
+    capitalizedCost?: number
+    imageUrl?: string | null
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+    upgrades?: InventoryUpgradeUncheckedCreateNestedManyWithoutInventoryItemInput
+  }
+
+  export type InventoryItemCreateOrConnectWithoutCategoryInput = {
+    where: InventoryItemWhereUniqueInput
+    create: XOR<InventoryItemCreateWithoutCategoryInput, InventoryItemUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type InventoryItemCreateManyCategoryInputEnvelope = {
+    data: InventoryItemCreateManyCategoryInput | InventoryItemCreateManyCategoryInput[]
     skipDuplicates?: boolean
   }
 
@@ -20437,6 +21318,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     parent?: CategoryUpdateOneWithoutChildrenNestedInput
     products?: ProductUpdateManyWithoutCategoryNestedInput
+    stockItems?: InventoryItemUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateWithoutChildrenInput = {
@@ -20449,6 +21331,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     products?: ProductUncheckedUpdateManyWithoutCategoryNestedInput
+    stockItems?: InventoryItemUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUpsertWithWhereUniqueWithoutParentInput = {
@@ -20516,6 +21399,8 @@ export namespace Prisma {
     status?: StringFilter<"Product"> | string
     specifications?: JsonNullableFilter<"Product">
     quantityOnHand?: FloatFilter<"Product"> | number
+    imageUrl?: StringNullableFilter<"Product"> | string | null
+    images?: StringNullableListFilter<"Product">
     createdAt?: DateTimeFilter<"Product"> | Date | string
     createdBy?: StringNullableFilter<"Product"> | string | null
     updatedAt?: DateTimeFilter<"Product"> | Date | string
@@ -20523,6 +21408,22 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"Product"> | Date | string | null
     deletedBy?: StringNullableFilter<"Product"> | string | null
     version?: IntFilter<"Product"> | number
+  }
+
+  export type InventoryItemUpsertWithWhereUniqueWithoutCategoryInput = {
+    where: InventoryItemWhereUniqueInput
+    update: XOR<InventoryItemUpdateWithoutCategoryInput, InventoryItemUncheckedUpdateWithoutCategoryInput>
+    create: XOR<InventoryItemCreateWithoutCategoryInput, InventoryItemUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type InventoryItemUpdateWithWhereUniqueWithoutCategoryInput = {
+    where: InventoryItemWhereUniqueInput
+    data: XOR<InventoryItemUpdateWithoutCategoryInput, InventoryItemUncheckedUpdateWithoutCategoryInput>
+  }
+
+  export type InventoryItemUpdateManyWithWhereWithoutCategoryInput = {
+    where: InventoryItemScalarWhereInput
+    data: XOR<InventoryItemUpdateManyMutationInput, InventoryItemUncheckedUpdateManyWithoutCategoryInput>
   }
 
   export type ProductCreateWithoutBrandInput = {
@@ -20539,6 +21440,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -20566,6 +21469,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -20587,6 +21492,74 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type InventoryItemCreateWithoutBrandInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    name?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
+    serialNumber: string
+    purchaseCost: number
+    status?: string
+    capitalizedCost?: number
+    imageUrl?: string | null
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+    product: ProductCreateNestedOneWithoutItemsInput
+    category?: CategoryCreateNestedOneWithoutStockItemsInput
+    upgrades?: InventoryUpgradeCreateNestedManyWithoutInventoryItemInput
+  }
+
+  export type InventoryItemUncheckedCreateWithoutBrandInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    productId: string
+    name?: string | null
+    categoryId?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
+    serialNumber: string
+    purchaseCost: number
+    status?: string
+    capitalizedCost?: number
+    imageUrl?: string | null
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+    upgrades?: InventoryUpgradeUncheckedCreateNestedManyWithoutInventoryItemInput
+  }
+
+  export type InventoryItemCreateOrConnectWithoutBrandInput = {
+    where: InventoryItemWhereUniqueInput
+    create: XOR<InventoryItemCreateWithoutBrandInput, InventoryItemUncheckedCreateWithoutBrandInput>
+  }
+
+  export type InventoryItemCreateManyBrandInputEnvelope = {
+    data: InventoryItemCreateManyBrandInput | InventoryItemCreateManyBrandInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProductUpsertWithWhereUniqueWithoutBrandInput = {
     where: ProductWhereUniqueInput
     update: XOR<ProductUpdateWithoutBrandInput, ProductUncheckedUpdateWithoutBrandInput>
@@ -20603,6 +21576,22 @@ export namespace Prisma {
     data: XOR<ProductUpdateManyMutationInput, ProductUncheckedUpdateManyWithoutBrandInput>
   }
 
+  export type InventoryItemUpsertWithWhereUniqueWithoutBrandInput = {
+    where: InventoryItemWhereUniqueInput
+    update: XOR<InventoryItemUpdateWithoutBrandInput, InventoryItemUncheckedUpdateWithoutBrandInput>
+    create: XOR<InventoryItemCreateWithoutBrandInput, InventoryItemUncheckedCreateWithoutBrandInput>
+  }
+
+  export type InventoryItemUpdateWithWhereUniqueWithoutBrandInput = {
+    where: InventoryItemWhereUniqueInput
+    data: XOR<InventoryItemUpdateWithoutBrandInput, InventoryItemUncheckedUpdateWithoutBrandInput>
+  }
+
+  export type InventoryItemUpdateManyWithWhereWithoutBrandInput = {
+    where: InventoryItemScalarWhereInput
+    data: XOR<InventoryItemUpdateManyMutationInput, InventoryItemUncheckedUpdateManyWithoutBrandInput>
+  }
+
   export type ProductCreateWithoutPricesInput = {
     id?: string
     tenantId: string
@@ -20617,6 +21606,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -20645,6 +21636,8 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -20685,6 +21678,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20713,6 +21708,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20727,6 +21724,16 @@ export namespace Prisma {
     id?: string
     tenantId: string
     shopId: string
+    name?: string | null
+    brandId?: string | null
+    categoryId?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
     serialNumber: string
     purchaseCost: number
     status?: string
@@ -20755,6 +21762,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
     serialNumber?: StringFieldUpdateOperationsInput | string
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -20767,6 +21782,8 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
+    brand?: BrandUpdateOneWithoutStockItemsNestedInput
+    category?: CategoryUpdateOneWithoutStockItemsNestedInput
     upgrades?: InventoryUpgradeUpdateManyWithoutInventoryItemNestedInput
   }
 
@@ -20774,6 +21791,16 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    brandId?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
     serialNumber?: StringFieldUpdateOperationsInput | string
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -20793,6 +21820,16 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     shopId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    brandId?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
     serialNumber?: StringFieldUpdateOperationsInput | string
     purchaseCost?: FloatFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
@@ -20902,6 +21939,36 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+  }
+
+  export type InventoryItemCreateManyCategoryInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    productId: string
+    name?: string | null
+    brandId?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
+    serialNumber: string
+    purchaseCost: number
+    status?: string
+    capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -20921,6 +21988,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     children?: CategoryUpdateManyWithoutParentNestedInput
     products?: ProductUpdateManyWithoutCategoryNestedInput
+    stockItems?: InventoryItemUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateWithoutParentInput = {
@@ -20933,6 +22001,7 @@ export namespace Prisma {
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     children?: CategoryUncheckedUpdateManyWithoutParentNestedInput
     products?: ProductUncheckedUpdateManyWithoutCategoryNestedInput
+    stockItems?: InventoryItemUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateManyWithoutParentInput = {
@@ -20959,6 +22028,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20986,6 +22057,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21012,6 +22085,94 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type InventoryItemUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
+    serialNumber?: StringFieldUpdateOperationsInput | string
+    purchaseCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    product?: ProductUpdateOneRequiredWithoutItemsNestedInput
+    brand?: BrandUpdateOneWithoutStockItemsNestedInput
+    upgrades?: InventoryUpgradeUpdateManyWithoutInventoryItemNestedInput
+  }
+
+  export type InventoryItemUncheckedUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    brandId?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
+    serialNumber?: StringFieldUpdateOperationsInput | string
+    purchaseCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    upgrades?: InventoryUpgradeUncheckedUpdateManyWithoutInventoryItemNestedInput
+  }
+
+  export type InventoryItemUncheckedUpdateManyWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    brandId?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
+    serialNumber?: StringFieldUpdateOperationsInput | string
+    purchaseCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21036,6 +22197,36 @@ export namespace Prisma {
     status?: string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+  }
+
+  export type InventoryItemCreateManyBrandInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    productId: string
+    name?: string | null
+    categoryId?: string | null
+    sellingPrice?: number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: string | null
+    imei2?: string | null
+    condition?: string | null
+    notes?: string | null
+    images?: InventoryItemCreateimagesInput | string[]
+    serialNumber: string
+    purchaseCost: number
+    status?: string
+    capitalizedCost?: number
+    imageUrl?: string | null
     createdAt?: Date | string
     createdBy?: string | null
     updatedAt?: Date | string
@@ -21059,6 +22250,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21086,6 +22279,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21112,6 +22307,94 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specifications?: NullableJsonNullValueInput | InputJsonValue
     quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type InventoryItemUpdateWithoutBrandInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
+    serialNumber?: StringFieldUpdateOperationsInput | string
+    purchaseCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    product?: ProductUpdateOneRequiredWithoutItemsNestedInput
+    category?: CategoryUpdateOneWithoutStockItemsNestedInput
+    upgrades?: InventoryUpgradeUpdateManyWithoutInventoryItemNestedInput
+  }
+
+  export type InventoryItemUncheckedUpdateWithoutBrandInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
+    serialNumber?: StringFieldUpdateOperationsInput | string
+    purchaseCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    upgrades?: InventoryUpgradeUncheckedUpdateManyWithoutInventoryItemNestedInput
+  }
+
+  export type InventoryItemUncheckedUpdateManyWithoutBrandInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    sellingPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    imei1?: NullableStringFieldUpdateOperationsInput | string | null
+    imei2?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: InventoryItemUpdateimagesInput | string[]
+    serialNumber?: StringFieldUpdateOperationsInput | string
+    purchaseCost?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    capitalizedCost?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

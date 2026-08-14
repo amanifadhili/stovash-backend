@@ -19,7 +19,7 @@ export class ReceivePurchaseUnitHandler extends BaseCommandHandler<ReceivePurcha
         serialNumber,
         imei1,
         imei2,
-        condition = 'ACCEPTED',
+        condition = 'GOOD',
         actualSpecs,
         unitAcquisitionCost,
         receivedAt,

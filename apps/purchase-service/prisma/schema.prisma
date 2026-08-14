@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../dist/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -45,10 +45,14 @@ enum PaymentMethod {
 }
 
 enum ReceivingItemCondition {
-  ACCEPTED
-  REJECTED
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
   DAMAGED
+  REJECTED
   WRONG_ITEM
+  ACCEPTED // legacy alias of GOOD
 }
 
 model Purchase {

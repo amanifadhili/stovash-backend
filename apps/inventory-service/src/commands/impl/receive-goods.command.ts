@@ -8,6 +8,12 @@ export class ReceiveGoodsItemInput {
   brandId?: string;
   categoryId?: string;
   serialNumber?: string;
+  imei1?: string;
+  imei2?: string;
+  condition?: string;
+  notes?: string;
+  images?: string[];
+  specifications?: any;
   quantity?: number; // >1 for Accessories, defaults to 1
   purchaseCost!: number;
   sellingPrice?: number;

@@ -7,7 +7,7 @@ export interface ReceivePurchaseUnitPayload {
   serialNumber?: string;
   imei1?: string;
   imei2?: string;
-  condition?: 'ACCEPTED' | 'REJECTED' | 'DAMAGED' | 'WRONG_ITEM';
+  condition?: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED' | 'REJECTED' | 'WRONG_ITEM' | 'ACCEPTED';
   actualSpecs?: string;
   unitAcquisitionCost: number;
   receivedAt?: string;

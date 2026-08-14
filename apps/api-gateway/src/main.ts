@@ -39,10 +39,20 @@ async function bootstrap() {
     maxAge: 86400,
   });
   
+  // IP-level ceiling (express-rate-limit). Per-user limits also apply in
+  // RateLimitMiddleware (20k/min auth, 2k/min anonymous). Keep this high enough
+  // for SPA polling + multi-service fan-out from one browser IP.
   app.use(
     rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 1000, // limit each IP to 1000 requests per windowMs
+      windowMs: 60 * 1000, // 1 minute
+      max: Number(process.env.GATEWAY_IP_RATE_LIMIT_MAX ?? 50000),
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: {
+        status: 'error',
+        message: 'Too many requests. Please wait a moment and try again.',
+        errorCode: 'RATE_LIMIT_EXCEEDED',
+      },
     }),
   );
 

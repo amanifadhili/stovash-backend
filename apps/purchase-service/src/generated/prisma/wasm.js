@@ -384,10 +384,14 @@ exports.PurchaseAccountingStatus = exports.$Enums.PurchaseAccountingStatus = {
 };
 
 exports.ReceivingItemCondition = exports.$Enums.ReceivingItemCondition = {
-  ACCEPTED: 'ACCEPTED',
-  REJECTED: 'REJECTED',
+  EXCELLENT: 'EXCELLENT',
+  GOOD: 'GOOD',
+  FAIR: 'FAIR',
+  POOR: 'POOR',
   DAMAGED: 'DAMAGED',
-  WRONG_ITEM: 'WRONG_ITEM'
+  REJECTED: 'REJECTED',
+  WRONG_ITEM: 'WRONG_ITEM',
+  ACCEPTED: 'ACCEPTED'
 };
 
 exports.PaymentMethod = exports.$Enums.PaymentMethod = {

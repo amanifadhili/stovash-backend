@@ -5,11 +5,14 @@ export interface CreatePurchaseUnitInput {
   serialNumber?: string;
   imei1?: string;
   imei2?: string;
-  condition?: 'ACCEPTED' | 'REJECTED' | 'DAMAGED' | 'WRONG_ITEM';
+  condition?: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED' | 'REJECTED' | 'WRONG_ITEM' | 'ACCEPTED';
   unitAcquisitionCost?: number;
   notes?: string;
   images?: string[];
+  /** When true, unit is CONFIRMED and stocked immediately (RECEIVED path). */
   received?: boolean;
+  /** NON_SERIALIZED batch size when a single unit row represents many qty. */
+  quantity?: number;
 }
 
 export interface CreatePurchaseItemInput {

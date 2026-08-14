@@ -20,9 +20,11 @@ export async function publishPurchaseUnitConfirmed(
   receivedItem: any,
   purchaseItem: any,
   context?: IRequestContext,
+  quantity: number = 1,
 ): Promise<void> {
   const traceId = context?.traceId || 'unknown';
   const createdBy = context?.userId || 'system';
+  const qty = Math.max(1, Number(quantity) || 1);
 
   try {
     // 1) Synchronous, reliable stock-in (works without RabbitMQ).
@@ -33,15 +35,25 @@ export async function publishPurchaseUnitConfirmed(
           payload: {
             productId: purchaseItem?.productId,
             productTracking: purchaseItem?.productTracking,
+            name: purchaseItem?.productName,
             serialNumber: receivedItem.serialNumber,
             imei1: receivedItem.imei1,
             imei2: receivedItem.imei2,
             unitAcquisitionCost: receivedItem.unitAcquisitionCost || 0,
             additionalCost: receivedItem.additionalCost || 0,
             condition: receivedItem.condition,
-            images: Array.isArray(receivedItem.images) && receivedItem.images.length > 0 ? receivedItem.images.slice(0, 3) : undefined,
+            notes: receivedItem.notes,
+            specifications: (() => {
+              try {
+                return purchaseItem?.purchaseSpecs ? JSON.parse(purchaseItem.purchaseSpecs) : undefined;
+              } catch {
+                return undefined;
+              }
+            })(),
+            images: Array.isArray(receivedItem.images) && receivedItem.images.length > 0 ? receivedItem.images.slice(0, 5) : undefined,
             purchaseId: receivedItem.purchaseId,
             referenceId: receivedItem.id,
+            quantity: qty,
           },
           context,
         },
@@ -82,7 +94,8 @@ export async function publishPurchaseUnitConfirmed(
             unitAcquisitionCost: receivedItem.unitAcquisitionCost || 0,
             additionalCost: receivedItem.additionalCost || 0,
             condition: receivedItem.condition,
-            images: Array.isArray(receivedItem.images) && receivedItem.images.length > 0 ? receivedItem.images.slice(0, 3) : undefined,
+            images: Array.isArray(receivedItem.images) && receivedItem.images.length > 0 ? receivedItem.images.slice(0, 5) : undefined,
+            quantity: qty,
             confirmedAt: receivedItem.confirmedAt || new Date().toISOString(),
           },
           timestamp: new Date().toISOString(),

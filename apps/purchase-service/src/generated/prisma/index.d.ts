@@ -120,10 +120,14 @@ export type PurchaseAccountingStatus = (typeof PurchaseAccountingStatus)[keyof t
 
 
 export const ReceivingItemCondition: {
-  ACCEPTED: 'ACCEPTED',
-  REJECTED: 'REJECTED',
+  EXCELLENT: 'EXCELLENT',
+  GOOD: 'GOOD',
+  FAIR: 'FAIR',
+  POOR: 'POOR',
   DAMAGED: 'DAMAGED',
-  WRONG_ITEM: 'WRONG_ITEM'
+  REJECTED: 'REJECTED',
+  WRONG_ITEM: 'WRONG_ITEM',
+  ACCEPTED: 'ACCEPTED'
 };
 
 export type ReceivingItemCondition = (typeof ReceivingItemCondition)[keyof typeof ReceivingItemCondition]

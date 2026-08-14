@@ -22,8 +22,17 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
       };
       if (shopId) where.shopId = shopId;
       if (payload.productId) where.productId = payload.productId;
-      if (payload.categoryId) where.product = { ...where.product, categoryId: payload.categoryId };
-      if (payload.brandId) where.product = { ...where.product, brandId: payload.brandId };
+      if (payload.categoryId) where.OR = [
+        ...(where.OR || []),
+        { categoryId: payload.categoryId },
+        { product: { categoryId: payload.categoryId } },
+      ];
+      if (payload.brandId) {
+        where.AND = [
+          ...(where.AND || []),
+          { OR: [{ brandId: payload.brandId }, { product: { brandId: payload.brandId } }] },
+        ];
+      }
       if (payload.status && payload.status.length) {
         where.status = { in: payload.status };
       } else {
@@ -34,6 +43,7 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
         where.OR = [
           { serialNumber: { contains: payload.search, mode: 'insensitive' } },
           { imei1: { contains: payload.search, mode: 'insensitive' } },
+          { name: { contains: payload.search, mode: 'insensitive' } },
           { product: { name: { contains: payload.search, mode: 'insensitive' } } },
           { product: { sku: { contains: payload.search, mode: 'insensitive' } } },
         ];
@@ -41,9 +51,11 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
 
       const items = await prisma.inventoryItem.findMany({
         where,
-        orderBy: [{ product: { name: 'asc' } }, { createdAt: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }],
         take: payload.limit && payload.limit > 0 ? payload.limit : undefined,
         include: {
+          brand: { select: { id: true, name: true } },
+          category: { select: { id: true, name: true } },
           product: {
             include: {
               brand: { select: { id: true, name: true } },
@@ -56,23 +68,48 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
       });
 
       const data = items.map((item) => {
-        console.log("DEBUG ITEM:", item.serialNumber, "imageUrl:", item.imageUrl);
         const capitalized = (item.upgrades ?? []).reduce((s, u) => s + (Number(u.cost) || 0), 0);
         const totalCost = Number(item.purchaseCost || 0) + Number(item.capitalizedCost || 0) + capitalized;
+        const brand = item.brand
+          ? { id: item.brand.id, name: item.brand.name }
+          : item.product?.brand
+            ? { id: item.product.brand.id, name: item.product.brand.name }
+            : null;
+        const category = item.category
+          ? { id: item.category.id, name: item.category.name }
+          : item.product?.category
+            ? { id: item.product.category.id, name: item.product.category.name }
+            : null;
+        const productSpecs = (item.product?.specifications && typeof item.product.specifications === 'object')
+          ? (item.product.specifications as Record<string, unknown>)
+          : null;
+        const deviceType =
+          (item.specifications as any)?.deviceType ||
+          productSpecs?.deviceType ||
+          (item.product as any)?.type ||
+          'DEVICE';
+
         return {
           id: item.id,
           productId: item.productId,
-          productName: item.product?.name || null,
+          productName: item.name || item.product?.name || null,
           productSku: item.product?.sku || null,
+          deviceType,
           trackingMethod: item.product?.trackingMethod || 'SERIALIZED',
           serialNumber: item.serialNumber,
+          imei1: item.imei1 || null,
+          imei2: item.imei2 || null,
+          condition: item.condition || null,
+          notes: item.notes || null,
           purchaseCost: Number(item.purchaseCost || 0),
           totalCost,
           status: item.status,
-          imageUrl: item.imageUrl || undefined,
-          brand: item.product?.brand ? { id: item.product.brand.id, name: item.product.brand.name } : null,
-          category: item.product?.category ? { id: item.product.category.id, name: item.product.category.name } : null,
-          sellingPrice: item.product?.prices?.[0]?.sellingPrice || 0,
+          imageUrl: item.imageUrl || (Array.isArray(item.images) && item.images[0]) || undefined,
+          images: Array.isArray(item.images) ? item.images : [],
+          brand,
+          category,
+          sellingPrice: item.sellingPrice ?? item.product?.prices?.[0]?.sellingPrice ?? 0,
+          specifications: item.specifications ?? item.product?.specifications ?? null,
         };
       });
 

@@ -76,8 +76,8 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
         sku = `${sku}-${Math.floor(Math.random() * 1000)}`;
       }
 
-      const brandId = isAccessory ? null : (payload.brandId || null);
-      const categoryId = isAccessory ? null : (payload.categoryId || null);
+      const brandId = payload.brandId || null;
+      const categoryId = payload.categoryId || null;
 
       if (brandId) {
         const brand = await prisma.brand.findFirst({
@@ -116,6 +116,7 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
           tenantId: context.tenantId,
           shopId: shopId || null,
           sharedShopIds: sharedShopIds || [],
+          type: deviceType,
           sku,
           name: payload.name.trim(),
           description: payload.description?.trim() || null,

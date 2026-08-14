@@ -38,6 +38,8 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
       if (tracking === 'NON_SERIALIZED') {
         // Idempotency: one IN movement per purchase reference.
         const referenceId = payload.referenceId || payload.purchaseId || null;
+        const qty = Math.max(1, Number(payload.quantity) || 1);
+        const imageList = Array.isArray(payload.images) ? payload.images.slice(0, 5) : [];
         if (referenceId) {
           const existing = await prisma.inventoryMovement.findFirst({
             where: { tenantId, productId: product.id, referenceId, referenceType: 'PURCHASE', movementType: 'IN' },
@@ -47,10 +49,22 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
           }
         }
 
-        const quantityOnHand = (product.quantityOnHand || 0) + 1;
+        const quantityOnHand = (product.quantityOnHand || 0) + qty;
+        const updateData: any = { quantityOnHand, updatedBy: userId };
+        // Persist package images when provided (first purchase photo becomes primary).
+        if (imageList.length > 0) {
+          updateData.images = imageList;
+          updateData.imageUrl = imageList[0];
+        } else if (payload.name || payload.specifications) {
+          // still allow identity enrichment without images
+        }
+        if (payload.specifications) {
+          updateData.specifications = payload.specifications;
+        }
+
         const updated = await prisma.product.update({
           where: { id: product.id },
-          data: { quantityOnHand, updatedBy: userId },
+          data: updateData,
         });
 
         await prisma.inventoryMovement.create({
@@ -60,14 +74,14 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
             inventoryItemId: null,
             productId: product.id,
             movementType: 'IN',
-            quantity: 1,
+            quantity: qty,
             referenceId,
             referenceType: 'PURCHASE',
             createdBy: userId,
           },
         });
 
-        return { status: 'success', traceId, data: { product: updated } };
+        return { status: 'success', traceId, data: { product: updated, quantity: qty } };
       }
 
       // SERIALIZED path
@@ -81,15 +95,25 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
       }
 
       const purchaseCost = (Number(payload.unitAcquisitionCost) || 0) + (Number(payload.additionalCost) || 0);
-      const imageList = Array.isArray(payload.images) ? payload.images : undefined;
+      const imageList = Array.isArray(payload.images) ? payload.images.slice(0, 5) : [];
       const invItem = await prisma.inventoryItem.create({
         data: {
           tenantId,
           shopId,
           productId: product.id,
+          name: payload.name?.trim() || product.name || null,
+          brandId: payload.brandId || product.brandId || null,
+          categoryId: payload.categoryId || product.categoryId || null,
+          sellingPrice: payload.sellingPrice != null ? Number(payload.sellingPrice) : null,
+          specifications: payload.specifications ?? product.specifications ?? undefined,
+          imei1: payload.imei1 || null,
+          imei2: payload.imei2 || null,
+          condition: payload.condition || null,
+          notes: payload.notes || null,
+          images: imageList,
           serialNumber: payload.serialNumber,
           purchaseCost,
-          imageUrl: imageList && imageList.length > 0 ? imageList[0] : undefined,
+          imageUrl: imageList.length > 0 ? imageList[0] : undefined,
           status: 'RECEIVED',
           createdBy: userId,
         },

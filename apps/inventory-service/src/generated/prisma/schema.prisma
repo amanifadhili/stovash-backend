@@ -47,6 +47,8 @@ model Product {
   status         String    @default("ACTIVE") // DRAFT, ACTIVE, INACTIVE, DISCONTINUED, ARCHIVED
   specifications Json? // [{key, value, type, sortOrder}]
   quantityOnHand Float     @default(0) // non-serialized stock level
+  imageUrl       String? // primary image for accessory / package display
+  images         String[]  @default([]) // package photos (data URLs or remote URLs)
   createdAt      DateTime  @default(now())
   createdBy      String?
   updatedAt      DateTime  @updatedAt
@@ -74,6 +76,17 @@ model InventoryItem {
   tenantId        String
   shopId          String
   productId       String
+  /// Stock-owned display fields (not shared catalog). Prefer these over Product.*.
+  name            String?
+  brandId         String?
+  categoryId      String?
+  sellingPrice    Float?
+  specifications  Json?
+  imei1           String?
+  imei2           String?
+  condition       String?
+  notes           String?
+  images          String[]  @default([])
   serialNumber    String
   purchaseCost    Float
   status          String    @default("CREATED") // CREATED, RECEIVED, AVAILABLE, RESERVED, SOLD, RETURNED, DAMAGED, LOST, STOLEN, DISPOSED
@@ -88,12 +101,16 @@ model InventoryItem {
   version         Int       @default(1)
 
   product  Product            @relation(fields: [productId], references: [id])
+  brand    Brand?             @relation(fields: [brandId], references: [id])
+  category Category?          @relation(fields: [categoryId], references: [id])
   upgrades InventoryUpgrade[]
 
   @@unique([tenantId, serialNumber])
   @@index([tenantId])
   @@index([shopId])
   @@index([productId])
+  @@index([brandId])
+  @@index([categoryId])
   @@index([status])
   @@map("inventory_items")
 }
@@ -167,9 +184,10 @@ model Category {
   createdAt     DateTime @default(now())
   createdBy     String?
 
-  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryHierarchy")
-  products Product[]
+  parent     Category?       @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children   Category[]      @relation("CategoryHierarchy")
+  products   Product[]
+  stockItems InventoryItem[]
 
   @@index([tenantId])
   @@index([shopId])
@@ -187,7 +205,8 @@ model Brand {
   createdAt     DateTime @default(now())
   createdBy     String?
 
-  products Product[]
+  products   Product[]
+  stockItems InventoryItem[]
 
   @@unique([tenantId, name])
   @@index([tenantId])

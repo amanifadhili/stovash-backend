@@ -78,34 +78,31 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
           const isAccessory = item.deviceType === 'ACCESSORY';
           let productId = item.productId;
 
-          // If no productId provided, find by name or create product
+          // Always create a unique product per stock line — never reuse by name.
+          // Stock display data lives on InventoryItem (devices) or this one-off product (accessories).
           if (!productId && item.name) {
-            let prod = await tx.product.findFirst({
-              where: { tenantId, name: { equals: item.name.trim(), mode: 'insensitive' } }
+            const prefix = isAccessory ? 'ACC' : 'DEV';
+            const cleanName = item.name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 5).toUpperCase() || 'ITEM';
+            const generatedSku = `${prefix}-${cleanName}-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 1000)}`;
+
+            const prod = await tx.product.create({
+              data: {
+                tenantId,
+                shopId,
+                name: item.name.trim(),
+                sku: generatedSku,
+                brandId: isAccessory ? null : (item.brandId || null),
+                categoryId: isAccessory ? null : (item.categoryId || null),
+                type: isAccessory ? 'ACCESSORY' : 'DEVICE',
+                productType: 'PHYSICAL_GOOD',
+                trackingMethod: isAccessory ? 'NON_SERIALIZED' : 'SERIALIZED',
+                specifications: item.specifications
+                  ? item.specifications
+                  : { deviceType: isAccessory ? 'ACCESSORY' : 'DEVICE' },
+                quantityOnHand: 0,
+                createdBy: context.userId || 'system'
+              }
             });
-
-            if (!prod) {
-              const prefix = isAccessory ? 'ACC' : 'DEV';
-              const cleanName = item.name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 5).toUpperCase() || 'ITEM';
-              const generatedSku = `${prefix}-${cleanName}-${Date.now().toString(36).toUpperCase()}`;
-
-              prod = await tx.product.create({
-                data: {
-                  tenantId,
-                  shopId,
-                  name: item.name.trim(),
-                  sku: generatedSku,
-                  brandId: isAccessory ? null : (item.brandId || null),
-                  categoryId: isAccessory ? null : (item.categoryId || null),
-                  type: isAccessory ? 'ACCESSORY' : 'DEVICE',
-                  productType: 'PHYSICAL_GOOD',
-                  trackingMethod: isAccessory ? 'NON_SERIALIZED' : 'SERIALIZED',
-                  specifications: { deviceType: isAccessory ? 'ACCESSORY' : 'DEVICE' },
-                  quantityOnHand: 0,
-                  createdBy: context.userId || 'system'
-                }
-              });
-            }
             productId = prod.id;
           }
 
@@ -127,10 +124,14 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
 
           if (isAccessory) {
             const qtyToAdd = item.quantity && item.quantity > 0 ? item.quantity : 1;
+            const imageList = Array.isArray(item.images) ? item.images.slice(0, 5) : [];
             const updatedProduct = await tx.product.update({
               where: { id: productId },
               data: {
-                quantityOnHand: { increment: qtyToAdd }
+                quantityOnHand: { increment: qtyToAdd },
+                ...(imageList.length > 0
+                  ? { images: imageList, imageUrl: imageList[0] }
+                  : {}),
               }
             });
 
@@ -149,16 +150,28 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
 
             createdItems.push(updatedProduct);
           } else {
-            // Device (Serialized)
+            // Device (Serialized) — stock row owns its own name/brand/price/images
             const serial = item.serialNumber || `SN-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+            const imageList = Array.isArray(item.images) ? item.images.slice(0, 5) : [];
 
             const invItem = await tx.inventoryItem.create({
               data: {
                 tenantId,
                 shopId,
                 productId,
+                name: item.name?.trim() || null,
+                brandId: item.brandId || null,
+                categoryId: item.categoryId || null,
+                sellingPrice: item.sellingPrice != null ? Number(item.sellingPrice) : null,
+                specifications: item.specifications ?? undefined,
+                imei1: item.imei1 || null,
+                imei2: item.imei2 || null,
+                condition: item.condition || null,
+                notes: item.notes || null,
+                images: imageList,
                 serialNumber: serial,
                 purchaseCost: item.purchaseCost,
+                imageUrl: imageList[0] || null,
                 status: 'AVAILABLE',
                 createdBy: context.userId || 'system'
               }

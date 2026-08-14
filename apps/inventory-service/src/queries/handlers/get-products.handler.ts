@@ -91,7 +91,10 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
         const stockByProduct = new Map(counts.map((c: any) => [c.productId, c._count._all]));
 
         const mapped = products.map((p: any) => {
-          const stock = stockByProduct.get(p.id) ?? 0;
+          const isNonSerialized = (p.trackingMethod || '') === 'NON_SERIALIZED';
+          const stock = isNonSerialized
+            ? Number(p.quantityOnHand || 0)
+            : (stockByProduct.get(p.id) ?? 0);
           let stockStatus: string;
           if (stock === 0) stockStatus = 'Out of Stock';
           else if (stock < 10) stockStatus = 'Low Stock';
@@ -107,6 +110,8 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
             trackingMethod: p.trackingMethod,
             status: p.status,
             specifications: p.specifications,
+            imageUrl: p.imageUrl || (Array.isArray(p.images) && p.images[0]) || null,
+            images: Array.isArray(p.images) ? p.images : [],
             brand: p.brand ? { id: p.brand.id, name: p.brand.name } : null,
             category: p.category ? { id: p.category.id, name: p.category.name } : null,
             currentPrice: p.prices[0] ? {
@@ -114,6 +119,7 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
               validFrom: p.prices[0].validFrom
             } : null,
             stock,
+            quantityOnHand: Number(p.quantityOnHand || 0),
             stockStatus,
             shopId: p.shopId,
             sharedShopIds: p.sharedShopIds ?? [],
@@ -134,30 +140,37 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
         };
       }
 
-      const mapped = products.map((p: any) => ({
-        id: p.id,
-        sku: p.sku,
-        name: p.name,
-        description: p.description,
-        deviceType: p.specifications?.deviceType || 'DEVICE',
-        productType: p.productType,
-        trackingMethod: p.trackingMethod,
-        status: p.status,
-        specifications: p.specifications,
-        brand: p.brand ? { id: p.brand.id, name: p.brand.name } : null,
-        category: p.category ? { id: p.category.id, name: p.category.name } : null,
-        currentPrice: p.prices[0] ? {
-          sellingPrice: p.prices[0].sellingPrice,
-          validFrom: p.prices[0].validFrom
-        } : null,
-        stock: 0,
-        stockStatus: 'Out of Stock',
-        shopId: p.shopId,
-        sharedShopIds: p.sharedShopIds ?? [],
-        createdAt: p.createdAt,
-        updatedAt: p.updatedAt,
-        version: p.version
-      }));
+      const mapped = products.map((p: any) => {
+        const isNonSerialized = (p.trackingMethod || '') === 'NON_SERIALIZED';
+        const stock = isNonSerialized ? Number(p.quantityOnHand || 0) : 0;
+        return {
+          id: p.id,
+          sku: p.sku,
+          name: p.name,
+          description: p.description,
+          deviceType: p.specifications?.deviceType || 'DEVICE',
+          productType: p.productType,
+          trackingMethod: p.trackingMethod,
+          status: p.status,
+          specifications: p.specifications,
+          imageUrl: p.imageUrl || (Array.isArray(p.images) && p.images[0]) || null,
+          images: Array.isArray(p.images) ? p.images : [],
+          brand: p.brand ? { id: p.brand.id, name: p.brand.name } : null,
+          category: p.category ? { id: p.category.id, name: p.category.name } : null,
+          currentPrice: p.prices[0] ? {
+            sellingPrice: p.prices[0].sellingPrice,
+            validFrom: p.prices[0].validFrom
+          } : null,
+          stock,
+          quantityOnHand: Number(p.quantityOnHand || 0),
+          stockStatus: stock === 0 ? 'Out of Stock' : stock < 10 ? 'Low Stock' : 'In Stock',
+          shopId: p.shopId,
+          sharedShopIds: p.sharedShopIds ?? [],
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt,
+          version: p.version
+        };
+      });
 
       return {
         status: 'success',

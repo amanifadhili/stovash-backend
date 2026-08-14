@@ -1,5 +1,13 @@
 import { prisma } from '../database/client.js';
 
+/** Conditions that count toward accepted/stockable receiving qty. */
+export const STOCKABLE_CONDITIONS = new Set([
+  'ACCEPTED',
+  'EXCELLENT',
+  'GOOD',
+  'FAIR',
+]);
+
 /**
  * Recomputed purchase item received/accepted/rejected counts from its received
  * units. Only CONFIRMED units count as received — PENDING units are logged but
@@ -10,8 +18,8 @@ export async function recomputePurchaseItemCounts(purchaseItemId: string): Promi
     where: { purchaseItemId, status: 'CONFIRMED' },
   });
   const receivedQty = receivedItems.length;
-  const acceptedQty = receivedItems.filter((i) => i.condition === 'ACCEPTED').length;
-  const rejectedQty = receivedItems.filter((i) => i.condition !== 'ACCEPTED').length;
+  const acceptedQty = receivedItems.filter((i) => STOCKABLE_CONDITIONS.has(i.condition)).length;
+  const rejectedQty = receivedItems.filter((i) => !STOCKABLE_CONDITIONS.has(i.condition)).length;
 
   await prisma.purchaseItem.update({
     where: { id: purchaseItemId },

@@ -151,7 +151,7 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
               purchaseId: purchase.id,
               productId: it.productId,
               productName: it.productName || it.productId,
-              productSku: it.productSku || null,
+              productSku: it.productSku || `SKU-${it.productId.slice(0, 8)}`,
               productTracking: it.productTracking || 'NON_SERIALIZED',
               orderedQty: qty,
               unitPrice,
@@ -160,8 +160,8 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
               otherCosts,
               lineTotal,
               acquisitionCost,
-              purchaseSpecs: it.purchaseSpecs,
-              notes: it.notes,
+              purchaseSpecs: it.purchaseSpecs ?? null,
+              notes: it.notes ?? null,
             },
           });
         }
@@ -230,7 +230,7 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
                 serialNumber: unit.serialNumber,
                 imei1: unit.imei1,
                 imei2: unit.imei2,
-                condition: unit.condition || 'ACCEPTED',
+                condition: unit.condition || 'GOOD',
                 unitAcquisitionCost: Number(unit.unitAcquisitionCost) || 0,
                 status: isConfirmed ? 'CONFIRMED' : 'PENDING',
                 confirmedAt: isConfirmed ? new Date() : undefined,
@@ -238,18 +238,48 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
                 receivedAt: new Date(),
                 receivedById: createdById,
                 notes: unit.notes,
-                images: Array.isArray(unit.images) && unit.images.length > 0 ? unit.images.slice(0, 3) : undefined,
+                images: Array.isArray(unit.images) && unit.images.length > 0 ? unit.images.slice(0, 5) : undefined,
               },
             });
 
             // Inline confirmed units also stock the inventory (sync RPC + event, idempotent).
             if (isConfirmed) {
-              await publishPurchaseUnitConfirmed(this.inventoryClient, this.eventBus, createdReceived, purchaseItem, context);
+              const batchQty =
+                purchaseItem.productTracking === 'NON_SERIALIZED'
+                  ? Math.max(1, Number(unit.quantity) || Number(purchaseItem.orderedQty) || 1)
+                  : 1;
+              await publishPurchaseUnitConfirmed(
+                this.inventoryClient,
+                this.eventBus,
+                createdReceived,
+                purchaseItem,
+                context,
+                batchQty,
+              );
             }
           }
 
           // Status-aware counts: only CONFIRMED units count as received.
-          await recomputePurchaseItemCounts(purchaseItem.id);
+          // NON_SERIALIZED batch may be one received row representing orderedQty.
+          if (purchaseItem.productTracking === 'NON_SERIALIZED') {
+            const confirmed = await prisma.purchaseReceivedItem.findMany({
+              where: { purchaseItemId: purchaseItem.id, status: 'CONFIRMED' },
+            });
+            const stockable = confirmed.filter((i) =>
+              ['ACCEPTED', 'EXCELLENT', 'GOOD', 'FAIR'].includes(i.condition),
+            );
+            const qty = purchaseItem.orderedQty;
+            await prisma.purchaseItem.update({
+              where: { id: purchaseItem.id },
+              data: {
+                receivedQty: confirmed.length > 0 ? qty : 0,
+                acceptedQty: stockable.length > 0 ? qty : 0,
+                rejectedQty: confirmed.length > 0 && stockable.length === 0 ? qty : 0,
+              },
+            });
+          } else {
+            await recomputePurchaseItemCounts(purchaseItem.id);
+          }
         }
 
         await recomputePurchaseReceivingStatus(purchase.id);
