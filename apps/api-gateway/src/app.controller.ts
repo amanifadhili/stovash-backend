@@ -342,12 +342,19 @@ export class AppController {
         traceId: context?.traceId
       };
     } catch (error: any) {
+      const rpcMessage =
+        error?.message ||
+        error?.err ||
+        error?.error ||
+        (typeof error === 'string' ? error : null) ||
+        'Service communication error';
       throw new HttpException(
         {
           status: 'error',
-          message: error.message || 'Service communication error',
-          errorCode: error.code || 'INTERNAL_ERROR',
-          details: error.details
+          message: rpcMessage,
+          errorCode: error.code || error.errorCode || 'INTERNAL_ERROR',
+          details: error.details || error.err,
+          command: cmd,
         },
         error.httpStatus || HttpStatus.INTERNAL_SERVER_ERROR
       );
