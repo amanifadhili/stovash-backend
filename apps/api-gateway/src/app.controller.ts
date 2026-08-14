@@ -9,11 +9,16 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   // Tenant commands
   'CreateTenant': ['tenant:create'],
   'CreateShop': ['shop:create'],
+  'UpdateShop': [],
   'GetTenant': [],
   'GetTenantShops': [],
+  'GetTenantSubscription': [],
+  'GetStaff': [],
+  'CreateStaff': [],
 
   // User commands
   'CreateUser': ['user:create'],
+  'GetUsers': [],
   'LoginUser': [], // Public endpoint
   
   // Accounting commands
@@ -136,7 +141,11 @@ const COMMAND_ROLES: Record<string, string[]> = {
   // reads are authenticated only (resolved against the JWT tenant).
   'CreateTenant': ['ADMIN'],
   'CreateShop': ['ADMIN'],
+  'UpdateShop': ['ADMIN'],
+  'CreateStaff': ['ADMIN', 'MANAGER'],
+  'GetStaff': ['ADMIN', 'MANAGER'],
   'CreateUser': ['ADMIN', 'MANAGER'],
+  'GetUsers': ['ADMIN', 'MANAGER'],
   'LoginUser': [], // Public endpoint
   
   // Accounting commands
@@ -328,11 +337,11 @@ export class AppController {
     }
 
     try {
-      if (['CreateTenant', 'CreateUser', 'LoginUser'].includes(cmd)) {
+      if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers'].includes(cmd)) {
         return await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
       }
 
-      if (['CreateShop', 'GetTenantShops', 'GetTenant', 'GetTenantSubscription'].includes(cmd)) {
+      if (['CreateShop', 'UpdateShop', 'GetTenantShops', 'GetTenant', 'GetTenantSubscription', 'GetStaff', 'CreateStaff'].includes(cmd)) {
         return await firstValueFrom(this.tenantClient.send({ cmd }, { payload, context }));
       }
 

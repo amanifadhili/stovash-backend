@@ -5,6 +5,7 @@ import { CreateTenantCommand } from './commands/impl/create-tenant.command.js';
 import { LoginUserCommand } from './commands/impl/login-user.command.js';
 import { CreateUserCommand } from './commands/impl/create-user.command.js';
 import { VerifyUserCommand } from './commands/impl/verify-user.command.js';
+import { GetUsersCommand } from './commands/impl/get-users.command.js';
 
 @Controller()
 export class IdentityServiceController {
@@ -28,5 +29,10 @@ export class IdentityServiceController {
   @MessagePattern({ cmd: 'CreateUser' })
   async handleCreateUser(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new CreateUserCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetUsers' })
+  async handleGetUsers(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new GetUsersCommand(data.payload, data.context));
   }
 }

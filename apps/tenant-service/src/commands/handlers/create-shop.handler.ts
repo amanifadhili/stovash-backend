@@ -41,15 +41,7 @@ export class CreateShopHandler extends BaseCommandHandler<CreateShopCommand> {
       if (context?.userId) {
         await prisma.staff.upsert({
           where: { userId: context.userId },
-          update: {
-            tenantId,
-            shopId: shop.id,
-            firstName: payload.firstName || context?.firstName || '',
-            lastName: payload.lastName || context?.lastName || '',
-            email: payload.email || context?.email || '',
-            role: 'ADMIN',
-            status: 'ACTIVE',
-          },
+          update: { status: 'ACTIVE' },
           create: {
             tenantId,
             shopId: shop.id,
@@ -102,7 +94,14 @@ export class CreateShopHandler extends BaseCommandHandler<CreateShopCommand> {
       return {
         status: 'success',
         traceId,
-        data: shop
+        data: {
+          id: shop.id,
+          tenantId: shop.tenantId,
+          name: shop.name,
+          address: shop.location,
+          status: shop.status,
+          createdAt: shop.createdAt,
+        }
       };
     } catch (error: any) {
       return {

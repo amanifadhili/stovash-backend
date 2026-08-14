@@ -11,19 +11,21 @@ export class CreateStaffHandler extends BaseCommandHandler<CreateStaffCommand> {
     const traceId = context?.traceId || 'unknown';
 
     try {
-      if (!payload?.tenantId || !payload?.shopId || !payload?.firstName || !payload?.lastName || !payload?.email) {
+      const tenantId = payload?.tenantId || context?.tenantId;
+      const shopId = payload?.shopId || context?.shopId;
+      if (!tenantId || !shopId || !payload?.userId || !payload?.firstName || !payload?.lastName || !payload?.email) {
         return {
           status: 'error',
           traceId,
-          message: 'Tenant ID, shop ID, first name, last name, and email are required',
+          message: 'Shop, user, first name, last name, and email are required',
           errorCode: ErrorCode.VALIDATION_ERROR
         };
       }
 
       const staff = await prisma.staff.create({
         data: {
-          tenantId: payload.tenantId,
-          shopId: payload.shopId,
+          tenantId,
+          shopId,
           userId: payload.userId,
           firstName: payload.firstName,
           lastName: payload.lastName,

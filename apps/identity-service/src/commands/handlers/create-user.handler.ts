@@ -18,11 +18,12 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
     const traceId = context?.traceId || 'unknown';
 
     try {
-      if (!payload?.tenantId || !payload?.email || !payload?.password || !payload?.firstName || !payload?.lastName) {
+      const tenantId = payload?.tenantId || context?.tenantId;
+      if (!tenantId || !payload?.email || !payload?.password || !payload?.firstName || !payload?.lastName) {
         return {
           status: 'error',
           traceId,
-          message: 'Tenant ID, email, password, first name, and last name are required',
+          message: 'Email, password, first name, and last name are required',
           errorCode: ErrorCode.VALIDATION_ERROR
         };
       }
@@ -44,7 +45,7 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
 
       const user = await prisma.user.create({
         data: {
-          tenantId: payload.tenantId,
+          tenantId,
           email: payload.email,
           password: hashedPassword,
           firstName: payload.firstName,
@@ -58,7 +59,7 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
       try {
         await prisma.auditLog.create({
           data: {
-            tenantId: payload.tenantId,
+            tenantId,
             shopId: null,
             userId: context?.userId || null,
             action: 'CreateUser',
@@ -93,10 +94,11 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
         'user.created'
       );
 
+      const { password: _password, ...safeUser } = user;
       return {
         status: 'success',
         traceId,
-        data: user
+        data: safeUser
       };
     } catch (error: any) {
       return {

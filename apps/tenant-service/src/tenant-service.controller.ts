@@ -2,9 +2,12 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateShopCommand } from './commands/impl/create-shop.command.js';
+import { UpdateShopCommand } from './commands/impl/update-shop.command.js';
 import { GetTenantShopsCommand } from './commands/impl/get-tenant-shops.command.js';
 import { GetTenantCommand } from './commands/impl/get-tenant.command.js';
 import { GetTenantSubscriptionCommand } from './commands/impl/get-tenant-subscription.command.js';
+import { GetStaffCommand } from './commands/impl/get-staff.command.js';
+import { CreateStaffCommand } from './commands/impl/create-staff.command.js';
 
 @Controller()
 export class TenantServiceController {
@@ -13,6 +16,11 @@ export class TenantServiceController {
   @MessagePattern({ cmd: 'CreateShop' })
   async handleCreateShop(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new CreateShopCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'UpdateShop' })
+  async handleUpdateShop(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new UpdateShopCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'GetTenantShops' })
@@ -28,5 +36,15 @@ export class TenantServiceController {
   @MessagePattern({ cmd: 'GetTenantSubscription' })
   async handleGetTenantSubscription(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new GetTenantSubscriptionCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetStaff' })
+  async handleGetStaff(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new GetStaffCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'CreateStaff' })
+  async handleCreateStaff(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CreateStaffCommand(data.payload, data.context));
   }
 }
