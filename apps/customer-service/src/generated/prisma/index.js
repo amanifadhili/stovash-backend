@@ -194,7 +194,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/customer-service/src/generated/prisma",
+      "value": "/mnt/Code/javascript/nextjs/stovash/electronic-shop/apps/customer-service/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -208,12 +208,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/customer-service/prisma/schema.prisma",
+    "sourceFilePath": "/mnt/Code/javascript/nextjs/stovash/electronic-shop/apps/customer-service/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma",
   "clientVersion": "5.22.0",
@@ -222,6 +221,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -240,8 +240,8 @@ const fs = require('fs')
 config.dirname = __dirname
 if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
   const alternativePaths = [
-    "apps/customer-service/src/generated/prisma",
-    "customer-service/src/generated/prisma",
+    "src/generated/prisma",
+    "generated/prisma",
   ]
   
   const alternativePath = alternativePaths.find((altPath) => {
@@ -270,7 +270,7 @@ Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
-path.join(process.cwd(), "apps/customer-service/src/generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
+path.join(process.cwd(), "src/generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "apps/customer-service/src/generated/prisma/schema.prisma")
+path.join(process.cwd(), "src/generated/prisma/schema.prisma")

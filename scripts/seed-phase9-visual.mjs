@@ -1,10 +1,13 @@
 /**
- * Phase 9 visual seed — fills treasury, loans, expenses, and journals
- * on the real Kanyuka tenant shops (kacyiru / ndera / Kanyuka).
+ * Phase 9 visual seed — Kanyuka-tenant-specific (NOT the portable demo).
  *
- * Inventory and sales already exist on kacyiru; this does not recreate them.
+ * Hardcoded tenant/shops for sincereabayo@gmail.com / Kacyiru / Ndera.
+ * Fills treasury activity + expenses via live API + psql.
  *
- * Usage (from electronic-shop-api):
+ * For a portable multi-DB demo that works on any machine:
+ *   npm run seed:demo
+ *
+ * Usage (from electronic-shop, with gateway running against Kanyuka data):
  *   node scripts/seed-phase9-visual.mjs
  *
  * Log in as sincereabayo@gmail.com and select shop **kacyiru**.

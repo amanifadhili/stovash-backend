@@ -1,3 +1,12 @@
+/**
+ * LEGACY — Do not use for the split per-service databases.
+ *
+ * This script uses monolith `@prisma/client` against `electronic_shop`.
+ * Real services use IDENTITY_DATABASE_URL, TENANT_DATABASE_URL, etc.
+ *
+ * Prefer:
+ *   cd electronic-shop && npm run seed:demo
+ */
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 

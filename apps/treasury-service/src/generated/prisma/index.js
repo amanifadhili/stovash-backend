@@ -234,7 +234,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/treasury-service/src/generated/prisma",
+      "value": "/mnt/Code/javascript/nextjs/stovash/electronic-shop/apps/treasury-service/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -248,7 +248,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/treasury-service/prisma/schema.prisma",
+    "sourceFilePath": "/mnt/Code/javascript/nextjs/stovash/electronic-shop/apps/treasury-service/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -261,6 +261,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
