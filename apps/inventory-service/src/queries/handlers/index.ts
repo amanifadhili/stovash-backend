@@ -10,6 +10,7 @@ import { GetStockUnitsHandler } from './get-stock-units.handler.js';
 import { GetDeviceLifeHandler } from './get-device-life.handler.js';
 import { GetRentalsHandler } from './get-rentals.handler.js';
 import { GetContactsHandler } from './get-contacts.handler.js';
+import { GetStockMovementsHandler } from './get-stock-movements.handler.js';
 
 export const QueryHandlers = [
   GetProductsHandler,
@@ -24,4 +25,5 @@ export const QueryHandlers = [
   GetDeviceLifeHandler,
   GetRentalsHandler,
   GetContactsHandler,
+  GetStockMovementsHandler,
 ];

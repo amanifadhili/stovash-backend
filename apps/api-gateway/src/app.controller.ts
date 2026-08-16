@@ -70,6 +70,7 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'CreateRental': ['inventory:item:create'],
   'UpdateRentalStatus': ['inventory:item:update'],
   'GetRentals': ['inventory:item:read'],
+  'GetStockMovements': ['inventory:item:read'],
   
   // Sales commands
   'ProcessSale': ['sales:sale:create'],
@@ -197,6 +198,7 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'CreateRental': ['ADMIN', 'MANAGER', 'STAFF'],
   'UpdateRentalStatus': ['ADMIN', 'MANAGER', 'STAFF'],
   'GetRentals': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetStockMovements': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'CreateContact': ['ADMIN', 'MANAGER', 'STAFF'],
   'GetContacts': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   
@@ -349,7 +351,7 @@ export class AppController {
         return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
       }
 
-      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'ProcessPosSale', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
         return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
       }
 

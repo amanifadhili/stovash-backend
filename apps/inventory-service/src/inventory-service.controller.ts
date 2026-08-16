@@ -33,6 +33,7 @@ import { GetDeviceLifeQuery } from './queries/impl/get-device-life.query.js';
 import { CreateRentalCommand } from './commands/impl/create-rental.command.js';
 import { UpdateRentalStatusCommand } from './commands/impl/update-rental-status.command.js';
 import { GetRentalsQuery } from './queries/impl/get-rentals.query.js';
+import { GetStockMovementsQuery } from './queries/impl/get-stock-movements.query.js';
 import { CreateContactCommand } from './commands/impl/create-contact.command.js';
 import { GetContactsQuery } from './queries/impl/get-contacts.query.js';
 
@@ -198,6 +199,11 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'GetRentals' })
   async handleGetRentals(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetRentalsQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetStockMovements' })
+  async handleGetStockMovements(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetStockMovementsQuery(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'CreateContact' })
