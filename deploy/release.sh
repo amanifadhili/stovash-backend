@@ -27,10 +27,7 @@ ln -sfn "$ROOT/shared/.env" "$RELEASE_DIR/.env"
 
 export RELEASE_ID
 RELEASE_ID="$(basename "$RELEASE_DIR")"
-set -a
-# shellcheck disable=SC1091
-source "$ROOT/shared/.env"
-set +a
+# Do not `source` shared/.env — values like APP_NAME=Electronic Shop break bash.
 export NODE_VERSION="${NODE_VERSION:-22-bookworm-slim}"
 export PORT="${PORT:-5051}"
 
