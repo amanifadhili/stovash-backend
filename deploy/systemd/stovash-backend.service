@@ -10,7 +10,8 @@ WorkingDirectory=/home/deploy/stovash/backend/current
 EnvironmentFile=-/home/deploy/stovash/backend/shared/.env
 Environment=NODE_ENV=production
 Environment=PORT=5051
-ExecStart=/usr/bin/bash -lc 'if [ -f dist/server.js ]; then exec node dist/server.js; else exec npx tsx server.ts; fi'
+Environment=NVM_DIR=/home/deploy/.nvm
+ExecStart=/bin/bash -c 'export NVM_DIR=/home/deploy/.nvm; . "$NVM_DIR/nvm.sh"; nvm use --silent || nvm use default; if [ -f dist/server.js ]; then exec node dist/server.js; else exec npx tsx server.ts; fi'
 Restart=always
 RestartSec=5
 LimitNOFILE=65535

@@ -12,6 +12,10 @@ RELEASE_DIR="${1:?release directory required}"
 KEEP="${KEEP_RELEASES:-3}"
 
 mkdir -p "$ROOT/shared"
+if [[ -f "$(dirname "$0")/ensure-node.sh" ]]; then
+  bash "$(dirname "$0")/ensure-node.sh"
+fi
+
 rm -rf "$RELEASE_DIR/shared"
 ln -sfn "$ROOT/shared" "$RELEASE_DIR/shared"
 ln -sfn "$ROOT/shared/.env" "$RELEASE_DIR/.env"
@@ -19,7 +23,15 @@ chmod +x "$RELEASE_DIR/deploy/start.sh" 2>/dev/null || true
 chown -R deploy:deploy "$RELEASE_DIR" "$ROOT/shared"
 
 cd "$RELEASE_DIR"
-sudo -u deploy -H bash -lc 'npm ci && npm run build' || sudo -u deploy -H bash -lc 'npm ci'
+sudo -u deploy -H bash -c '
+  set -euo pipefail
+  export NVM_DIR="$HOME/.nvm"
+  . "$NVM_DIR/nvm.sh"
+  nvm use --silent || nvm use default
+  node -v
+  npm ci
+  npm run build || true
+'
 
 ln -sfn "$RELEASE_DIR" "$ROOT/current"
 chown -h deploy:deploy "$ROOT/current"
