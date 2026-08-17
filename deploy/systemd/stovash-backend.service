@@ -10,7 +10,8 @@ WorkingDirectory=/home/deploy/stovash/backend/current
 EnvironmentFile=-/home/deploy/stovash/backend/shared/.env
 Environment=NODE_ENV=production
 Environment=PORT=5051
-ExecStart=/usr/bin/bash -lc 'if [ -f dist/server.js ]; then exec node dist/server.js; else exec npx tsx server.ts; fi'
+Environment=PATH=/usr/bin:/bin
+ExecStart=/usr/bin/bash -c 'if [ -f dist/server.js ]; then exec /usr/bin/node dist/server.js; else exec /usr/bin/npx tsx server.ts; fi'
 Restart=always
 RestartSec=5
 LimitNOFILE=65535

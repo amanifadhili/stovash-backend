@@ -51,12 +51,12 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT != '' && secrets.VPS_PORT || 22 }}
           envs: GITHUB_SHA
-          script_stop: true
           script: |
             set -euo pipefail
             REL="/home/deploy/stovash/backend/releases/$(date -u +%Y%m%d%H%M%S)_${GITHUB_SHA:0:7}"
             mkdir -p "$REL"
             tar xzf /tmp/stovash-backend.tgz -C "$REL"
-            chmod +x "$REL/deploy/release.sh" "$REL/deploy/start.sh"
+            chmod +x "$REL/deploy/release.sh" "$REL/deploy/start.sh" "$REL/deploy/ensure-node.sh"
+            "$REL/deploy/ensure-node.sh"
             "$REL/deploy/release.sh" "$REL"
             systemctl is-active stovash-backend
