@@ -8,10 +8,9 @@ services:
     image: stovash-backend:${RELEASE_ID:-latest}
     container_name: stovash-backend
     restart: unless-stopped
+    network_mode: host
     env_file:
       - .env
-    ports:
-      - "127.0.0.1:5051:5051"
     environment:
       NODE_ENV: production
       PORT: "5051"
