@@ -19,9 +19,8 @@ ENV PURCHASE_DATABASE_URL=$DATABASE_URL
 ENV TREASURY_DATABASE_URL=$DATABASE_URL
 ENV REPORT_DATABASE_URL=$DATABASE_URL
 RUN npm ci
-RUN for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do \
-      (cd "apps/${svc}-service" && npx prisma generate); \
-    done
+RUN find apps -path '*/prisma/schema.prisma' -print \
+      -exec npx --yes prisma@5.22.0 generate --schema={} \;
 RUN npm run build
 
 FROM node:${NODE_VERSION}
