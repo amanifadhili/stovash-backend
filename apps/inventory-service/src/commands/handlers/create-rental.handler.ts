@@ -51,14 +51,6 @@ export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand>
       }
 
       const ownerAgreedCost = Number(payload.ownerAgreedCost) || 0;
-      if (!(ownerAgreedCost > 0)) {
-        return {
-          status: 'error',
-          traceId,
-          message: 'Floor price is required',
-          errorCode: ErrorCode.VALIDATION_ERROR,
-        };
-      }
 
       const quantity = Math.max(1, Number(payload.quantity) || 1);
       const accessoryProductId = payload.productId && !payload.inventoryItemId && !payload.createInventory
