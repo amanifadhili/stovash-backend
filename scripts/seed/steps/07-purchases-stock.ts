@@ -264,6 +264,30 @@ export async function seedPurchasesAndStock(
     }
   }
 
+  // Per-shop accessory balances (ShopProductBalance). Catalog qty lives on Product;
+  // GetProducts reads shop rows when present.
+  for (const product of products) {
+    if (product.trackingMethod !== 'NON_SERIALIZED') continue;
+    const qty = Number(product.qtyOnHand ?? 0);
+    if (qty <= 0) continue;
+    await clients.inventory.shopProductBalance.upsert({
+      where: {
+        tenantId_shopId_productId: {
+          tenantId: DEMO.tenantId,
+          shopId: DEMO.shops.main.id,
+          productId: product.id,
+        },
+      },
+      update: { quantityOnHand: qty },
+      create: {
+        tenantId: DEMO.tenantId,
+        shopId: DEMO.shops.main.id,
+        productId: product.id,
+        quantityOnHand: qty,
+      },
+    });
+  }
+
   // Deduplicate available ids
   const unique = [...new Set(availableItemIds)];
   console.log(

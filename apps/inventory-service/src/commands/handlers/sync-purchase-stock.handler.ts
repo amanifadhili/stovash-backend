@@ -3,11 +3,12 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { SyncPurchaseStockCommand } from '../impl/sync-purchase-stock.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { adjustShopBalance } from '../../common/shop-product-balance.js';
 
 /**
  * Synchronously stocks inventory for a confirmed purchase unit.
  *  - SERIALIZED    -> create a serialized InventoryItem (RECEIVED -> AVAILABLE)
- *  - NON_SERIALIZED-> increment the product-level quantityOnHand
+ *  - NON_SERIALIZED-> increment shop product balance (+ denormalized Product.quantityOnHand)
  * Idempotent: skips when the serialized item (or the same IN movement reference)
  * already exists, so a later async PurchaseUnitConfirmed event cannot double-count.
  */
@@ -49,7 +50,6 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
           }
         }
 
-        const quantityOnHand = (product.quantityOnHand || 0) + qty;
         const productSpecs =
           product.specifications && typeof product.specifications === 'object'
             ? (product.specifications as Record<string, unknown>)
@@ -59,35 +59,42 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
             ? payload.specifications
             : {};
         const updateData: any = {
-          quantityOnHand,
           updatedBy: userId,
           type: 'ACCESSORY',
           trackingMethod: 'NON_SERIALIZED',
           specifications: { ...productSpecs, ...payloadSpecs, deviceType: 'ACCESSORY' },
         };
-        // Persist package images when provided (first purchase photo becomes primary).
         if (imageList.length > 0) {
           updateData.images = imageList;
           updateData.imageUrl = imageList[0];
         }
 
-        const updated = await prisma.product.update({
-          where: { id: product.id },
-          data: updateData,
-        });
-
-        await prisma.inventoryMovement.create({
-          data: {
+        const updated = await prisma.$transaction(async (tx) => {
+          await adjustShopBalance(tx, {
             tenantId,
             shopId,
-            inventoryItemId: null,
             productId: product.id,
-            movementType: 'IN',
-            quantity: qty,
-            referenceId,
-            referenceType: 'PURCHASE',
-            createdBy: userId,
-          },
+            delta: qty,
+            updatedBy: userId,
+          });
+          const p = await tx.product.update({
+            where: { id: product.id },
+            data: updateData,
+          });
+          await tx.inventoryMovement.create({
+            data: {
+              tenantId,
+              shopId,
+              inventoryItemId: null,
+              productId: product.id,
+              movementType: 'IN',
+              quantity: qty,
+              referenceId,
+              referenceType: 'PURCHASE',
+              createdBy: userId,
+            },
+          });
+          return p;
         });
 
         return { status: 'success', traceId, data: { product: updated, quantity: qty } };

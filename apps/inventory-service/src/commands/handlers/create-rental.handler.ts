@@ -3,6 +3,7 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { CreateRentalCommand } from '../impl/create-rental.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { adjustShopBalance, getShopBalanceQty } from '../../common/shop-product-balance.js';
 
 function isAccessoryProduct(product: { type?: string | null; trackingMethod?: string | null; sku?: string | null }) {
   const typed = String(product.type || '').toUpperCase();
@@ -173,13 +174,20 @@ export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand>
           inventoryItemId = null;
 
           if (payload.agreementType === 'OUTWARD_RENTAL') {
-            const onHand = Number(product.quantityOnHand || 0);
+            const onHand = await getShopBalanceQty(tx, {
+              tenantId,
+              shopId,
+              productId: product.id,
+            });
             if (onHand < quantity) {
               throw new Error(`Not enough stock to lend (${product.name}: ${onHand} in shop, need ${quantity})`);
             }
-            await tx.product.update({
-              where: { id: product.id },
-              data: { quantityOnHand: onHand - quantity, updatedBy: userId },
+            await adjustShopBalance(tx, {
+              tenantId,
+              shopId,
+              productId: product.id,
+              delta: -quantity,
+              updatedBy: userId,
             });
             await tx.inventoryMovement.create({
               data: {

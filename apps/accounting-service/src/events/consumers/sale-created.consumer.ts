@@ -19,6 +19,14 @@ export const saleCreatedConsumer = async (event: any): Promise<void> => {
       return;
     }
 
+    const amount = Number(payload.totalAmount ?? payload.grandTotal);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      console.error(
+        `SaleCreated missing finite totalAmount/grandTotal for sale ${aggregateId}: totalAmount=${payload.totalAmount} grandTotal=${payload.grandTotal}`,
+      );
+      return;
+    }
+
     // Get or create Accounts Receivable account
     let arAccount = await prisma.ledgerAccount.findFirst({
       where: {
@@ -74,8 +82,8 @@ export const saleCreatedConsumer = async (event: any): Promise<void> => {
         status: 'POSTED',
         entries: {
           create: [
-            { accountId: arAccount.id, type: 'DEBIT', amount: payload.totalAmount },
-            { accountId: revenueAccount.id, type: 'CREDIT', amount: payload.totalAmount }
+            { accountId: arAccount.id, type: 'DEBIT', amount },
+            { accountId: revenueAccount.id, type: 'CREDIT', amount }
           ]
         }
       }
@@ -84,12 +92,12 @@ export const saleCreatedConsumer = async (event: any): Promise<void> => {
     // Update account balances
     await prisma.ledgerAccount.update({
       where: { id: arAccount.id },
-      data: { balance: { increment: payload.totalAmount } }
+      data: { balance: { increment: amount } }
     });
 
     await prisma.ledgerAccount.update({
       where: { id: revenueAccount.id },
-      data: { balance: { increment: payload.totalAmount } }
+      data: { balance: { increment: amount } }
     });
 
     console.log(`SaleCreated event processed: ${aggregateId} (correlationId: ${correlationId})`, journalEntry.id);

@@ -5,6 +5,7 @@ import { RecordInventoryIncidentCommand } from '../impl/record-inventory-inciden
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { EventBus } from '@electronic-shop/framework-event';
+import { adjustShopBalance, getShopBalanceQty } from '../../common/shop-product-balance.js';
 
 const INCIDENT_TYPES = ['DAMAGED', 'LOST', 'STOLEN'] as const;
 const BLOCKED_ITEM_STATUSES = ['SOLD', 'DISPOSED', 'DAMAGED', 'LOST', 'STOLEN', 'RETURNED'];
@@ -133,7 +134,11 @@ export class RecordInventoryIncidentHandler extends BaseCommandHandler<RecordInv
         const product = await tx.product.findFirst({ where: { id: payload.productId, tenantId } });
         if (!product) throw Object.assign(new Error('Product not found'), { code: ErrorCode.NOT_FOUND });
         const qty = Math.max(1, Number(payload.quantity) || 1);
-        const onHand = Number(product.quantityOnHand || 0);
+        const onHand = await getShopBalanceQty(tx, {
+          tenantId,
+          shopId,
+          productId: product.id,
+        });
         if (onHand < qty) {
           throw Object.assign(
             new Error(`Not enough stock: have ${onHand}, need ${qty}`),
@@ -143,9 +148,12 @@ export class RecordInventoryIncidentHandler extends BaseCommandHandler<RecordInv
 
         const writeOffAmount = payload.writeOffAmount != null ? Number(payload.writeOffAmount) : 0;
 
-        await tx.product.update({
-          where: { id: product.id },
-          data: { quantityOnHand: onHand - qty, updatedBy: userId },
+        await adjustShopBalance(tx, {
+          tenantId,
+          shopId,
+          productId: product.id,
+          delta: -qty,
+          updatedBy: userId,
         });
 
         const adjustment = await tx.inventoryAdjustment.create({

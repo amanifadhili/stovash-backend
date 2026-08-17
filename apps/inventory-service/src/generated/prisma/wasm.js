@@ -163,6 +163,17 @@ exports.Prisma.ProductScalarFieldEnum = {
   version: 'version'
 };
 
+exports.Prisma.ShopProductBalanceScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  productId: 'productId',
+  quantityOnHand: 'quantityOnHand',
+  version: 'version',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.InventoryItemScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -362,6 +373,7 @@ exports.Prisma.JsonNullValueFilter = {
 exports.Prisma.ModelName = {
   Contact: 'Contact',
   Product: 'Product',
+  ShopProductBalance: 'ShopProductBalance',
   InventoryItem: 'InventoryItem',
   InventoryUpgrade: 'InventoryUpgrade',
   InventoryTransfer: 'InventoryTransfer',

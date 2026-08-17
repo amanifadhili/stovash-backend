@@ -90,10 +90,30 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
 
         const stockByProduct = new Map(counts.map((c: any) => [c.productId, c._count._all]));
 
+        // Guard: Nest can keep a stale PrismaClient in memory after prisma generate
+        // until the process restarts — shopProductBalance may be undefined briefly.
+        const balanceDelegate = (prisma as { shopProductBalance?: { findMany: Function } })
+          .shopProductBalance;
+        const balanceRows =
+          shopId && productIds.length > 0 && balanceDelegate?.findMany
+            ? await balanceDelegate.findMany({
+                where: { tenantId, shopId, productId: { in: productIds } },
+              })
+            : [];
+        const balanceByProduct = new Map(
+          (balanceRows as Array<{ productId: string; quantityOnHand: number }>).map((b) => [
+            b.productId,
+            Number(b.quantityOnHand || 0),
+          ]),
+        );
+
         const mapped = products.map((p: any) => {
           const isNonSerialized = (p.trackingMethod || '') === 'NON_SERIALIZED';
+          const shopQty = balanceByProduct.has(p.id)
+            ? (balanceByProduct.get(p.id) as number)
+            : Number(p.quantityOnHand || 0);
           const stock = isNonSerialized
-            ? Number(p.quantityOnHand || 0)
+            ? shopQty
             : (stockByProduct.get(p.id) ?? 0);
           let stockStatus: string;
           if (stock === 0) stockStatus = 'Out of Stock';
@@ -118,7 +138,7 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
               validFrom: p.prices[0].validFrom
             } : null,
             stock,
-            quantityOnHand: Number(p.quantityOnHand || 0),
+            quantityOnHand: shopQty,
             stockStatus,
             shopId: p.shopId,
             sharedShopIds: p.sharedShopIds ?? [],

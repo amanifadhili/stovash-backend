@@ -8,10 +8,12 @@ describe('Inventory sale fulfillment lifecycle (Specific Identification)', () =>
   const shopId = 'shop-inv-test';
 
   beforeEach(async () => {
-    await prisma.inventoryMovement.deleteMany();
-    await prisma.auditLog.deleteMany();
-    await prisma.inventoryItem.deleteMany();
-    await prisma.product.deleteMany();
+    await prisma.inventoryMovement.deleteMany({ where: { tenantId } });
+    await prisma.auditLog.deleteMany({ where: { tenantId } });
+    await prisma.inventoryItem.deleteMany({ where: { tenantId } });
+    await prisma.shopProductBalance.deleteMany({ where: { tenantId } });
+    await prisma.productPrice.deleteMany({ where: { tenantId } });
+    await prisma.product.deleteMany({ where: { tenantId } });
   });
 
   afterAll(async () => {
@@ -111,13 +113,21 @@ describe('Inventory sale fulfillment lifecycle (Specific Identification)', () =>
     expect(movements).toHaveLength(1);
   });
 
-  it('decrements product-level quantity for non-serialized sales', async () => {
+  it('decrements shop product balance for non-serialized sales', async () => {
     const product = await prisma.product.create({
       data: {
         tenantId,
         sku: 'SKU-MOUSE',
         name: 'Wireless Mouse',
         trackingMethod: 'NON_SERIALIZED',
+        quantityOnHand: 5,
+      },
+    });
+    await prisma.shopProductBalance.create({
+      data: {
+        tenantId,
+        shopId,
+        productId: product.id,
         quantityOnHand: 5,
       },
     });
@@ -138,6 +148,13 @@ describe('Inventory sale fulfillment lifecycle (Specific Identification)', () =>
     const updated = await prisma.product.findUnique({ where: { id: product.id } });
     expect(updated?.quantityOnHand).toBe(3);
 
+    const balance = await prisma.shopProductBalance.findUnique({
+      where: {
+        tenantId_shopId_productId: { tenantId, shopId, productId: product.id },
+      },
+    });
+    expect(balance?.quantityOnHand).toBe(3);
+
     const movements = await prisma.inventoryMovement.findMany({
       where: { productId: product.id },
     });
@@ -150,6 +167,34 @@ describe('Inventory sale fulfillment lifecycle (Specific Identification)', () =>
       quantity: 2,
       inventoryItemId: null,
     });
+  });
+
+  it('fails closed when accessory stock is insufficient', async () => {
+    const product = await prisma.product.create({
+      data: {
+        tenantId,
+        sku: 'SKU-SHORT',
+        name: 'Short Stock',
+        trackingMethod: 'NON_SERIALIZED',
+        quantityOnHand: 1,
+      },
+    });
+    await prisma.shopProductBalance.create({
+      data: { tenantId, shopId, productId: product.id, quantityOnHand: 1 },
+    });
+
+    await expect(
+      saleFulfilledConsumer({
+        aggregateId: 'sale-short',
+        correlationId: 'trace-short',
+        payload: {
+          tenantId,
+          shopId,
+          saleId: 'sale-short',
+          items: [{ productId: product.id, quantity: 5 }],
+        },
+      }),
+    ).rejects.toThrow(/Insufficient/);
   });
 
   it('marks a returned item RETURNED and only a SELLABLE assessment restocks it', async () => {

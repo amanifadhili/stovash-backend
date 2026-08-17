@@ -5,6 +5,7 @@ import { UpdateRentalStatusCommand } from '../impl/update-rental-status.command.
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { EventBus } from '@electronic-shop/framework-event';
+import { adjustShopBalance } from '../../common/shop-product-balance.js';
 
 function closedAt(status: string) {
   return status === 'RETURNED' || status === 'SOLD' || status === 'SETTLED';
@@ -171,9 +172,12 @@ export class UpdateRentalStatusHandler extends BaseCommandHandler<UpdateRentalSt
           });
           if (rental.agreementType === 'OUTWARD_RENTAL') {
             if ((newStatus === 'RETURNED' || newStatus === 'CANCELLED') && product) {
-              await tx.product.update({
-                where: { id: product.id },
-                data: { quantityOnHand: Number(product.quantityOnHand || 0) + qty, updatedBy: userId },
+              await adjustShopBalance(tx, {
+                tenantId: rental.tenantId,
+                shopId: rental.shopId,
+                productId: product.id,
+                delta: qty,
+                updatedBy: userId,
               });
               await tx.inventoryMovement.create({
                 data: {

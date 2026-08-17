@@ -24,6 +24,12 @@ export type Contact = $Result.DefaultSelection<Prisma.$ContactPayload>
  */
 export type Product = $Result.DefaultSelection<Prisma.$ProductPayload>
 /**
+ * Model ShopProductBalance
+ * Per-shop quantity for non-serialized (accessory) stock.
+ * Product.quantityOnHand is kept as a denormalized sum across shops for one release.
+ */
+export type ShopProductBalance = $Result.DefaultSelection<Prisma.$ShopProductBalancePayload>
+/**
  * Model InventoryItem
  * 
  */
@@ -221,6 +227,16 @@ export class PrismaClient<
     * ```
     */
   get product(): Prisma.ProductDelegate<ExtArgs>;
+
+  /**
+   * `prisma.shopProductBalance`: Exposes CRUD operations for the **ShopProductBalance** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ShopProductBalances
+    * const shopProductBalances = await prisma.shopProductBalance.findMany()
+    * ```
+    */
+  get shopProductBalance(): Prisma.ShopProductBalanceDelegate<ExtArgs>;
 
   /**
    * `prisma.inventoryItem`: Exposes CRUD operations for the **InventoryItem** model.
@@ -774,6 +790,7 @@ export namespace Prisma {
   export const ModelName: {
     Contact: 'Contact',
     Product: 'Product',
+    ShopProductBalance: 'ShopProductBalance',
     InventoryItem: 'InventoryItem',
     InventoryUpgrade: 'InventoryUpgrade',
     InventoryTransfer: 'InventoryTransfer',
@@ -800,7 +817,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "contact" | "product" | "inventoryItem" | "inventoryUpgrade" | "inventoryTransfer" | "warrantyClaim" | "category" | "brand" | "productPrice" | "inventoryMovement" | "inventoryAdjustment" | "auditLog" | "rentalAgreement"
+      modelProps: "contact" | "product" | "shopProductBalance" | "inventoryItem" | "inventoryUpgrade" | "inventoryTransfer" | "warrantyClaim" | "category" | "brand" | "productPrice" | "inventoryMovement" | "inventoryAdjustment" | "auditLog" | "rentalAgreement"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -941,6 +958,76 @@ export namespace Prisma {
           count: {
             args: Prisma.ProductCountArgs<ExtArgs>
             result: $Utils.Optional<ProductCountAggregateOutputType> | number
+          }
+        }
+      }
+      ShopProductBalance: {
+        payload: Prisma.$ShopProductBalancePayload<ExtArgs>
+        fields: Prisma.ShopProductBalanceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ShopProductBalanceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ShopProductBalanceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload>
+          }
+          findFirst: {
+            args: Prisma.ShopProductBalanceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ShopProductBalanceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload>
+          }
+          findMany: {
+            args: Prisma.ShopProductBalanceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload>[]
+          }
+          create: {
+            args: Prisma.ShopProductBalanceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload>
+          }
+          createMany: {
+            args: Prisma.ShopProductBalanceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ShopProductBalanceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload>[]
+          }
+          delete: {
+            args: Prisma.ShopProductBalanceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload>
+          }
+          update: {
+            args: Prisma.ShopProductBalanceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload>
+          }
+          deleteMany: {
+            args: Prisma.ShopProductBalanceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ShopProductBalanceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ShopProductBalanceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ShopProductBalancePayload>
+          }
+          aggregate: {
+            args: Prisma.ShopProductBalanceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateShopProductBalance>
+          }
+          groupBy: {
+            args: Prisma.ShopProductBalanceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ShopProductBalanceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ShopProductBalanceCountArgs<ExtArgs>
+            result: $Utils.Optional<ShopProductBalanceCountAggregateOutputType> | number
           }
         }
       }
@@ -1877,11 +1964,13 @@ export namespace Prisma {
   export type ProductCountOutputType = {
     items: number
     prices: number
+    shopBalances: number
   }
 
   export type ProductCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | ProductCountOutputTypeCountItemsArgs
     prices?: boolean | ProductCountOutputTypeCountPricesArgs
+    shopBalances?: boolean | ProductCountOutputTypeCountShopBalancesArgs
   }
 
   // Custom InputTypes
@@ -1907,6 +1996,13 @@ export namespace Prisma {
    */
   export type ProductCountOutputTypeCountPricesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProductPriceWhereInput
+  }
+
+  /**
+   * ProductCountOutputType without action
+   */
+  export type ProductCountOutputTypeCountShopBalancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShopProductBalanceWhereInput
   }
 
 
@@ -3330,6 +3426,7 @@ export namespace Prisma {
     category?: boolean | Product$categoryArgs<ExtArgs>
     items?: boolean | Product$itemsArgs<ExtArgs>
     prices?: boolean | Product$pricesArgs<ExtArgs>
+    shopBalances?: boolean | Product$shopBalancesArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -3394,6 +3491,7 @@ export namespace Prisma {
     category?: boolean | Product$categoryArgs<ExtArgs>
     items?: boolean | Product$itemsArgs<ExtArgs>
     prices?: boolean | Product$pricesArgs<ExtArgs>
+    shopBalances?: boolean | Product$shopBalancesArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3408,6 +3506,7 @@ export namespace Prisma {
       category: Prisma.$CategoryPayload<ExtArgs> | null
       items: Prisma.$InventoryItemPayload<ExtArgs>[]
       prices: Prisma.$ProductPricePayload<ExtArgs>[]
+      shopBalances: Prisma.$ShopProductBalancePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3802,6 +3901,7 @@ export namespace Prisma {
     category<T extends Product$categoryArgs<ExtArgs> = {}>(args?: Subset<T, Product$categoryArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     items<T extends Product$itemsArgs<ExtArgs> = {}>(args?: Subset<T, Product$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findMany"> | Null>
     prices<T extends Product$pricesArgs<ExtArgs> = {}>(args?: Subset<T, Product$pricesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPricePayload<ExtArgs>, T, "findMany"> | Null>
+    shopBalances<T extends Product$shopBalancesArgs<ExtArgs> = {}>(args?: Subset<T, Product$shopBalancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4243,6 +4343,26 @@ export namespace Prisma {
   }
 
   /**
+   * Product.shopBalances
+   */
+  export type Product$shopBalancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    where?: ShopProductBalanceWhereInput
+    orderBy?: ShopProductBalanceOrderByWithRelationInput | ShopProductBalanceOrderByWithRelationInput[]
+    cursor?: ShopProductBalanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ShopProductBalanceScalarFieldEnum | ShopProductBalanceScalarFieldEnum[]
+  }
+
+  /**
    * Product without action
    */
   export type ProductDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4254,6 +4374,1013 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ProductInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ShopProductBalance
+   */
+
+  export type AggregateShopProductBalance = {
+    _count: ShopProductBalanceCountAggregateOutputType | null
+    _avg: ShopProductBalanceAvgAggregateOutputType | null
+    _sum: ShopProductBalanceSumAggregateOutputType | null
+    _min: ShopProductBalanceMinAggregateOutputType | null
+    _max: ShopProductBalanceMaxAggregateOutputType | null
+  }
+
+  export type ShopProductBalanceAvgAggregateOutputType = {
+    quantityOnHand: number | null
+    version: number | null
+  }
+
+  export type ShopProductBalanceSumAggregateOutputType = {
+    quantityOnHand: number | null
+    version: number | null
+  }
+
+  export type ShopProductBalanceMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    productId: string | null
+    quantityOnHand: number | null
+    version: number | null
+    updatedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type ShopProductBalanceMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    productId: string | null
+    quantityOnHand: number | null
+    version: number | null
+    updatedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type ShopProductBalanceCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    productId: number
+    quantityOnHand: number
+    version: number
+    updatedAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ShopProductBalanceAvgAggregateInputType = {
+    quantityOnHand?: true
+    version?: true
+  }
+
+  export type ShopProductBalanceSumAggregateInputType = {
+    quantityOnHand?: true
+    version?: true
+  }
+
+  export type ShopProductBalanceMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    productId?: true
+    quantityOnHand?: true
+    version?: true
+    updatedAt?: true
+    createdAt?: true
+  }
+
+  export type ShopProductBalanceMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    productId?: true
+    quantityOnHand?: true
+    version?: true
+    updatedAt?: true
+    createdAt?: true
+  }
+
+  export type ShopProductBalanceCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    productId?: true
+    quantityOnHand?: true
+    version?: true
+    updatedAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ShopProductBalanceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ShopProductBalance to aggregate.
+     */
+    where?: ShopProductBalanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ShopProductBalances to fetch.
+     */
+    orderBy?: ShopProductBalanceOrderByWithRelationInput | ShopProductBalanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ShopProductBalanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ShopProductBalances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ShopProductBalances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ShopProductBalances
+    **/
+    _count?: true | ShopProductBalanceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ShopProductBalanceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ShopProductBalanceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ShopProductBalanceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ShopProductBalanceMaxAggregateInputType
+  }
+
+  export type GetShopProductBalanceAggregateType<T extends ShopProductBalanceAggregateArgs> = {
+        [P in keyof T & keyof AggregateShopProductBalance]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateShopProductBalance[P]>
+      : GetScalarType<T[P], AggregateShopProductBalance[P]>
+  }
+
+
+
+
+  export type ShopProductBalanceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ShopProductBalanceWhereInput
+    orderBy?: ShopProductBalanceOrderByWithAggregationInput | ShopProductBalanceOrderByWithAggregationInput[]
+    by: ShopProductBalanceScalarFieldEnum[] | ShopProductBalanceScalarFieldEnum
+    having?: ShopProductBalanceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ShopProductBalanceCountAggregateInputType | true
+    _avg?: ShopProductBalanceAvgAggregateInputType
+    _sum?: ShopProductBalanceSumAggregateInputType
+    _min?: ShopProductBalanceMinAggregateInputType
+    _max?: ShopProductBalanceMaxAggregateInputType
+  }
+
+  export type ShopProductBalanceGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    productId: string
+    quantityOnHand: number
+    version: number
+    updatedAt: Date
+    createdAt: Date
+    _count: ShopProductBalanceCountAggregateOutputType | null
+    _avg: ShopProductBalanceAvgAggregateOutputType | null
+    _sum: ShopProductBalanceSumAggregateOutputType | null
+    _min: ShopProductBalanceMinAggregateOutputType | null
+    _max: ShopProductBalanceMaxAggregateOutputType | null
+  }
+
+  type GetShopProductBalanceGroupByPayload<T extends ShopProductBalanceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ShopProductBalanceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ShopProductBalanceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ShopProductBalanceGroupByOutputType[P]>
+            : GetScalarType<T[P], ShopProductBalanceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ShopProductBalanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    productId?: boolean
+    quantityOnHand?: boolean
+    version?: boolean
+    updatedAt?: boolean
+    createdAt?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["shopProductBalance"]>
+
+  export type ShopProductBalanceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    productId?: boolean
+    quantityOnHand?: boolean
+    version?: boolean
+    updatedAt?: boolean
+    createdAt?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["shopProductBalance"]>
+
+  export type ShopProductBalanceSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    productId?: boolean
+    quantityOnHand?: boolean
+    version?: boolean
+    updatedAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type ShopProductBalanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+  export type ShopProductBalanceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+
+  export type $ShopProductBalancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ShopProductBalance"
+    objects: {
+      product: Prisma.$ProductPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      productId: string
+      quantityOnHand: number
+      version: number
+      updatedAt: Date
+      createdAt: Date
+    }, ExtArgs["result"]["shopProductBalance"]>
+    composites: {}
+  }
+
+  type ShopProductBalanceGetPayload<S extends boolean | null | undefined | ShopProductBalanceDefaultArgs> = $Result.GetResult<Prisma.$ShopProductBalancePayload, S>
+
+  type ShopProductBalanceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ShopProductBalanceFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ShopProductBalanceCountAggregateInputType | true
+    }
+
+  export interface ShopProductBalanceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ShopProductBalance'], meta: { name: 'ShopProductBalance' } }
+    /**
+     * Find zero or one ShopProductBalance that matches the filter.
+     * @param {ShopProductBalanceFindUniqueArgs} args - Arguments to find a ShopProductBalance
+     * @example
+     * // Get one ShopProductBalance
+     * const shopProductBalance = await prisma.shopProductBalance.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ShopProductBalanceFindUniqueArgs>(args: SelectSubset<T, ShopProductBalanceFindUniqueArgs<ExtArgs>>): Prisma__ShopProductBalanceClient<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ShopProductBalance that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ShopProductBalanceFindUniqueOrThrowArgs} args - Arguments to find a ShopProductBalance
+     * @example
+     * // Get one ShopProductBalance
+     * const shopProductBalance = await prisma.shopProductBalance.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ShopProductBalanceFindUniqueOrThrowArgs>(args: SelectSubset<T, ShopProductBalanceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ShopProductBalanceClient<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ShopProductBalance that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopProductBalanceFindFirstArgs} args - Arguments to find a ShopProductBalance
+     * @example
+     * // Get one ShopProductBalance
+     * const shopProductBalance = await prisma.shopProductBalance.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ShopProductBalanceFindFirstArgs>(args?: SelectSubset<T, ShopProductBalanceFindFirstArgs<ExtArgs>>): Prisma__ShopProductBalanceClient<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ShopProductBalance that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopProductBalanceFindFirstOrThrowArgs} args - Arguments to find a ShopProductBalance
+     * @example
+     * // Get one ShopProductBalance
+     * const shopProductBalance = await prisma.shopProductBalance.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ShopProductBalanceFindFirstOrThrowArgs>(args?: SelectSubset<T, ShopProductBalanceFindFirstOrThrowArgs<ExtArgs>>): Prisma__ShopProductBalanceClient<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ShopProductBalances that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopProductBalanceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ShopProductBalances
+     * const shopProductBalances = await prisma.shopProductBalance.findMany()
+     * 
+     * // Get first 10 ShopProductBalances
+     * const shopProductBalances = await prisma.shopProductBalance.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const shopProductBalanceWithIdOnly = await prisma.shopProductBalance.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ShopProductBalanceFindManyArgs>(args?: SelectSubset<T, ShopProductBalanceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ShopProductBalance.
+     * @param {ShopProductBalanceCreateArgs} args - Arguments to create a ShopProductBalance.
+     * @example
+     * // Create one ShopProductBalance
+     * const ShopProductBalance = await prisma.shopProductBalance.create({
+     *   data: {
+     *     // ... data to create a ShopProductBalance
+     *   }
+     * })
+     * 
+     */
+    create<T extends ShopProductBalanceCreateArgs>(args: SelectSubset<T, ShopProductBalanceCreateArgs<ExtArgs>>): Prisma__ShopProductBalanceClient<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ShopProductBalances.
+     * @param {ShopProductBalanceCreateManyArgs} args - Arguments to create many ShopProductBalances.
+     * @example
+     * // Create many ShopProductBalances
+     * const shopProductBalance = await prisma.shopProductBalance.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ShopProductBalanceCreateManyArgs>(args?: SelectSubset<T, ShopProductBalanceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ShopProductBalances and returns the data saved in the database.
+     * @param {ShopProductBalanceCreateManyAndReturnArgs} args - Arguments to create many ShopProductBalances.
+     * @example
+     * // Create many ShopProductBalances
+     * const shopProductBalance = await prisma.shopProductBalance.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ShopProductBalances and only return the `id`
+     * const shopProductBalanceWithIdOnly = await prisma.shopProductBalance.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ShopProductBalanceCreateManyAndReturnArgs>(args?: SelectSubset<T, ShopProductBalanceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ShopProductBalance.
+     * @param {ShopProductBalanceDeleteArgs} args - Arguments to delete one ShopProductBalance.
+     * @example
+     * // Delete one ShopProductBalance
+     * const ShopProductBalance = await prisma.shopProductBalance.delete({
+     *   where: {
+     *     // ... filter to delete one ShopProductBalance
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ShopProductBalanceDeleteArgs>(args: SelectSubset<T, ShopProductBalanceDeleteArgs<ExtArgs>>): Prisma__ShopProductBalanceClient<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ShopProductBalance.
+     * @param {ShopProductBalanceUpdateArgs} args - Arguments to update one ShopProductBalance.
+     * @example
+     * // Update one ShopProductBalance
+     * const shopProductBalance = await prisma.shopProductBalance.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ShopProductBalanceUpdateArgs>(args: SelectSubset<T, ShopProductBalanceUpdateArgs<ExtArgs>>): Prisma__ShopProductBalanceClient<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ShopProductBalances.
+     * @param {ShopProductBalanceDeleteManyArgs} args - Arguments to filter ShopProductBalances to delete.
+     * @example
+     * // Delete a few ShopProductBalances
+     * const { count } = await prisma.shopProductBalance.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ShopProductBalanceDeleteManyArgs>(args?: SelectSubset<T, ShopProductBalanceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ShopProductBalances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopProductBalanceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ShopProductBalances
+     * const shopProductBalance = await prisma.shopProductBalance.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ShopProductBalanceUpdateManyArgs>(args: SelectSubset<T, ShopProductBalanceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ShopProductBalance.
+     * @param {ShopProductBalanceUpsertArgs} args - Arguments to update or create a ShopProductBalance.
+     * @example
+     * // Update or create a ShopProductBalance
+     * const shopProductBalance = await prisma.shopProductBalance.upsert({
+     *   create: {
+     *     // ... data to create a ShopProductBalance
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ShopProductBalance we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ShopProductBalanceUpsertArgs>(args: SelectSubset<T, ShopProductBalanceUpsertArgs<ExtArgs>>): Prisma__ShopProductBalanceClient<$Result.GetResult<Prisma.$ShopProductBalancePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ShopProductBalances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopProductBalanceCountArgs} args - Arguments to filter ShopProductBalances to count.
+     * @example
+     * // Count the number of ShopProductBalances
+     * const count = await prisma.shopProductBalance.count({
+     *   where: {
+     *     // ... the filter for the ShopProductBalances we want to count
+     *   }
+     * })
+    **/
+    count<T extends ShopProductBalanceCountArgs>(
+      args?: Subset<T, ShopProductBalanceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ShopProductBalanceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ShopProductBalance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopProductBalanceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ShopProductBalanceAggregateArgs>(args: Subset<T, ShopProductBalanceAggregateArgs>): Prisma.PrismaPromise<GetShopProductBalanceAggregateType<T>>
+
+    /**
+     * Group by ShopProductBalance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ShopProductBalanceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ShopProductBalanceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ShopProductBalanceGroupByArgs['orderBy'] }
+        : { orderBy?: ShopProductBalanceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ShopProductBalanceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetShopProductBalanceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ShopProductBalance model
+   */
+  readonly fields: ShopProductBalanceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ShopProductBalance.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ShopProductBalanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    product<T extends ProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProductDefaultArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ShopProductBalance model
+   */ 
+  interface ShopProductBalanceFieldRefs {
+    readonly id: FieldRef<"ShopProductBalance", 'String'>
+    readonly tenantId: FieldRef<"ShopProductBalance", 'String'>
+    readonly shopId: FieldRef<"ShopProductBalance", 'String'>
+    readonly productId: FieldRef<"ShopProductBalance", 'String'>
+    readonly quantityOnHand: FieldRef<"ShopProductBalance", 'Float'>
+    readonly version: FieldRef<"ShopProductBalance", 'Int'>
+    readonly updatedAt: FieldRef<"ShopProductBalance", 'DateTime'>
+    readonly createdAt: FieldRef<"ShopProductBalance", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ShopProductBalance findUnique
+   */
+  export type ShopProductBalanceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopProductBalance to fetch.
+     */
+    where: ShopProductBalanceWhereUniqueInput
+  }
+
+  /**
+   * ShopProductBalance findUniqueOrThrow
+   */
+  export type ShopProductBalanceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopProductBalance to fetch.
+     */
+    where: ShopProductBalanceWhereUniqueInput
+  }
+
+  /**
+   * ShopProductBalance findFirst
+   */
+  export type ShopProductBalanceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopProductBalance to fetch.
+     */
+    where?: ShopProductBalanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ShopProductBalances to fetch.
+     */
+    orderBy?: ShopProductBalanceOrderByWithRelationInput | ShopProductBalanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ShopProductBalances.
+     */
+    cursor?: ShopProductBalanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ShopProductBalances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ShopProductBalances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ShopProductBalances.
+     */
+    distinct?: ShopProductBalanceScalarFieldEnum | ShopProductBalanceScalarFieldEnum[]
+  }
+
+  /**
+   * ShopProductBalance findFirstOrThrow
+   */
+  export type ShopProductBalanceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopProductBalance to fetch.
+     */
+    where?: ShopProductBalanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ShopProductBalances to fetch.
+     */
+    orderBy?: ShopProductBalanceOrderByWithRelationInput | ShopProductBalanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ShopProductBalances.
+     */
+    cursor?: ShopProductBalanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ShopProductBalances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ShopProductBalances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ShopProductBalances.
+     */
+    distinct?: ShopProductBalanceScalarFieldEnum | ShopProductBalanceScalarFieldEnum[]
+  }
+
+  /**
+   * ShopProductBalance findMany
+   */
+  export type ShopProductBalanceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    /**
+     * Filter, which ShopProductBalances to fetch.
+     */
+    where?: ShopProductBalanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ShopProductBalances to fetch.
+     */
+    orderBy?: ShopProductBalanceOrderByWithRelationInput | ShopProductBalanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ShopProductBalances.
+     */
+    cursor?: ShopProductBalanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ShopProductBalances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ShopProductBalances.
+     */
+    skip?: number
+    distinct?: ShopProductBalanceScalarFieldEnum | ShopProductBalanceScalarFieldEnum[]
+  }
+
+  /**
+   * ShopProductBalance create
+   */
+  export type ShopProductBalanceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ShopProductBalance.
+     */
+    data: XOR<ShopProductBalanceCreateInput, ShopProductBalanceUncheckedCreateInput>
+  }
+
+  /**
+   * ShopProductBalance createMany
+   */
+  export type ShopProductBalanceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ShopProductBalances.
+     */
+    data: ShopProductBalanceCreateManyInput | ShopProductBalanceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ShopProductBalance createManyAndReturn
+   */
+  export type ShopProductBalanceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ShopProductBalances.
+     */
+    data: ShopProductBalanceCreateManyInput | ShopProductBalanceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ShopProductBalance update
+   */
+  export type ShopProductBalanceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ShopProductBalance.
+     */
+    data: XOR<ShopProductBalanceUpdateInput, ShopProductBalanceUncheckedUpdateInput>
+    /**
+     * Choose, which ShopProductBalance to update.
+     */
+    where: ShopProductBalanceWhereUniqueInput
+  }
+
+  /**
+   * ShopProductBalance updateMany
+   */
+  export type ShopProductBalanceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ShopProductBalances.
+     */
+    data: XOR<ShopProductBalanceUpdateManyMutationInput, ShopProductBalanceUncheckedUpdateManyInput>
+    /**
+     * Filter which ShopProductBalances to update
+     */
+    where?: ShopProductBalanceWhereInput
+  }
+
+  /**
+   * ShopProductBalance upsert
+   */
+  export type ShopProductBalanceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ShopProductBalance to update in case it exists.
+     */
+    where: ShopProductBalanceWhereUniqueInput
+    /**
+     * In case the ShopProductBalance found by the `where` argument doesn't exist, create a new ShopProductBalance with this data.
+     */
+    create: XOR<ShopProductBalanceCreateInput, ShopProductBalanceUncheckedCreateInput>
+    /**
+     * In case the ShopProductBalance was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ShopProductBalanceUpdateInput, ShopProductBalanceUncheckedUpdateInput>
+  }
+
+  /**
+   * ShopProductBalance delete
+   */
+  export type ShopProductBalanceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
+    /**
+     * Filter which ShopProductBalance to delete.
+     */
+    where: ShopProductBalanceWhereUniqueInput
+  }
+
+  /**
+   * ShopProductBalance deleteMany
+   */
+  export type ShopProductBalanceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ShopProductBalances to delete
+     */
+    where?: ShopProductBalanceWhereInput
+  }
+
+  /**
+   * ShopProductBalance without action
+   */
+  export type ShopProductBalanceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ShopProductBalance
+     */
+    select?: ShopProductBalanceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ShopProductBalanceInclude<ExtArgs> | null
   }
 
 
@@ -15642,6 +16769,20 @@ export namespace Prisma {
   export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
+  export const ShopProductBalanceScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    productId: 'productId',
+    quantityOnHand: 'quantityOnHand',
+    version: 'version',
+    updatedAt: 'updatedAt',
+    createdAt: 'createdAt'
+  };
+
+  export type ShopProductBalanceScalarFieldEnum = (typeof ShopProductBalanceScalarFieldEnum)[keyof typeof ShopProductBalanceScalarFieldEnum]
+
+
   export const InventoryItemScalarFieldEnum: {
     id: 'id',
     tenantId: 'tenantId',
@@ -16070,6 +17211,7 @@ export namespace Prisma {
     category?: XOR<CategoryNullableRelationFilter, CategoryWhereInput> | null
     items?: InventoryItemListRelationFilter
     prices?: ProductPriceListRelationFilter
+    shopBalances?: ShopProductBalanceListRelationFilter
   }
 
   export type ProductOrderByWithRelationInput = {
@@ -16101,6 +17243,7 @@ export namespace Prisma {
     category?: CategoryOrderByWithRelationInput
     items?: InventoryItemOrderByRelationAggregateInput
     prices?: ProductPriceOrderByRelationAggregateInput
+    shopBalances?: ShopProductBalanceOrderByRelationAggregateInput
   }
 
   export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -16136,6 +17279,7 @@ export namespace Prisma {
     category?: XOR<CategoryNullableRelationFilter, CategoryWhereInput> | null
     items?: InventoryItemListRelationFilter
     prices?: ProductPriceListRelationFilter
+    shopBalances?: ShopProductBalanceListRelationFilter
   }, "id" | "tenantId_sku">
 
   export type ProductOrderByWithAggregationInput = {
@@ -16198,6 +17342,79 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Product"> | Date | string | null
     deletedBy?: StringNullableWithAggregatesFilter<"Product"> | string | null
     version?: IntWithAggregatesFilter<"Product"> | number
+  }
+
+  export type ShopProductBalanceWhereInput = {
+    AND?: ShopProductBalanceWhereInput | ShopProductBalanceWhereInput[]
+    OR?: ShopProductBalanceWhereInput[]
+    NOT?: ShopProductBalanceWhereInput | ShopProductBalanceWhereInput[]
+    id?: StringFilter<"ShopProductBalance"> | string
+    tenantId?: StringFilter<"ShopProductBalance"> | string
+    shopId?: StringFilter<"ShopProductBalance"> | string
+    productId?: StringFilter<"ShopProductBalance"> | string
+    quantityOnHand?: FloatFilter<"ShopProductBalance"> | number
+    version?: IntFilter<"ShopProductBalance"> | number
+    updatedAt?: DateTimeFilter<"ShopProductBalance"> | Date | string
+    createdAt?: DateTimeFilter<"ShopProductBalance"> | Date | string
+    product?: XOR<ProductRelationFilter, ProductWhereInput>
+  }
+
+  export type ShopProductBalanceOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    productId?: SortOrder
+    quantityOnHand?: SortOrder
+    version?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+    product?: ProductOrderByWithRelationInput
+  }
+
+  export type ShopProductBalanceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_shopId_productId?: ShopProductBalanceTenantIdShopIdProductIdCompoundUniqueInput
+    AND?: ShopProductBalanceWhereInput | ShopProductBalanceWhereInput[]
+    OR?: ShopProductBalanceWhereInput[]
+    NOT?: ShopProductBalanceWhereInput | ShopProductBalanceWhereInput[]
+    tenantId?: StringFilter<"ShopProductBalance"> | string
+    shopId?: StringFilter<"ShopProductBalance"> | string
+    productId?: StringFilter<"ShopProductBalance"> | string
+    quantityOnHand?: FloatFilter<"ShopProductBalance"> | number
+    version?: IntFilter<"ShopProductBalance"> | number
+    updatedAt?: DateTimeFilter<"ShopProductBalance"> | Date | string
+    createdAt?: DateTimeFilter<"ShopProductBalance"> | Date | string
+    product?: XOR<ProductRelationFilter, ProductWhereInput>
+  }, "id" | "tenantId_shopId_productId">
+
+  export type ShopProductBalanceOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    productId?: SortOrder
+    quantityOnHand?: SortOrder
+    version?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+    _count?: ShopProductBalanceCountOrderByAggregateInput
+    _avg?: ShopProductBalanceAvgOrderByAggregateInput
+    _max?: ShopProductBalanceMaxOrderByAggregateInput
+    _min?: ShopProductBalanceMinOrderByAggregateInput
+    _sum?: ShopProductBalanceSumOrderByAggregateInput
+  }
+
+  export type ShopProductBalanceScalarWhereWithAggregatesInput = {
+    AND?: ShopProductBalanceScalarWhereWithAggregatesInput | ShopProductBalanceScalarWhereWithAggregatesInput[]
+    OR?: ShopProductBalanceScalarWhereWithAggregatesInput[]
+    NOT?: ShopProductBalanceScalarWhereWithAggregatesInput | ShopProductBalanceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ShopProductBalance"> | string
+    tenantId?: StringWithAggregatesFilter<"ShopProductBalance"> | string
+    shopId?: StringWithAggregatesFilter<"ShopProductBalance"> | string
+    productId?: StringWithAggregatesFilter<"ShopProductBalance"> | string
+    quantityOnHand?: FloatWithAggregatesFilter<"ShopProductBalance"> | number
+    version?: IntWithAggregatesFilter<"ShopProductBalance"> | number
+    updatedAt?: DateTimeWithAggregatesFilter<"ShopProductBalance"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"ShopProductBalance"> | Date | string
   }
 
   export type InventoryItemWhereInput = {
@@ -17352,6 +18569,7 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     items?: InventoryItemCreateNestedManyWithoutProductInput
     prices?: ProductPriceCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceCreateNestedManyWithoutProductInput
   }
 
   export type ProductUncheckedCreateInput = {
@@ -17381,6 +18599,7 @@ export namespace Prisma {
     version?: number
     items?: InventoryItemUncheckedCreateNestedManyWithoutProductInput
     prices?: ProductPriceUncheckedCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type ProductUpdateInput = {
@@ -17410,6 +18629,7 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     items?: InventoryItemUpdateManyWithoutProductNestedInput
     prices?: ProductPriceUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateInput = {
@@ -17439,6 +18659,7 @@ export namespace Prisma {
     version?: IntFieldUpdateOperationsInput | number
     items?: InventoryItemUncheckedUpdateManyWithoutProductNestedInput
     prices?: ProductPriceUncheckedUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type ProductCreateManyInput = {
@@ -17518,6 +18739,82 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ShopProductBalanceCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    quantityOnHand?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
+    product: ProductCreateNestedOneWithoutShopBalancesInput
+  }
+
+  export type ShopProductBalanceUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    productId: string
+    quantityOnHand?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ShopProductBalanceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    product?: ProductUpdateOneRequiredWithoutShopBalancesNestedInput
+  }
+
+  export type ShopProductBalanceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopProductBalanceCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    productId: string
+    quantityOnHand?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ShopProductBalanceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopProductBalanceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InventoryItemCreateInput = {
@@ -18944,11 +20241,21 @@ export namespace Prisma {
     none?: ProductPriceWhereInput
   }
 
+  export type ShopProductBalanceListRelationFilter = {
+    every?: ShopProductBalanceWhereInput
+    some?: ShopProductBalanceWhereInput
+    none?: ShopProductBalanceWhereInput
+  }
+
   export type InventoryItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type ProductPriceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ShopProductBalanceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19113,6 +20420,60 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type ProductRelationFilter = {
+    is?: ProductWhereInput
+    isNot?: ProductWhereInput
+  }
+
+  export type ShopProductBalanceTenantIdShopIdProductIdCompoundUniqueInput = {
+    tenantId: string
+    shopId: string
+    productId: string
+  }
+
+  export type ShopProductBalanceCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    productId?: SortOrder
+    quantityOnHand?: SortOrder
+    version?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ShopProductBalanceAvgOrderByAggregateInput = {
+    quantityOnHand?: SortOrder
+    version?: SortOrder
+  }
+
+  export type ShopProductBalanceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    productId?: SortOrder
+    quantityOnHand?: SortOrder
+    version?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ShopProductBalanceMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    productId?: SortOrder
+    quantityOnHand?: SortOrder
+    version?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ShopProductBalanceSumOrderByAggregateInput = {
+    quantityOnHand?: SortOrder
+    version?: SortOrder
+  }
+
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -19122,11 +20483,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type ProductRelationFilter = {
-    is?: ProductWhereInput
-    isNot?: ProductWhereInput
   }
 
   export type InventoryUpgradeListRelationFilter = {
@@ -19799,6 +21155,13 @@ export namespace Prisma {
     connect?: ProductPriceWhereUniqueInput | ProductPriceWhereUniqueInput[]
   }
 
+  export type ShopProductBalanceCreateNestedManyWithoutProductInput = {
+    create?: XOR<ShopProductBalanceCreateWithoutProductInput, ShopProductBalanceUncheckedCreateWithoutProductInput> | ShopProductBalanceCreateWithoutProductInput[] | ShopProductBalanceUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ShopProductBalanceCreateOrConnectWithoutProductInput | ShopProductBalanceCreateOrConnectWithoutProductInput[]
+    createMany?: ShopProductBalanceCreateManyProductInputEnvelope
+    connect?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
+  }
+
   export type InventoryItemUncheckedCreateNestedManyWithoutProductInput = {
     create?: XOR<InventoryItemCreateWithoutProductInput, InventoryItemUncheckedCreateWithoutProductInput> | InventoryItemCreateWithoutProductInput[] | InventoryItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: InventoryItemCreateOrConnectWithoutProductInput | InventoryItemCreateOrConnectWithoutProductInput[]
@@ -19811,6 +21174,13 @@ export namespace Prisma {
     connectOrCreate?: ProductPriceCreateOrConnectWithoutProductInput | ProductPriceCreateOrConnectWithoutProductInput[]
     createMany?: ProductPriceCreateManyProductInputEnvelope
     connect?: ProductPriceWhereUniqueInput | ProductPriceWhereUniqueInput[]
+  }
+
+  export type ShopProductBalanceUncheckedCreateNestedManyWithoutProductInput = {
+    create?: XOR<ShopProductBalanceCreateWithoutProductInput, ShopProductBalanceUncheckedCreateWithoutProductInput> | ShopProductBalanceCreateWithoutProductInput[] | ShopProductBalanceUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ShopProductBalanceCreateOrConnectWithoutProductInput | ShopProductBalanceCreateOrConnectWithoutProductInput[]
+    createMany?: ShopProductBalanceCreateManyProductInputEnvelope
+    connect?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
   }
 
   export type ProductUpdatesharedShopIdsInput = {
@@ -19891,6 +21261,20 @@ export namespace Prisma {
     deleteMany?: ProductPriceScalarWhereInput | ProductPriceScalarWhereInput[]
   }
 
+  export type ShopProductBalanceUpdateManyWithoutProductNestedInput = {
+    create?: XOR<ShopProductBalanceCreateWithoutProductInput, ShopProductBalanceUncheckedCreateWithoutProductInput> | ShopProductBalanceCreateWithoutProductInput[] | ShopProductBalanceUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ShopProductBalanceCreateOrConnectWithoutProductInput | ShopProductBalanceCreateOrConnectWithoutProductInput[]
+    upsert?: ShopProductBalanceUpsertWithWhereUniqueWithoutProductInput | ShopProductBalanceUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: ShopProductBalanceCreateManyProductInputEnvelope
+    set?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
+    disconnect?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
+    delete?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
+    connect?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
+    update?: ShopProductBalanceUpdateWithWhereUniqueWithoutProductInput | ShopProductBalanceUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: ShopProductBalanceUpdateManyWithWhereWithoutProductInput | ShopProductBalanceUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: ShopProductBalanceScalarWhereInput | ShopProductBalanceScalarWhereInput[]
+  }
+
   export type InventoryItemUncheckedUpdateManyWithoutProductNestedInput = {
     create?: XOR<InventoryItemCreateWithoutProductInput, InventoryItemUncheckedCreateWithoutProductInput> | InventoryItemCreateWithoutProductInput[] | InventoryItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: InventoryItemCreateOrConnectWithoutProductInput | InventoryItemCreateOrConnectWithoutProductInput[]
@@ -19917,6 +21301,34 @@ export namespace Prisma {
     update?: ProductPriceUpdateWithWhereUniqueWithoutProductInput | ProductPriceUpdateWithWhereUniqueWithoutProductInput[]
     updateMany?: ProductPriceUpdateManyWithWhereWithoutProductInput | ProductPriceUpdateManyWithWhereWithoutProductInput[]
     deleteMany?: ProductPriceScalarWhereInput | ProductPriceScalarWhereInput[]
+  }
+
+  export type ShopProductBalanceUncheckedUpdateManyWithoutProductNestedInput = {
+    create?: XOR<ShopProductBalanceCreateWithoutProductInput, ShopProductBalanceUncheckedCreateWithoutProductInput> | ShopProductBalanceCreateWithoutProductInput[] | ShopProductBalanceUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ShopProductBalanceCreateOrConnectWithoutProductInput | ShopProductBalanceCreateOrConnectWithoutProductInput[]
+    upsert?: ShopProductBalanceUpsertWithWhereUniqueWithoutProductInput | ShopProductBalanceUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: ShopProductBalanceCreateManyProductInputEnvelope
+    set?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
+    disconnect?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
+    delete?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
+    connect?: ShopProductBalanceWhereUniqueInput | ShopProductBalanceWhereUniqueInput[]
+    update?: ShopProductBalanceUpdateWithWhereUniqueWithoutProductInput | ShopProductBalanceUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: ShopProductBalanceUpdateManyWithWhereWithoutProductInput | ShopProductBalanceUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: ShopProductBalanceScalarWhereInput | ShopProductBalanceScalarWhereInput[]
+  }
+
+  export type ProductCreateNestedOneWithoutShopBalancesInput = {
+    create?: XOR<ProductCreateWithoutShopBalancesInput, ProductUncheckedCreateWithoutShopBalancesInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutShopBalancesInput
+    connect?: ProductWhereUniqueInput
+  }
+
+  export type ProductUpdateOneRequiredWithoutShopBalancesNestedInput = {
+    create?: XOR<ProductCreateWithoutShopBalancesInput, ProductUncheckedCreateWithoutShopBalancesInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutShopBalancesInput
+    upsert?: ProductUpsertWithoutShopBalancesInput
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutShopBalancesInput, ProductUpdateWithoutShopBalancesInput>, ProductUncheckedUpdateWithoutShopBalancesInput>
   }
 
   export type InventoryItemCreateimagesInput = {
@@ -20680,6 +22092,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ShopProductBalanceCreateWithoutProductInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    quantityOnHand?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ShopProductBalanceUncheckedCreateWithoutProductInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    quantityOnHand?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ShopProductBalanceCreateOrConnectWithoutProductInput = {
+    where: ShopProductBalanceWhereUniqueInput
+    create: XOR<ShopProductBalanceCreateWithoutProductInput, ShopProductBalanceUncheckedCreateWithoutProductInput>
+  }
+
+  export type ShopProductBalanceCreateManyProductInputEnvelope = {
+    data: ShopProductBalanceCreateManyProductInput | ShopProductBalanceCreateManyProductInput[]
+    skipDuplicates?: boolean
+  }
+
   export type BrandUpsertWithoutProductsInput = {
     update: XOR<BrandUpdateWithoutProductsInput, BrandUncheckedUpdateWithoutProductsInput>
     create: XOR<BrandCreateWithoutProductsInput, BrandUncheckedCreateWithoutProductsInput>
@@ -20830,6 +22272,168 @@ export namespace Prisma {
     createdBy?: StringNullableFilter<"ProductPrice"> | string | null
   }
 
+  export type ShopProductBalanceUpsertWithWhereUniqueWithoutProductInput = {
+    where: ShopProductBalanceWhereUniqueInput
+    update: XOR<ShopProductBalanceUpdateWithoutProductInput, ShopProductBalanceUncheckedUpdateWithoutProductInput>
+    create: XOR<ShopProductBalanceCreateWithoutProductInput, ShopProductBalanceUncheckedCreateWithoutProductInput>
+  }
+
+  export type ShopProductBalanceUpdateWithWhereUniqueWithoutProductInput = {
+    where: ShopProductBalanceWhereUniqueInput
+    data: XOR<ShopProductBalanceUpdateWithoutProductInput, ShopProductBalanceUncheckedUpdateWithoutProductInput>
+  }
+
+  export type ShopProductBalanceUpdateManyWithWhereWithoutProductInput = {
+    where: ShopProductBalanceScalarWhereInput
+    data: XOR<ShopProductBalanceUpdateManyMutationInput, ShopProductBalanceUncheckedUpdateManyWithoutProductInput>
+  }
+
+  export type ShopProductBalanceScalarWhereInput = {
+    AND?: ShopProductBalanceScalarWhereInput | ShopProductBalanceScalarWhereInput[]
+    OR?: ShopProductBalanceScalarWhereInput[]
+    NOT?: ShopProductBalanceScalarWhereInput | ShopProductBalanceScalarWhereInput[]
+    id?: StringFilter<"ShopProductBalance"> | string
+    tenantId?: StringFilter<"ShopProductBalance"> | string
+    shopId?: StringFilter<"ShopProductBalance"> | string
+    productId?: StringFilter<"ShopProductBalance"> | string
+    quantityOnHand?: FloatFilter<"ShopProductBalance"> | number
+    version?: IntFilter<"ShopProductBalance"> | number
+    updatedAt?: DateTimeFilter<"ShopProductBalance"> | Date | string
+    createdAt?: DateTimeFilter<"ShopProductBalance"> | Date | string
+  }
+
+  export type ProductCreateWithoutShopBalancesInput = {
+    id?: string
+    tenantId: string
+    shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
+    type?: string
+    sku: string
+    name: string
+    description?: string | null
+    productType?: string
+    trackingMethod?: string
+    status?: string
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+    brand?: BrandCreateNestedOneWithoutProductsInput
+    category?: CategoryCreateNestedOneWithoutProductsInput
+    items?: InventoryItemCreateNestedManyWithoutProductInput
+    prices?: ProductPriceCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductUncheckedCreateWithoutShopBalancesInput = {
+    id?: string
+    tenantId: string
+    shopId?: string | null
+    sharedShopIds?: ProductCreatesharedShopIdsInput | string[]
+    type?: string
+    sku: string
+    name: string
+    description?: string | null
+    brandId?: string | null
+    categoryId?: string | null
+    productType?: string
+    trackingMethod?: string
+    status?: string
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: number
+    imageUrl?: string | null
+    images?: ProductCreateimagesInput | string[]
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    updatedBy?: string | null
+    deletedAt?: Date | string | null
+    deletedBy?: string | null
+    version?: number
+    items?: InventoryItemUncheckedCreateNestedManyWithoutProductInput
+    prices?: ProductPriceUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductCreateOrConnectWithoutShopBalancesInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutShopBalancesInput, ProductUncheckedCreateWithoutShopBalancesInput>
+  }
+
+  export type ProductUpsertWithoutShopBalancesInput = {
+    update: XOR<ProductUpdateWithoutShopBalancesInput, ProductUncheckedUpdateWithoutShopBalancesInput>
+    create: XOR<ProductCreateWithoutShopBalancesInput, ProductUncheckedCreateWithoutShopBalancesInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutShopBalancesInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutShopBalancesInput, ProductUncheckedUpdateWithoutShopBalancesInput>
+  }
+
+  export type ProductUpdateWithoutShopBalancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
+    type?: StringFieldUpdateOperationsInput | string
+    sku?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    productType?: StringFieldUpdateOperationsInput | string
+    trackingMethod?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    brand?: BrandUpdateOneWithoutProductsNestedInput
+    category?: CategoryUpdateOneWithoutProductsNestedInput
+    items?: InventoryItemUpdateManyWithoutProductNestedInput
+    prices?: ProductPriceUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutShopBalancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: NullableStringFieldUpdateOperationsInput | string | null
+    sharedShopIds?: ProductUpdatesharedShopIdsInput | string[]
+    type?: StringFieldUpdateOperationsInput | string
+    sku?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    brandId?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    productType?: StringFieldUpdateOperationsInput | string
+    trackingMethod?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    specifications?: NullableJsonNullValueInput | InputJsonValue
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    images?: ProductUpdateimagesInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: IntFieldUpdateOperationsInput | number
+    items?: InventoryItemUncheckedUpdateManyWithoutProductNestedInput
+    prices?: ProductPriceUncheckedUpdateManyWithoutProductNestedInput
+  }
+
   export type ProductCreateWithoutItemsInput = {
     id?: string
     tenantId: string
@@ -20856,6 +22460,7 @@ export namespace Prisma {
     brand?: BrandCreateNestedOneWithoutProductsInput
     category?: CategoryCreateNestedOneWithoutProductsInput
     prices?: ProductPriceCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceCreateNestedManyWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutItemsInput = {
@@ -20884,6 +22489,7 @@ export namespace Prisma {
     deletedBy?: string | null
     version?: number
     prices?: ProductPriceUncheckedCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutItemsInput = {
@@ -21018,6 +22624,7 @@ export namespace Prisma {
     brand?: BrandUpdateOneWithoutProductsNestedInput
     category?: CategoryUpdateOneWithoutProductsNestedInput
     prices?: ProductPriceUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutItemsInput = {
@@ -21046,6 +22653,7 @@ export namespace Prisma {
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
     prices?: ProductPriceUncheckedUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type BrandUpsertWithoutStockItemsInput = {
@@ -21375,6 +22983,7 @@ export namespace Prisma {
     brand?: BrandCreateNestedOneWithoutProductsInput
     items?: InventoryItemCreateNestedManyWithoutProductInput
     prices?: ProductPriceCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceCreateNestedManyWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutCategoryInput = {
@@ -21403,6 +23012,7 @@ export namespace Prisma {
     version?: number
     items?: InventoryItemUncheckedCreateNestedManyWithoutProductInput
     prices?: ProductPriceUncheckedCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutCategoryInput = {
@@ -21638,6 +23248,7 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     items?: InventoryItemCreateNestedManyWithoutProductInput
     prices?: ProductPriceCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceCreateNestedManyWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutBrandInput = {
@@ -21666,6 +23277,7 @@ export namespace Prisma {
     version?: number
     items?: InventoryItemUncheckedCreateNestedManyWithoutProductInput
     prices?: ProductPriceUncheckedCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutBrandInput = {
@@ -21804,6 +23416,7 @@ export namespace Prisma {
     brand?: BrandCreateNestedOneWithoutProductsInput
     category?: CategoryCreateNestedOneWithoutProductsInput
     items?: InventoryItemCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceCreateNestedManyWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutPricesInput = {
@@ -21832,6 +23445,7 @@ export namespace Prisma {
     deletedBy?: string | null
     version?: number
     items?: InventoryItemUncheckedCreateNestedManyWithoutProductInput
+    shopBalances?: ShopProductBalanceUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutPricesInput = {
@@ -21876,6 +23490,7 @@ export namespace Prisma {
     brand?: BrandUpdateOneWithoutProductsNestedInput
     category?: CategoryUpdateOneWithoutProductsNestedInput
     items?: InventoryItemUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutPricesInput = {
@@ -21904,6 +23519,7 @@ export namespace Prisma {
     deletedBy?: NullableStringFieldUpdateOperationsInput | string | null
     version?: IntFieldUpdateOperationsInput | number
     items?: InventoryItemUncheckedUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type InventoryItemCreateManyProductInput = {
@@ -21942,6 +23558,16 @@ export namespace Prisma {
     validTo?: Date | string | null
     createdAt?: Date | string
     createdBy?: string | null
+  }
+
+  export type ShopProductBalanceCreateManyProductInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    quantityOnHand?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
   }
 
   export type InventoryItemUpdateWithoutProductInput = {
@@ -22058,6 +23684,36 @@ export namespace Prisma {
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ShopProductBalanceUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopProductBalanceUncheckedUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ShopProductBalanceUncheckedUpdateManyWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    quantityOnHand?: FloatFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InventoryUpgradeCreateManyInventoryItemInput = {
@@ -22226,6 +23882,7 @@ export namespace Prisma {
     brand?: BrandUpdateOneWithoutProductsNestedInput
     items?: InventoryItemUpdateManyWithoutProductNestedInput
     prices?: ProductPriceUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutCategoryInput = {
@@ -22254,6 +23911,7 @@ export namespace Prisma {
     version?: IntFieldUpdateOperationsInput | number
     items?: InventoryItemUncheckedUpdateManyWithoutProductNestedInput
     prices?: ProductPriceUncheckedUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateManyWithoutCategoryInput = {
@@ -22448,6 +24106,7 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     items?: InventoryItemUpdateManyWithoutProductNestedInput
     prices?: ProductPriceUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutBrandInput = {
@@ -22476,6 +24135,7 @@ export namespace Prisma {
     version?: IntFieldUpdateOperationsInput | number
     items?: InventoryItemUncheckedUpdateManyWithoutProductNestedInput
     prices?: ProductPriceUncheckedUpdateManyWithoutProductNestedInput
+    shopBalances?: ShopProductBalanceUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateManyWithoutBrandInput = {
@@ -22619,6 +24279,10 @@ export namespace Prisma {
      * @deprecated Use ProductDefaultArgs instead
      */
     export type ProductArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProductDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ShopProductBalanceDefaultArgs instead
+     */
+    export type ShopProductBalanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ShopProductBalanceDefaultArgs<ExtArgs>
     /**
      * @deprecated Use InventoryItemDefaultArgs instead
      */

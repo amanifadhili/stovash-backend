@@ -13,6 +13,7 @@ import { FulfillSaleCommand } from '../../commands/impl/fulfill-sale.command.js'
 import { CancelSaleCommand } from '../../commands/impl/cancel-sale.command.js';
 import { CreateWarrantyCommand } from '../../commands/impl/create-warranty.command.js';
 import { prisma } from '../../database/client.js';
+import { of } from 'rxjs';
 
 class CapturingEventBus {
   events: Array<{ event: any; routingKey: string }> = [];
@@ -35,6 +36,14 @@ class CapturingEventBus {
   startConsuming() { return Promise.resolve(); }
   startAllConsumers() { return Promise.resolve(); }
 }
+
+const inventoryClientMock = {
+  send: () =>
+    of({
+      status: 'success',
+      data: { applied: 1, skippedIdempotent: 0 },
+    }),
+};
 
 describe('Sale lifecycle integration', () => {
   let createHandler: CreateSaleHandler;
@@ -64,6 +73,7 @@ describe('Sale lifecycle integration', () => {
         CancelSaleHandler,
         CreateWarrantyHandler,
         { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
       ],
     }).compile();
 
@@ -190,10 +200,14 @@ describe('Sale lifecycle integration', () => {
     expect(earlyFulfill.status).toBe('error');
     expect(earlyFulfill.errorCode).toBe('BUSINESS_RULE_VIOLATION');
 
-    await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
-    const fulfilled = await fulfillHandler.execute(new FulfillSaleCommand({ saleId }, ctx));
-    expect(fulfilled.status).toBe('success');
-    expect(fulfilled.data.fulfillmentStatus).toBe('FULFILLED');
+    // ConfirmSale sync-applies inventory and marks FULFILLED in one step.
+    const confirmed = await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
+    expect(confirmed.status).toBe('success');
+    expect(confirmed.data.fulfillmentStatus).toBe('FULFILLED');
+
+    const alreadyFulfilled = await fulfillHandler.execute(new FulfillSaleCommand({ saleId }, ctx));
+    expect(alreadyFulfilled.status).toBe('error');
+    expect(alreadyFulfilled.errorCode).toBe('BUSINESS_RULE_VIOLATION');
 
     const event = eventBus.events.find((e) => e.routingKey === 'sale.fulfilled');
     expect(event).toBeDefined();

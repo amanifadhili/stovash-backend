@@ -1,10 +1,11 @@
 import { prisma } from '../../database/client.js';
+import { adjustShopBalance } from '../../common/shop-product-balance.js';
 
 /**
  * Consumes PurchaseUnitConfirmed events from the purchase service. Creates the
  * matching inventory stock:
  *  - SERIALIZED products  -> a serialized InventoryItem (RECEIVED -> AVAILABLE)
- *  - NON_SERIALIZED       -> increments the product-level quantityOnHand
+ *  - NON_SERIALIZED       -> increments shop product balance
  * Skips when the serialized item already exists (idempotent re-delivery).
  */
 export const purchaseUnitConfirmedConsumer = async (event: any): Promise<void> => {
@@ -23,15 +24,16 @@ export const purchaseUnitConfirmedConsumer = async (event: any): Promise<void> =
     const tracking = payload.productTracking || 'SERIALIZED';
 
     if (tracking === 'NON_SERIALIZED') {
-      // Non-serialized: increment the product-level on-hand quantity.
       const product = await prisma.product.findFirst({ where: { tenantId, id: productId } });
       if (!product) {
         console.log(`Product ${productId} not found (tenant ${tenantId})`);
         return;
       }
+      if (!shopId) {
+        console.log(`PurchaseUnitConfirmed non-serialized missing shopId: ${aggregateId}`);
+        return;
+      }
 
-      // Idempotency: skip if this purchase reference already stocked inventory
-      // (sync RPC path may have already recorded it).
       const referenceId = payload.referenceId || aggregateId || null;
       if (referenceId) {
         const existing = await prisma.inventoryMovement.findFirst({
@@ -43,24 +45,27 @@ export const purchaseUnitConfirmedConsumer = async (event: any): Promise<void> =
         }
       }
 
-      const quantityOnHand = (product.quantityOnHand || 0) + 1;
-      await prisma.product.update({
-        where: { id: product.id },
-        data: { quantityOnHand, updatedBy: payload.createdBy || 'system' },
-      });
-
-      await prisma.inventoryMovement.create({
-        data: {
+      await prisma.$transaction(async (tx) => {
+        await adjustShopBalance(tx, {
           tenantId,
           shopId,
-          inventoryItemId: null,
           productId: product.id,
-          movementType: 'IN',
-          quantity: 1,
-          referenceId,
-          referenceType: 'PURCHASE',
-          createdBy: payload.createdBy || 'system',
-        },
+          delta: 1,
+          updatedBy: payload.createdBy || 'system',
+        });
+        await tx.inventoryMovement.create({
+          data: {
+            tenantId,
+            shopId,
+            inventoryItemId: null,
+            productId: product.id,
+            movementType: 'IN',
+            quantity: 1,
+            referenceId,
+            referenceType: 'PURCHASE',
+            createdBy: payload.createdBy || 'system',
+          },
+        });
       });
 
       console.log(`PurchaseUnitConfirmed (non-serialized) processed: ${aggregateId}`);

@@ -21,6 +21,7 @@ import { DeleteCategoryHandler } from './delete-category.handler.js';
 import { CreateRentalHandler } from './create-rental.handler.js';
 import { UpdateRentalStatusHandler } from './update-rental-status.handler.js';
 import { CreateContactHandler } from './create-contact.handler.js';
+import { ApplySaleFulfillmentHandler } from './apply-sale-fulfillment.handler.js';
 
 export const CommandHandlers = [
   AddProductHandler,
@@ -31,6 +32,7 @@ export const CommandHandlers = [
   AddInventoryItemHandler,
   SyncPurchaseStockHandler,
   ProcessPosSaleHandler,
+  ApplySaleFulfillmentHandler,
   ReceiveGoodsHandler,
   ProcessSalesReturnHandler,
   CreateWarrantyClaimHandler,

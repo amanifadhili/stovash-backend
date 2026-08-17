@@ -36,10 +36,16 @@ import { GetRentalsQuery } from './queries/impl/get-rentals.query.js';
 import { GetStockMovementsQuery } from './queries/impl/get-stock-movements.query.js';
 import { CreateContactCommand } from './commands/impl/create-contact.command.js';
 import { GetContactsQuery } from './queries/impl/get-contacts.query.js';
+import { ApplySaleFulfillmentCommand } from './commands/impl/apply-sale-fulfillment.command.js';
 
 @Controller()
 export class InventoryServiceController {
   constructor(private readonly commandBus: CommandBus, private readonly queryBus: QueryBus) {}
+
+  @MessagePattern({ cmd: 'ApplySaleFulfillment' })
+  async handleApplySaleFulfillment(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ApplySaleFulfillmentCommand(data.payload, data.context));
+  }
 
   @MessagePattern({ cmd: 'AddProduct' })
   async handleAddProduct(@Payload() data: { payload: any, context: any }) {

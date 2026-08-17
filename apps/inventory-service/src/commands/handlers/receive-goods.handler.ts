@@ -5,6 +5,7 @@ import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { Inject } from '@nestjs/common';
 import { EventBus } from '@electronic-shop/framework-event';
+import { adjustShopBalance } from '../../common/shop-product-balance.js';
 
 @CommandHandler(ReceiveGoodsCommand)
 export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand> {
@@ -125,10 +126,16 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
           if (isAccessory) {
             const qtyToAdd = item.quantity && item.quantity > 0 ? item.quantity : 1;
             const imageList = Array.isArray(item.images) ? item.images.slice(0, 5) : [];
+            await adjustShopBalance(tx, {
+              tenantId,
+              shopId,
+              productId,
+              delta: qtyToAdd,
+              updatedBy: context.userId || 'system',
+            });
             const updatedProduct = await tx.product.update({
               where: { id: productId },
               data: {
-                quantityOnHand: { increment: qtyToAdd },
                 ...(imageList.length > 0
                   ? { images: imageList, imageUrl: imageList[0] }
                   : {}),

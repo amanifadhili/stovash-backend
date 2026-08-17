@@ -234,6 +234,7 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
             otherChargesTotal,
             additionalCostTotal,
             grandTotal,
+            totalAmount: grandTotal,
             commercialStatus: 'DRAFT',
             fulfillmentStatus: 'NOT_FULFILLED',
             paymentStatus: 'UNPAID',

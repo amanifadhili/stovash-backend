@@ -57,10 +57,11 @@ model Product {
   deletedBy      String?
   version        Int       @default(1)
 
-  brand    Brand?          @relation(fields: [brandId], references: [id])
-  category Category?       @relation(fields: [categoryId], references: [id])
-  items    InventoryItem[]
-  prices   ProductPrice[]
+  brand        Brand?               @relation(fields: [brandId], references: [id])
+  category     Category?            @relation(fields: [categoryId], references: [id])
+  items        InventoryItem[]
+  prices       ProductPrice[]
+  shopBalances ShopProductBalance[]
 
   @@unique([tenantId, sku])
   @@index([tenantId])
@@ -69,6 +70,26 @@ model Product {
   @@index([categoryId])
   @@index([status])
   @@map("products")
+}
+
+/// Per-shop quantity for non-serialized (accessory) stock.
+/// Product.quantityOnHand is kept as a denormalized sum across shops for one release.
+model ShopProductBalance {
+  id             String   @id @default(uuid())
+  tenantId       String
+  shopId         String
+  productId      String
+  quantityOnHand Float    @default(0)
+  version        Int      @default(1)
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([tenantId, shopId, productId])
+  @@index([tenantId, shopId])
+  @@index([productId])
+  @@map("shop_product_balances")
 }
 
 model InventoryItem {

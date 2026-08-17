@@ -4,12 +4,17 @@ import { ConfirmSaleCommand } from '../impl/confirm-sale.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { EventBus } from '@electronic-shop/framework-event';
 import { actorOf } from '../../common/actor.js';
+import { firstValueFrom, timeout } from 'rxjs';
 
 @CommandHandler(ConfirmSaleCommand)
 export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
-  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+  constructor(
+    @Inject('EVENT_BUS') private readonly eventBus: EventBus,
+    @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
+  ) {
     super();
   }
 
@@ -54,6 +59,45 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
           traceId,
           message: 'Cannot confirm a sale without items',
           errorCode: ErrorCode.BUSINESS_RULE_VIOLATION,
+        };
+      }
+
+      // Fail closed: deduct / lock stock before marking the sale fulfilled.
+      const stockResult = await firstValueFrom(
+        this.inventoryClient
+          .send(
+            { cmd: 'ApplySaleFulfillment' },
+            {
+              payload: {
+                saleId: sale.id,
+                shopId: sale.shopId,
+                customerId: sale.customerId || null,
+                fulfilledBy: createdById,
+                items: (sale.items ?? []).map((i: any) => ({
+                  saleItemId: i.id,
+                  productId: i.productId,
+                  inventoryItemId: i.inventoryItemId,
+                  serialNumber: i.serialNumber,
+                  quantity: i.quantity,
+                })),
+              },
+              context: {
+                tenantId,
+                shopId: sale.shopId,
+                userId: createdById,
+                traceId,
+              },
+            },
+          )
+          .pipe(timeout(15000)),
+      );
+
+      if (!stockResult || stockResult.status === 'error') {
+        return {
+          status: 'error',
+          traceId,
+          message: stockResult?.message || 'Inventory could not fulfill this sale',
+          errorCode: stockResult?.errorCode || ErrorCode.BUSINESS_RULE_VIOLATION,
         };
       }
 
@@ -113,8 +157,7 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
         'sale.confirmed',
       );
 
-      // Walk-in POS confirms and hands over in one step. Inventory listens to
-      // SaleFulfilled to decrement accessory quantityOnHand / mark device units sold.
+      // Idempotent replay for other consumers / late subscribers.
       await this.eventBus.publish(
         {
           eventType: 'SaleFulfilled',
