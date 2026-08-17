@@ -35,7 +35,7 @@ export interface CreatePurchaseItemInput {
 export interface CreatePurchasePayload {
   tenantId: string;
   shopId: string;
-  supplierId: string;
+  supplierId?: string;
   supplierName: string;
   supplierContact?: string;
   supplierAddress?: string;

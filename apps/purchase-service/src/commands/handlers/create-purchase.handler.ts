@@ -43,8 +43,18 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
       const createdById = userId;
       const createdByName = userName;
 
-      // Validate the supplier against the system (supplier-service) when one is
-      // referenced, and sync the stored snapshot from the master record.
+      const typedName = String(supplierName || '').trim();
+      if (!typedName && !supplierId) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Supplier name is required',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
+      // Optional legacy path: if a supplierId is still sent, resolve the snapshot.
+      // New purchase UI only types a free-text name (no supplier CRM).
       if (supplierId) {
         const supplierResp: ICommandResponse<any> = await firstValueFrom(
           this.supplierClient.send(
@@ -66,6 +76,9 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
         supplierName = supplier.name;
         supplierContact = supplier.phone || supplier.email || supplierContact;
         supplierAddress = supplier.address || supplierAddress;
+      } else {
+        supplierId = undefined;
+        supplierName = typedName;
       }
 
       // Generate a unique, gap-safe purchase number for the year. Each attempt
@@ -95,7 +108,7 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
               tenantId,
               shopId,
               purchaseNumber,
-              supplierId,
+              supplierId: supplierId || null,
               supplierName,
               supplierContact,
               supplierAddress,
