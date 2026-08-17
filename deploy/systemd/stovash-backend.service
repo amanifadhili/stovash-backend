@@ -1,0 +1,19 @@
+[Unit]
+Description=STOVASH API (gateway + services)
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+WorkingDirectory=/home/deploy/stovash/backend/current
+EnvironmentFile=-/home/deploy/stovash/backend/shared/.env
+Environment=NODE_ENV=production
+Environment=PORT=5051
+ExecStart=/usr/bin/bash -lc 'if [ -f dist/server.js ]; then exec node dist/server.js; else exec npx tsx server.ts; fi'
+Restart=always
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
