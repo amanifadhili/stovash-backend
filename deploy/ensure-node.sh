@@ -1,25 +1,30 @@
 #!/usr/bin/env bash
-# Install Node.js 22 on the VPS if the system node is older.
+# Ensure Node 22 via nvm for the deploy user (no apt nodejs).
 set -euo pipefail
 
-NODE_BIN="${NODE_BIN:-/usr/bin/node}"
+DEPLOY_USER="${DEPLOY_USER:-deploy}"
+DEPLOY_HOME="$(getent passwd "$DEPLOY_USER" | cut -d: -f6)"
+NVM_DIR="${DEPLOY_HOME}/.nvm"
+NODE_VERSION="${NODE_VERSION:-22.13.0}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-need_install=0
-if ! command -v "$NODE_BIN" >/dev/null 2>&1 && ! command -v node >/dev/null 2>&1; then
-  need_install=1
-else
-  ver="$("$NODE_BIN" -v 2>/dev/null || node -v 2>/dev/null || echo v0)"
-  case "$ver" in
-    v22.*|v23.*|v24.*) ;;
-    *) need_install=1 ;;
-  esac
+if [[ -f "$SCRIPT_DIR/../.nvmrc" ]]; then
+  NODE_VERSION="$(tr -d '[:space:]' < "$SCRIPT_DIR/../.nvmrc")"
+elif [[ -f "${PWD}/.nvmrc" ]]; then
+  NODE_VERSION="$(tr -d '[:space:]' < "${PWD}/.nvmrc")"
 fi
 
-if [[ "$need_install" -eq 1 ]]; then
-  apt-get update
-  apt-get install -y ca-certificates curl gnupg
-  curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
-  apt-get install -y nodejs
+id "$DEPLOY_USER" >/dev/null 2>&1 || useradd --create-home --shell /bin/bash "$DEPLOY_USER"
+
+if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
+  sudo -u "$DEPLOY_USER" -H bash -c 'curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash'
 fi
 
-echo "Node $(/usr/bin/node -v)  npm $(/usr/bin/npm -v)"
+sudo -u "$DEPLOY_USER" -H bash -c "
+  export NVM_DIR=\"\$HOME/.nvm\"
+  . \"\$NVM_DIR/nvm.sh\"
+  nvm install ${NODE_VERSION}
+  nvm alias default ${NODE_VERSION}
+  nvm use default
+  echo \"Node \$(node -v)  npm \$(npm -v)  (nvm)\"
+"

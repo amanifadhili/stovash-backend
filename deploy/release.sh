@@ -23,10 +23,15 @@ chmod +x "$RELEASE_DIR/deploy/start.sh" 2>/dev/null || true
 chown -R deploy:deploy "$RELEASE_DIR" "$ROOT/shared"
 
 cd "$RELEASE_DIR"
-sudo -u deploy -H env PATH="/usr/bin:/bin" HOME="/home/deploy" \
-  /usr/bin/npm ci
-sudo -u deploy -H env PATH="/usr/bin:/bin" HOME="/home/deploy" \
-  /usr/bin/npm run build || true
+sudo -u deploy -H bash -c '
+  set -euo pipefail
+  export NVM_DIR="$HOME/.nvm"
+  . "$NVM_DIR/nvm.sh"
+  nvm use --silent || nvm use default
+  node -v
+  npm ci
+  npm run build || true
+'
 
 ln -sfn "$RELEASE_DIR" "$ROOT/current"
 chown -h deploy:deploy "$ROOT/current"
