@@ -332,6 +332,14 @@ export function buildCatalogProducts(): CatalogProduct[] {
     },
   ];
 
+  for (const product of products) {
+    if (product.trackingMethod === 'SERIALIZED') {
+      product.units = 20;
+    } else if (product.qtyOnHand) {
+      product.qtyOnHand *= 3;
+    }
+  }
+
   return products;
 }
 

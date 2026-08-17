@@ -148,3 +148,110 @@ model AuditLog {
   @@index([createdAt])
   @@map("audit_logs")
 }
+
+/// Canonical money event. Phase 2 persists the typed row only — no journal legs,
+/// no LedgerAccount.balance / till updates. Amount is integer RWF cents (BigInt).
+model FinancialTransaction {
+  id                    String   @id @default(uuid())
+  tenantId              String
+  shopId                String
+  type                  String
+  occurredOn            DateTime @db.Date
+  occurredAt            DateTime @default(now())
+  actorUserId           String?
+  sourceDomain          String
+  sourceCommand         String
+  sourceId              String
+  idempotencyKey        String
+  amountMinor           BigInt
+  currency              String   @default("RWF")
+  description           String?
+  reason                String?
+  originalTransactionId String?
+  status                String   @default("POSTED")
+  metadata              Json?
+  createdAt             DateTime @default(now())
+  createdBy             String?
+  updatedAt             DateTime @updatedAt
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, shopId, occurredOn])
+  @@index([tenantId, sourceId])
+  @@index([originalTransactionId])
+  @@map("financial_transactions")
+}
+
+/// Phase 4 engine chart. Balances are derived from PostedJournalLine, never stored.
+model ChartAccount {
+  id        String              @id @default(uuid())
+  tenantId  String
+  shopId    String
+  code      String
+  name      String
+  type      String
+  fundCode  String?
+  createdAt DateTime            @default(now())
+  lines     PostedJournalLine[]
+
+  @@unique([tenantId, shopId, code])
+  @@index([tenantId, shopId, type])
+  @@map("chart_accounts")
+}
+
+model PostedJournal {
+  id                     String              @id @default(uuid())
+  tenantId               String
+  shopId                 String
+  financialTransactionId String              @unique
+  description            String
+  status                 String              @default("POSTED")
+  postedBy               String
+  occurredOn             DateTime            @db.Date
+  createdAt              DateTime            @default(now())
+  lines                  PostedJournalLine[]
+
+  @@index([tenantId, shopId, occurredOn])
+  @@map("posted_journals")
+}
+
+model PostedJournalLine {
+  id          String        @id @default(uuid())
+  journalId   String
+  accountId   String
+  side        String
+  amountMinor BigInt
+  journal     PostedJournal @relation(fields: [journalId], references: [id])
+  account     ChartAccount  @relation(fields: [accountId], references: [id])
+
+  @@index([journalId])
+  @@index([accountId])
+  @@map("posted_journal_lines")
+}
+
+model Obligation {
+  id                     String   @id @default(uuid())
+  tenantId               String
+  shopId                 String
+  kind                   String
+  partyName              String
+  outstandingMinor       BigInt
+  financialTransactionId String
+  status                 String   @default("OPEN")
+  createdAt              DateTime @default(now())
+
+  @@index([tenantId, shopId, kind])
+  @@index([financialTransactionId])
+  @@map("obligations")
+}
+
+model ProfitAllocation {
+  id               String   @id @default(uuid())
+  tenantId         String
+  shopId           String
+  earnedMinor      BigInt   @default(0)
+  transferredMinor BigInt   @default(0)
+  updatedAt        DateTime @updatedAt
+
+  @@unique([tenantId, shopId])
+  @@map("profit_allocations")
+}

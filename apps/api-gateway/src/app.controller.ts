@@ -2,10 +2,13 @@ import { Controller, Get, Post, Req, Inject, Body, UseGuards, HttpException, Htt
 import { JwtAuthGuard } from './common/auth/jwt-auth.guard.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { getMetrics } from '@electronic-shop/metrics';
+import { getMetrics, recordCommandExecution, recordFinancialPostLatency } from '@electronic-shop/metrics';
+import { ErrorCode } from '@electronic-shop/types';
 
-// Command to permission mapping
-const COMMAND_PERMISSIONS: Record<string, string[]> = {
+// Permission strings are unused for engine commands: JWT only issues `*` for ADMIN
+// and `[]` for everyone else. A non-empty list would 403 MANAGER/ACCOUNTANT/STAFF.
+// Role allow-lists in COMMAND_ROLES are the real financial RBAC gate.
+export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   // Tenant commands
   'CreateTenant': ['tenant:create'],
   'CreateShop': ['shop:create'],
@@ -31,11 +34,22 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetTrialBalance': [],
   'GetIncomeStatement': [],
   'GetBalanceSheet': [],
-  'CreatePostingBatch': ['accounting:batch:create'],
-  'PostBatch': ['accounting:batch:post'],
   'RecordExpense': [],
   'GetExpenses': [],
   'GetChartOfAccounts': [],
+  'PostFinancialTransaction': [],
+  'GetFinancialTransaction': [],
+  'RecordGeneralExpense': [],
+  'RecordWorkerAdvance': [],
+  'GetAccountingAccounts': [],
+  'GetJournals': [],
+  'GetReceivables': [],
+  'PostTreasuryBooks': [],
+  'GetProfitAllocation': [],
+  'PostSaleConfirmation': [],
+  'PostPurchasePayable': [],
+  'PostFinancialCorrection': [],
+  'GetEngineReport': [],
   
   // Inventory commands
   'AddProduct': ['inventory:product:create'],
@@ -135,10 +149,22 @@ const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetTreasuryActivity': [],
   'RecordTreasuryLoan': [],
   'RecordLoanRepayment': [],
+  'GetFinancialStructure': [],
+  'CreatePhysicalAccount': [],
+  'CreateTreasuryMovement': [],
+  'GetFundBalances': [],
+  'GetTreasuryMovements': [],
+  'GetTreasuryLoans': [],
+  'GetProfitTransferPosition': [],
+  'RecordReconciliation': [],
+  'ApproveReconciliationAdjustment': [],
+  'GetReconciliations': [],
+  'GetDailyPosition': [],
+  'GetFinancialOverview': [],
 };
 
 // Command to role mapping (role-based access control)
-const COMMAND_ROLES: Record<string, string[]> = {
+export const COMMAND_ROLES: Record<string, string[]> = {
   // Tenant commands - only ADMIN (tenant owner) can mutate tenants/shops;
   // reads are authenticated only (resolved against the JWT tenant).
   'CreateTenant': ['ADMIN'],
@@ -160,11 +186,22 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'GetTrialBalance': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'GetIncomeStatement': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'GetBalanceSheet': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
-  'CreatePostingBatch': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
-  'PostBatch': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'RecordExpense': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetExpenses': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetChartOfAccounts': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'PostFinancialTransaction': ['ADMIN', 'MANAGER'],
+  'GetFinancialTransaction': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'RecordGeneralExpense': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'RecordWorkerAdvance': ['ADMIN', 'MANAGER'],
+  'GetAccountingAccounts': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetJournals': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'GetReceivables': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'PostTreasuryBooks': ['ADMIN', 'MANAGER'],
+  'GetProfitAllocation': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'PostSaleConfirmation': ['ADMIN', 'MANAGER', 'STAFF'],
+  'PostPurchasePayable': ['ADMIN', 'MANAGER', 'STAFF'],
+  'PostFinancialCorrection': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'GetEngineReport': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   
   // Inventory commands
   'AddProduct': ['ADMIN', 'MANAGER'],
@@ -266,12 +303,82 @@ const COMMAND_ROLES: Record<string, string[]> = {
   'GetTreasuryActivity': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'RecordTreasuryLoan': ['ADMIN', 'MANAGER'],
   'RecordLoanRepayment': ['ADMIN', 'MANAGER'],
+  'GetFinancialStructure': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'CreatePhysicalAccount': ['ADMIN', 'MANAGER'],
+  'CreateTreasuryMovement': ['ADMIN', 'MANAGER'],
+  'GetFundBalances': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetTreasuryMovements': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetTreasuryLoans': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'GetProfitTransferPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'RecordReconciliation': ['ADMIN', 'MANAGER', 'STAFF'],
+  'ApproveReconciliationAdjustment': ['ADMIN', 'MANAGER'],
+  'GetReconciliations': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'GetDailyPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetFinancialOverview': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
 };
 
 // Commands that are public (no authenticated user required). Their role/permission
 // checks are skipped because there is no user context to authorize against.
 // CreateTenant is the tenant self-registration (onboarding) flow; LoginUser is public auth.
 const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant'];
+
+/**
+ * Phase 10: legacy till/ledger commands are gone, not 501 forever.
+ * Gateway returns 410 COMMAND_RETIRED and does not route them to Nest handlers.
+ */
+export const RETIRED_FINANCIAL_COMMANDS = new Set([
+  'PostJournalEntry',
+  'CreateLedgerAccount',
+  'OpenWorkPeriod',
+  'CloseWorkPeriod',
+  'GetActiveWorkPeriod',
+  'GetAccountTransactions',
+  'GetTrialBalance',
+  'GetIncomeStatement',
+  'GetBalanceSheet',
+  'CreatePostingBatch',
+  'PostBatch',
+  'RecordExpense',
+  'GetExpenses',
+  'GetChartOfAccounts',
+  'RecordOperationalDeposit',
+  'ReconcilePaymentMethod',
+  'CreatePaymentMethod',
+  'GetPaymentMethods',
+  'CreateTransfer',
+  'CreatePhysicalConfirmation',
+  'GetTreasuryActivity',
+  'RecordTreasuryLoan',
+  'RecordLoanRepayment',
+]);
+
+/** @deprecated Phase 10 alias — same set as RETIRED_FINANCIAL_COMMANDS. */
+export const QUARANTINED_FINANCIAL_COMMANDS = RETIRED_FINANCIAL_COMMANDS;
+
+/** STAFF may count cash and post sales; cannot approve recon, profit transfer, or capital/internal loans. */
+export const STAFF_CANNOT_APPROVE = ['ApproveReconciliationAdjustment', 'CreateTreasuryMovement'] as const;
+
+const FINANCIAL_WRITE_COMMANDS = new Set([
+  'PostFinancialTransaction',
+  'RecordGeneralExpense',
+  'RecordWorkerAdvance',
+  'PostTreasuryBooks',
+  'PostSaleConfirmation',
+  'PostPurchasePayable',
+  'PostFinancialCorrection',
+  'CreatePhysicalAccount',
+  'CreateTreasuryMovement',
+  'RecordReconciliation',
+  'ApproveReconciliationAdjustment',
+]);
+
+function observeGatewayCommand(command: string, status: string, startedNs: bigint) {
+  const duration = Number(process.hrtime.bigint() - startedNs) / 1e9;
+  recordCommandExecution(command, 'gateway', status, duration);
+  if (FINANCIAL_WRITE_COMMANDS.has(command)) {
+    recordFinancialPostLatency(command, status, duration);
+  }
+}
 
 @Controller()
 export class AppController {
@@ -296,12 +403,28 @@ export class AppController {
   async handleCommand(@Req() req: any, @Body() body: any): Promise<any> {
     const { command, payload } = body || {};
     const cmd = command || req.headers['x-command'];
+    const started = process.hrtime.bigint();
 
     if (!cmd) {
       return { status: 'error', message: 'Missing command identifier in body' };
     }
 
     const context = req.context;
+
+    if (RETIRED_FINANCIAL_COMMANDS.has(cmd)) {
+      observeGatewayCommand(cmd, 'retired', started);
+      throw new HttpException(
+        {
+          status: 'error',
+          message:
+            'This command has been retired. Use the financial engine (PostFinancialTransaction, CreateTreasuryMovement, GetEngineReport).',
+          errorCode: ErrorCode.COMMAND_RETIRED,
+          command: cmd,
+          traceId: context?.traceId,
+        },
+        HttpStatus.GONE,
+      );
+    }
 
     // Public commands (e.g. self-registration) bypass role/permission checks.
     const isPublic = PUBLIC_COMMANDS.includes(cmd);
@@ -311,6 +434,7 @@ export class AppController {
     if (!isPublic && requiredRoles && requiredRoles.length > 0) {
       const userRole = req.user?.role;
       if (!userRole || !requiredRoles.includes(userRole)) {
+        observeGatewayCommand(cmd, 'forbidden', started);
         throw new HttpException(
           {
             status: 'error',
@@ -329,6 +453,7 @@ export class AppController {
       const hasPermission = userPermissions.includes('*') || requiredPermissions.some(p => userPermissions.includes(p));
       
       if (!hasPermission) {
+        observeGatewayCommand(cmd, 'forbidden', started);
         throw new HttpException(
           {
             status: 'error',
@@ -342,43 +467,64 @@ export class AppController {
 
     try {
       if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers'].includes(cmd)) {
-        return await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
+        const result = await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
+        observeGatewayCommand(cmd, 'success', started);
+        return result;
       }
 
       if (['CreateShop', 'UpdateShop', 'GetTenantShops', 'GetTenant', 'GetTenantSubscription', 'GetStaff', 'CreateStaff'].includes(cmd)) {
-        return await firstValueFrom(this.tenantClient.send({ cmd }, { payload, context }));
+        const result = await firstValueFrom(this.tenantClient.send({ cmd }, { payload, context }));
+        observeGatewayCommand(cmd, 'success', started);
+        return result;
       }
 
-      if (['PostJournalEntry', 'CreateLedgerAccount', 'OpenWorkPeriod', 'CloseWorkPeriod', 'GetActiveWorkPeriod', 'GetAccountTransactions', 'GetTrialBalance', 'GetIncomeStatement', 'GetBalanceSheet', 'CreatePostingBatch', 'PostBatch', 'RecordExpense', 'GetExpenses', 'GetChartOfAccounts'].includes(cmd)) {
-        return await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
+      if (['PostFinancialTransaction', 'GetFinancialTransaction', 'RecordGeneralExpense', 'RecordWorkerAdvance', 'GetAccountingAccounts', 'GetJournals', 'GetReceivables', 'PostTreasuryBooks', 'GetProfitAllocation', 'PostSaleConfirmation', 'PostPurchasePayable', 'PostFinancialCorrection', 'GetEngineReport'].includes(cmd)) {
+        const result = await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
+        observeGatewayCommand(cmd, 'success', started);
+        return result;
       }
 
       if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'ProcessPosSale', 'ApplySaleFulfillment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
-        return await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
+        const result = await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
+        observeGatewayCommand(cmd, 'success', started);
+        return result;
       }
 
       if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales'].includes(cmd)) {
-        return await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
+        const result = await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
+        observeGatewayCommand(cmd, 'success', started);
+        return result;
       }
 
       if (['CreatePurchase', 'AddPurchaseItem', 'UpdatePurchaseItem', 'RemovePurchaseItem', 'ConfirmPurchase', 'CancelPurchase', 'CreatePurchaseReceiving', 'AddReceivedItems', 'ReceivePurchaseUnit', 'ConfirmPurchaseUnit', 'CancelPurchaseUnit', 'AddReceivedItemCost', 'RecordPurchasePayment', 'CreatePurchaseReturn', 'AddPurchaseReturnItems', 'AddPurchaseDocument', 'GetPurchases', 'GetPurchaseById', 'GetPurchaseByNumber', 'GetPurchaseItems', 'GetPurchaseReceivings', 'GetPurchasePayments', 'GetPurchaseReturns', 'GetPurchaseDocuments', 'GetPurchaseHistory'].includes(cmd)) {
-        return await firstValueFrom(this.purchaseClient.send({ cmd }, { payload, context }));
+        const result = await firstValueFrom(this.purchaseClient.send({ cmd }, { payload, context }));
+        observeGatewayCommand(cmd, 'success', started);
+        return result;
       }
 
       if (['CreateSupplier', 'GetSuppliers', 'UpdateSupplier', 'DeleteSupplier'].includes(cmd)) {
-        return await firstValueFrom(this.supplierClient.send({ cmd }, { payload, context }));
+        const result = await firstValueFrom(this.supplierClient.send({ cmd }, { payload, context }));
+        observeGatewayCommand(cmd, 'success', started);
+        return result;
       }
 
-      if (['RecordOperationalDeposit', 'ReconcilePaymentMethod', 'CreatePaymentMethod', 'GetPaymentMethods', 'CreateTransfer', 'CreatePhysicalConfirmation', 'GetTreasuryActivity', 'RecordTreasuryLoan', 'RecordLoanRepayment'].includes(cmd)) {
-        return await firstValueFrom(this.treasuryClient.send({ cmd }, { payload, context }));
+      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetFinancialOverview'].includes(cmd)) {
+        const result = await firstValueFrom(this.treasuryClient.send({ cmd }, { payload, context }));
+        observeGatewayCommand(cmd, 'success', started);
+        return result;
       }
 
+      observeGatewayCommand(cmd, 'unrouted', started);
       return { 
         status: 'error', 
         message: `Command ${cmd} is not routed properly.`,
         traceId: context?.traceId
       };
     } catch (error: any) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      observeGatewayCommand(cmd, 'error', started);
       const rpcMessage =
         error?.message ||
         error?.err ||

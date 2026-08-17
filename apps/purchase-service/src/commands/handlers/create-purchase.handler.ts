@@ -10,6 +10,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { EventBus } from '@electronic-shop/framework-event';
 import { recomputePurchaseItemCounts, recomputePurchaseReceivingStatus } from '../../common/receiving-counts.js';
 import { publishPurchaseUnitConfirmed } from '../../common/publish-purchase-unit-confirmed.js';
+import { postPurchasePayableBooks } from '../../common/post-purchase-finance.js';
 
 @CommandHandler(CreatePurchaseCommand)
 export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseCommand> {
@@ -18,6 +19,7 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
   constructor(
     @Inject('SUPPLIER_SERVICE') private readonly supplierClient: ClientProxy,
     @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
+    @Inject('ACCOUNTING_SERVICE') private readonly accountingClient: ClientProxy,
     @Inject('EVENT_BUS') private readonly eventBus: EventBus,
   ) {
     super();
@@ -302,6 +304,16 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
         }
 
         await recomputePurchaseReceivingStatus(purchase.id);
+      }
+
+      const latest = await prisma.purchase.findUnique({ where: { id: purchase.id } });
+      if (latest?.commercialStatus === 'CONFIRMED' && Number(latest.grandTotal) > 0) {
+        const books = await postPurchasePayableBooks(
+          this.accountingClient,
+          latest,
+          { tenantId, shopId, userId: createdById, traceId },
+        );
+        if (books.status === 'error') return books;
       }
 
       // Create history entry

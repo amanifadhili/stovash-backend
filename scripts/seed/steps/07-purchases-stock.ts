@@ -182,7 +182,6 @@ export async function seedPurchasesAndStock(
               tenantId_serialNumber: { tenantId: DEMO.tenantId, serialNumber: serial },
             },
             update: {
-              status: 'AVAILABLE',
               shopId: po.shopId,
               productId: product.id,
               purchaseCost: product.cost,
@@ -239,29 +238,11 @@ export async function seedPurchasesAndStock(
       data: {
         grandTotal,
         subtotal: grandTotal,
-        amountPaid: Math.round(grandTotal * 0.4),
-        amountOutstanding: Math.round(grandTotal * 0.6),
+        amountPaid: 0,
+        amountOutstanding: grandTotal,
+        paymentStatus: 'UNPAID',
       },
     });
-
-    const payExists = await clients.purchase.purchasePayment.findUnique({
-      where: { paymentNumber: po.paymentNumber },
-    });
-    if (!payExists) {
-      await clients.purchase.purchasePayment.create({
-        data: {
-          id: po.paymentId,
-          purchaseId: purchase.id,
-          paymentNumber: po.paymentNumber,
-          amount: Math.round(grandTotal * 0.4),
-          currency: 'RWF',
-          paymentMethod: 'MOBILE_MONEY',
-          accountName: 'MoMo',
-          paidById: DEMO.users.admin.id,
-          reference: 'DEMO-SEED',
-        },
-      });
-    }
   }
 
   // Per-shop accessory balances (ShopProductBalance). Catalog qty lives on Product;

@@ -74,6 +74,8 @@ describe('Sale lifecycle integration', () => {
         CreateWarrantyHandler,
         { provide: 'EVENT_BUS', useClass: CapturingEventBus },
         { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: () => of({ status: 'success', data: { ok: true } }) } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => of({ status: 'success', data: { id: 'mv-1' } }) } },
       ],
     }).compile();
 
@@ -153,7 +155,7 @@ describe('Sale lifecycle integration', () => {
     expect(result.errorCode).toBe('BUSINESS_RULE_VIOLATION');
   });
 
-  it('confirms, pays partially then in full, and records credit receivable', async () => {
+  it('confirms, pays partially, and rejects CREDIT as a till method', async () => {
     const created = await createHandler.execute(
       new CreateSaleCommand({ customerId: 'cus-002', customerName: 'Marie', items: baseItems }, ctx),
     );
@@ -163,29 +165,19 @@ describe('Sale lifecycle integration', () => {
     expect(confirmed.status).toBe('success');
     expect(confirmed.data.commercialStatus).toBe('CONFIRMED');
 
-    // Double confirm must fail
     const reConfirm = await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
-    expect(reConfirm.status).toBe('error');
-    expect(reConfirm.errorCode).toBe('BUSINESS_RULE_VIOLATION');
+    expect(reConfirm.status).toBe('success');
 
-    // Partial payment: 300,000 cash
+    const remaining = created.data.grandTotal - 300000;
     const pay1 = await payHandler.execute(new RecordSalePaymentCommand({ saleId, amount: 300000, method: 'CASH' }, ctx));
     expect(pay1.status).toBe('success');
     expect(pay1.data.sale.paymentStatus).toBe('PARTIALLY_PAID');
     expect(pay1.data.payment.paymentNumber).toMatch(/^PAY-\d{4}-\d{6}$/);
+    expect(pay1.data.sale.amountDue).toBeCloseTo(remaining);
 
-    // Remaining covered partly by credit: creates receivable
-    const remaining = created.data.grandTotal - 300000;
-    const pay2 = await payHandler.execute(new RecordSalePaymentCommand({ saleId, amount: remaining, method: 'CREDIT' }, ctx));
-    expect(pay2.status).toBe('success');
-    expect(pay2.data.sale.paymentStatus).toBe('PAID');
-    expect(pay2.data.sale.amountDue).toBe(0);
-
-    const receivable = await prisma.customerReceivable.findFirst({
-      where: { saleId, customerId: 'cus-002' },
-    });
-    expect(receivable).toBeDefined();
-    expect(receivable?.debit).toBeCloseTo(remaining);
+    const credit = await payHandler.execute(new RecordSalePaymentCommand({ saleId, amount: remaining, method: 'CREDIT' }, ctx));
+    expect(credit.status).toBe('error');
+    expect(credit.errorCode).toBe('BUSINESS_RULE_VIOLATION');
 
     const history = await prisma.saleHistory.findMany({ where: { saleId } });
     expect(history.map((h) => h.eventType)).toContain('PAYMENT_RECEIVED');
@@ -254,5 +246,85 @@ describe('Sale lifecycle integration', () => {
 
     const history = await prisma.saleHistory.findMany({ where: { saleId: created.data.id } });
     expect(history.map((h) => h.eventType)).toContain('WARRANTY_CREATED');
+  });
+});
+
+describe('Phase 9 sale payment fail-closed', () => {
+  const ctx: any = {
+    tenantId: 'tenant-sale-failclosed',
+    shopId: 'shop-sale-failclosed',
+    userId: 'user-sale-failclosed',
+    traceId: 'trace-sale-failclosed',
+    email: 'seller@test.com',
+  };
+  const items: CreateSaleItemInput[] = [
+    { productId: 'prod-phone', inventoryItemId: 'inv-FC-1', serialNumber: 'FC-1', quantity: 1, unitPrice: 500000 },
+  ];
+
+  async function makeHandlers(treasurySend: () => any) {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        RecordSalePaymentHandler,
+        FulfillSaleHandler,
+        CancelSaleHandler,
+        CreateWarrantyHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: () => of({ status: 'success', data: { ok: true } }) } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: treasurySend } },
+      ],
+    }).compile();
+    return {
+      create: module.get(CreateSaleHandler),
+      confirm: module.get(ConfirmSaleHandler),
+      pay: module.get(RecordSalePaymentHandler),
+    };
+  }
+
+  beforeEach(async () => {
+    await prisma.saleHistory.deleteMany();
+    await prisma.saleWarranty.deleteMany();
+    await prisma.customerReceivable.deleteMany();
+    await prisma.saleReturnItem.deleteMany();
+    await prisma.saleReturn.deleteMany();
+    await prisma.salePayment.deleteMany();
+    await prisma.saleItem.deleteMany();
+    await prisma.sale.deleteMany();
+  });
+
+  it('compensates the payment row when treasury/accounting books are down', async () => {
+    const { create, confirm, pay } = await makeHandlers(() => {
+      throw new Error('Accounting TCP down');
+    });
+    const created = await create.execute(new CreateSaleCommand({ customerName: 'Jean', items }, ctx));
+    await confirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const paid = await pay.execute(
+      new RecordSalePaymentCommand({ saleId: created.data.id, amount: 200000, method: 'CASH' }, ctx),
+    );
+    expect(paid.status).toBe('error');
+    const payments = await prisma.salePayment.findMany({ where: { saleId: created.data.id } });
+    expect(payments).toHaveLength(0);
+    const sale = await prisma.sale.findUniqueOrThrow({ where: { id: created.data.id } });
+    expect(sale.amountPaid).toBe(0);
+  });
+
+  it('keeps two concurrent payments consistent with recorded rows', async () => {
+    const { create, confirm, pay } = await makeHandlers(() => of({ status: 'success', data: { id: 'mv-1' } }));
+    const created = await create.execute(new CreateSaleCommand({ customerName: 'Marie', items }, ctx));
+    await confirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const [a, b] = await Promise.all([
+      pay.execute(new RecordSalePaymentCommand({ saleId: created.data.id, amount: 100000, method: 'CASH' }, ctx)),
+      pay.execute(new RecordSalePaymentCommand({ saleId: created.data.id, amount: 150000, method: 'MOMO' }, ctx)),
+    ]);
+    const successes = [a, b].filter((r) => r.status === 'success');
+    expect(successes.length).toBeGreaterThanOrEqual(1);
+    const payments = await prisma.salePayment.findMany({ where: { saleId: created.data.id } });
+    const sum = payments.reduce((s, p) => s + p.amount, 0);
+    const sale = await prisma.sale.findUniqueOrThrow({ where: { id: created.data.id } });
+    expect(sale.amountPaid).toBe(sum);
+    expect(sum).toBeLessThanOrEqual(sale.grandTotal);
   });
 });

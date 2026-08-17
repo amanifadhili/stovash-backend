@@ -5,6 +5,12 @@ import { GetAccountTransactionsHandler } from './get-account-transactions.handle
 import { GetExpensesHandler } from './get-expenses.handler.js';
 import { GetChartOfAccountsHandler } from './get-chart-of-accounts.handler.js';
 import { GetActiveWorkPeriodHandler } from './get-active-work-period.handler.js';
+import { GetFinancialTransactionHandler } from './get-financial-transaction.handler.js';
+import { GetAccountingAccountsHandler } from './get-accounting-accounts.handler.js';
+import { GetJournalsHandler } from './get-journals.handler.js';
+import { GetReceivablesHandler } from './get-receivables.handler.js';
+import { GetProfitAllocationHandler } from './get-profit-allocation.handler.js';
+import { GetEngineReportHandler } from './get-engine-report.handler.js';
 
 export const QueryHandlers = [
   GetTrialBalanceHandler,
@@ -14,4 +20,10 @@ export const QueryHandlers = [
   GetExpensesHandler,
   GetChartOfAccountsHandler,
   GetActiveWorkPeriodHandler,
+  GetFinancialTransactionHandler,
+  GetAccountingAccountsHandler,
+  GetJournalsHandler,
+  GetReceivablesHandler,
+  GetProfitAllocationHandler,
+  GetEngineReportHandler,
 ];

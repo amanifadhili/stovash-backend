@@ -4,12 +4,23 @@ import { RecordSalePaymentCommand } from '../impl/record-sale-payment.command.js
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { EventBus } from '@electronic-shop/framework-event';
 import { actorOf } from '../../common/actor.js';
+import {
+  francsToMinor,
+  isoDay,
+  NON_TILL_METHODS,
+  operationalKindForMethod,
+  sendFinanceCommand,
+} from '../../common/commercial-finance.js';
 
 @CommandHandler(RecordSalePaymentCommand)
 export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePaymentCommand> {
-  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+  constructor(
+    @Inject('EVENT_BUS') private readonly eventBus: EventBus,
+    @Inject('TREASURY_SERVICE') private readonly treasuryClient: ClientProxy,
+  ) {
     super();
   }
 
@@ -32,6 +43,23 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
           status: 'error',
           traceId,
           message: 'Payment method is required',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+      if (NON_TILL_METHODS.has(String(payload.method).toUpperCase())) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'CREDIT is not a till method. Leave the unpaid remainder as receivable.',
+          errorCode: ErrorCode.BUSINESS_RULE_VIOLATION,
+        };
+      }
+      const toKind = operationalKindForMethod(payload.method);
+      if (!toKind && !payload.accountId) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Payment method must map to an Operational physical account (Cash, MoMo, or Bank)',
           errorCode: ErrorCode.VALIDATION_ERROR,
         };
       }
@@ -117,27 +145,35 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
         data: { amountPaid, amountDue, paymentStatus },
       });
 
-      // Credit sales create a customer receivable entry.
-      if (payload.method === 'CREDIT' && sale.customerId) {
-        const lastReceivable = await prisma.customerReceivable.findFirst({
-          where: { customerId: sale.customerId },
-          orderBy: { createdAt: 'desc' },
-        });
-        const balance = (lastReceivable?.balance || 0) + Number(payload.amount);
-        await prisma.customerReceivable.create({
-          data: {
-            tenantId,
-            shopId: sale.shopId,
-            customerId: sale.customerId,
-            saleId: sale.id,
-            date,
-            debit: Number(payload.amount),
-            credit: 0,
-            balance,
-            reference: payment.paymentNumber || null,
-            createdById: createdById,
-          },
-        });
+      const amountMinor = francsToMinor(payment.amount);
+      if (!amountMinor) {
+        await this.compensatePayment(sale.id, payment.id);
+        return {
+          status: 'error',
+          traceId,
+          message: 'Payment amount must convert to positive RWF cents',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
+      const movement = await sendFinanceCommand(
+        this.treasuryClient,
+        'CreateTreasuryMovement',
+        {
+          movementType: 'SALE_PAYMENT',
+          amountMinor,
+          occurredOn: isoDay(date),
+          toPhysicalId: payload.accountId || undefined,
+          toKind,
+          obligationSourceId: sale.id,
+          idempotencyKey: payment.id,
+          notes: payload.reference || undefined,
+        },
+        { tenantId, shopId: sale.shopId, userId: createdById, traceId },
+      );
+      if (movement.status === 'error') {
+        await this.compensatePayment(sale.id, payment.id);
+        return movement;
       }
 
       await prisma.saleHistory.create({
@@ -204,7 +240,7 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
       return {
         status: 'success',
         traceId,
-        data: { payment, sale: updated },
+        data: { payment, sale: updated, treasuryMovement: movement.data },
       };
     } catch (error: any) {
       return {
@@ -214,5 +250,19 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
         errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }
+  }
+
+  private async compensatePayment(saleId: string, paymentId: string) {
+    await prisma.salePayment.delete({ where: { id: paymentId } }).catch(() => undefined);
+    const sale = await prisma.sale.findUnique({ where: { id: saleId } });
+    if (!sale) return;
+    const payments = await prisma.salePayment.findMany({ where: { saleId } });
+    const amountPaid = payments.reduce((s, p) => s + p.amount, 0);
+    const amountDue = Math.max(0, sale.grandTotal - amountPaid);
+    let paymentStatus: 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' = 'UNPAID';
+    if (amountPaid <= 0) paymentStatus = 'UNPAID';
+    else if (amountPaid >= sale.grandTotal) paymentStatus = 'PAID';
+    else paymentStatus = 'PARTIALLY_PAID';
+    await prisma.sale.update({ where: { id: saleId }, data: { amountPaid, amountDue, paymentStatus } });
   }
 }

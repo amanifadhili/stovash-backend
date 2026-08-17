@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant'];
 
 // Commands that do NOT require an active subscription (auth, reads, onboarding, subscription mgmt)
-const SUBSCRIPTION_EXEMPT = [
+export const SUBSCRIPTION_EXEMPT = [
   'LoginUser', 'CreateTenant', 'VerifyUser', 'RefreshToken',
   'GetTenant', 'GetTenantSubscription', 'GetTenantShops',
   'CreateShop', // New users must create a shop before they can subscribe

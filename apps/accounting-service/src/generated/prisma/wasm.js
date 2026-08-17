@@ -219,9 +219,90 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.FinancialTransactionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  type: 'type',
+  occurredOn: 'occurredOn',
+  occurredAt: 'occurredAt',
+  actorUserId: 'actorUserId',
+  sourceDomain: 'sourceDomain',
+  sourceCommand: 'sourceCommand',
+  sourceId: 'sourceId',
+  idempotencyKey: 'idempotencyKey',
+  amountMinor: 'amountMinor',
+  currency: 'currency',
+  description: 'description',
+  reason: 'reason',
+  originalTransactionId: 'originalTransactionId',
+  status: 'status',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ChartAccountScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  code: 'code',
+  name: 'name',
+  type: 'type',
+  fundCode: 'fundCode',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PostedJournalScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  financialTransactionId: 'financialTransactionId',
+  description: 'description',
+  status: 'status',
+  postedBy: 'postedBy',
+  occurredOn: 'occurredOn',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PostedJournalLineScalarFieldEnum = {
+  id: 'id',
+  journalId: 'journalId',
+  accountId: 'accountId',
+  side: 'side',
+  amountMinor: 'amountMinor'
+};
+
+exports.Prisma.ObligationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  kind: 'kind',
+  partyName: 'partyName',
+  outstandingMinor: 'outstandingMinor',
+  financialTransactionId: 'financialTransactionId',
+  status: 'status',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ProfitAllocationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  earnedMinor: 'earnedMinor',
+  transferredMinor: 'transferredMinor',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -234,6 +315,12 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
 
 exports.Prisma.ModelName = {
   LedgerAccount: 'LedgerAccount',
@@ -241,7 +328,13 @@ exports.Prisma.ModelName = {
   PostingBatch: 'PostingBatch',
   LedgerEntry: 'LedgerEntry',
   WorkPeriod: 'WorkPeriod',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  FinancialTransaction: 'FinancialTransaction',
+  ChartAccount: 'ChartAccount',
+  PostedJournal: 'PostedJournal',
+  PostedJournalLine: 'PostedJournalLine',
+  Obligation: 'Obligation',
+  ProfitAllocation: 'ProfitAllocation'
 };
 
 /**

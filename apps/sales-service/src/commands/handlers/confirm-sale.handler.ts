@@ -8,12 +8,14 @@ import { ClientProxy } from '@nestjs/microservices';
 import { EventBus } from '@electronic-shop/framework-event';
 import { actorOf } from '../../common/actor.js';
 import { firstValueFrom, timeout } from 'rxjs';
+import { francsToMinor, isoDay, sendFinanceCommand } from '../../common/commercial-finance.js';
 
 @CommandHandler(ConfirmSaleCommand)
 export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
   constructor(
     @Inject('EVENT_BUS') private readonly eventBus: EventBus,
     @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
+    @Inject('ACCOUNTING_SERVICE') private readonly accountingClient: ClientProxy,
   ) {
     super();
   }
@@ -45,7 +47,15 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
           errorCode: ErrorCode.NOT_FOUND,
         };
       }
-      if (sale.commercialStatus !== 'DRAFT') {
+      if (sale.commercialStatus === 'CANCELLED') {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Cancelled sales cannot be confirmed',
+          errorCode: ErrorCode.BUSINESS_RULE_VIOLATION,
+        };
+      }
+      if (sale.commercialStatus !== 'DRAFT' && sale.commercialStatus !== 'CONFIRMED') {
         return {
           status: 'error',
           traceId,
@@ -62,7 +72,19 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
         };
       }
 
-      // Fail closed: deduct / lock stock before marking the sale fulfilled.
+      const financeContext = {
+        tenantId,
+        shopId: sale.shopId,
+        userId: createdById,
+        traceId,
+      };
+
+      if (sale.commercialStatus === 'CONFIRMED') {
+        const replay = await this.postSaleBooks(sale, financeContext, traceId);
+        if (replay.status === 'error') return replay;
+        return { status: 'success', traceId, data: sale };
+      }
+
       const stockResult = await firstValueFrom(
         this.inventoryClient
           .send(
@@ -81,12 +103,7 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
                   quantity: i.quantity,
                 })),
               },
-              context: {
-                tenantId,
-                shopId: sale.shopId,
-                userId: createdById,
-                traceId,
-              },
+              context: financeContext,
             },
           )
           .pipe(timeout(15000)),
@@ -100,6 +117,9 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
           errorCode: stockResult?.errorCode || ErrorCode.BUSINESS_RULE_VIOLATION,
         };
       }
+
+      const books = await this.postSaleBooks(sale, financeContext, traceId);
+      if (books.status === 'error') return books;
 
       const updated = await prisma.sale.update({
         where: { id: sale.id },
@@ -157,7 +177,6 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
         'sale.confirmed',
       );
 
-      // Idempotent replay for other consumers / late subscribers.
       await this.eventBus.publish(
         {
           eventType: 'SaleFulfilled',
@@ -199,5 +218,39 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
         errorCode: error.code || ErrorCode.INTERNAL_ERROR,
       };
     }
+  }
+
+  private async postSaleBooks(
+    sale: any,
+    financeContext: Record<string, unknown>,
+    traceId: string,
+  ): Promise<ICommandResponse<any>> {
+    const revenueMinor = francsToMinor(sale.grandTotal);
+    if (!revenueMinor) {
+      return {
+        status: 'error',
+        traceId,
+        message: 'Sale total must be a positive amount to post books',
+        errorCode: ErrorCode.VALIDATION_ERROR,
+      };
+    }
+    const costFrancs = (sale.items ?? []).reduce(
+      (sum: number, item: any) => sum + (Number(item.unitCost) || 0) * (Number(item.quantity) || 0),
+      0,
+    );
+    const cogsMinor = costFrancs > 0 ? francsToMinor(costFrancs) : undefined;
+    return sendFinanceCommand(
+      this.accountingClient,
+      'PostSaleConfirmation',
+      {
+        saleId: sale.id,
+        customerName: sale.customerName || 'Walk-in Customer',
+        revenueMinor,
+        cogsMinor,
+        occurredOn: isoDay(sale.saleDate),
+        description: `Sale ${sale.orderNumber}`,
+      },
+      financeContext,
+    );
   }
 }

@@ -1,18 +1,15 @@
+/**
+ * Demo accounting leftover tables — OBSOLETE for product UI (not the money source of truth).
+ * Engine chart + journals are created by seed step 11 (PostFinancialTransaction / engine posts).
+ * Do not treat LedgerAccount.balance or work periods as live books.
+ */
 import { DEMO } from '../demo-ids.js';
 import type { SeedClients } from '../prisma-clients.js';
 
 const COA: { code: string; name: string; type: string }[] = [
-  { code: '1001', name: 'Cash', type: 'ASSET' },
-  { code: '1002', name: 'Mobile Money', type: 'ASSET' },
-  { code: '1003', name: 'Bank', type: 'ASSET' },
-  { code: '1101', name: 'Accounts Receivable', type: 'ASSET' },
-  { code: '1200', name: 'Accounts Receivable (Trade)', type: 'ASSET' },
-  { code: '1300', name: 'Inventory Asset', type: 'ASSET' },
-  { code: '2001', name: 'Accounts Payable', type: 'LIABILITY' },
-  { code: '3001', name: 'Owner Equity', type: 'EQUITY' },
-  { code: '4001', name: 'Sales Revenue', type: 'REVENUE' },
-  { code: '5001', name: 'Cost of Goods Sold', type: 'EXPENSE' },
-  { code: '5100', name: 'Operating Expense', type: 'EXPENSE' },
+  { code: '1001', name: 'Cash (legacy)', type: 'ASSET' },
+  { code: '1002', name: 'Mobile Money (legacy)', type: 'ASSET' },
+  { code: '1003', name: 'Bank (legacy)', type: 'ASSET' },
 ];
 
 function accountId(shopKey: 'main' | 'branch', code: string): string {
@@ -22,22 +19,13 @@ function accountId(shopKey: 'main' | 'branch', code: string): string {
 }
 
 export async function seedAccounting(clients: SeedClients): Promise<void> {
-  const shops: { key: 'main' | 'branch'; shopId: string; wpId: string }[] = [
-    {
-      key: 'main',
-      shopId: DEMO.shops.main.id,
-      wpId: DEMO.workPeriods.mainAccounting,
-    },
-    {
-      key: 'branch',
-      shopId: DEMO.shops.branch.id,
-      wpId: DEMO.workPeriods.branchAccounting,
-    },
+  const shops: { key: 'main' | 'branch'; shopId: string }[] = [
+    { key: 'main', shopId: DEMO.shops.main.id },
+    { key: 'branch', shopId: DEMO.shops.branch.id },
   ];
 
   for (const shop of shops) {
     for (const acct of COA) {
-      const id = accountId(shop.key, acct.code);
       const existing = await clients.accounting.ledgerAccount.findFirst({
         where: {
           tenantId: DEMO.tenantId,
@@ -47,10 +35,9 @@ export async function seedAccounting(clients: SeedClients): Promise<void> {
         },
       });
       if (existing) continue;
-
       await clients.accounting.ledgerAccount.create({
         data: {
-          id,
+          id: accountId(shop.key, acct.code),
           tenantId: DEMO.tenantId,
           shopId: shop.shopId,
           code: acct.code,
@@ -61,25 +48,7 @@ export async function seedAccounting(clients: SeedClients): Promise<void> {
         },
       });
     }
-
-    const openWp = await clients.accounting.workPeriod.findFirst({
-      where: { shopId: shop.shopId, status: 'OPEN' },
-    });
-    if (!openWp) {
-      await clients.accounting.workPeriod.upsert({
-        where: { id: shop.wpId },
-        update: { status: 'OPEN' },
-        create: {
-          id: shop.wpId,
-          tenantId: DEMO.tenantId,
-          shopId: shop.shopId,
-          openedBy: DEMO.users.admin.id,
-          status: 'OPEN',
-          createdBy: DEMO.users.admin.id,
-        },
-      });
-    }
   }
 
-  console.log('  accounting: COA + open work periods for 2 shops');
+  console.log('  accounting: leftover CoA rows at 0 (not SoT). Engine books land in step 11.');
 }

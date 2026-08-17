@@ -53,6 +53,42 @@ export type TreasuryLoanRepayment = $Result.DefaultSelection<Prisma.$TreasuryLoa
  * 
  */
 export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
+/**
+ * Model LogicalFund
+ * Phase 3 fund tree. Balances are never stored here — they are Σ of treasury
+ * movements (Phase 5). Until then every derived balance is 0.
+ */
+export type LogicalFund = $Result.DefaultSelection<Prisma.$LogicalFundPayload>
+/**
+ * Model PhysicalAccount
+ * 
+ */
+export type PhysicalAccount = $Result.DefaultSelection<Prisma.$PhysicalAccountPayload>
+/**
+ * Model TreasuryMovement
+ * Phase 5 money movements. Totals are Σ incoming − Σ outgoing. No stored SoT column.
+ */
+export type TreasuryMovement = $Result.DefaultSelection<Prisma.$TreasuryMovementPayload>
+/**
+ * Model FinancialPeriod
+ * Phase 7 calendar day. Identity is tenant + shop + date. Never opened or closed by a button.
+ */
+export type FinancialPeriod = $Result.DefaultSelection<Prisma.$FinancialPeriodPayload>
+/**
+ * Model PeriodSnapshot
+ * Opening + inflows − outflows ± adjustments = closing. Derived from TreasuryMovement, then stored.
+ */
+export type PeriodSnapshot = $Result.DefaultSelection<Prisma.$PeriodSnapshotPayload>
+/**
+ * Model TreasuryObligation
+ * 
+ */
+export type TreasuryObligation = $Result.DefaultSelection<Prisma.$TreasuryObligationPayload>
+/**
+ * Model ReconciliationCount
+ * 
+ */
+export type ReconciliationCount = $Result.DefaultSelection<Prisma.$ReconciliationCountPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -256,6 +292,76 @@ export class PrismaClient<
     * ```
     */
   get auditLog(): Prisma.AuditLogDelegate<ExtArgs>;
+
+  /**
+   * `prisma.logicalFund`: Exposes CRUD operations for the **LogicalFund** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LogicalFunds
+    * const logicalFunds = await prisma.logicalFund.findMany()
+    * ```
+    */
+  get logicalFund(): Prisma.LogicalFundDelegate<ExtArgs>;
+
+  /**
+   * `prisma.physicalAccount`: Exposes CRUD operations for the **PhysicalAccount** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PhysicalAccounts
+    * const physicalAccounts = await prisma.physicalAccount.findMany()
+    * ```
+    */
+  get physicalAccount(): Prisma.PhysicalAccountDelegate<ExtArgs>;
+
+  /**
+   * `prisma.treasuryMovement`: Exposes CRUD operations for the **TreasuryMovement** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TreasuryMovements
+    * const treasuryMovements = await prisma.treasuryMovement.findMany()
+    * ```
+    */
+  get treasuryMovement(): Prisma.TreasuryMovementDelegate<ExtArgs>;
+
+  /**
+   * `prisma.financialPeriod`: Exposes CRUD operations for the **FinancialPeriod** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FinancialPeriods
+    * const financialPeriods = await prisma.financialPeriod.findMany()
+    * ```
+    */
+  get financialPeriod(): Prisma.FinancialPeriodDelegate<ExtArgs>;
+
+  /**
+   * `prisma.periodSnapshot`: Exposes CRUD operations for the **PeriodSnapshot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PeriodSnapshots
+    * const periodSnapshots = await prisma.periodSnapshot.findMany()
+    * ```
+    */
+  get periodSnapshot(): Prisma.PeriodSnapshotDelegate<ExtArgs>;
+
+  /**
+   * `prisma.treasuryObligation`: Exposes CRUD operations for the **TreasuryObligation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TreasuryObligations
+    * const treasuryObligations = await prisma.treasuryObligation.findMany()
+    * ```
+    */
+  get treasuryObligation(): Prisma.TreasuryObligationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.reconciliationCount`: Exposes CRUD operations for the **ReconciliationCount** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ReconciliationCounts
+    * const reconciliationCounts = await prisma.reconciliationCount.findMany()
+    * ```
+    */
+  get reconciliationCount(): Prisma.ReconciliationCountDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -704,7 +810,14 @@ export namespace Prisma {
     Reconciliation: 'Reconciliation',
     TreasuryLoan: 'TreasuryLoan',
     TreasuryLoanRepayment: 'TreasuryLoanRepayment',
-    AuditLog: 'AuditLog'
+    AuditLog: 'AuditLog',
+    LogicalFund: 'LogicalFund',
+    PhysicalAccount: 'PhysicalAccount',
+    TreasuryMovement: 'TreasuryMovement',
+    FinancialPeriod: 'FinancialPeriod',
+    PeriodSnapshot: 'PeriodSnapshot',
+    TreasuryObligation: 'TreasuryObligation',
+    ReconciliationCount: 'ReconciliationCount'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -720,7 +833,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "paymentMethod" | "transfer" | "physicalConfirmation" | "operationalDeposit" | "reconciliation" | "treasuryLoan" | "treasuryLoanRepayment" | "auditLog"
+      modelProps: "paymentMethod" | "transfer" | "physicalConfirmation" | "operationalDeposit" | "reconciliation" | "treasuryLoan" | "treasuryLoanRepayment" | "auditLog" | "logicalFund" | "physicalAccount" | "treasuryMovement" | "financialPeriod" | "periodSnapshot" | "treasuryObligation" | "reconciliationCount"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1284,6 +1397,496 @@ export namespace Prisma {
           }
         }
       }
+      LogicalFund: {
+        payload: Prisma.$LogicalFundPayload<ExtArgs>
+        fields: Prisma.LogicalFundFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LogicalFundFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LogicalFundFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload>
+          }
+          findFirst: {
+            args: Prisma.LogicalFundFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LogicalFundFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload>
+          }
+          findMany: {
+            args: Prisma.LogicalFundFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload>[]
+          }
+          create: {
+            args: Prisma.LogicalFundCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload>
+          }
+          createMany: {
+            args: Prisma.LogicalFundCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LogicalFundCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload>[]
+          }
+          delete: {
+            args: Prisma.LogicalFundDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload>
+          }
+          update: {
+            args: Prisma.LogicalFundUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload>
+          }
+          deleteMany: {
+            args: Prisma.LogicalFundDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LogicalFundUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.LogicalFundUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LogicalFundPayload>
+          }
+          aggregate: {
+            args: Prisma.LogicalFundAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLogicalFund>
+          }
+          groupBy: {
+            args: Prisma.LogicalFundGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LogicalFundGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LogicalFundCountArgs<ExtArgs>
+            result: $Utils.Optional<LogicalFundCountAggregateOutputType> | number
+          }
+        }
+      }
+      PhysicalAccount: {
+        payload: Prisma.$PhysicalAccountPayload<ExtArgs>
+        fields: Prisma.PhysicalAccountFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PhysicalAccountFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PhysicalAccountFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload>
+          }
+          findFirst: {
+            args: Prisma.PhysicalAccountFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PhysicalAccountFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload>
+          }
+          findMany: {
+            args: Prisma.PhysicalAccountFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload>[]
+          }
+          create: {
+            args: Prisma.PhysicalAccountCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload>
+          }
+          createMany: {
+            args: Prisma.PhysicalAccountCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PhysicalAccountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload>[]
+          }
+          delete: {
+            args: Prisma.PhysicalAccountDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload>
+          }
+          update: {
+            args: Prisma.PhysicalAccountUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload>
+          }
+          deleteMany: {
+            args: Prisma.PhysicalAccountDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PhysicalAccountUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PhysicalAccountUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PhysicalAccountPayload>
+          }
+          aggregate: {
+            args: Prisma.PhysicalAccountAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePhysicalAccount>
+          }
+          groupBy: {
+            args: Prisma.PhysicalAccountGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PhysicalAccountGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PhysicalAccountCountArgs<ExtArgs>
+            result: $Utils.Optional<PhysicalAccountCountAggregateOutputType> | number
+          }
+        }
+      }
+      TreasuryMovement: {
+        payload: Prisma.$TreasuryMovementPayload<ExtArgs>
+        fields: Prisma.TreasuryMovementFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TreasuryMovementFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TreasuryMovementFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload>
+          }
+          findFirst: {
+            args: Prisma.TreasuryMovementFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TreasuryMovementFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload>
+          }
+          findMany: {
+            args: Prisma.TreasuryMovementFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload>[]
+          }
+          create: {
+            args: Prisma.TreasuryMovementCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload>
+          }
+          createMany: {
+            args: Prisma.TreasuryMovementCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TreasuryMovementCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload>[]
+          }
+          delete: {
+            args: Prisma.TreasuryMovementDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload>
+          }
+          update: {
+            args: Prisma.TreasuryMovementUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload>
+          }
+          deleteMany: {
+            args: Prisma.TreasuryMovementDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TreasuryMovementUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TreasuryMovementUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryMovementPayload>
+          }
+          aggregate: {
+            args: Prisma.TreasuryMovementAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTreasuryMovement>
+          }
+          groupBy: {
+            args: Prisma.TreasuryMovementGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TreasuryMovementGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TreasuryMovementCountArgs<ExtArgs>
+            result: $Utils.Optional<TreasuryMovementCountAggregateOutputType> | number
+          }
+        }
+      }
+      FinancialPeriod: {
+        payload: Prisma.$FinancialPeriodPayload<ExtArgs>
+        fields: Prisma.FinancialPeriodFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FinancialPeriodFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FinancialPeriodFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload>
+          }
+          findFirst: {
+            args: Prisma.FinancialPeriodFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FinancialPeriodFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload>
+          }
+          findMany: {
+            args: Prisma.FinancialPeriodFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload>[]
+          }
+          create: {
+            args: Prisma.FinancialPeriodCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload>
+          }
+          createMany: {
+            args: Prisma.FinancialPeriodCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FinancialPeriodCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload>[]
+          }
+          delete: {
+            args: Prisma.FinancialPeriodDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload>
+          }
+          update: {
+            args: Prisma.FinancialPeriodUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload>
+          }
+          deleteMany: {
+            args: Prisma.FinancialPeriodDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FinancialPeriodUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.FinancialPeriodUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialPeriodPayload>
+          }
+          aggregate: {
+            args: Prisma.FinancialPeriodAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFinancialPeriod>
+          }
+          groupBy: {
+            args: Prisma.FinancialPeriodGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FinancialPeriodGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FinancialPeriodCountArgs<ExtArgs>
+            result: $Utils.Optional<FinancialPeriodCountAggregateOutputType> | number
+          }
+        }
+      }
+      PeriodSnapshot: {
+        payload: Prisma.$PeriodSnapshotPayload<ExtArgs>
+        fields: Prisma.PeriodSnapshotFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PeriodSnapshotFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PeriodSnapshotFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload>
+          }
+          findFirst: {
+            args: Prisma.PeriodSnapshotFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PeriodSnapshotFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload>
+          }
+          findMany: {
+            args: Prisma.PeriodSnapshotFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload>[]
+          }
+          create: {
+            args: Prisma.PeriodSnapshotCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload>
+          }
+          createMany: {
+            args: Prisma.PeriodSnapshotCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PeriodSnapshotCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload>[]
+          }
+          delete: {
+            args: Prisma.PeriodSnapshotDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload>
+          }
+          update: {
+            args: Prisma.PeriodSnapshotUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload>
+          }
+          deleteMany: {
+            args: Prisma.PeriodSnapshotDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PeriodSnapshotUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PeriodSnapshotUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PeriodSnapshotPayload>
+          }
+          aggregate: {
+            args: Prisma.PeriodSnapshotAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePeriodSnapshot>
+          }
+          groupBy: {
+            args: Prisma.PeriodSnapshotGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PeriodSnapshotGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PeriodSnapshotCountArgs<ExtArgs>
+            result: $Utils.Optional<PeriodSnapshotCountAggregateOutputType> | number
+          }
+        }
+      }
+      TreasuryObligation: {
+        payload: Prisma.$TreasuryObligationPayload<ExtArgs>
+        fields: Prisma.TreasuryObligationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TreasuryObligationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TreasuryObligationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload>
+          }
+          findFirst: {
+            args: Prisma.TreasuryObligationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TreasuryObligationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload>
+          }
+          findMany: {
+            args: Prisma.TreasuryObligationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload>[]
+          }
+          create: {
+            args: Prisma.TreasuryObligationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload>
+          }
+          createMany: {
+            args: Prisma.TreasuryObligationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TreasuryObligationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload>[]
+          }
+          delete: {
+            args: Prisma.TreasuryObligationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload>
+          }
+          update: {
+            args: Prisma.TreasuryObligationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload>
+          }
+          deleteMany: {
+            args: Prisma.TreasuryObligationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TreasuryObligationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TreasuryObligationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreasuryObligationPayload>
+          }
+          aggregate: {
+            args: Prisma.TreasuryObligationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTreasuryObligation>
+          }
+          groupBy: {
+            args: Prisma.TreasuryObligationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TreasuryObligationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TreasuryObligationCountArgs<ExtArgs>
+            result: $Utils.Optional<TreasuryObligationCountAggregateOutputType> | number
+          }
+        }
+      }
+      ReconciliationCount: {
+        payload: Prisma.$ReconciliationCountPayload<ExtArgs>
+        fields: Prisma.ReconciliationCountFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ReconciliationCountFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ReconciliationCountFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload>
+          }
+          findFirst: {
+            args: Prisma.ReconciliationCountFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ReconciliationCountFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload>
+          }
+          findMany: {
+            args: Prisma.ReconciliationCountFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload>[]
+          }
+          create: {
+            args: Prisma.ReconciliationCountCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload>
+          }
+          createMany: {
+            args: Prisma.ReconciliationCountCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ReconciliationCountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload>[]
+          }
+          delete: {
+            args: Prisma.ReconciliationCountDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload>
+          }
+          update: {
+            args: Prisma.ReconciliationCountUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload>
+          }
+          deleteMany: {
+            args: Prisma.ReconciliationCountDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ReconciliationCountUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ReconciliationCountUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReconciliationCountPayload>
+          }
+          aggregate: {
+            args: Prisma.ReconciliationCountAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateReconciliationCount>
+          }
+          groupBy: {
+            args: Prisma.ReconciliationCountGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ReconciliationCountGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ReconciliationCountCountArgs<ExtArgs>
+            result: $Utils.Optional<ReconciliationCountCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1553,6 +2156,117 @@ export namespace Prisma {
    */
   export type TreasuryLoanCountOutputTypeCountRepaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TreasuryLoanRepaymentWhereInput
+  }
+
+
+  /**
+   * Count Type LogicalFundCountOutputType
+   */
+
+  export type LogicalFundCountOutputType = {
+    accounts: number
+  }
+
+  export type LogicalFundCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    accounts?: boolean | LogicalFundCountOutputTypeCountAccountsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * LogicalFundCountOutputType without action
+   */
+  export type LogicalFundCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFundCountOutputType
+     */
+    select?: LogicalFundCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * LogicalFundCountOutputType without action
+   */
+  export type LogicalFundCountOutputTypeCountAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PhysicalAccountWhereInput
+  }
+
+
+  /**
+   * Count Type PhysicalAccountCountOutputType
+   */
+
+  export type PhysicalAccountCountOutputType = {
+    outgoing: number
+    incoming: number
+    reconCounts: number
+  }
+
+  export type PhysicalAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    outgoing?: boolean | PhysicalAccountCountOutputTypeCountOutgoingArgs
+    incoming?: boolean | PhysicalAccountCountOutputTypeCountIncomingArgs
+    reconCounts?: boolean | PhysicalAccountCountOutputTypeCountReconCountsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PhysicalAccountCountOutputType without action
+   */
+  export type PhysicalAccountCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccountCountOutputType
+     */
+    select?: PhysicalAccountCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PhysicalAccountCountOutputType without action
+   */
+  export type PhysicalAccountCountOutputTypeCountOutgoingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreasuryMovementWhereInput
+  }
+
+  /**
+   * PhysicalAccountCountOutputType without action
+   */
+  export type PhysicalAccountCountOutputTypeCountIncomingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreasuryMovementWhereInput
+  }
+
+  /**
+   * PhysicalAccountCountOutputType without action
+   */
+  export type PhysicalAccountCountOutputTypeCountReconCountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReconciliationCountWhereInput
+  }
+
+
+  /**
+   * Count Type FinancialPeriodCountOutputType
+   */
+
+  export type FinancialPeriodCountOutputType = {
+    snapshots: number
+  }
+
+  export type FinancialPeriodCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    snapshots?: boolean | FinancialPeriodCountOutputTypeCountSnapshotsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * FinancialPeriodCountOutputType without action
+   */
+  export type FinancialPeriodCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriodCountOutputType
+     */
+    select?: FinancialPeriodCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * FinancialPeriodCountOutputType without action
+   */
+  export type FinancialPeriodCountOutputTypeCountSnapshotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PeriodSnapshotWhereInput
   }
 
 
@@ -9921,6 +10635,7286 @@ export namespace Prisma {
 
 
   /**
+   * Model LogicalFund
+   */
+
+  export type AggregateLogicalFund = {
+    _count: LogicalFundCountAggregateOutputType | null
+    _min: LogicalFundMinAggregateOutputType | null
+    _max: LogicalFundMaxAggregateOutputType | null
+  }
+
+  export type LogicalFundMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    code: string | null
+    name: string | null
+    currency: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type LogicalFundMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    code: string | null
+    name: string | null
+    currency: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type LogicalFundCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    code: number
+    name: number
+    currency: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type LogicalFundMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    code?: true
+    name?: true
+    currency?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type LogicalFundMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    code?: true
+    name?: true
+    currency?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type LogicalFundCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    code?: true
+    name?: true
+    currency?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type LogicalFundAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LogicalFund to aggregate.
+     */
+    where?: LogicalFundWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LogicalFunds to fetch.
+     */
+    orderBy?: LogicalFundOrderByWithRelationInput | LogicalFundOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LogicalFundWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LogicalFunds from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LogicalFunds.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LogicalFunds
+    **/
+    _count?: true | LogicalFundCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LogicalFundMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LogicalFundMaxAggregateInputType
+  }
+
+  export type GetLogicalFundAggregateType<T extends LogicalFundAggregateArgs> = {
+        [P in keyof T & keyof AggregateLogicalFund]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLogicalFund[P]>
+      : GetScalarType<T[P], AggregateLogicalFund[P]>
+  }
+
+
+
+
+  export type LogicalFundGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LogicalFundWhereInput
+    orderBy?: LogicalFundOrderByWithAggregationInput | LogicalFundOrderByWithAggregationInput[]
+    by: LogicalFundScalarFieldEnum[] | LogicalFundScalarFieldEnum
+    having?: LogicalFundScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LogicalFundCountAggregateInputType | true
+    _min?: LogicalFundMinAggregateInputType
+    _max?: LogicalFundMaxAggregateInputType
+  }
+
+  export type LogicalFundGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    currency: string
+    createdAt: Date
+    updatedAt: Date
+    _count: LogicalFundCountAggregateOutputType | null
+    _min: LogicalFundMinAggregateOutputType | null
+    _max: LogicalFundMaxAggregateOutputType | null
+  }
+
+  type GetLogicalFundGroupByPayload<T extends LogicalFundGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LogicalFundGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LogicalFundGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LogicalFundGroupByOutputType[P]>
+            : GetScalarType<T[P], LogicalFundGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LogicalFundSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    code?: boolean
+    name?: boolean
+    currency?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    accounts?: boolean | LogicalFund$accountsArgs<ExtArgs>
+    _count?: boolean | LogicalFundCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["logicalFund"]>
+
+  export type LogicalFundSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    code?: boolean
+    name?: boolean
+    currency?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["logicalFund"]>
+
+  export type LogicalFundSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    code?: boolean
+    name?: boolean
+    currency?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type LogicalFundInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    accounts?: boolean | LogicalFund$accountsArgs<ExtArgs>
+    _count?: boolean | LogicalFundCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type LogicalFundIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $LogicalFundPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LogicalFund"
+    objects: {
+      accounts: Prisma.$PhysicalAccountPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      code: string
+      name: string
+      currency: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["logicalFund"]>
+    composites: {}
+  }
+
+  type LogicalFundGetPayload<S extends boolean | null | undefined | LogicalFundDefaultArgs> = $Result.GetResult<Prisma.$LogicalFundPayload, S>
+
+  type LogicalFundCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<LogicalFundFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: LogicalFundCountAggregateInputType | true
+    }
+
+  export interface LogicalFundDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LogicalFund'], meta: { name: 'LogicalFund' } }
+    /**
+     * Find zero or one LogicalFund that matches the filter.
+     * @param {LogicalFundFindUniqueArgs} args - Arguments to find a LogicalFund
+     * @example
+     * // Get one LogicalFund
+     * const logicalFund = await prisma.logicalFund.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LogicalFundFindUniqueArgs>(args: SelectSubset<T, LogicalFundFindUniqueArgs<ExtArgs>>): Prisma__LogicalFundClient<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one LogicalFund that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {LogicalFundFindUniqueOrThrowArgs} args - Arguments to find a LogicalFund
+     * @example
+     * // Get one LogicalFund
+     * const logicalFund = await prisma.logicalFund.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LogicalFundFindUniqueOrThrowArgs>(args: SelectSubset<T, LogicalFundFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LogicalFundClient<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first LogicalFund that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LogicalFundFindFirstArgs} args - Arguments to find a LogicalFund
+     * @example
+     * // Get one LogicalFund
+     * const logicalFund = await prisma.logicalFund.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LogicalFundFindFirstArgs>(args?: SelectSubset<T, LogicalFundFindFirstArgs<ExtArgs>>): Prisma__LogicalFundClient<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first LogicalFund that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LogicalFundFindFirstOrThrowArgs} args - Arguments to find a LogicalFund
+     * @example
+     * // Get one LogicalFund
+     * const logicalFund = await prisma.logicalFund.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LogicalFundFindFirstOrThrowArgs>(args?: SelectSubset<T, LogicalFundFindFirstOrThrowArgs<ExtArgs>>): Prisma__LogicalFundClient<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more LogicalFunds that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LogicalFundFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LogicalFunds
+     * const logicalFunds = await prisma.logicalFund.findMany()
+     * 
+     * // Get first 10 LogicalFunds
+     * const logicalFunds = await prisma.logicalFund.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const logicalFundWithIdOnly = await prisma.logicalFund.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LogicalFundFindManyArgs>(args?: SelectSubset<T, LogicalFundFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a LogicalFund.
+     * @param {LogicalFundCreateArgs} args - Arguments to create a LogicalFund.
+     * @example
+     * // Create one LogicalFund
+     * const LogicalFund = await prisma.logicalFund.create({
+     *   data: {
+     *     // ... data to create a LogicalFund
+     *   }
+     * })
+     * 
+     */
+    create<T extends LogicalFundCreateArgs>(args: SelectSubset<T, LogicalFundCreateArgs<ExtArgs>>): Prisma__LogicalFundClient<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many LogicalFunds.
+     * @param {LogicalFundCreateManyArgs} args - Arguments to create many LogicalFunds.
+     * @example
+     * // Create many LogicalFunds
+     * const logicalFund = await prisma.logicalFund.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LogicalFundCreateManyArgs>(args?: SelectSubset<T, LogicalFundCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LogicalFunds and returns the data saved in the database.
+     * @param {LogicalFundCreateManyAndReturnArgs} args - Arguments to create many LogicalFunds.
+     * @example
+     * // Create many LogicalFunds
+     * const logicalFund = await prisma.logicalFund.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LogicalFunds and only return the `id`
+     * const logicalFundWithIdOnly = await prisma.logicalFund.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LogicalFundCreateManyAndReturnArgs>(args?: SelectSubset<T, LogicalFundCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a LogicalFund.
+     * @param {LogicalFundDeleteArgs} args - Arguments to delete one LogicalFund.
+     * @example
+     * // Delete one LogicalFund
+     * const LogicalFund = await prisma.logicalFund.delete({
+     *   where: {
+     *     // ... filter to delete one LogicalFund
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LogicalFundDeleteArgs>(args: SelectSubset<T, LogicalFundDeleteArgs<ExtArgs>>): Prisma__LogicalFundClient<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one LogicalFund.
+     * @param {LogicalFundUpdateArgs} args - Arguments to update one LogicalFund.
+     * @example
+     * // Update one LogicalFund
+     * const logicalFund = await prisma.logicalFund.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LogicalFundUpdateArgs>(args: SelectSubset<T, LogicalFundUpdateArgs<ExtArgs>>): Prisma__LogicalFundClient<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more LogicalFunds.
+     * @param {LogicalFundDeleteManyArgs} args - Arguments to filter LogicalFunds to delete.
+     * @example
+     * // Delete a few LogicalFunds
+     * const { count } = await prisma.logicalFund.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LogicalFundDeleteManyArgs>(args?: SelectSubset<T, LogicalFundDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LogicalFunds.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LogicalFundUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LogicalFunds
+     * const logicalFund = await prisma.logicalFund.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LogicalFundUpdateManyArgs>(args: SelectSubset<T, LogicalFundUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one LogicalFund.
+     * @param {LogicalFundUpsertArgs} args - Arguments to update or create a LogicalFund.
+     * @example
+     * // Update or create a LogicalFund
+     * const logicalFund = await prisma.logicalFund.upsert({
+     *   create: {
+     *     // ... data to create a LogicalFund
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LogicalFund we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LogicalFundUpsertArgs>(args: SelectSubset<T, LogicalFundUpsertArgs<ExtArgs>>): Prisma__LogicalFundClient<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of LogicalFunds.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LogicalFundCountArgs} args - Arguments to filter LogicalFunds to count.
+     * @example
+     * // Count the number of LogicalFunds
+     * const count = await prisma.logicalFund.count({
+     *   where: {
+     *     // ... the filter for the LogicalFunds we want to count
+     *   }
+     * })
+    **/
+    count<T extends LogicalFundCountArgs>(
+      args?: Subset<T, LogicalFundCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LogicalFundCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LogicalFund.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LogicalFundAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LogicalFundAggregateArgs>(args: Subset<T, LogicalFundAggregateArgs>): Prisma.PrismaPromise<GetLogicalFundAggregateType<T>>
+
+    /**
+     * Group by LogicalFund.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LogicalFundGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LogicalFundGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LogicalFundGroupByArgs['orderBy'] }
+        : { orderBy?: LogicalFundGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LogicalFundGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLogicalFundGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LogicalFund model
+   */
+  readonly fields: LogicalFundFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LogicalFund.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LogicalFundClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    accounts<T extends LogicalFund$accountsArgs<ExtArgs> = {}>(args?: Subset<T, LogicalFund$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LogicalFund model
+   */ 
+  interface LogicalFundFieldRefs {
+    readonly id: FieldRef<"LogicalFund", 'String'>
+    readonly tenantId: FieldRef<"LogicalFund", 'String'>
+    readonly shopId: FieldRef<"LogicalFund", 'String'>
+    readonly code: FieldRef<"LogicalFund", 'String'>
+    readonly name: FieldRef<"LogicalFund", 'String'>
+    readonly currency: FieldRef<"LogicalFund", 'String'>
+    readonly createdAt: FieldRef<"LogicalFund", 'DateTime'>
+    readonly updatedAt: FieldRef<"LogicalFund", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LogicalFund findUnique
+   */
+  export type LogicalFundFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+    /**
+     * Filter, which LogicalFund to fetch.
+     */
+    where: LogicalFundWhereUniqueInput
+  }
+
+  /**
+   * LogicalFund findUniqueOrThrow
+   */
+  export type LogicalFundFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+    /**
+     * Filter, which LogicalFund to fetch.
+     */
+    where: LogicalFundWhereUniqueInput
+  }
+
+  /**
+   * LogicalFund findFirst
+   */
+  export type LogicalFundFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+    /**
+     * Filter, which LogicalFund to fetch.
+     */
+    where?: LogicalFundWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LogicalFunds to fetch.
+     */
+    orderBy?: LogicalFundOrderByWithRelationInput | LogicalFundOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LogicalFunds.
+     */
+    cursor?: LogicalFundWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LogicalFunds from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LogicalFunds.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LogicalFunds.
+     */
+    distinct?: LogicalFundScalarFieldEnum | LogicalFundScalarFieldEnum[]
+  }
+
+  /**
+   * LogicalFund findFirstOrThrow
+   */
+  export type LogicalFundFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+    /**
+     * Filter, which LogicalFund to fetch.
+     */
+    where?: LogicalFundWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LogicalFunds to fetch.
+     */
+    orderBy?: LogicalFundOrderByWithRelationInput | LogicalFundOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LogicalFunds.
+     */
+    cursor?: LogicalFundWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LogicalFunds from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LogicalFunds.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LogicalFunds.
+     */
+    distinct?: LogicalFundScalarFieldEnum | LogicalFundScalarFieldEnum[]
+  }
+
+  /**
+   * LogicalFund findMany
+   */
+  export type LogicalFundFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+    /**
+     * Filter, which LogicalFunds to fetch.
+     */
+    where?: LogicalFundWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LogicalFunds to fetch.
+     */
+    orderBy?: LogicalFundOrderByWithRelationInput | LogicalFundOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LogicalFunds.
+     */
+    cursor?: LogicalFundWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LogicalFunds from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LogicalFunds.
+     */
+    skip?: number
+    distinct?: LogicalFundScalarFieldEnum | LogicalFundScalarFieldEnum[]
+  }
+
+  /**
+   * LogicalFund create
+   */
+  export type LogicalFundCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LogicalFund.
+     */
+    data: XOR<LogicalFundCreateInput, LogicalFundUncheckedCreateInput>
+  }
+
+  /**
+   * LogicalFund createMany
+   */
+  export type LogicalFundCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LogicalFunds.
+     */
+    data: LogicalFundCreateManyInput | LogicalFundCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LogicalFund createManyAndReturn
+   */
+  export type LogicalFundCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many LogicalFunds.
+     */
+    data: LogicalFundCreateManyInput | LogicalFundCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LogicalFund update
+   */
+  export type LogicalFundUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LogicalFund.
+     */
+    data: XOR<LogicalFundUpdateInput, LogicalFundUncheckedUpdateInput>
+    /**
+     * Choose, which LogicalFund to update.
+     */
+    where: LogicalFundWhereUniqueInput
+  }
+
+  /**
+   * LogicalFund updateMany
+   */
+  export type LogicalFundUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LogicalFunds.
+     */
+    data: XOR<LogicalFundUpdateManyMutationInput, LogicalFundUncheckedUpdateManyInput>
+    /**
+     * Filter which LogicalFunds to update
+     */
+    where?: LogicalFundWhereInput
+  }
+
+  /**
+   * LogicalFund upsert
+   */
+  export type LogicalFundUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LogicalFund to update in case it exists.
+     */
+    where: LogicalFundWhereUniqueInput
+    /**
+     * In case the LogicalFund found by the `where` argument doesn't exist, create a new LogicalFund with this data.
+     */
+    create: XOR<LogicalFundCreateInput, LogicalFundUncheckedCreateInput>
+    /**
+     * In case the LogicalFund was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LogicalFundUpdateInput, LogicalFundUncheckedUpdateInput>
+  }
+
+  /**
+   * LogicalFund delete
+   */
+  export type LogicalFundDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+    /**
+     * Filter which LogicalFund to delete.
+     */
+    where: LogicalFundWhereUniqueInput
+  }
+
+  /**
+   * LogicalFund deleteMany
+   */
+  export type LogicalFundDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LogicalFunds to delete
+     */
+    where?: LogicalFundWhereInput
+  }
+
+  /**
+   * LogicalFund.accounts
+   */
+  export type LogicalFund$accountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    where?: PhysicalAccountWhereInput
+    orderBy?: PhysicalAccountOrderByWithRelationInput | PhysicalAccountOrderByWithRelationInput[]
+    cursor?: PhysicalAccountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PhysicalAccountScalarFieldEnum | PhysicalAccountScalarFieldEnum[]
+  }
+
+  /**
+   * LogicalFund without action
+   */
+  export type LogicalFundDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LogicalFund
+     */
+    select?: LogicalFundSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LogicalFundInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PhysicalAccount
+   */
+
+  export type AggregatePhysicalAccount = {
+    _count: PhysicalAccountCountAggregateOutputType | null
+    _min: PhysicalAccountMinAggregateOutputType | null
+    _max: PhysicalAccountMaxAggregateOutputType | null
+  }
+
+  export type PhysicalAccountMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    fundId: string | null
+    kind: string | null
+    code: string | null
+    name: string | null
+    currency: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    createdBy: string | null
+    updatedAt: Date | null
+  }
+
+  export type PhysicalAccountMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    fundId: string | null
+    kind: string | null
+    code: string | null
+    name: string | null
+    currency: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    createdBy: string | null
+    updatedAt: Date | null
+  }
+
+  export type PhysicalAccountCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    fundId: number
+    kind: number
+    code: number
+    name: number
+    currency: number
+    isActive: number
+    createdAt: number
+    createdBy: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PhysicalAccountMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    fundId?: true
+    kind?: true
+    code?: true
+    name?: true
+    currency?: true
+    isActive?: true
+    createdAt?: true
+    createdBy?: true
+    updatedAt?: true
+  }
+
+  export type PhysicalAccountMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    fundId?: true
+    kind?: true
+    code?: true
+    name?: true
+    currency?: true
+    isActive?: true
+    createdAt?: true
+    createdBy?: true
+    updatedAt?: true
+  }
+
+  export type PhysicalAccountCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    fundId?: true
+    kind?: true
+    code?: true
+    name?: true
+    currency?: true
+    isActive?: true
+    createdAt?: true
+    createdBy?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PhysicalAccountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PhysicalAccount to aggregate.
+     */
+    where?: PhysicalAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PhysicalAccounts to fetch.
+     */
+    orderBy?: PhysicalAccountOrderByWithRelationInput | PhysicalAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PhysicalAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PhysicalAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PhysicalAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PhysicalAccounts
+    **/
+    _count?: true | PhysicalAccountCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PhysicalAccountMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PhysicalAccountMaxAggregateInputType
+  }
+
+  export type GetPhysicalAccountAggregateType<T extends PhysicalAccountAggregateArgs> = {
+        [P in keyof T & keyof AggregatePhysicalAccount]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePhysicalAccount[P]>
+      : GetScalarType<T[P], AggregatePhysicalAccount[P]>
+  }
+
+
+
+
+  export type PhysicalAccountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PhysicalAccountWhereInput
+    orderBy?: PhysicalAccountOrderByWithAggregationInput | PhysicalAccountOrderByWithAggregationInput[]
+    by: PhysicalAccountScalarFieldEnum[] | PhysicalAccountScalarFieldEnum
+    having?: PhysicalAccountScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PhysicalAccountCountAggregateInputType | true
+    _min?: PhysicalAccountMinAggregateInputType
+    _max?: PhysicalAccountMaxAggregateInputType
+  }
+
+  export type PhysicalAccountGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    fundId: string
+    kind: string
+    code: string
+    name: string
+    currency: string
+    isActive: boolean
+    createdAt: Date
+    createdBy: string | null
+    updatedAt: Date
+    _count: PhysicalAccountCountAggregateOutputType | null
+    _min: PhysicalAccountMinAggregateOutputType | null
+    _max: PhysicalAccountMaxAggregateOutputType | null
+  }
+
+  type GetPhysicalAccountGroupByPayload<T extends PhysicalAccountGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PhysicalAccountGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PhysicalAccountGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PhysicalAccountGroupByOutputType[P]>
+            : GetScalarType<T[P], PhysicalAccountGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PhysicalAccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    fundId?: boolean
+    kind?: boolean
+    code?: boolean
+    name?: boolean
+    currency?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+    updatedAt?: boolean
+    fund?: boolean | LogicalFundDefaultArgs<ExtArgs>
+    outgoing?: boolean | PhysicalAccount$outgoingArgs<ExtArgs>
+    incoming?: boolean | PhysicalAccount$incomingArgs<ExtArgs>
+    reconCounts?: boolean | PhysicalAccount$reconCountsArgs<ExtArgs>
+    _count?: boolean | PhysicalAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["physicalAccount"]>
+
+  export type PhysicalAccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    fundId?: boolean
+    kind?: boolean
+    code?: boolean
+    name?: boolean
+    currency?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+    updatedAt?: boolean
+    fund?: boolean | LogicalFundDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["physicalAccount"]>
+
+  export type PhysicalAccountSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    fundId?: boolean
+    kind?: boolean
+    code?: boolean
+    name?: boolean
+    currency?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PhysicalAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    fund?: boolean | LogicalFundDefaultArgs<ExtArgs>
+    outgoing?: boolean | PhysicalAccount$outgoingArgs<ExtArgs>
+    incoming?: boolean | PhysicalAccount$incomingArgs<ExtArgs>
+    reconCounts?: boolean | PhysicalAccount$reconCountsArgs<ExtArgs>
+    _count?: boolean | PhysicalAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PhysicalAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    fund?: boolean | LogicalFundDefaultArgs<ExtArgs>
+  }
+
+  export type $PhysicalAccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PhysicalAccount"
+    objects: {
+      fund: Prisma.$LogicalFundPayload<ExtArgs>
+      outgoing: Prisma.$TreasuryMovementPayload<ExtArgs>[]
+      incoming: Prisma.$TreasuryMovementPayload<ExtArgs>[]
+      reconCounts: Prisma.$ReconciliationCountPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      fundId: string
+      kind: string
+      code: string
+      name: string
+      currency: string
+      isActive: boolean
+      createdAt: Date
+      createdBy: string | null
+      updatedAt: Date
+    }, ExtArgs["result"]["physicalAccount"]>
+    composites: {}
+  }
+
+  type PhysicalAccountGetPayload<S extends boolean | null | undefined | PhysicalAccountDefaultArgs> = $Result.GetResult<Prisma.$PhysicalAccountPayload, S>
+
+  type PhysicalAccountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PhysicalAccountFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PhysicalAccountCountAggregateInputType | true
+    }
+
+  export interface PhysicalAccountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PhysicalAccount'], meta: { name: 'PhysicalAccount' } }
+    /**
+     * Find zero or one PhysicalAccount that matches the filter.
+     * @param {PhysicalAccountFindUniqueArgs} args - Arguments to find a PhysicalAccount
+     * @example
+     * // Get one PhysicalAccount
+     * const physicalAccount = await prisma.physicalAccount.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PhysicalAccountFindUniqueArgs>(args: SelectSubset<T, PhysicalAccountFindUniqueArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PhysicalAccount that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PhysicalAccountFindUniqueOrThrowArgs} args - Arguments to find a PhysicalAccount
+     * @example
+     * // Get one PhysicalAccount
+     * const physicalAccount = await prisma.physicalAccount.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PhysicalAccountFindUniqueOrThrowArgs>(args: SelectSubset<T, PhysicalAccountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PhysicalAccount that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PhysicalAccountFindFirstArgs} args - Arguments to find a PhysicalAccount
+     * @example
+     * // Get one PhysicalAccount
+     * const physicalAccount = await prisma.physicalAccount.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PhysicalAccountFindFirstArgs>(args?: SelectSubset<T, PhysicalAccountFindFirstArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PhysicalAccount that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PhysicalAccountFindFirstOrThrowArgs} args - Arguments to find a PhysicalAccount
+     * @example
+     * // Get one PhysicalAccount
+     * const physicalAccount = await prisma.physicalAccount.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PhysicalAccountFindFirstOrThrowArgs>(args?: SelectSubset<T, PhysicalAccountFindFirstOrThrowArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PhysicalAccounts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PhysicalAccountFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PhysicalAccounts
+     * const physicalAccounts = await prisma.physicalAccount.findMany()
+     * 
+     * // Get first 10 PhysicalAccounts
+     * const physicalAccounts = await prisma.physicalAccount.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const physicalAccountWithIdOnly = await prisma.physicalAccount.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PhysicalAccountFindManyArgs>(args?: SelectSubset<T, PhysicalAccountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PhysicalAccount.
+     * @param {PhysicalAccountCreateArgs} args - Arguments to create a PhysicalAccount.
+     * @example
+     * // Create one PhysicalAccount
+     * const PhysicalAccount = await prisma.physicalAccount.create({
+     *   data: {
+     *     // ... data to create a PhysicalAccount
+     *   }
+     * })
+     * 
+     */
+    create<T extends PhysicalAccountCreateArgs>(args: SelectSubset<T, PhysicalAccountCreateArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PhysicalAccounts.
+     * @param {PhysicalAccountCreateManyArgs} args - Arguments to create many PhysicalAccounts.
+     * @example
+     * // Create many PhysicalAccounts
+     * const physicalAccount = await prisma.physicalAccount.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PhysicalAccountCreateManyArgs>(args?: SelectSubset<T, PhysicalAccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PhysicalAccounts and returns the data saved in the database.
+     * @param {PhysicalAccountCreateManyAndReturnArgs} args - Arguments to create many PhysicalAccounts.
+     * @example
+     * // Create many PhysicalAccounts
+     * const physicalAccount = await prisma.physicalAccount.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PhysicalAccounts and only return the `id`
+     * const physicalAccountWithIdOnly = await prisma.physicalAccount.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PhysicalAccountCreateManyAndReturnArgs>(args?: SelectSubset<T, PhysicalAccountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PhysicalAccount.
+     * @param {PhysicalAccountDeleteArgs} args - Arguments to delete one PhysicalAccount.
+     * @example
+     * // Delete one PhysicalAccount
+     * const PhysicalAccount = await prisma.physicalAccount.delete({
+     *   where: {
+     *     // ... filter to delete one PhysicalAccount
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PhysicalAccountDeleteArgs>(args: SelectSubset<T, PhysicalAccountDeleteArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PhysicalAccount.
+     * @param {PhysicalAccountUpdateArgs} args - Arguments to update one PhysicalAccount.
+     * @example
+     * // Update one PhysicalAccount
+     * const physicalAccount = await prisma.physicalAccount.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PhysicalAccountUpdateArgs>(args: SelectSubset<T, PhysicalAccountUpdateArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PhysicalAccounts.
+     * @param {PhysicalAccountDeleteManyArgs} args - Arguments to filter PhysicalAccounts to delete.
+     * @example
+     * // Delete a few PhysicalAccounts
+     * const { count } = await prisma.physicalAccount.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PhysicalAccountDeleteManyArgs>(args?: SelectSubset<T, PhysicalAccountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PhysicalAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PhysicalAccountUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PhysicalAccounts
+     * const physicalAccount = await prisma.physicalAccount.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PhysicalAccountUpdateManyArgs>(args: SelectSubset<T, PhysicalAccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PhysicalAccount.
+     * @param {PhysicalAccountUpsertArgs} args - Arguments to update or create a PhysicalAccount.
+     * @example
+     * // Update or create a PhysicalAccount
+     * const physicalAccount = await prisma.physicalAccount.upsert({
+     *   create: {
+     *     // ... data to create a PhysicalAccount
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PhysicalAccount we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PhysicalAccountUpsertArgs>(args: SelectSubset<T, PhysicalAccountUpsertArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PhysicalAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PhysicalAccountCountArgs} args - Arguments to filter PhysicalAccounts to count.
+     * @example
+     * // Count the number of PhysicalAccounts
+     * const count = await prisma.physicalAccount.count({
+     *   where: {
+     *     // ... the filter for the PhysicalAccounts we want to count
+     *   }
+     * })
+    **/
+    count<T extends PhysicalAccountCountArgs>(
+      args?: Subset<T, PhysicalAccountCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PhysicalAccountCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PhysicalAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PhysicalAccountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PhysicalAccountAggregateArgs>(args: Subset<T, PhysicalAccountAggregateArgs>): Prisma.PrismaPromise<GetPhysicalAccountAggregateType<T>>
+
+    /**
+     * Group by PhysicalAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PhysicalAccountGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PhysicalAccountGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PhysicalAccountGroupByArgs['orderBy'] }
+        : { orderBy?: PhysicalAccountGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PhysicalAccountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPhysicalAccountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PhysicalAccount model
+   */
+  readonly fields: PhysicalAccountFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PhysicalAccount.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PhysicalAccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    fund<T extends LogicalFundDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LogicalFundDefaultArgs<ExtArgs>>): Prisma__LogicalFundClient<$Result.GetResult<Prisma.$LogicalFundPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    outgoing<T extends PhysicalAccount$outgoingArgs<ExtArgs> = {}>(args?: Subset<T, PhysicalAccount$outgoingArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "findMany"> | Null>
+    incoming<T extends PhysicalAccount$incomingArgs<ExtArgs> = {}>(args?: Subset<T, PhysicalAccount$incomingArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "findMany"> | Null>
+    reconCounts<T extends PhysicalAccount$reconCountsArgs<ExtArgs> = {}>(args?: Subset<T, PhysicalAccount$reconCountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PhysicalAccount model
+   */ 
+  interface PhysicalAccountFieldRefs {
+    readonly id: FieldRef<"PhysicalAccount", 'String'>
+    readonly tenantId: FieldRef<"PhysicalAccount", 'String'>
+    readonly shopId: FieldRef<"PhysicalAccount", 'String'>
+    readonly fundId: FieldRef<"PhysicalAccount", 'String'>
+    readonly kind: FieldRef<"PhysicalAccount", 'String'>
+    readonly code: FieldRef<"PhysicalAccount", 'String'>
+    readonly name: FieldRef<"PhysicalAccount", 'String'>
+    readonly currency: FieldRef<"PhysicalAccount", 'String'>
+    readonly isActive: FieldRef<"PhysicalAccount", 'Boolean'>
+    readonly createdAt: FieldRef<"PhysicalAccount", 'DateTime'>
+    readonly createdBy: FieldRef<"PhysicalAccount", 'String'>
+    readonly updatedAt: FieldRef<"PhysicalAccount", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PhysicalAccount findUnique
+   */
+  export type PhysicalAccountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which PhysicalAccount to fetch.
+     */
+    where: PhysicalAccountWhereUniqueInput
+  }
+
+  /**
+   * PhysicalAccount findUniqueOrThrow
+   */
+  export type PhysicalAccountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which PhysicalAccount to fetch.
+     */
+    where: PhysicalAccountWhereUniqueInput
+  }
+
+  /**
+   * PhysicalAccount findFirst
+   */
+  export type PhysicalAccountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which PhysicalAccount to fetch.
+     */
+    where?: PhysicalAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PhysicalAccounts to fetch.
+     */
+    orderBy?: PhysicalAccountOrderByWithRelationInput | PhysicalAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PhysicalAccounts.
+     */
+    cursor?: PhysicalAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PhysicalAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PhysicalAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PhysicalAccounts.
+     */
+    distinct?: PhysicalAccountScalarFieldEnum | PhysicalAccountScalarFieldEnum[]
+  }
+
+  /**
+   * PhysicalAccount findFirstOrThrow
+   */
+  export type PhysicalAccountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which PhysicalAccount to fetch.
+     */
+    where?: PhysicalAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PhysicalAccounts to fetch.
+     */
+    orderBy?: PhysicalAccountOrderByWithRelationInput | PhysicalAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PhysicalAccounts.
+     */
+    cursor?: PhysicalAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PhysicalAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PhysicalAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PhysicalAccounts.
+     */
+    distinct?: PhysicalAccountScalarFieldEnum | PhysicalAccountScalarFieldEnum[]
+  }
+
+  /**
+   * PhysicalAccount findMany
+   */
+  export type PhysicalAccountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which PhysicalAccounts to fetch.
+     */
+    where?: PhysicalAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PhysicalAccounts to fetch.
+     */
+    orderBy?: PhysicalAccountOrderByWithRelationInput | PhysicalAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PhysicalAccounts.
+     */
+    cursor?: PhysicalAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PhysicalAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PhysicalAccounts.
+     */
+    skip?: number
+    distinct?: PhysicalAccountScalarFieldEnum | PhysicalAccountScalarFieldEnum[]
+  }
+
+  /**
+   * PhysicalAccount create
+   */
+  export type PhysicalAccountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PhysicalAccount.
+     */
+    data: XOR<PhysicalAccountCreateInput, PhysicalAccountUncheckedCreateInput>
+  }
+
+  /**
+   * PhysicalAccount createMany
+   */
+  export type PhysicalAccountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PhysicalAccounts.
+     */
+    data: PhysicalAccountCreateManyInput | PhysicalAccountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PhysicalAccount createManyAndReturn
+   */
+  export type PhysicalAccountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PhysicalAccounts.
+     */
+    data: PhysicalAccountCreateManyInput | PhysicalAccountCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PhysicalAccount update
+   */
+  export type PhysicalAccountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PhysicalAccount.
+     */
+    data: XOR<PhysicalAccountUpdateInput, PhysicalAccountUncheckedUpdateInput>
+    /**
+     * Choose, which PhysicalAccount to update.
+     */
+    where: PhysicalAccountWhereUniqueInput
+  }
+
+  /**
+   * PhysicalAccount updateMany
+   */
+  export type PhysicalAccountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PhysicalAccounts.
+     */
+    data: XOR<PhysicalAccountUpdateManyMutationInput, PhysicalAccountUncheckedUpdateManyInput>
+    /**
+     * Filter which PhysicalAccounts to update
+     */
+    where?: PhysicalAccountWhereInput
+  }
+
+  /**
+   * PhysicalAccount upsert
+   */
+  export type PhysicalAccountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PhysicalAccount to update in case it exists.
+     */
+    where: PhysicalAccountWhereUniqueInput
+    /**
+     * In case the PhysicalAccount found by the `where` argument doesn't exist, create a new PhysicalAccount with this data.
+     */
+    create: XOR<PhysicalAccountCreateInput, PhysicalAccountUncheckedCreateInput>
+    /**
+     * In case the PhysicalAccount was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PhysicalAccountUpdateInput, PhysicalAccountUncheckedUpdateInput>
+  }
+
+  /**
+   * PhysicalAccount delete
+   */
+  export type PhysicalAccountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    /**
+     * Filter which PhysicalAccount to delete.
+     */
+    where: PhysicalAccountWhereUniqueInput
+  }
+
+  /**
+   * PhysicalAccount deleteMany
+   */
+  export type PhysicalAccountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PhysicalAccounts to delete
+     */
+    where?: PhysicalAccountWhereInput
+  }
+
+  /**
+   * PhysicalAccount.outgoing
+   */
+  export type PhysicalAccount$outgoingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    where?: TreasuryMovementWhereInput
+    orderBy?: TreasuryMovementOrderByWithRelationInput | TreasuryMovementOrderByWithRelationInput[]
+    cursor?: TreasuryMovementWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TreasuryMovementScalarFieldEnum | TreasuryMovementScalarFieldEnum[]
+  }
+
+  /**
+   * PhysicalAccount.incoming
+   */
+  export type PhysicalAccount$incomingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    where?: TreasuryMovementWhereInput
+    orderBy?: TreasuryMovementOrderByWithRelationInput | TreasuryMovementOrderByWithRelationInput[]
+    cursor?: TreasuryMovementWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TreasuryMovementScalarFieldEnum | TreasuryMovementScalarFieldEnum[]
+  }
+
+  /**
+   * PhysicalAccount.reconCounts
+   */
+  export type PhysicalAccount$reconCountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    where?: ReconciliationCountWhereInput
+    orderBy?: ReconciliationCountOrderByWithRelationInput | ReconciliationCountOrderByWithRelationInput[]
+    cursor?: ReconciliationCountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReconciliationCountScalarFieldEnum | ReconciliationCountScalarFieldEnum[]
+  }
+
+  /**
+   * PhysicalAccount without action
+   */
+  export type PhysicalAccountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TreasuryMovement
+   */
+
+  export type AggregateTreasuryMovement = {
+    _count: TreasuryMovementCountAggregateOutputType | null
+    _avg: TreasuryMovementAvgAggregateOutputType | null
+    _sum: TreasuryMovementSumAggregateOutputType | null
+    _min: TreasuryMovementMinAggregateOutputType | null
+    _max: TreasuryMovementMaxAggregateOutputType | null
+  }
+
+  export type TreasuryMovementAvgAggregateOutputType = {
+    amountMinor: number | null
+  }
+
+  export type TreasuryMovementSumAggregateOutputType = {
+    amountMinor: bigint | null
+  }
+
+  export type TreasuryMovementMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    movementType: string | null
+    fromPhysicalId: string | null
+    toPhysicalId: string | null
+    amountMinor: bigint | null
+    financialTransactionId: string | null
+    journalId: string | null
+    occurredOn: Date | null
+    idempotencyKey: string | null
+    reason: string | null
+    notes: string | null
+    originalMovementId: string | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type TreasuryMovementMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    movementType: string | null
+    fromPhysicalId: string | null
+    toPhysicalId: string | null
+    amountMinor: bigint | null
+    financialTransactionId: string | null
+    journalId: string | null
+    occurredOn: Date | null
+    idempotencyKey: string | null
+    reason: string | null
+    notes: string | null
+    originalMovementId: string | null
+    createdBy: string | null
+    createdAt: Date | null
+  }
+
+  export type TreasuryMovementCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    movementType: number
+    fromPhysicalId: number
+    toPhysicalId: number
+    amountMinor: number
+    financialTransactionId: number
+    journalId: number
+    occurredOn: number
+    idempotencyKey: number
+    reason: number
+    notes: number
+    originalMovementId: number
+    createdBy: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type TreasuryMovementAvgAggregateInputType = {
+    amountMinor?: true
+  }
+
+  export type TreasuryMovementSumAggregateInputType = {
+    amountMinor?: true
+  }
+
+  export type TreasuryMovementMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    movementType?: true
+    fromPhysicalId?: true
+    toPhysicalId?: true
+    amountMinor?: true
+    financialTransactionId?: true
+    journalId?: true
+    occurredOn?: true
+    idempotencyKey?: true
+    reason?: true
+    notes?: true
+    originalMovementId?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type TreasuryMovementMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    movementType?: true
+    fromPhysicalId?: true
+    toPhysicalId?: true
+    amountMinor?: true
+    financialTransactionId?: true
+    journalId?: true
+    occurredOn?: true
+    idempotencyKey?: true
+    reason?: true
+    notes?: true
+    originalMovementId?: true
+    createdBy?: true
+    createdAt?: true
+  }
+
+  export type TreasuryMovementCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    movementType?: true
+    fromPhysicalId?: true
+    toPhysicalId?: true
+    amountMinor?: true
+    financialTransactionId?: true
+    journalId?: true
+    occurredOn?: true
+    idempotencyKey?: true
+    reason?: true
+    notes?: true
+    originalMovementId?: true
+    createdBy?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type TreasuryMovementAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TreasuryMovement to aggregate.
+     */
+    where?: TreasuryMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryMovements to fetch.
+     */
+    orderBy?: TreasuryMovementOrderByWithRelationInput | TreasuryMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TreasuryMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TreasuryMovements
+    **/
+    _count?: true | TreasuryMovementCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TreasuryMovementAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TreasuryMovementSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TreasuryMovementMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TreasuryMovementMaxAggregateInputType
+  }
+
+  export type GetTreasuryMovementAggregateType<T extends TreasuryMovementAggregateArgs> = {
+        [P in keyof T & keyof AggregateTreasuryMovement]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTreasuryMovement[P]>
+      : GetScalarType<T[P], AggregateTreasuryMovement[P]>
+  }
+
+
+
+
+  export type TreasuryMovementGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreasuryMovementWhereInput
+    orderBy?: TreasuryMovementOrderByWithAggregationInput | TreasuryMovementOrderByWithAggregationInput[]
+    by: TreasuryMovementScalarFieldEnum[] | TreasuryMovementScalarFieldEnum
+    having?: TreasuryMovementScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TreasuryMovementCountAggregateInputType | true
+    _avg?: TreasuryMovementAvgAggregateInputType
+    _sum?: TreasuryMovementSumAggregateInputType
+    _min?: TreasuryMovementMinAggregateInputType
+    _max?: TreasuryMovementMaxAggregateInputType
+  }
+
+  export type TreasuryMovementGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    fromPhysicalId: string | null
+    toPhysicalId: string | null
+    amountMinor: bigint
+    financialTransactionId: string
+    journalId: string | null
+    occurredOn: Date
+    idempotencyKey: string
+    reason: string | null
+    notes: string | null
+    originalMovementId: string | null
+    createdBy: string | null
+    createdAt: Date
+    _count: TreasuryMovementCountAggregateOutputType | null
+    _avg: TreasuryMovementAvgAggregateOutputType | null
+    _sum: TreasuryMovementSumAggregateOutputType | null
+    _min: TreasuryMovementMinAggregateOutputType | null
+    _max: TreasuryMovementMaxAggregateOutputType | null
+  }
+
+  type GetTreasuryMovementGroupByPayload<T extends TreasuryMovementGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TreasuryMovementGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TreasuryMovementGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TreasuryMovementGroupByOutputType[P]>
+            : GetScalarType<T[P], TreasuryMovementGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TreasuryMovementSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    movementType?: boolean
+    fromPhysicalId?: boolean
+    toPhysicalId?: boolean
+    amountMinor?: boolean
+    financialTransactionId?: boolean
+    journalId?: boolean
+    occurredOn?: boolean
+    idempotencyKey?: boolean
+    reason?: boolean
+    notes?: boolean
+    originalMovementId?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    fromAccount?: boolean | TreasuryMovement$fromAccountArgs<ExtArgs>
+    toAccount?: boolean | TreasuryMovement$toAccountArgs<ExtArgs>
+  }, ExtArgs["result"]["treasuryMovement"]>
+
+  export type TreasuryMovementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    movementType?: boolean
+    fromPhysicalId?: boolean
+    toPhysicalId?: boolean
+    amountMinor?: boolean
+    financialTransactionId?: boolean
+    journalId?: boolean
+    occurredOn?: boolean
+    idempotencyKey?: boolean
+    reason?: boolean
+    notes?: boolean
+    originalMovementId?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    fromAccount?: boolean | TreasuryMovement$fromAccountArgs<ExtArgs>
+    toAccount?: boolean | TreasuryMovement$toAccountArgs<ExtArgs>
+  }, ExtArgs["result"]["treasuryMovement"]>
+
+  export type TreasuryMovementSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    movementType?: boolean
+    fromPhysicalId?: boolean
+    toPhysicalId?: boolean
+    amountMinor?: boolean
+    financialTransactionId?: boolean
+    journalId?: boolean
+    occurredOn?: boolean
+    idempotencyKey?: boolean
+    reason?: boolean
+    notes?: boolean
+    originalMovementId?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+  }
+
+  export type TreasuryMovementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    fromAccount?: boolean | TreasuryMovement$fromAccountArgs<ExtArgs>
+    toAccount?: boolean | TreasuryMovement$toAccountArgs<ExtArgs>
+  }
+  export type TreasuryMovementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    fromAccount?: boolean | TreasuryMovement$fromAccountArgs<ExtArgs>
+    toAccount?: boolean | TreasuryMovement$toAccountArgs<ExtArgs>
+  }
+
+  export type $TreasuryMovementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TreasuryMovement"
+    objects: {
+      fromAccount: Prisma.$PhysicalAccountPayload<ExtArgs> | null
+      toAccount: Prisma.$PhysicalAccountPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      movementType: string
+      fromPhysicalId: string | null
+      toPhysicalId: string | null
+      amountMinor: bigint
+      financialTransactionId: string
+      journalId: string | null
+      occurredOn: Date
+      idempotencyKey: string
+      reason: string | null
+      notes: string | null
+      originalMovementId: string | null
+      createdBy: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["treasuryMovement"]>
+    composites: {}
+  }
+
+  type TreasuryMovementGetPayload<S extends boolean | null | undefined | TreasuryMovementDefaultArgs> = $Result.GetResult<Prisma.$TreasuryMovementPayload, S>
+
+  type TreasuryMovementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TreasuryMovementFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TreasuryMovementCountAggregateInputType | true
+    }
+
+  export interface TreasuryMovementDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TreasuryMovement'], meta: { name: 'TreasuryMovement' } }
+    /**
+     * Find zero or one TreasuryMovement that matches the filter.
+     * @param {TreasuryMovementFindUniqueArgs} args - Arguments to find a TreasuryMovement
+     * @example
+     * // Get one TreasuryMovement
+     * const treasuryMovement = await prisma.treasuryMovement.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TreasuryMovementFindUniqueArgs>(args: SelectSubset<T, TreasuryMovementFindUniqueArgs<ExtArgs>>): Prisma__TreasuryMovementClient<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TreasuryMovement that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TreasuryMovementFindUniqueOrThrowArgs} args - Arguments to find a TreasuryMovement
+     * @example
+     * // Get one TreasuryMovement
+     * const treasuryMovement = await prisma.treasuryMovement.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TreasuryMovementFindUniqueOrThrowArgs>(args: SelectSubset<T, TreasuryMovementFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TreasuryMovementClient<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TreasuryMovement that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryMovementFindFirstArgs} args - Arguments to find a TreasuryMovement
+     * @example
+     * // Get one TreasuryMovement
+     * const treasuryMovement = await prisma.treasuryMovement.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TreasuryMovementFindFirstArgs>(args?: SelectSubset<T, TreasuryMovementFindFirstArgs<ExtArgs>>): Prisma__TreasuryMovementClient<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TreasuryMovement that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryMovementFindFirstOrThrowArgs} args - Arguments to find a TreasuryMovement
+     * @example
+     * // Get one TreasuryMovement
+     * const treasuryMovement = await prisma.treasuryMovement.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TreasuryMovementFindFirstOrThrowArgs>(args?: SelectSubset<T, TreasuryMovementFindFirstOrThrowArgs<ExtArgs>>): Prisma__TreasuryMovementClient<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TreasuryMovements that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryMovementFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TreasuryMovements
+     * const treasuryMovements = await prisma.treasuryMovement.findMany()
+     * 
+     * // Get first 10 TreasuryMovements
+     * const treasuryMovements = await prisma.treasuryMovement.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const treasuryMovementWithIdOnly = await prisma.treasuryMovement.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TreasuryMovementFindManyArgs>(args?: SelectSubset<T, TreasuryMovementFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TreasuryMovement.
+     * @param {TreasuryMovementCreateArgs} args - Arguments to create a TreasuryMovement.
+     * @example
+     * // Create one TreasuryMovement
+     * const TreasuryMovement = await prisma.treasuryMovement.create({
+     *   data: {
+     *     // ... data to create a TreasuryMovement
+     *   }
+     * })
+     * 
+     */
+    create<T extends TreasuryMovementCreateArgs>(args: SelectSubset<T, TreasuryMovementCreateArgs<ExtArgs>>): Prisma__TreasuryMovementClient<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TreasuryMovements.
+     * @param {TreasuryMovementCreateManyArgs} args - Arguments to create many TreasuryMovements.
+     * @example
+     * // Create many TreasuryMovements
+     * const treasuryMovement = await prisma.treasuryMovement.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TreasuryMovementCreateManyArgs>(args?: SelectSubset<T, TreasuryMovementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TreasuryMovements and returns the data saved in the database.
+     * @param {TreasuryMovementCreateManyAndReturnArgs} args - Arguments to create many TreasuryMovements.
+     * @example
+     * // Create many TreasuryMovements
+     * const treasuryMovement = await prisma.treasuryMovement.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TreasuryMovements and only return the `id`
+     * const treasuryMovementWithIdOnly = await prisma.treasuryMovement.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TreasuryMovementCreateManyAndReturnArgs>(args?: SelectSubset<T, TreasuryMovementCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a TreasuryMovement.
+     * @param {TreasuryMovementDeleteArgs} args - Arguments to delete one TreasuryMovement.
+     * @example
+     * // Delete one TreasuryMovement
+     * const TreasuryMovement = await prisma.treasuryMovement.delete({
+     *   where: {
+     *     // ... filter to delete one TreasuryMovement
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TreasuryMovementDeleteArgs>(args: SelectSubset<T, TreasuryMovementDeleteArgs<ExtArgs>>): Prisma__TreasuryMovementClient<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TreasuryMovement.
+     * @param {TreasuryMovementUpdateArgs} args - Arguments to update one TreasuryMovement.
+     * @example
+     * // Update one TreasuryMovement
+     * const treasuryMovement = await prisma.treasuryMovement.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TreasuryMovementUpdateArgs>(args: SelectSubset<T, TreasuryMovementUpdateArgs<ExtArgs>>): Prisma__TreasuryMovementClient<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TreasuryMovements.
+     * @param {TreasuryMovementDeleteManyArgs} args - Arguments to filter TreasuryMovements to delete.
+     * @example
+     * // Delete a few TreasuryMovements
+     * const { count } = await prisma.treasuryMovement.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TreasuryMovementDeleteManyArgs>(args?: SelectSubset<T, TreasuryMovementDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TreasuryMovements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryMovementUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TreasuryMovements
+     * const treasuryMovement = await prisma.treasuryMovement.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TreasuryMovementUpdateManyArgs>(args: SelectSubset<T, TreasuryMovementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TreasuryMovement.
+     * @param {TreasuryMovementUpsertArgs} args - Arguments to update or create a TreasuryMovement.
+     * @example
+     * // Update or create a TreasuryMovement
+     * const treasuryMovement = await prisma.treasuryMovement.upsert({
+     *   create: {
+     *     // ... data to create a TreasuryMovement
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TreasuryMovement we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TreasuryMovementUpsertArgs>(args: SelectSubset<T, TreasuryMovementUpsertArgs<ExtArgs>>): Prisma__TreasuryMovementClient<$Result.GetResult<Prisma.$TreasuryMovementPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TreasuryMovements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryMovementCountArgs} args - Arguments to filter TreasuryMovements to count.
+     * @example
+     * // Count the number of TreasuryMovements
+     * const count = await prisma.treasuryMovement.count({
+     *   where: {
+     *     // ... the filter for the TreasuryMovements we want to count
+     *   }
+     * })
+    **/
+    count<T extends TreasuryMovementCountArgs>(
+      args?: Subset<T, TreasuryMovementCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TreasuryMovementCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TreasuryMovement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryMovementAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TreasuryMovementAggregateArgs>(args: Subset<T, TreasuryMovementAggregateArgs>): Prisma.PrismaPromise<GetTreasuryMovementAggregateType<T>>
+
+    /**
+     * Group by TreasuryMovement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryMovementGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TreasuryMovementGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TreasuryMovementGroupByArgs['orderBy'] }
+        : { orderBy?: TreasuryMovementGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TreasuryMovementGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTreasuryMovementGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TreasuryMovement model
+   */
+  readonly fields: TreasuryMovementFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TreasuryMovement.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TreasuryMovementClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    fromAccount<T extends TreasuryMovement$fromAccountArgs<ExtArgs> = {}>(args?: Subset<T, TreasuryMovement$fromAccountArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    toAccount<T extends TreasuryMovement$toAccountArgs<ExtArgs> = {}>(args?: Subset<T, TreasuryMovement$toAccountArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TreasuryMovement model
+   */ 
+  interface TreasuryMovementFieldRefs {
+    readonly id: FieldRef<"TreasuryMovement", 'String'>
+    readonly tenantId: FieldRef<"TreasuryMovement", 'String'>
+    readonly shopId: FieldRef<"TreasuryMovement", 'String'>
+    readonly movementType: FieldRef<"TreasuryMovement", 'String'>
+    readonly fromPhysicalId: FieldRef<"TreasuryMovement", 'String'>
+    readonly toPhysicalId: FieldRef<"TreasuryMovement", 'String'>
+    readonly amountMinor: FieldRef<"TreasuryMovement", 'BigInt'>
+    readonly financialTransactionId: FieldRef<"TreasuryMovement", 'String'>
+    readonly journalId: FieldRef<"TreasuryMovement", 'String'>
+    readonly occurredOn: FieldRef<"TreasuryMovement", 'DateTime'>
+    readonly idempotencyKey: FieldRef<"TreasuryMovement", 'String'>
+    readonly reason: FieldRef<"TreasuryMovement", 'String'>
+    readonly notes: FieldRef<"TreasuryMovement", 'String'>
+    readonly originalMovementId: FieldRef<"TreasuryMovement", 'String'>
+    readonly createdBy: FieldRef<"TreasuryMovement", 'String'>
+    readonly createdAt: FieldRef<"TreasuryMovement", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TreasuryMovement findUnique
+   */
+  export type TreasuryMovementFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryMovement to fetch.
+     */
+    where: TreasuryMovementWhereUniqueInput
+  }
+
+  /**
+   * TreasuryMovement findUniqueOrThrow
+   */
+  export type TreasuryMovementFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryMovement to fetch.
+     */
+    where: TreasuryMovementWhereUniqueInput
+  }
+
+  /**
+   * TreasuryMovement findFirst
+   */
+  export type TreasuryMovementFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryMovement to fetch.
+     */
+    where?: TreasuryMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryMovements to fetch.
+     */
+    orderBy?: TreasuryMovementOrderByWithRelationInput | TreasuryMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TreasuryMovements.
+     */
+    cursor?: TreasuryMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TreasuryMovements.
+     */
+    distinct?: TreasuryMovementScalarFieldEnum | TreasuryMovementScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryMovement findFirstOrThrow
+   */
+  export type TreasuryMovementFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryMovement to fetch.
+     */
+    where?: TreasuryMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryMovements to fetch.
+     */
+    orderBy?: TreasuryMovementOrderByWithRelationInput | TreasuryMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TreasuryMovements.
+     */
+    cursor?: TreasuryMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TreasuryMovements.
+     */
+    distinct?: TreasuryMovementScalarFieldEnum | TreasuryMovementScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryMovement findMany
+   */
+  export type TreasuryMovementFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which TreasuryMovements to fetch.
+     */
+    where?: TreasuryMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryMovements to fetch.
+     */
+    orderBy?: TreasuryMovementOrderByWithRelationInput | TreasuryMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TreasuryMovements.
+     */
+    cursor?: TreasuryMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryMovements.
+     */
+    skip?: number
+    distinct?: TreasuryMovementScalarFieldEnum | TreasuryMovementScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryMovement create
+   */
+  export type TreasuryMovementCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TreasuryMovement.
+     */
+    data: XOR<TreasuryMovementCreateInput, TreasuryMovementUncheckedCreateInput>
+  }
+
+  /**
+   * TreasuryMovement createMany
+   */
+  export type TreasuryMovementCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TreasuryMovements.
+     */
+    data: TreasuryMovementCreateManyInput | TreasuryMovementCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TreasuryMovement createManyAndReturn
+   */
+  export type TreasuryMovementCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many TreasuryMovements.
+     */
+    data: TreasuryMovementCreateManyInput | TreasuryMovementCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TreasuryMovement update
+   */
+  export type TreasuryMovementUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TreasuryMovement.
+     */
+    data: XOR<TreasuryMovementUpdateInput, TreasuryMovementUncheckedUpdateInput>
+    /**
+     * Choose, which TreasuryMovement to update.
+     */
+    where: TreasuryMovementWhereUniqueInput
+  }
+
+  /**
+   * TreasuryMovement updateMany
+   */
+  export type TreasuryMovementUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TreasuryMovements.
+     */
+    data: XOR<TreasuryMovementUpdateManyMutationInput, TreasuryMovementUncheckedUpdateManyInput>
+    /**
+     * Filter which TreasuryMovements to update
+     */
+    where?: TreasuryMovementWhereInput
+  }
+
+  /**
+   * TreasuryMovement upsert
+   */
+  export type TreasuryMovementUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TreasuryMovement to update in case it exists.
+     */
+    where: TreasuryMovementWhereUniqueInput
+    /**
+     * In case the TreasuryMovement found by the `where` argument doesn't exist, create a new TreasuryMovement with this data.
+     */
+    create: XOR<TreasuryMovementCreateInput, TreasuryMovementUncheckedCreateInput>
+    /**
+     * In case the TreasuryMovement was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TreasuryMovementUpdateInput, TreasuryMovementUncheckedUpdateInput>
+  }
+
+  /**
+   * TreasuryMovement delete
+   */
+  export type TreasuryMovementDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+    /**
+     * Filter which TreasuryMovement to delete.
+     */
+    where: TreasuryMovementWhereUniqueInput
+  }
+
+  /**
+   * TreasuryMovement deleteMany
+   */
+  export type TreasuryMovementDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TreasuryMovements to delete
+     */
+    where?: TreasuryMovementWhereInput
+  }
+
+  /**
+   * TreasuryMovement.fromAccount
+   */
+  export type TreasuryMovement$fromAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    where?: PhysicalAccountWhereInput
+  }
+
+  /**
+   * TreasuryMovement.toAccount
+   */
+  export type TreasuryMovement$toAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PhysicalAccount
+     */
+    select?: PhysicalAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhysicalAccountInclude<ExtArgs> | null
+    where?: PhysicalAccountWhereInput
+  }
+
+  /**
+   * TreasuryMovement without action
+   */
+  export type TreasuryMovementDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryMovement
+     */
+    select?: TreasuryMovementSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreasuryMovementInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model FinancialPeriod
+   */
+
+  export type AggregateFinancialPeriod = {
+    _count: FinancialPeriodCountAggregateOutputType | null
+    _min: FinancialPeriodMinAggregateOutputType | null
+    _max: FinancialPeriodMaxAggregateOutputType | null
+  }
+
+  export type FinancialPeriodMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    date: Date | null
+    createdAt: Date | null
+  }
+
+  export type FinancialPeriodMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    date: Date | null
+    createdAt: Date | null
+  }
+
+  export type FinancialPeriodCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    date: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type FinancialPeriodMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    date?: true
+    createdAt?: true
+  }
+
+  export type FinancialPeriodMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    date?: true
+    createdAt?: true
+  }
+
+  export type FinancialPeriodCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    date?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type FinancialPeriodAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FinancialPeriod to aggregate.
+     */
+    where?: FinancialPeriodWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FinancialPeriods to fetch.
+     */
+    orderBy?: FinancialPeriodOrderByWithRelationInput | FinancialPeriodOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FinancialPeriodWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FinancialPeriods from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FinancialPeriods.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FinancialPeriods
+    **/
+    _count?: true | FinancialPeriodCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FinancialPeriodMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FinancialPeriodMaxAggregateInputType
+  }
+
+  export type GetFinancialPeriodAggregateType<T extends FinancialPeriodAggregateArgs> = {
+        [P in keyof T & keyof AggregateFinancialPeriod]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFinancialPeriod[P]>
+      : GetScalarType<T[P], AggregateFinancialPeriod[P]>
+  }
+
+
+
+
+  export type FinancialPeriodGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FinancialPeriodWhereInput
+    orderBy?: FinancialPeriodOrderByWithAggregationInput | FinancialPeriodOrderByWithAggregationInput[]
+    by: FinancialPeriodScalarFieldEnum[] | FinancialPeriodScalarFieldEnum
+    having?: FinancialPeriodScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FinancialPeriodCountAggregateInputType | true
+    _min?: FinancialPeriodMinAggregateInputType
+    _max?: FinancialPeriodMaxAggregateInputType
+  }
+
+  export type FinancialPeriodGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    date: Date
+    createdAt: Date
+    _count: FinancialPeriodCountAggregateOutputType | null
+    _min: FinancialPeriodMinAggregateOutputType | null
+    _max: FinancialPeriodMaxAggregateOutputType | null
+  }
+
+  type GetFinancialPeriodGroupByPayload<T extends FinancialPeriodGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FinancialPeriodGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FinancialPeriodGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FinancialPeriodGroupByOutputType[P]>
+            : GetScalarType<T[P], FinancialPeriodGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FinancialPeriodSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    date?: boolean
+    createdAt?: boolean
+    snapshots?: boolean | FinancialPeriod$snapshotsArgs<ExtArgs>
+    _count?: boolean | FinancialPeriodCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["financialPeriod"]>
+
+  export type FinancialPeriodSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    date?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["financialPeriod"]>
+
+  export type FinancialPeriodSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    date?: boolean
+    createdAt?: boolean
+  }
+
+  export type FinancialPeriodInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    snapshots?: boolean | FinancialPeriod$snapshotsArgs<ExtArgs>
+    _count?: boolean | FinancialPeriodCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type FinancialPeriodIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $FinancialPeriodPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FinancialPeriod"
+    objects: {
+      snapshots: Prisma.$PeriodSnapshotPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      date: Date
+      createdAt: Date
+    }, ExtArgs["result"]["financialPeriod"]>
+    composites: {}
+  }
+
+  type FinancialPeriodGetPayload<S extends boolean | null | undefined | FinancialPeriodDefaultArgs> = $Result.GetResult<Prisma.$FinancialPeriodPayload, S>
+
+  type FinancialPeriodCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<FinancialPeriodFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: FinancialPeriodCountAggregateInputType | true
+    }
+
+  export interface FinancialPeriodDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FinancialPeriod'], meta: { name: 'FinancialPeriod' } }
+    /**
+     * Find zero or one FinancialPeriod that matches the filter.
+     * @param {FinancialPeriodFindUniqueArgs} args - Arguments to find a FinancialPeriod
+     * @example
+     * // Get one FinancialPeriod
+     * const financialPeriod = await prisma.financialPeriod.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FinancialPeriodFindUniqueArgs>(args: SelectSubset<T, FinancialPeriodFindUniqueArgs<ExtArgs>>): Prisma__FinancialPeriodClient<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one FinancialPeriod that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {FinancialPeriodFindUniqueOrThrowArgs} args - Arguments to find a FinancialPeriod
+     * @example
+     * // Get one FinancialPeriod
+     * const financialPeriod = await prisma.financialPeriod.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FinancialPeriodFindUniqueOrThrowArgs>(args: SelectSubset<T, FinancialPeriodFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FinancialPeriodClient<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first FinancialPeriod that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialPeriodFindFirstArgs} args - Arguments to find a FinancialPeriod
+     * @example
+     * // Get one FinancialPeriod
+     * const financialPeriod = await prisma.financialPeriod.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FinancialPeriodFindFirstArgs>(args?: SelectSubset<T, FinancialPeriodFindFirstArgs<ExtArgs>>): Prisma__FinancialPeriodClient<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first FinancialPeriod that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialPeriodFindFirstOrThrowArgs} args - Arguments to find a FinancialPeriod
+     * @example
+     * // Get one FinancialPeriod
+     * const financialPeriod = await prisma.financialPeriod.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FinancialPeriodFindFirstOrThrowArgs>(args?: SelectSubset<T, FinancialPeriodFindFirstOrThrowArgs<ExtArgs>>): Prisma__FinancialPeriodClient<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more FinancialPeriods that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialPeriodFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FinancialPeriods
+     * const financialPeriods = await prisma.financialPeriod.findMany()
+     * 
+     * // Get first 10 FinancialPeriods
+     * const financialPeriods = await prisma.financialPeriod.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const financialPeriodWithIdOnly = await prisma.financialPeriod.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FinancialPeriodFindManyArgs>(args?: SelectSubset<T, FinancialPeriodFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a FinancialPeriod.
+     * @param {FinancialPeriodCreateArgs} args - Arguments to create a FinancialPeriod.
+     * @example
+     * // Create one FinancialPeriod
+     * const FinancialPeriod = await prisma.financialPeriod.create({
+     *   data: {
+     *     // ... data to create a FinancialPeriod
+     *   }
+     * })
+     * 
+     */
+    create<T extends FinancialPeriodCreateArgs>(args: SelectSubset<T, FinancialPeriodCreateArgs<ExtArgs>>): Prisma__FinancialPeriodClient<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many FinancialPeriods.
+     * @param {FinancialPeriodCreateManyArgs} args - Arguments to create many FinancialPeriods.
+     * @example
+     * // Create many FinancialPeriods
+     * const financialPeriod = await prisma.financialPeriod.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FinancialPeriodCreateManyArgs>(args?: SelectSubset<T, FinancialPeriodCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FinancialPeriods and returns the data saved in the database.
+     * @param {FinancialPeriodCreateManyAndReturnArgs} args - Arguments to create many FinancialPeriods.
+     * @example
+     * // Create many FinancialPeriods
+     * const financialPeriod = await prisma.financialPeriod.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FinancialPeriods and only return the `id`
+     * const financialPeriodWithIdOnly = await prisma.financialPeriod.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FinancialPeriodCreateManyAndReturnArgs>(args?: SelectSubset<T, FinancialPeriodCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a FinancialPeriod.
+     * @param {FinancialPeriodDeleteArgs} args - Arguments to delete one FinancialPeriod.
+     * @example
+     * // Delete one FinancialPeriod
+     * const FinancialPeriod = await prisma.financialPeriod.delete({
+     *   where: {
+     *     // ... filter to delete one FinancialPeriod
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FinancialPeriodDeleteArgs>(args: SelectSubset<T, FinancialPeriodDeleteArgs<ExtArgs>>): Prisma__FinancialPeriodClient<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one FinancialPeriod.
+     * @param {FinancialPeriodUpdateArgs} args - Arguments to update one FinancialPeriod.
+     * @example
+     * // Update one FinancialPeriod
+     * const financialPeriod = await prisma.financialPeriod.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FinancialPeriodUpdateArgs>(args: SelectSubset<T, FinancialPeriodUpdateArgs<ExtArgs>>): Prisma__FinancialPeriodClient<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more FinancialPeriods.
+     * @param {FinancialPeriodDeleteManyArgs} args - Arguments to filter FinancialPeriods to delete.
+     * @example
+     * // Delete a few FinancialPeriods
+     * const { count } = await prisma.financialPeriod.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FinancialPeriodDeleteManyArgs>(args?: SelectSubset<T, FinancialPeriodDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FinancialPeriods.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialPeriodUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FinancialPeriods
+     * const financialPeriod = await prisma.financialPeriod.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FinancialPeriodUpdateManyArgs>(args: SelectSubset<T, FinancialPeriodUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one FinancialPeriod.
+     * @param {FinancialPeriodUpsertArgs} args - Arguments to update or create a FinancialPeriod.
+     * @example
+     * // Update or create a FinancialPeriod
+     * const financialPeriod = await prisma.financialPeriod.upsert({
+     *   create: {
+     *     // ... data to create a FinancialPeriod
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FinancialPeriod we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FinancialPeriodUpsertArgs>(args: SelectSubset<T, FinancialPeriodUpsertArgs<ExtArgs>>): Prisma__FinancialPeriodClient<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of FinancialPeriods.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialPeriodCountArgs} args - Arguments to filter FinancialPeriods to count.
+     * @example
+     * // Count the number of FinancialPeriods
+     * const count = await prisma.financialPeriod.count({
+     *   where: {
+     *     // ... the filter for the FinancialPeriods we want to count
+     *   }
+     * })
+    **/
+    count<T extends FinancialPeriodCountArgs>(
+      args?: Subset<T, FinancialPeriodCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FinancialPeriodCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FinancialPeriod.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialPeriodAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FinancialPeriodAggregateArgs>(args: Subset<T, FinancialPeriodAggregateArgs>): Prisma.PrismaPromise<GetFinancialPeriodAggregateType<T>>
+
+    /**
+     * Group by FinancialPeriod.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialPeriodGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FinancialPeriodGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FinancialPeriodGroupByArgs['orderBy'] }
+        : { orderBy?: FinancialPeriodGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FinancialPeriodGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFinancialPeriodGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FinancialPeriod model
+   */
+  readonly fields: FinancialPeriodFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FinancialPeriod.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FinancialPeriodClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    snapshots<T extends FinancialPeriod$snapshotsArgs<ExtArgs> = {}>(args?: Subset<T, FinancialPeriod$snapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FinancialPeriod model
+   */ 
+  interface FinancialPeriodFieldRefs {
+    readonly id: FieldRef<"FinancialPeriod", 'String'>
+    readonly tenantId: FieldRef<"FinancialPeriod", 'String'>
+    readonly shopId: FieldRef<"FinancialPeriod", 'String'>
+    readonly date: FieldRef<"FinancialPeriod", 'DateTime'>
+    readonly createdAt: FieldRef<"FinancialPeriod", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FinancialPeriod findUnique
+   */
+  export type FinancialPeriodFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialPeriod to fetch.
+     */
+    where: FinancialPeriodWhereUniqueInput
+  }
+
+  /**
+   * FinancialPeriod findUniqueOrThrow
+   */
+  export type FinancialPeriodFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialPeriod to fetch.
+     */
+    where: FinancialPeriodWhereUniqueInput
+  }
+
+  /**
+   * FinancialPeriod findFirst
+   */
+  export type FinancialPeriodFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialPeriod to fetch.
+     */
+    where?: FinancialPeriodWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FinancialPeriods to fetch.
+     */
+    orderBy?: FinancialPeriodOrderByWithRelationInput | FinancialPeriodOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FinancialPeriods.
+     */
+    cursor?: FinancialPeriodWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FinancialPeriods from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FinancialPeriods.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FinancialPeriods.
+     */
+    distinct?: FinancialPeriodScalarFieldEnum | FinancialPeriodScalarFieldEnum[]
+  }
+
+  /**
+   * FinancialPeriod findFirstOrThrow
+   */
+  export type FinancialPeriodFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialPeriod to fetch.
+     */
+    where?: FinancialPeriodWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FinancialPeriods to fetch.
+     */
+    orderBy?: FinancialPeriodOrderByWithRelationInput | FinancialPeriodOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FinancialPeriods.
+     */
+    cursor?: FinancialPeriodWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FinancialPeriods from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FinancialPeriods.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FinancialPeriods.
+     */
+    distinct?: FinancialPeriodScalarFieldEnum | FinancialPeriodScalarFieldEnum[]
+  }
+
+  /**
+   * FinancialPeriod findMany
+   */
+  export type FinancialPeriodFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialPeriods to fetch.
+     */
+    where?: FinancialPeriodWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FinancialPeriods to fetch.
+     */
+    orderBy?: FinancialPeriodOrderByWithRelationInput | FinancialPeriodOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FinancialPeriods.
+     */
+    cursor?: FinancialPeriodWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FinancialPeriods from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FinancialPeriods.
+     */
+    skip?: number
+    distinct?: FinancialPeriodScalarFieldEnum | FinancialPeriodScalarFieldEnum[]
+  }
+
+  /**
+   * FinancialPeriod create
+   */
+  export type FinancialPeriodCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FinancialPeriod.
+     */
+    data: XOR<FinancialPeriodCreateInput, FinancialPeriodUncheckedCreateInput>
+  }
+
+  /**
+   * FinancialPeriod createMany
+   */
+  export type FinancialPeriodCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FinancialPeriods.
+     */
+    data: FinancialPeriodCreateManyInput | FinancialPeriodCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FinancialPeriod createManyAndReturn
+   */
+  export type FinancialPeriodCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many FinancialPeriods.
+     */
+    data: FinancialPeriodCreateManyInput | FinancialPeriodCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FinancialPeriod update
+   */
+  export type FinancialPeriodUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+    /**
+     * The data needed to update a FinancialPeriod.
+     */
+    data: XOR<FinancialPeriodUpdateInput, FinancialPeriodUncheckedUpdateInput>
+    /**
+     * Choose, which FinancialPeriod to update.
+     */
+    where: FinancialPeriodWhereUniqueInput
+  }
+
+  /**
+   * FinancialPeriod updateMany
+   */
+  export type FinancialPeriodUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FinancialPeriods.
+     */
+    data: XOR<FinancialPeriodUpdateManyMutationInput, FinancialPeriodUncheckedUpdateManyInput>
+    /**
+     * Filter which FinancialPeriods to update
+     */
+    where?: FinancialPeriodWhereInput
+  }
+
+  /**
+   * FinancialPeriod upsert
+   */
+  export type FinancialPeriodUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FinancialPeriod to update in case it exists.
+     */
+    where: FinancialPeriodWhereUniqueInput
+    /**
+     * In case the FinancialPeriod found by the `where` argument doesn't exist, create a new FinancialPeriod with this data.
+     */
+    create: XOR<FinancialPeriodCreateInput, FinancialPeriodUncheckedCreateInput>
+    /**
+     * In case the FinancialPeriod was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FinancialPeriodUpdateInput, FinancialPeriodUncheckedUpdateInput>
+  }
+
+  /**
+   * FinancialPeriod delete
+   */
+  export type FinancialPeriodDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+    /**
+     * Filter which FinancialPeriod to delete.
+     */
+    where: FinancialPeriodWhereUniqueInput
+  }
+
+  /**
+   * FinancialPeriod deleteMany
+   */
+  export type FinancialPeriodDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FinancialPeriods to delete
+     */
+    where?: FinancialPeriodWhereInput
+  }
+
+  /**
+   * FinancialPeriod.snapshots
+   */
+  export type FinancialPeriod$snapshotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    where?: PeriodSnapshotWhereInput
+    orderBy?: PeriodSnapshotOrderByWithRelationInput | PeriodSnapshotOrderByWithRelationInput[]
+    cursor?: PeriodSnapshotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PeriodSnapshotScalarFieldEnum | PeriodSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * FinancialPeriod without action
+   */
+  export type FinancialPeriodDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialPeriod
+     */
+    select?: FinancialPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialPeriodInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PeriodSnapshot
+   */
+
+  export type AggregatePeriodSnapshot = {
+    _count: PeriodSnapshotCountAggregateOutputType | null
+    _avg: PeriodSnapshotAvgAggregateOutputType | null
+    _sum: PeriodSnapshotSumAggregateOutputType | null
+    _min: PeriodSnapshotMinAggregateOutputType | null
+    _max: PeriodSnapshotMaxAggregateOutputType | null
+  }
+
+  export type PeriodSnapshotAvgAggregateOutputType = {
+    openingMinor: number | null
+    inflowsMinor: number | null
+    outflowsMinor: number | null
+    adjustmentsMinor: number | null
+    closingMinor: number | null
+  }
+
+  export type PeriodSnapshotSumAggregateOutputType = {
+    openingMinor: bigint | null
+    inflowsMinor: bigint | null
+    outflowsMinor: bigint | null
+    adjustmentsMinor: bigint | null
+    closingMinor: bigint | null
+  }
+
+  export type PeriodSnapshotMinAggregateOutputType = {
+    id: string | null
+    periodId: string | null
+    scopeType: string | null
+    scopeKey: string | null
+    openingMinor: bigint | null
+    inflowsMinor: bigint | null
+    outflowsMinor: bigint | null
+    adjustmentsMinor: bigint | null
+    closingMinor: bigint | null
+  }
+
+  export type PeriodSnapshotMaxAggregateOutputType = {
+    id: string | null
+    periodId: string | null
+    scopeType: string | null
+    scopeKey: string | null
+    openingMinor: bigint | null
+    inflowsMinor: bigint | null
+    outflowsMinor: bigint | null
+    adjustmentsMinor: bigint | null
+    closingMinor: bigint | null
+  }
+
+  export type PeriodSnapshotCountAggregateOutputType = {
+    id: number
+    periodId: number
+    scopeType: number
+    scopeKey: number
+    openingMinor: number
+    inflowsMinor: number
+    outflowsMinor: number
+    adjustmentsMinor: number
+    closingMinor: number
+    _all: number
+  }
+
+
+  export type PeriodSnapshotAvgAggregateInputType = {
+    openingMinor?: true
+    inflowsMinor?: true
+    outflowsMinor?: true
+    adjustmentsMinor?: true
+    closingMinor?: true
+  }
+
+  export type PeriodSnapshotSumAggregateInputType = {
+    openingMinor?: true
+    inflowsMinor?: true
+    outflowsMinor?: true
+    adjustmentsMinor?: true
+    closingMinor?: true
+  }
+
+  export type PeriodSnapshotMinAggregateInputType = {
+    id?: true
+    periodId?: true
+    scopeType?: true
+    scopeKey?: true
+    openingMinor?: true
+    inflowsMinor?: true
+    outflowsMinor?: true
+    adjustmentsMinor?: true
+    closingMinor?: true
+  }
+
+  export type PeriodSnapshotMaxAggregateInputType = {
+    id?: true
+    periodId?: true
+    scopeType?: true
+    scopeKey?: true
+    openingMinor?: true
+    inflowsMinor?: true
+    outflowsMinor?: true
+    adjustmentsMinor?: true
+    closingMinor?: true
+  }
+
+  export type PeriodSnapshotCountAggregateInputType = {
+    id?: true
+    periodId?: true
+    scopeType?: true
+    scopeKey?: true
+    openingMinor?: true
+    inflowsMinor?: true
+    outflowsMinor?: true
+    adjustmentsMinor?: true
+    closingMinor?: true
+    _all?: true
+  }
+
+  export type PeriodSnapshotAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PeriodSnapshot to aggregate.
+     */
+    where?: PeriodSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PeriodSnapshots to fetch.
+     */
+    orderBy?: PeriodSnapshotOrderByWithRelationInput | PeriodSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PeriodSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PeriodSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PeriodSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PeriodSnapshots
+    **/
+    _count?: true | PeriodSnapshotCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PeriodSnapshotAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PeriodSnapshotSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PeriodSnapshotMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PeriodSnapshotMaxAggregateInputType
+  }
+
+  export type GetPeriodSnapshotAggregateType<T extends PeriodSnapshotAggregateArgs> = {
+        [P in keyof T & keyof AggregatePeriodSnapshot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePeriodSnapshot[P]>
+      : GetScalarType<T[P], AggregatePeriodSnapshot[P]>
+  }
+
+
+
+
+  export type PeriodSnapshotGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PeriodSnapshotWhereInput
+    orderBy?: PeriodSnapshotOrderByWithAggregationInput | PeriodSnapshotOrderByWithAggregationInput[]
+    by: PeriodSnapshotScalarFieldEnum[] | PeriodSnapshotScalarFieldEnum
+    having?: PeriodSnapshotScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PeriodSnapshotCountAggregateInputType | true
+    _avg?: PeriodSnapshotAvgAggregateInputType
+    _sum?: PeriodSnapshotSumAggregateInputType
+    _min?: PeriodSnapshotMinAggregateInputType
+    _max?: PeriodSnapshotMaxAggregateInputType
+  }
+
+  export type PeriodSnapshotGroupByOutputType = {
+    id: string
+    periodId: string
+    scopeType: string
+    scopeKey: string
+    openingMinor: bigint
+    inflowsMinor: bigint
+    outflowsMinor: bigint
+    adjustmentsMinor: bigint
+    closingMinor: bigint
+    _count: PeriodSnapshotCountAggregateOutputType | null
+    _avg: PeriodSnapshotAvgAggregateOutputType | null
+    _sum: PeriodSnapshotSumAggregateOutputType | null
+    _min: PeriodSnapshotMinAggregateOutputType | null
+    _max: PeriodSnapshotMaxAggregateOutputType | null
+  }
+
+  type GetPeriodSnapshotGroupByPayload<T extends PeriodSnapshotGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PeriodSnapshotGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PeriodSnapshotGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PeriodSnapshotGroupByOutputType[P]>
+            : GetScalarType<T[P], PeriodSnapshotGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PeriodSnapshotSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    periodId?: boolean
+    scopeType?: boolean
+    scopeKey?: boolean
+    openingMinor?: boolean
+    inflowsMinor?: boolean
+    outflowsMinor?: boolean
+    adjustmentsMinor?: boolean
+    closingMinor?: boolean
+    period?: boolean | FinancialPeriodDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["periodSnapshot"]>
+
+  export type PeriodSnapshotSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    periodId?: boolean
+    scopeType?: boolean
+    scopeKey?: boolean
+    openingMinor?: boolean
+    inflowsMinor?: boolean
+    outflowsMinor?: boolean
+    adjustmentsMinor?: boolean
+    closingMinor?: boolean
+    period?: boolean | FinancialPeriodDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["periodSnapshot"]>
+
+  export type PeriodSnapshotSelectScalar = {
+    id?: boolean
+    periodId?: boolean
+    scopeType?: boolean
+    scopeKey?: boolean
+    openingMinor?: boolean
+    inflowsMinor?: boolean
+    outflowsMinor?: boolean
+    adjustmentsMinor?: boolean
+    closingMinor?: boolean
+  }
+
+  export type PeriodSnapshotInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    period?: boolean | FinancialPeriodDefaultArgs<ExtArgs>
+  }
+  export type PeriodSnapshotIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    period?: boolean | FinancialPeriodDefaultArgs<ExtArgs>
+  }
+
+  export type $PeriodSnapshotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PeriodSnapshot"
+    objects: {
+      period: Prisma.$FinancialPeriodPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      periodId: string
+      scopeType: string
+      scopeKey: string
+      openingMinor: bigint
+      inflowsMinor: bigint
+      outflowsMinor: bigint
+      adjustmentsMinor: bigint
+      closingMinor: bigint
+    }, ExtArgs["result"]["periodSnapshot"]>
+    composites: {}
+  }
+
+  type PeriodSnapshotGetPayload<S extends boolean | null | undefined | PeriodSnapshotDefaultArgs> = $Result.GetResult<Prisma.$PeriodSnapshotPayload, S>
+
+  type PeriodSnapshotCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PeriodSnapshotFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PeriodSnapshotCountAggregateInputType | true
+    }
+
+  export interface PeriodSnapshotDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PeriodSnapshot'], meta: { name: 'PeriodSnapshot' } }
+    /**
+     * Find zero or one PeriodSnapshot that matches the filter.
+     * @param {PeriodSnapshotFindUniqueArgs} args - Arguments to find a PeriodSnapshot
+     * @example
+     * // Get one PeriodSnapshot
+     * const periodSnapshot = await prisma.periodSnapshot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PeriodSnapshotFindUniqueArgs>(args: SelectSubset<T, PeriodSnapshotFindUniqueArgs<ExtArgs>>): Prisma__PeriodSnapshotClient<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PeriodSnapshot that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PeriodSnapshotFindUniqueOrThrowArgs} args - Arguments to find a PeriodSnapshot
+     * @example
+     * // Get one PeriodSnapshot
+     * const periodSnapshot = await prisma.periodSnapshot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PeriodSnapshotFindUniqueOrThrowArgs>(args: SelectSubset<T, PeriodSnapshotFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PeriodSnapshotClient<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PeriodSnapshot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PeriodSnapshotFindFirstArgs} args - Arguments to find a PeriodSnapshot
+     * @example
+     * // Get one PeriodSnapshot
+     * const periodSnapshot = await prisma.periodSnapshot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PeriodSnapshotFindFirstArgs>(args?: SelectSubset<T, PeriodSnapshotFindFirstArgs<ExtArgs>>): Prisma__PeriodSnapshotClient<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PeriodSnapshot that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PeriodSnapshotFindFirstOrThrowArgs} args - Arguments to find a PeriodSnapshot
+     * @example
+     * // Get one PeriodSnapshot
+     * const periodSnapshot = await prisma.periodSnapshot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PeriodSnapshotFindFirstOrThrowArgs>(args?: SelectSubset<T, PeriodSnapshotFindFirstOrThrowArgs<ExtArgs>>): Prisma__PeriodSnapshotClient<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PeriodSnapshots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PeriodSnapshotFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PeriodSnapshots
+     * const periodSnapshots = await prisma.periodSnapshot.findMany()
+     * 
+     * // Get first 10 PeriodSnapshots
+     * const periodSnapshots = await prisma.periodSnapshot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const periodSnapshotWithIdOnly = await prisma.periodSnapshot.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PeriodSnapshotFindManyArgs>(args?: SelectSubset<T, PeriodSnapshotFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PeriodSnapshot.
+     * @param {PeriodSnapshotCreateArgs} args - Arguments to create a PeriodSnapshot.
+     * @example
+     * // Create one PeriodSnapshot
+     * const PeriodSnapshot = await prisma.periodSnapshot.create({
+     *   data: {
+     *     // ... data to create a PeriodSnapshot
+     *   }
+     * })
+     * 
+     */
+    create<T extends PeriodSnapshotCreateArgs>(args: SelectSubset<T, PeriodSnapshotCreateArgs<ExtArgs>>): Prisma__PeriodSnapshotClient<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PeriodSnapshots.
+     * @param {PeriodSnapshotCreateManyArgs} args - Arguments to create many PeriodSnapshots.
+     * @example
+     * // Create many PeriodSnapshots
+     * const periodSnapshot = await prisma.periodSnapshot.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PeriodSnapshotCreateManyArgs>(args?: SelectSubset<T, PeriodSnapshotCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PeriodSnapshots and returns the data saved in the database.
+     * @param {PeriodSnapshotCreateManyAndReturnArgs} args - Arguments to create many PeriodSnapshots.
+     * @example
+     * // Create many PeriodSnapshots
+     * const periodSnapshot = await prisma.periodSnapshot.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PeriodSnapshots and only return the `id`
+     * const periodSnapshotWithIdOnly = await prisma.periodSnapshot.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PeriodSnapshotCreateManyAndReturnArgs>(args?: SelectSubset<T, PeriodSnapshotCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PeriodSnapshot.
+     * @param {PeriodSnapshotDeleteArgs} args - Arguments to delete one PeriodSnapshot.
+     * @example
+     * // Delete one PeriodSnapshot
+     * const PeriodSnapshot = await prisma.periodSnapshot.delete({
+     *   where: {
+     *     // ... filter to delete one PeriodSnapshot
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PeriodSnapshotDeleteArgs>(args: SelectSubset<T, PeriodSnapshotDeleteArgs<ExtArgs>>): Prisma__PeriodSnapshotClient<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PeriodSnapshot.
+     * @param {PeriodSnapshotUpdateArgs} args - Arguments to update one PeriodSnapshot.
+     * @example
+     * // Update one PeriodSnapshot
+     * const periodSnapshot = await prisma.periodSnapshot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PeriodSnapshotUpdateArgs>(args: SelectSubset<T, PeriodSnapshotUpdateArgs<ExtArgs>>): Prisma__PeriodSnapshotClient<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PeriodSnapshots.
+     * @param {PeriodSnapshotDeleteManyArgs} args - Arguments to filter PeriodSnapshots to delete.
+     * @example
+     * // Delete a few PeriodSnapshots
+     * const { count } = await prisma.periodSnapshot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PeriodSnapshotDeleteManyArgs>(args?: SelectSubset<T, PeriodSnapshotDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PeriodSnapshots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PeriodSnapshotUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PeriodSnapshots
+     * const periodSnapshot = await prisma.periodSnapshot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PeriodSnapshotUpdateManyArgs>(args: SelectSubset<T, PeriodSnapshotUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PeriodSnapshot.
+     * @param {PeriodSnapshotUpsertArgs} args - Arguments to update or create a PeriodSnapshot.
+     * @example
+     * // Update or create a PeriodSnapshot
+     * const periodSnapshot = await prisma.periodSnapshot.upsert({
+     *   create: {
+     *     // ... data to create a PeriodSnapshot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PeriodSnapshot we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PeriodSnapshotUpsertArgs>(args: SelectSubset<T, PeriodSnapshotUpsertArgs<ExtArgs>>): Prisma__PeriodSnapshotClient<$Result.GetResult<Prisma.$PeriodSnapshotPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PeriodSnapshots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PeriodSnapshotCountArgs} args - Arguments to filter PeriodSnapshots to count.
+     * @example
+     * // Count the number of PeriodSnapshots
+     * const count = await prisma.periodSnapshot.count({
+     *   where: {
+     *     // ... the filter for the PeriodSnapshots we want to count
+     *   }
+     * })
+    **/
+    count<T extends PeriodSnapshotCountArgs>(
+      args?: Subset<T, PeriodSnapshotCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PeriodSnapshotCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PeriodSnapshot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PeriodSnapshotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PeriodSnapshotAggregateArgs>(args: Subset<T, PeriodSnapshotAggregateArgs>): Prisma.PrismaPromise<GetPeriodSnapshotAggregateType<T>>
+
+    /**
+     * Group by PeriodSnapshot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PeriodSnapshotGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PeriodSnapshotGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PeriodSnapshotGroupByArgs['orderBy'] }
+        : { orderBy?: PeriodSnapshotGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PeriodSnapshotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPeriodSnapshotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PeriodSnapshot model
+   */
+  readonly fields: PeriodSnapshotFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PeriodSnapshot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PeriodSnapshotClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    period<T extends FinancialPeriodDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FinancialPeriodDefaultArgs<ExtArgs>>): Prisma__FinancialPeriodClient<$Result.GetResult<Prisma.$FinancialPeriodPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PeriodSnapshot model
+   */ 
+  interface PeriodSnapshotFieldRefs {
+    readonly id: FieldRef<"PeriodSnapshot", 'String'>
+    readonly periodId: FieldRef<"PeriodSnapshot", 'String'>
+    readonly scopeType: FieldRef<"PeriodSnapshot", 'String'>
+    readonly scopeKey: FieldRef<"PeriodSnapshot", 'String'>
+    readonly openingMinor: FieldRef<"PeriodSnapshot", 'BigInt'>
+    readonly inflowsMinor: FieldRef<"PeriodSnapshot", 'BigInt'>
+    readonly outflowsMinor: FieldRef<"PeriodSnapshot", 'BigInt'>
+    readonly adjustmentsMinor: FieldRef<"PeriodSnapshot", 'BigInt'>
+    readonly closingMinor: FieldRef<"PeriodSnapshot", 'BigInt'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PeriodSnapshot findUnique
+   */
+  export type PeriodSnapshotFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PeriodSnapshot to fetch.
+     */
+    where: PeriodSnapshotWhereUniqueInput
+  }
+
+  /**
+   * PeriodSnapshot findUniqueOrThrow
+   */
+  export type PeriodSnapshotFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PeriodSnapshot to fetch.
+     */
+    where: PeriodSnapshotWhereUniqueInput
+  }
+
+  /**
+   * PeriodSnapshot findFirst
+   */
+  export type PeriodSnapshotFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PeriodSnapshot to fetch.
+     */
+    where?: PeriodSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PeriodSnapshots to fetch.
+     */
+    orderBy?: PeriodSnapshotOrderByWithRelationInput | PeriodSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PeriodSnapshots.
+     */
+    cursor?: PeriodSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PeriodSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PeriodSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PeriodSnapshots.
+     */
+    distinct?: PeriodSnapshotScalarFieldEnum | PeriodSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * PeriodSnapshot findFirstOrThrow
+   */
+  export type PeriodSnapshotFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PeriodSnapshot to fetch.
+     */
+    where?: PeriodSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PeriodSnapshots to fetch.
+     */
+    orderBy?: PeriodSnapshotOrderByWithRelationInput | PeriodSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PeriodSnapshots.
+     */
+    cursor?: PeriodSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PeriodSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PeriodSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PeriodSnapshots.
+     */
+    distinct?: PeriodSnapshotScalarFieldEnum | PeriodSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * PeriodSnapshot findMany
+   */
+  export type PeriodSnapshotFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PeriodSnapshots to fetch.
+     */
+    where?: PeriodSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PeriodSnapshots to fetch.
+     */
+    orderBy?: PeriodSnapshotOrderByWithRelationInput | PeriodSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PeriodSnapshots.
+     */
+    cursor?: PeriodSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PeriodSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PeriodSnapshots.
+     */
+    skip?: number
+    distinct?: PeriodSnapshotScalarFieldEnum | PeriodSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * PeriodSnapshot create
+   */
+  export type PeriodSnapshotCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PeriodSnapshot.
+     */
+    data: XOR<PeriodSnapshotCreateInput, PeriodSnapshotUncheckedCreateInput>
+  }
+
+  /**
+   * PeriodSnapshot createMany
+   */
+  export type PeriodSnapshotCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PeriodSnapshots.
+     */
+    data: PeriodSnapshotCreateManyInput | PeriodSnapshotCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PeriodSnapshot createManyAndReturn
+   */
+  export type PeriodSnapshotCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PeriodSnapshots.
+     */
+    data: PeriodSnapshotCreateManyInput | PeriodSnapshotCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PeriodSnapshot update
+   */
+  export type PeriodSnapshotUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PeriodSnapshot.
+     */
+    data: XOR<PeriodSnapshotUpdateInput, PeriodSnapshotUncheckedUpdateInput>
+    /**
+     * Choose, which PeriodSnapshot to update.
+     */
+    where: PeriodSnapshotWhereUniqueInput
+  }
+
+  /**
+   * PeriodSnapshot updateMany
+   */
+  export type PeriodSnapshotUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PeriodSnapshots.
+     */
+    data: XOR<PeriodSnapshotUpdateManyMutationInput, PeriodSnapshotUncheckedUpdateManyInput>
+    /**
+     * Filter which PeriodSnapshots to update
+     */
+    where?: PeriodSnapshotWhereInput
+  }
+
+  /**
+   * PeriodSnapshot upsert
+   */
+  export type PeriodSnapshotUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PeriodSnapshot to update in case it exists.
+     */
+    where: PeriodSnapshotWhereUniqueInput
+    /**
+     * In case the PeriodSnapshot found by the `where` argument doesn't exist, create a new PeriodSnapshot with this data.
+     */
+    create: XOR<PeriodSnapshotCreateInput, PeriodSnapshotUncheckedCreateInput>
+    /**
+     * In case the PeriodSnapshot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PeriodSnapshotUpdateInput, PeriodSnapshotUncheckedUpdateInput>
+  }
+
+  /**
+   * PeriodSnapshot delete
+   */
+  export type PeriodSnapshotDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter which PeriodSnapshot to delete.
+     */
+    where: PeriodSnapshotWhereUniqueInput
+  }
+
+  /**
+   * PeriodSnapshot deleteMany
+   */
+  export type PeriodSnapshotDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PeriodSnapshots to delete
+     */
+    where?: PeriodSnapshotWhereInput
+  }
+
+  /**
+   * PeriodSnapshot without action
+   */
+  export type PeriodSnapshotDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PeriodSnapshot
+     */
+    select?: PeriodSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PeriodSnapshotInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TreasuryObligation
+   */
+
+  export type AggregateTreasuryObligation = {
+    _count: TreasuryObligationCountAggregateOutputType | null
+    _avg: TreasuryObligationAvgAggregateOutputType | null
+    _sum: TreasuryObligationSumAggregateOutputType | null
+    _min: TreasuryObligationMinAggregateOutputType | null
+    _max: TreasuryObligationMaxAggregateOutputType | null
+  }
+
+  export type TreasuryObligationAvgAggregateOutputType = {
+    outstandingMinor: number | null
+  }
+
+  export type TreasuryObligationSumAggregateOutputType = {
+    outstandingMinor: bigint | null
+  }
+
+  export type TreasuryObligationMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    kind: string | null
+    lenderFundCode: string | null
+    borrowerFundCode: string | null
+    partyName: string | null
+    outstandingMinor: bigint | null
+    financialTransactionId: string | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TreasuryObligationMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    kind: string | null
+    lenderFundCode: string | null
+    borrowerFundCode: string | null
+    partyName: string | null
+    outstandingMinor: bigint | null
+    financialTransactionId: string | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TreasuryObligationCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    kind: number
+    lenderFundCode: number
+    borrowerFundCode: number
+    partyName: number
+    outstandingMinor: number
+    financialTransactionId: number
+    status: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TreasuryObligationAvgAggregateInputType = {
+    outstandingMinor?: true
+  }
+
+  export type TreasuryObligationSumAggregateInputType = {
+    outstandingMinor?: true
+  }
+
+  export type TreasuryObligationMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    kind?: true
+    lenderFundCode?: true
+    borrowerFundCode?: true
+    partyName?: true
+    outstandingMinor?: true
+    financialTransactionId?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TreasuryObligationMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    kind?: true
+    lenderFundCode?: true
+    borrowerFundCode?: true
+    partyName?: true
+    outstandingMinor?: true
+    financialTransactionId?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TreasuryObligationCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    kind?: true
+    lenderFundCode?: true
+    borrowerFundCode?: true
+    partyName?: true
+    outstandingMinor?: true
+    financialTransactionId?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TreasuryObligationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TreasuryObligation to aggregate.
+     */
+    where?: TreasuryObligationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryObligations to fetch.
+     */
+    orderBy?: TreasuryObligationOrderByWithRelationInput | TreasuryObligationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TreasuryObligationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryObligations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryObligations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TreasuryObligations
+    **/
+    _count?: true | TreasuryObligationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TreasuryObligationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TreasuryObligationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TreasuryObligationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TreasuryObligationMaxAggregateInputType
+  }
+
+  export type GetTreasuryObligationAggregateType<T extends TreasuryObligationAggregateArgs> = {
+        [P in keyof T & keyof AggregateTreasuryObligation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTreasuryObligation[P]>
+      : GetScalarType<T[P], AggregateTreasuryObligation[P]>
+  }
+
+
+
+
+  export type TreasuryObligationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreasuryObligationWhereInput
+    orderBy?: TreasuryObligationOrderByWithAggregationInput | TreasuryObligationOrderByWithAggregationInput[]
+    by: TreasuryObligationScalarFieldEnum[] | TreasuryObligationScalarFieldEnum
+    having?: TreasuryObligationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TreasuryObligationCountAggregateInputType | true
+    _avg?: TreasuryObligationAvgAggregateInputType
+    _sum?: TreasuryObligationSumAggregateInputType
+    _min?: TreasuryObligationMinAggregateInputType
+    _max?: TreasuryObligationMaxAggregateInputType
+  }
+
+  export type TreasuryObligationGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    kind: string
+    lenderFundCode: string | null
+    borrowerFundCode: string | null
+    partyName: string
+    outstandingMinor: bigint
+    financialTransactionId: string
+    status: string
+    createdAt: Date
+    updatedAt: Date
+    _count: TreasuryObligationCountAggregateOutputType | null
+    _avg: TreasuryObligationAvgAggregateOutputType | null
+    _sum: TreasuryObligationSumAggregateOutputType | null
+    _min: TreasuryObligationMinAggregateOutputType | null
+    _max: TreasuryObligationMaxAggregateOutputType | null
+  }
+
+  type GetTreasuryObligationGroupByPayload<T extends TreasuryObligationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TreasuryObligationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TreasuryObligationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TreasuryObligationGroupByOutputType[P]>
+            : GetScalarType<T[P], TreasuryObligationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TreasuryObligationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    kind?: boolean
+    lenderFundCode?: boolean
+    borrowerFundCode?: boolean
+    partyName?: boolean
+    outstandingMinor?: boolean
+    financialTransactionId?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["treasuryObligation"]>
+
+  export type TreasuryObligationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    kind?: boolean
+    lenderFundCode?: boolean
+    borrowerFundCode?: boolean
+    partyName?: boolean
+    outstandingMinor?: boolean
+    financialTransactionId?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["treasuryObligation"]>
+
+  export type TreasuryObligationSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    kind?: boolean
+    lenderFundCode?: boolean
+    borrowerFundCode?: boolean
+    partyName?: boolean
+    outstandingMinor?: boolean
+    financialTransactionId?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $TreasuryObligationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TreasuryObligation"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      kind: string
+      lenderFundCode: string | null
+      borrowerFundCode: string | null
+      partyName: string
+      outstandingMinor: bigint
+      financialTransactionId: string
+      status: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["treasuryObligation"]>
+    composites: {}
+  }
+
+  type TreasuryObligationGetPayload<S extends boolean | null | undefined | TreasuryObligationDefaultArgs> = $Result.GetResult<Prisma.$TreasuryObligationPayload, S>
+
+  type TreasuryObligationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TreasuryObligationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TreasuryObligationCountAggregateInputType | true
+    }
+
+  export interface TreasuryObligationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TreasuryObligation'], meta: { name: 'TreasuryObligation' } }
+    /**
+     * Find zero or one TreasuryObligation that matches the filter.
+     * @param {TreasuryObligationFindUniqueArgs} args - Arguments to find a TreasuryObligation
+     * @example
+     * // Get one TreasuryObligation
+     * const treasuryObligation = await prisma.treasuryObligation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TreasuryObligationFindUniqueArgs>(args: SelectSubset<T, TreasuryObligationFindUniqueArgs<ExtArgs>>): Prisma__TreasuryObligationClient<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TreasuryObligation that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TreasuryObligationFindUniqueOrThrowArgs} args - Arguments to find a TreasuryObligation
+     * @example
+     * // Get one TreasuryObligation
+     * const treasuryObligation = await prisma.treasuryObligation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TreasuryObligationFindUniqueOrThrowArgs>(args: SelectSubset<T, TreasuryObligationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TreasuryObligationClient<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TreasuryObligation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryObligationFindFirstArgs} args - Arguments to find a TreasuryObligation
+     * @example
+     * // Get one TreasuryObligation
+     * const treasuryObligation = await prisma.treasuryObligation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TreasuryObligationFindFirstArgs>(args?: SelectSubset<T, TreasuryObligationFindFirstArgs<ExtArgs>>): Prisma__TreasuryObligationClient<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TreasuryObligation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryObligationFindFirstOrThrowArgs} args - Arguments to find a TreasuryObligation
+     * @example
+     * // Get one TreasuryObligation
+     * const treasuryObligation = await prisma.treasuryObligation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TreasuryObligationFindFirstOrThrowArgs>(args?: SelectSubset<T, TreasuryObligationFindFirstOrThrowArgs<ExtArgs>>): Prisma__TreasuryObligationClient<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TreasuryObligations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryObligationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TreasuryObligations
+     * const treasuryObligations = await prisma.treasuryObligation.findMany()
+     * 
+     * // Get first 10 TreasuryObligations
+     * const treasuryObligations = await prisma.treasuryObligation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const treasuryObligationWithIdOnly = await prisma.treasuryObligation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TreasuryObligationFindManyArgs>(args?: SelectSubset<T, TreasuryObligationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TreasuryObligation.
+     * @param {TreasuryObligationCreateArgs} args - Arguments to create a TreasuryObligation.
+     * @example
+     * // Create one TreasuryObligation
+     * const TreasuryObligation = await prisma.treasuryObligation.create({
+     *   data: {
+     *     // ... data to create a TreasuryObligation
+     *   }
+     * })
+     * 
+     */
+    create<T extends TreasuryObligationCreateArgs>(args: SelectSubset<T, TreasuryObligationCreateArgs<ExtArgs>>): Prisma__TreasuryObligationClient<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TreasuryObligations.
+     * @param {TreasuryObligationCreateManyArgs} args - Arguments to create many TreasuryObligations.
+     * @example
+     * // Create many TreasuryObligations
+     * const treasuryObligation = await prisma.treasuryObligation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TreasuryObligationCreateManyArgs>(args?: SelectSubset<T, TreasuryObligationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TreasuryObligations and returns the data saved in the database.
+     * @param {TreasuryObligationCreateManyAndReturnArgs} args - Arguments to create many TreasuryObligations.
+     * @example
+     * // Create many TreasuryObligations
+     * const treasuryObligation = await prisma.treasuryObligation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TreasuryObligations and only return the `id`
+     * const treasuryObligationWithIdOnly = await prisma.treasuryObligation.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TreasuryObligationCreateManyAndReturnArgs>(args?: SelectSubset<T, TreasuryObligationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a TreasuryObligation.
+     * @param {TreasuryObligationDeleteArgs} args - Arguments to delete one TreasuryObligation.
+     * @example
+     * // Delete one TreasuryObligation
+     * const TreasuryObligation = await prisma.treasuryObligation.delete({
+     *   where: {
+     *     // ... filter to delete one TreasuryObligation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TreasuryObligationDeleteArgs>(args: SelectSubset<T, TreasuryObligationDeleteArgs<ExtArgs>>): Prisma__TreasuryObligationClient<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TreasuryObligation.
+     * @param {TreasuryObligationUpdateArgs} args - Arguments to update one TreasuryObligation.
+     * @example
+     * // Update one TreasuryObligation
+     * const treasuryObligation = await prisma.treasuryObligation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TreasuryObligationUpdateArgs>(args: SelectSubset<T, TreasuryObligationUpdateArgs<ExtArgs>>): Prisma__TreasuryObligationClient<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TreasuryObligations.
+     * @param {TreasuryObligationDeleteManyArgs} args - Arguments to filter TreasuryObligations to delete.
+     * @example
+     * // Delete a few TreasuryObligations
+     * const { count } = await prisma.treasuryObligation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TreasuryObligationDeleteManyArgs>(args?: SelectSubset<T, TreasuryObligationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TreasuryObligations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryObligationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TreasuryObligations
+     * const treasuryObligation = await prisma.treasuryObligation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TreasuryObligationUpdateManyArgs>(args: SelectSubset<T, TreasuryObligationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TreasuryObligation.
+     * @param {TreasuryObligationUpsertArgs} args - Arguments to update or create a TreasuryObligation.
+     * @example
+     * // Update or create a TreasuryObligation
+     * const treasuryObligation = await prisma.treasuryObligation.upsert({
+     *   create: {
+     *     // ... data to create a TreasuryObligation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TreasuryObligation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TreasuryObligationUpsertArgs>(args: SelectSubset<T, TreasuryObligationUpsertArgs<ExtArgs>>): Prisma__TreasuryObligationClient<$Result.GetResult<Prisma.$TreasuryObligationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TreasuryObligations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryObligationCountArgs} args - Arguments to filter TreasuryObligations to count.
+     * @example
+     * // Count the number of TreasuryObligations
+     * const count = await prisma.treasuryObligation.count({
+     *   where: {
+     *     // ... the filter for the TreasuryObligations we want to count
+     *   }
+     * })
+    **/
+    count<T extends TreasuryObligationCountArgs>(
+      args?: Subset<T, TreasuryObligationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TreasuryObligationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TreasuryObligation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryObligationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TreasuryObligationAggregateArgs>(args: Subset<T, TreasuryObligationAggregateArgs>): Prisma.PrismaPromise<GetTreasuryObligationAggregateType<T>>
+
+    /**
+     * Group by TreasuryObligation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreasuryObligationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TreasuryObligationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TreasuryObligationGroupByArgs['orderBy'] }
+        : { orderBy?: TreasuryObligationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TreasuryObligationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTreasuryObligationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TreasuryObligation model
+   */
+  readonly fields: TreasuryObligationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TreasuryObligation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TreasuryObligationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TreasuryObligation model
+   */ 
+  interface TreasuryObligationFieldRefs {
+    readonly id: FieldRef<"TreasuryObligation", 'String'>
+    readonly tenantId: FieldRef<"TreasuryObligation", 'String'>
+    readonly shopId: FieldRef<"TreasuryObligation", 'String'>
+    readonly kind: FieldRef<"TreasuryObligation", 'String'>
+    readonly lenderFundCode: FieldRef<"TreasuryObligation", 'String'>
+    readonly borrowerFundCode: FieldRef<"TreasuryObligation", 'String'>
+    readonly partyName: FieldRef<"TreasuryObligation", 'String'>
+    readonly outstandingMinor: FieldRef<"TreasuryObligation", 'BigInt'>
+    readonly financialTransactionId: FieldRef<"TreasuryObligation", 'String'>
+    readonly status: FieldRef<"TreasuryObligation", 'String'>
+    readonly createdAt: FieldRef<"TreasuryObligation", 'DateTime'>
+    readonly updatedAt: FieldRef<"TreasuryObligation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TreasuryObligation findUnique
+   */
+  export type TreasuryObligationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which TreasuryObligation to fetch.
+     */
+    where: TreasuryObligationWhereUniqueInput
+  }
+
+  /**
+   * TreasuryObligation findUniqueOrThrow
+   */
+  export type TreasuryObligationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which TreasuryObligation to fetch.
+     */
+    where: TreasuryObligationWhereUniqueInput
+  }
+
+  /**
+   * TreasuryObligation findFirst
+   */
+  export type TreasuryObligationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which TreasuryObligation to fetch.
+     */
+    where?: TreasuryObligationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryObligations to fetch.
+     */
+    orderBy?: TreasuryObligationOrderByWithRelationInput | TreasuryObligationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TreasuryObligations.
+     */
+    cursor?: TreasuryObligationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryObligations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryObligations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TreasuryObligations.
+     */
+    distinct?: TreasuryObligationScalarFieldEnum | TreasuryObligationScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryObligation findFirstOrThrow
+   */
+  export type TreasuryObligationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which TreasuryObligation to fetch.
+     */
+    where?: TreasuryObligationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryObligations to fetch.
+     */
+    orderBy?: TreasuryObligationOrderByWithRelationInput | TreasuryObligationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TreasuryObligations.
+     */
+    cursor?: TreasuryObligationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryObligations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryObligations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TreasuryObligations.
+     */
+    distinct?: TreasuryObligationScalarFieldEnum | TreasuryObligationScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryObligation findMany
+   */
+  export type TreasuryObligationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which TreasuryObligations to fetch.
+     */
+    where?: TreasuryObligationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TreasuryObligations to fetch.
+     */
+    orderBy?: TreasuryObligationOrderByWithRelationInput | TreasuryObligationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TreasuryObligations.
+     */
+    cursor?: TreasuryObligationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TreasuryObligations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TreasuryObligations.
+     */
+    skip?: number
+    distinct?: TreasuryObligationScalarFieldEnum | TreasuryObligationScalarFieldEnum[]
+  }
+
+  /**
+   * TreasuryObligation create
+   */
+  export type TreasuryObligationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+    /**
+     * The data needed to create a TreasuryObligation.
+     */
+    data: XOR<TreasuryObligationCreateInput, TreasuryObligationUncheckedCreateInput>
+  }
+
+  /**
+   * TreasuryObligation createMany
+   */
+  export type TreasuryObligationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TreasuryObligations.
+     */
+    data: TreasuryObligationCreateManyInput | TreasuryObligationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TreasuryObligation createManyAndReturn
+   */
+  export type TreasuryObligationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many TreasuryObligations.
+     */
+    data: TreasuryObligationCreateManyInput | TreasuryObligationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TreasuryObligation update
+   */
+  export type TreasuryObligationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+    /**
+     * The data needed to update a TreasuryObligation.
+     */
+    data: XOR<TreasuryObligationUpdateInput, TreasuryObligationUncheckedUpdateInput>
+    /**
+     * Choose, which TreasuryObligation to update.
+     */
+    where: TreasuryObligationWhereUniqueInput
+  }
+
+  /**
+   * TreasuryObligation updateMany
+   */
+  export type TreasuryObligationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TreasuryObligations.
+     */
+    data: XOR<TreasuryObligationUpdateManyMutationInput, TreasuryObligationUncheckedUpdateManyInput>
+    /**
+     * Filter which TreasuryObligations to update
+     */
+    where?: TreasuryObligationWhereInput
+  }
+
+  /**
+   * TreasuryObligation upsert
+   */
+  export type TreasuryObligationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+    /**
+     * The filter to search for the TreasuryObligation to update in case it exists.
+     */
+    where: TreasuryObligationWhereUniqueInput
+    /**
+     * In case the TreasuryObligation found by the `where` argument doesn't exist, create a new TreasuryObligation with this data.
+     */
+    create: XOR<TreasuryObligationCreateInput, TreasuryObligationUncheckedCreateInput>
+    /**
+     * In case the TreasuryObligation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TreasuryObligationUpdateInput, TreasuryObligationUncheckedUpdateInput>
+  }
+
+  /**
+   * TreasuryObligation delete
+   */
+  export type TreasuryObligationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+    /**
+     * Filter which TreasuryObligation to delete.
+     */
+    where: TreasuryObligationWhereUniqueInput
+  }
+
+  /**
+   * TreasuryObligation deleteMany
+   */
+  export type TreasuryObligationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TreasuryObligations to delete
+     */
+    where?: TreasuryObligationWhereInput
+  }
+
+  /**
+   * TreasuryObligation without action
+   */
+  export type TreasuryObligationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreasuryObligation
+     */
+    select?: TreasuryObligationSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ReconciliationCount
+   */
+
+  export type AggregateReconciliationCount = {
+    _count: ReconciliationCountCountAggregateOutputType | null
+    _avg: ReconciliationCountAvgAggregateOutputType | null
+    _sum: ReconciliationCountSumAggregateOutputType | null
+    _min: ReconciliationCountMinAggregateOutputType | null
+    _max: ReconciliationCountMaxAggregateOutputType | null
+  }
+
+  export type ReconciliationCountAvgAggregateOutputType = {
+    expectedMinor: number | null
+    countedMinor: number | null
+    differenceMinor: number | null
+  }
+
+  export type ReconciliationCountSumAggregateOutputType = {
+    expectedMinor: bigint | null
+    countedMinor: bigint | null
+    differenceMinor: bigint | null
+  }
+
+  export type ReconciliationCountMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    physicalAccountId: string | null
+    expectedMinor: bigint | null
+    countedMinor: bigint | null
+    differenceMinor: bigint | null
+    status: string | null
+    countedBy: string | null
+    notes: string | null
+    reason: string | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    adjustmentMovementId: string | null
+    createdAt: Date | null
+  }
+
+  export type ReconciliationCountMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    physicalAccountId: string | null
+    expectedMinor: bigint | null
+    countedMinor: bigint | null
+    differenceMinor: bigint | null
+    status: string | null
+    countedBy: string | null
+    notes: string | null
+    reason: string | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    adjustmentMovementId: string | null
+    createdAt: Date | null
+  }
+
+  export type ReconciliationCountCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    physicalAccountId: number
+    expectedMinor: number
+    countedMinor: number
+    differenceMinor: number
+    status: number
+    countedBy: number
+    notes: number
+    reason: number
+    approvedBy: number
+    approvedAt: number
+    adjustmentMovementId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ReconciliationCountAvgAggregateInputType = {
+    expectedMinor?: true
+    countedMinor?: true
+    differenceMinor?: true
+  }
+
+  export type ReconciliationCountSumAggregateInputType = {
+    expectedMinor?: true
+    countedMinor?: true
+    differenceMinor?: true
+  }
+
+  export type ReconciliationCountMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    physicalAccountId?: true
+    expectedMinor?: true
+    countedMinor?: true
+    differenceMinor?: true
+    status?: true
+    countedBy?: true
+    notes?: true
+    reason?: true
+    approvedBy?: true
+    approvedAt?: true
+    adjustmentMovementId?: true
+    createdAt?: true
+  }
+
+  export type ReconciliationCountMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    physicalAccountId?: true
+    expectedMinor?: true
+    countedMinor?: true
+    differenceMinor?: true
+    status?: true
+    countedBy?: true
+    notes?: true
+    reason?: true
+    approvedBy?: true
+    approvedAt?: true
+    adjustmentMovementId?: true
+    createdAt?: true
+  }
+
+  export type ReconciliationCountCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    physicalAccountId?: true
+    expectedMinor?: true
+    countedMinor?: true
+    differenceMinor?: true
+    status?: true
+    countedBy?: true
+    notes?: true
+    reason?: true
+    approvedBy?: true
+    approvedAt?: true
+    adjustmentMovementId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ReconciliationCountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ReconciliationCount to aggregate.
+     */
+    where?: ReconciliationCountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReconciliationCounts to fetch.
+     */
+    orderBy?: ReconciliationCountOrderByWithRelationInput | ReconciliationCountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ReconciliationCountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReconciliationCounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReconciliationCounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ReconciliationCounts
+    **/
+    _count?: true | ReconciliationCountCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ReconciliationCountAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ReconciliationCountSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ReconciliationCountMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ReconciliationCountMaxAggregateInputType
+  }
+
+  export type GetReconciliationCountAggregateType<T extends ReconciliationCountAggregateArgs> = {
+        [P in keyof T & keyof AggregateReconciliationCount]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateReconciliationCount[P]>
+      : GetScalarType<T[P], AggregateReconciliationCount[P]>
+  }
+
+
+
+
+  export type ReconciliationCountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReconciliationCountWhereInput
+    orderBy?: ReconciliationCountOrderByWithAggregationInput | ReconciliationCountOrderByWithAggregationInput[]
+    by: ReconciliationCountScalarFieldEnum[] | ReconciliationCountScalarFieldEnum
+    having?: ReconciliationCountScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ReconciliationCountCountAggregateInputType | true
+    _avg?: ReconciliationCountAvgAggregateInputType
+    _sum?: ReconciliationCountSumAggregateInputType
+    _min?: ReconciliationCountMinAggregateInputType
+    _max?: ReconciliationCountMaxAggregateInputType
+  }
+
+  export type ReconciliationCountGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    physicalAccountId: string
+    expectedMinor: bigint
+    countedMinor: bigint
+    differenceMinor: bigint
+    status: string
+    countedBy: string
+    notes: string | null
+    reason: string | null
+    approvedBy: string | null
+    approvedAt: Date | null
+    adjustmentMovementId: string | null
+    createdAt: Date
+    _count: ReconciliationCountCountAggregateOutputType | null
+    _avg: ReconciliationCountAvgAggregateOutputType | null
+    _sum: ReconciliationCountSumAggregateOutputType | null
+    _min: ReconciliationCountMinAggregateOutputType | null
+    _max: ReconciliationCountMaxAggregateOutputType | null
+  }
+
+  type GetReconciliationCountGroupByPayload<T extends ReconciliationCountGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ReconciliationCountGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ReconciliationCountGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ReconciliationCountGroupByOutputType[P]>
+            : GetScalarType<T[P], ReconciliationCountGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ReconciliationCountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    physicalAccountId?: boolean
+    expectedMinor?: boolean
+    countedMinor?: boolean
+    differenceMinor?: boolean
+    status?: boolean
+    countedBy?: boolean
+    notes?: boolean
+    reason?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    adjustmentMovementId?: boolean
+    createdAt?: boolean
+    account?: boolean | PhysicalAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["reconciliationCount"]>
+
+  export type ReconciliationCountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    physicalAccountId?: boolean
+    expectedMinor?: boolean
+    countedMinor?: boolean
+    differenceMinor?: boolean
+    status?: boolean
+    countedBy?: boolean
+    notes?: boolean
+    reason?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    adjustmentMovementId?: boolean
+    createdAt?: boolean
+    account?: boolean | PhysicalAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["reconciliationCount"]>
+
+  export type ReconciliationCountSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    physicalAccountId?: boolean
+    expectedMinor?: boolean
+    countedMinor?: boolean
+    differenceMinor?: boolean
+    status?: boolean
+    countedBy?: boolean
+    notes?: boolean
+    reason?: boolean
+    approvedBy?: boolean
+    approvedAt?: boolean
+    adjustmentMovementId?: boolean
+    createdAt?: boolean
+  }
+
+  export type ReconciliationCountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | PhysicalAccountDefaultArgs<ExtArgs>
+  }
+  export type ReconciliationCountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | PhysicalAccountDefaultArgs<ExtArgs>
+  }
+
+  export type $ReconciliationCountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ReconciliationCount"
+    objects: {
+      account: Prisma.$PhysicalAccountPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      physicalAccountId: string
+      expectedMinor: bigint
+      countedMinor: bigint
+      differenceMinor: bigint
+      status: string
+      countedBy: string
+      notes: string | null
+      reason: string | null
+      approvedBy: string | null
+      approvedAt: Date | null
+      adjustmentMovementId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["reconciliationCount"]>
+    composites: {}
+  }
+
+  type ReconciliationCountGetPayload<S extends boolean | null | undefined | ReconciliationCountDefaultArgs> = $Result.GetResult<Prisma.$ReconciliationCountPayload, S>
+
+  type ReconciliationCountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ReconciliationCountFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ReconciliationCountCountAggregateInputType | true
+    }
+
+  export interface ReconciliationCountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ReconciliationCount'], meta: { name: 'ReconciliationCount' } }
+    /**
+     * Find zero or one ReconciliationCount that matches the filter.
+     * @param {ReconciliationCountFindUniqueArgs} args - Arguments to find a ReconciliationCount
+     * @example
+     * // Get one ReconciliationCount
+     * const reconciliationCount = await prisma.reconciliationCount.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ReconciliationCountFindUniqueArgs>(args: SelectSubset<T, ReconciliationCountFindUniqueArgs<ExtArgs>>): Prisma__ReconciliationCountClient<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ReconciliationCount that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ReconciliationCountFindUniqueOrThrowArgs} args - Arguments to find a ReconciliationCount
+     * @example
+     * // Get one ReconciliationCount
+     * const reconciliationCount = await prisma.reconciliationCount.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ReconciliationCountFindUniqueOrThrowArgs>(args: SelectSubset<T, ReconciliationCountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ReconciliationCountClient<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ReconciliationCount that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReconciliationCountFindFirstArgs} args - Arguments to find a ReconciliationCount
+     * @example
+     * // Get one ReconciliationCount
+     * const reconciliationCount = await prisma.reconciliationCount.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ReconciliationCountFindFirstArgs>(args?: SelectSubset<T, ReconciliationCountFindFirstArgs<ExtArgs>>): Prisma__ReconciliationCountClient<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ReconciliationCount that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReconciliationCountFindFirstOrThrowArgs} args - Arguments to find a ReconciliationCount
+     * @example
+     * // Get one ReconciliationCount
+     * const reconciliationCount = await prisma.reconciliationCount.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ReconciliationCountFindFirstOrThrowArgs>(args?: SelectSubset<T, ReconciliationCountFindFirstOrThrowArgs<ExtArgs>>): Prisma__ReconciliationCountClient<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ReconciliationCounts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReconciliationCountFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ReconciliationCounts
+     * const reconciliationCounts = await prisma.reconciliationCount.findMany()
+     * 
+     * // Get first 10 ReconciliationCounts
+     * const reconciliationCounts = await prisma.reconciliationCount.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const reconciliationCountWithIdOnly = await prisma.reconciliationCount.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ReconciliationCountFindManyArgs>(args?: SelectSubset<T, ReconciliationCountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ReconciliationCount.
+     * @param {ReconciliationCountCreateArgs} args - Arguments to create a ReconciliationCount.
+     * @example
+     * // Create one ReconciliationCount
+     * const ReconciliationCount = await prisma.reconciliationCount.create({
+     *   data: {
+     *     // ... data to create a ReconciliationCount
+     *   }
+     * })
+     * 
+     */
+    create<T extends ReconciliationCountCreateArgs>(args: SelectSubset<T, ReconciliationCountCreateArgs<ExtArgs>>): Prisma__ReconciliationCountClient<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ReconciliationCounts.
+     * @param {ReconciliationCountCreateManyArgs} args - Arguments to create many ReconciliationCounts.
+     * @example
+     * // Create many ReconciliationCounts
+     * const reconciliationCount = await prisma.reconciliationCount.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ReconciliationCountCreateManyArgs>(args?: SelectSubset<T, ReconciliationCountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ReconciliationCounts and returns the data saved in the database.
+     * @param {ReconciliationCountCreateManyAndReturnArgs} args - Arguments to create many ReconciliationCounts.
+     * @example
+     * // Create many ReconciliationCounts
+     * const reconciliationCount = await prisma.reconciliationCount.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ReconciliationCounts and only return the `id`
+     * const reconciliationCountWithIdOnly = await prisma.reconciliationCount.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ReconciliationCountCreateManyAndReturnArgs>(args?: SelectSubset<T, ReconciliationCountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ReconciliationCount.
+     * @param {ReconciliationCountDeleteArgs} args - Arguments to delete one ReconciliationCount.
+     * @example
+     * // Delete one ReconciliationCount
+     * const ReconciliationCount = await prisma.reconciliationCount.delete({
+     *   where: {
+     *     // ... filter to delete one ReconciliationCount
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ReconciliationCountDeleteArgs>(args: SelectSubset<T, ReconciliationCountDeleteArgs<ExtArgs>>): Prisma__ReconciliationCountClient<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ReconciliationCount.
+     * @param {ReconciliationCountUpdateArgs} args - Arguments to update one ReconciliationCount.
+     * @example
+     * // Update one ReconciliationCount
+     * const reconciliationCount = await prisma.reconciliationCount.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ReconciliationCountUpdateArgs>(args: SelectSubset<T, ReconciliationCountUpdateArgs<ExtArgs>>): Prisma__ReconciliationCountClient<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ReconciliationCounts.
+     * @param {ReconciliationCountDeleteManyArgs} args - Arguments to filter ReconciliationCounts to delete.
+     * @example
+     * // Delete a few ReconciliationCounts
+     * const { count } = await prisma.reconciliationCount.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ReconciliationCountDeleteManyArgs>(args?: SelectSubset<T, ReconciliationCountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ReconciliationCounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReconciliationCountUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ReconciliationCounts
+     * const reconciliationCount = await prisma.reconciliationCount.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ReconciliationCountUpdateManyArgs>(args: SelectSubset<T, ReconciliationCountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ReconciliationCount.
+     * @param {ReconciliationCountUpsertArgs} args - Arguments to update or create a ReconciliationCount.
+     * @example
+     * // Update or create a ReconciliationCount
+     * const reconciliationCount = await prisma.reconciliationCount.upsert({
+     *   create: {
+     *     // ... data to create a ReconciliationCount
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ReconciliationCount we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ReconciliationCountUpsertArgs>(args: SelectSubset<T, ReconciliationCountUpsertArgs<ExtArgs>>): Prisma__ReconciliationCountClient<$Result.GetResult<Prisma.$ReconciliationCountPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ReconciliationCounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReconciliationCountCountArgs} args - Arguments to filter ReconciliationCounts to count.
+     * @example
+     * // Count the number of ReconciliationCounts
+     * const count = await prisma.reconciliationCount.count({
+     *   where: {
+     *     // ... the filter for the ReconciliationCounts we want to count
+     *   }
+     * })
+    **/
+    count<T extends ReconciliationCountCountArgs>(
+      args?: Subset<T, ReconciliationCountCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ReconciliationCountCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ReconciliationCount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReconciliationCountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ReconciliationCountAggregateArgs>(args: Subset<T, ReconciliationCountAggregateArgs>): Prisma.PrismaPromise<GetReconciliationCountAggregateType<T>>
+
+    /**
+     * Group by ReconciliationCount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReconciliationCountGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ReconciliationCountGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ReconciliationCountGroupByArgs['orderBy'] }
+        : { orderBy?: ReconciliationCountGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ReconciliationCountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReconciliationCountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ReconciliationCount model
+   */
+  readonly fields: ReconciliationCountFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ReconciliationCount.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ReconciliationCountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    account<T extends PhysicalAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PhysicalAccountDefaultArgs<ExtArgs>>): Prisma__PhysicalAccountClient<$Result.GetResult<Prisma.$PhysicalAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ReconciliationCount model
+   */ 
+  interface ReconciliationCountFieldRefs {
+    readonly id: FieldRef<"ReconciliationCount", 'String'>
+    readonly tenantId: FieldRef<"ReconciliationCount", 'String'>
+    readonly shopId: FieldRef<"ReconciliationCount", 'String'>
+    readonly physicalAccountId: FieldRef<"ReconciliationCount", 'String'>
+    readonly expectedMinor: FieldRef<"ReconciliationCount", 'BigInt'>
+    readonly countedMinor: FieldRef<"ReconciliationCount", 'BigInt'>
+    readonly differenceMinor: FieldRef<"ReconciliationCount", 'BigInt'>
+    readonly status: FieldRef<"ReconciliationCount", 'String'>
+    readonly countedBy: FieldRef<"ReconciliationCount", 'String'>
+    readonly notes: FieldRef<"ReconciliationCount", 'String'>
+    readonly reason: FieldRef<"ReconciliationCount", 'String'>
+    readonly approvedBy: FieldRef<"ReconciliationCount", 'String'>
+    readonly approvedAt: FieldRef<"ReconciliationCount", 'DateTime'>
+    readonly adjustmentMovementId: FieldRef<"ReconciliationCount", 'String'>
+    readonly createdAt: FieldRef<"ReconciliationCount", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ReconciliationCount findUnique
+   */
+  export type ReconciliationCountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    /**
+     * Filter, which ReconciliationCount to fetch.
+     */
+    where: ReconciliationCountWhereUniqueInput
+  }
+
+  /**
+   * ReconciliationCount findUniqueOrThrow
+   */
+  export type ReconciliationCountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    /**
+     * Filter, which ReconciliationCount to fetch.
+     */
+    where: ReconciliationCountWhereUniqueInput
+  }
+
+  /**
+   * ReconciliationCount findFirst
+   */
+  export type ReconciliationCountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    /**
+     * Filter, which ReconciliationCount to fetch.
+     */
+    where?: ReconciliationCountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReconciliationCounts to fetch.
+     */
+    orderBy?: ReconciliationCountOrderByWithRelationInput | ReconciliationCountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ReconciliationCounts.
+     */
+    cursor?: ReconciliationCountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReconciliationCounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReconciliationCounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ReconciliationCounts.
+     */
+    distinct?: ReconciliationCountScalarFieldEnum | ReconciliationCountScalarFieldEnum[]
+  }
+
+  /**
+   * ReconciliationCount findFirstOrThrow
+   */
+  export type ReconciliationCountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    /**
+     * Filter, which ReconciliationCount to fetch.
+     */
+    where?: ReconciliationCountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReconciliationCounts to fetch.
+     */
+    orderBy?: ReconciliationCountOrderByWithRelationInput | ReconciliationCountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ReconciliationCounts.
+     */
+    cursor?: ReconciliationCountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReconciliationCounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReconciliationCounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ReconciliationCounts.
+     */
+    distinct?: ReconciliationCountScalarFieldEnum | ReconciliationCountScalarFieldEnum[]
+  }
+
+  /**
+   * ReconciliationCount findMany
+   */
+  export type ReconciliationCountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    /**
+     * Filter, which ReconciliationCounts to fetch.
+     */
+    where?: ReconciliationCountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ReconciliationCounts to fetch.
+     */
+    orderBy?: ReconciliationCountOrderByWithRelationInput | ReconciliationCountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ReconciliationCounts.
+     */
+    cursor?: ReconciliationCountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ReconciliationCounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ReconciliationCounts.
+     */
+    skip?: number
+    distinct?: ReconciliationCountScalarFieldEnum | ReconciliationCountScalarFieldEnum[]
+  }
+
+  /**
+   * ReconciliationCount create
+   */
+  export type ReconciliationCountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ReconciliationCount.
+     */
+    data: XOR<ReconciliationCountCreateInput, ReconciliationCountUncheckedCreateInput>
+  }
+
+  /**
+   * ReconciliationCount createMany
+   */
+  export type ReconciliationCountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ReconciliationCounts.
+     */
+    data: ReconciliationCountCreateManyInput | ReconciliationCountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ReconciliationCount createManyAndReturn
+   */
+  export type ReconciliationCountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ReconciliationCounts.
+     */
+    data: ReconciliationCountCreateManyInput | ReconciliationCountCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ReconciliationCount update
+   */
+  export type ReconciliationCountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ReconciliationCount.
+     */
+    data: XOR<ReconciliationCountUpdateInput, ReconciliationCountUncheckedUpdateInput>
+    /**
+     * Choose, which ReconciliationCount to update.
+     */
+    where: ReconciliationCountWhereUniqueInput
+  }
+
+  /**
+   * ReconciliationCount updateMany
+   */
+  export type ReconciliationCountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ReconciliationCounts.
+     */
+    data: XOR<ReconciliationCountUpdateManyMutationInput, ReconciliationCountUncheckedUpdateManyInput>
+    /**
+     * Filter which ReconciliationCounts to update
+     */
+    where?: ReconciliationCountWhereInput
+  }
+
+  /**
+   * ReconciliationCount upsert
+   */
+  export type ReconciliationCountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ReconciliationCount to update in case it exists.
+     */
+    where: ReconciliationCountWhereUniqueInput
+    /**
+     * In case the ReconciliationCount found by the `where` argument doesn't exist, create a new ReconciliationCount with this data.
+     */
+    create: XOR<ReconciliationCountCreateInput, ReconciliationCountUncheckedCreateInput>
+    /**
+     * In case the ReconciliationCount was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ReconciliationCountUpdateInput, ReconciliationCountUncheckedUpdateInput>
+  }
+
+  /**
+   * ReconciliationCount delete
+   */
+  export type ReconciliationCountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+    /**
+     * Filter which ReconciliationCount to delete.
+     */
+    where: ReconciliationCountWhereUniqueInput
+  }
+
+  /**
+   * ReconciliationCount deleteMany
+   */
+  export type ReconciliationCountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ReconciliationCounts to delete
+     */
+    where?: ReconciliationCountWhereInput
+  }
+
+  /**
+   * ReconciliationCount without action
+   */
+  export type ReconciliationCountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ReconciliationCount
+     */
+    select?: ReconciliationCountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReconciliationCountInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10064,6 +18058,125 @@ export namespace Prisma {
   export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
+  export const LogicalFundScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    code: 'code',
+    name: 'name',
+    currency: 'currency',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type LogicalFundScalarFieldEnum = (typeof LogicalFundScalarFieldEnum)[keyof typeof LogicalFundScalarFieldEnum]
+
+
+  export const PhysicalAccountScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    fundId: 'fundId',
+    kind: 'kind',
+    code: 'code',
+    name: 'name',
+    currency: 'currency',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    createdBy: 'createdBy',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PhysicalAccountScalarFieldEnum = (typeof PhysicalAccountScalarFieldEnum)[keyof typeof PhysicalAccountScalarFieldEnum]
+
+
+  export const TreasuryMovementScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    movementType: 'movementType',
+    fromPhysicalId: 'fromPhysicalId',
+    toPhysicalId: 'toPhysicalId',
+    amountMinor: 'amountMinor',
+    financialTransactionId: 'financialTransactionId',
+    journalId: 'journalId',
+    occurredOn: 'occurredOn',
+    idempotencyKey: 'idempotencyKey',
+    reason: 'reason',
+    notes: 'notes',
+    originalMovementId: 'originalMovementId',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt'
+  };
+
+  export type TreasuryMovementScalarFieldEnum = (typeof TreasuryMovementScalarFieldEnum)[keyof typeof TreasuryMovementScalarFieldEnum]
+
+
+  export const FinancialPeriodScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    date: 'date',
+    createdAt: 'createdAt'
+  };
+
+  export type FinancialPeriodScalarFieldEnum = (typeof FinancialPeriodScalarFieldEnum)[keyof typeof FinancialPeriodScalarFieldEnum]
+
+
+  export const PeriodSnapshotScalarFieldEnum: {
+    id: 'id',
+    periodId: 'periodId',
+    scopeType: 'scopeType',
+    scopeKey: 'scopeKey',
+    openingMinor: 'openingMinor',
+    inflowsMinor: 'inflowsMinor',
+    outflowsMinor: 'outflowsMinor',
+    adjustmentsMinor: 'adjustmentsMinor',
+    closingMinor: 'closingMinor'
+  };
+
+  export type PeriodSnapshotScalarFieldEnum = (typeof PeriodSnapshotScalarFieldEnum)[keyof typeof PeriodSnapshotScalarFieldEnum]
+
+
+  export const TreasuryObligationScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    kind: 'kind',
+    lenderFundCode: 'lenderFundCode',
+    borrowerFundCode: 'borrowerFundCode',
+    partyName: 'partyName',
+    outstandingMinor: 'outstandingMinor',
+    financialTransactionId: 'financialTransactionId',
+    status: 'status',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TreasuryObligationScalarFieldEnum = (typeof TreasuryObligationScalarFieldEnum)[keyof typeof TreasuryObligationScalarFieldEnum]
+
+
+  export const ReconciliationCountScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    physicalAccountId: 'physicalAccountId',
+    expectedMinor: 'expectedMinor',
+    countedMinor: 'countedMinor',
+    differenceMinor: 'differenceMinor',
+    status: 'status',
+    countedBy: 'countedBy',
+    notes: 'notes',
+    reason: 'reason',
+    approvedBy: 'approvedBy',
+    approvedAt: 'approvedAt',
+    adjustmentMovementId: 'adjustmentMovementId',
+    createdAt: 'createdAt'
+  };
+
+  export type ReconciliationCountScalarFieldEnum = (typeof ReconciliationCountScalarFieldEnum)[keyof typeof ReconciliationCountScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -10139,6 +18252,20 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt'
+   */
+  export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt[]'
+   */
+  export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
     
 
 
@@ -10845,6 +18972,623 @@ export namespace Prisma {
     traceId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     details?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+  }
+
+  export type LogicalFundWhereInput = {
+    AND?: LogicalFundWhereInput | LogicalFundWhereInput[]
+    OR?: LogicalFundWhereInput[]
+    NOT?: LogicalFundWhereInput | LogicalFundWhereInput[]
+    id?: StringFilter<"LogicalFund"> | string
+    tenantId?: StringFilter<"LogicalFund"> | string
+    shopId?: StringFilter<"LogicalFund"> | string
+    code?: StringFilter<"LogicalFund"> | string
+    name?: StringFilter<"LogicalFund"> | string
+    currency?: StringFilter<"LogicalFund"> | string
+    createdAt?: DateTimeFilter<"LogicalFund"> | Date | string
+    updatedAt?: DateTimeFilter<"LogicalFund"> | Date | string
+    accounts?: PhysicalAccountListRelationFilter
+  }
+
+  export type LogicalFundOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    accounts?: PhysicalAccountOrderByRelationAggregateInput
+  }
+
+  export type LogicalFundWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_shopId_code?: LogicalFundTenantIdShopIdCodeCompoundUniqueInput
+    AND?: LogicalFundWhereInput | LogicalFundWhereInput[]
+    OR?: LogicalFundWhereInput[]
+    NOT?: LogicalFundWhereInput | LogicalFundWhereInput[]
+    tenantId?: StringFilter<"LogicalFund"> | string
+    shopId?: StringFilter<"LogicalFund"> | string
+    code?: StringFilter<"LogicalFund"> | string
+    name?: StringFilter<"LogicalFund"> | string
+    currency?: StringFilter<"LogicalFund"> | string
+    createdAt?: DateTimeFilter<"LogicalFund"> | Date | string
+    updatedAt?: DateTimeFilter<"LogicalFund"> | Date | string
+    accounts?: PhysicalAccountListRelationFilter
+  }, "id" | "tenantId_shopId_code">
+
+  export type LogicalFundOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: LogicalFundCountOrderByAggregateInput
+    _max?: LogicalFundMaxOrderByAggregateInput
+    _min?: LogicalFundMinOrderByAggregateInput
+  }
+
+  export type LogicalFundScalarWhereWithAggregatesInput = {
+    AND?: LogicalFundScalarWhereWithAggregatesInput | LogicalFundScalarWhereWithAggregatesInput[]
+    OR?: LogicalFundScalarWhereWithAggregatesInput[]
+    NOT?: LogicalFundScalarWhereWithAggregatesInput | LogicalFundScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"LogicalFund"> | string
+    tenantId?: StringWithAggregatesFilter<"LogicalFund"> | string
+    shopId?: StringWithAggregatesFilter<"LogicalFund"> | string
+    code?: StringWithAggregatesFilter<"LogicalFund"> | string
+    name?: StringWithAggregatesFilter<"LogicalFund"> | string
+    currency?: StringWithAggregatesFilter<"LogicalFund"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"LogicalFund"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"LogicalFund"> | Date | string
+  }
+
+  export type PhysicalAccountWhereInput = {
+    AND?: PhysicalAccountWhereInput | PhysicalAccountWhereInput[]
+    OR?: PhysicalAccountWhereInput[]
+    NOT?: PhysicalAccountWhereInput | PhysicalAccountWhereInput[]
+    id?: StringFilter<"PhysicalAccount"> | string
+    tenantId?: StringFilter<"PhysicalAccount"> | string
+    shopId?: StringFilter<"PhysicalAccount"> | string
+    fundId?: StringFilter<"PhysicalAccount"> | string
+    kind?: StringFilter<"PhysicalAccount"> | string
+    code?: StringFilter<"PhysicalAccount"> | string
+    name?: StringFilter<"PhysicalAccount"> | string
+    currency?: StringFilter<"PhysicalAccount"> | string
+    isActive?: BoolFilter<"PhysicalAccount"> | boolean
+    createdAt?: DateTimeFilter<"PhysicalAccount"> | Date | string
+    createdBy?: StringNullableFilter<"PhysicalAccount"> | string | null
+    updatedAt?: DateTimeFilter<"PhysicalAccount"> | Date | string
+    fund?: XOR<LogicalFundRelationFilter, LogicalFundWhereInput>
+    outgoing?: TreasuryMovementListRelationFilter
+    incoming?: TreasuryMovementListRelationFilter
+    reconCounts?: ReconciliationCountListRelationFilter
+  }
+
+  export type PhysicalAccountOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    fundId?: SortOrder
+    kind?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    fund?: LogicalFundOrderByWithRelationInput
+    outgoing?: TreasuryMovementOrderByRelationAggregateInput
+    incoming?: TreasuryMovementOrderByRelationAggregateInput
+    reconCounts?: ReconciliationCountOrderByRelationAggregateInput
+  }
+
+  export type PhysicalAccountWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_shopId_code?: PhysicalAccountTenantIdShopIdCodeCompoundUniqueInput
+    AND?: PhysicalAccountWhereInput | PhysicalAccountWhereInput[]
+    OR?: PhysicalAccountWhereInput[]
+    NOT?: PhysicalAccountWhereInput | PhysicalAccountWhereInput[]
+    tenantId?: StringFilter<"PhysicalAccount"> | string
+    shopId?: StringFilter<"PhysicalAccount"> | string
+    fundId?: StringFilter<"PhysicalAccount"> | string
+    kind?: StringFilter<"PhysicalAccount"> | string
+    code?: StringFilter<"PhysicalAccount"> | string
+    name?: StringFilter<"PhysicalAccount"> | string
+    currency?: StringFilter<"PhysicalAccount"> | string
+    isActive?: BoolFilter<"PhysicalAccount"> | boolean
+    createdAt?: DateTimeFilter<"PhysicalAccount"> | Date | string
+    createdBy?: StringNullableFilter<"PhysicalAccount"> | string | null
+    updatedAt?: DateTimeFilter<"PhysicalAccount"> | Date | string
+    fund?: XOR<LogicalFundRelationFilter, LogicalFundWhereInput>
+    outgoing?: TreasuryMovementListRelationFilter
+    incoming?: TreasuryMovementListRelationFilter
+    reconCounts?: ReconciliationCountListRelationFilter
+  }, "id" | "tenantId_shopId_code">
+
+  export type PhysicalAccountOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    fundId?: SortOrder
+    kind?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    _count?: PhysicalAccountCountOrderByAggregateInput
+    _max?: PhysicalAccountMaxOrderByAggregateInput
+    _min?: PhysicalAccountMinOrderByAggregateInput
+  }
+
+  export type PhysicalAccountScalarWhereWithAggregatesInput = {
+    AND?: PhysicalAccountScalarWhereWithAggregatesInput | PhysicalAccountScalarWhereWithAggregatesInput[]
+    OR?: PhysicalAccountScalarWhereWithAggregatesInput[]
+    NOT?: PhysicalAccountScalarWhereWithAggregatesInput | PhysicalAccountScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PhysicalAccount"> | string
+    tenantId?: StringWithAggregatesFilter<"PhysicalAccount"> | string
+    shopId?: StringWithAggregatesFilter<"PhysicalAccount"> | string
+    fundId?: StringWithAggregatesFilter<"PhysicalAccount"> | string
+    kind?: StringWithAggregatesFilter<"PhysicalAccount"> | string
+    code?: StringWithAggregatesFilter<"PhysicalAccount"> | string
+    name?: StringWithAggregatesFilter<"PhysicalAccount"> | string
+    currency?: StringWithAggregatesFilter<"PhysicalAccount"> | string
+    isActive?: BoolWithAggregatesFilter<"PhysicalAccount"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"PhysicalAccount"> | Date | string
+    createdBy?: StringNullableWithAggregatesFilter<"PhysicalAccount"> | string | null
+    updatedAt?: DateTimeWithAggregatesFilter<"PhysicalAccount"> | Date | string
+  }
+
+  export type TreasuryMovementWhereInput = {
+    AND?: TreasuryMovementWhereInput | TreasuryMovementWhereInput[]
+    OR?: TreasuryMovementWhereInput[]
+    NOT?: TreasuryMovementWhereInput | TreasuryMovementWhereInput[]
+    id?: StringFilter<"TreasuryMovement"> | string
+    tenantId?: StringFilter<"TreasuryMovement"> | string
+    shopId?: StringFilter<"TreasuryMovement"> | string
+    movementType?: StringFilter<"TreasuryMovement"> | string
+    fromPhysicalId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    toPhysicalId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    amountMinor?: BigIntFilter<"TreasuryMovement"> | bigint | number
+    financialTransactionId?: StringFilter<"TreasuryMovement"> | string
+    journalId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    occurredOn?: DateTimeFilter<"TreasuryMovement"> | Date | string
+    idempotencyKey?: StringFilter<"TreasuryMovement"> | string
+    reason?: StringNullableFilter<"TreasuryMovement"> | string | null
+    notes?: StringNullableFilter<"TreasuryMovement"> | string | null
+    originalMovementId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    createdBy?: StringNullableFilter<"TreasuryMovement"> | string | null
+    createdAt?: DateTimeFilter<"TreasuryMovement"> | Date | string
+    fromAccount?: XOR<PhysicalAccountNullableRelationFilter, PhysicalAccountWhereInput> | null
+    toAccount?: XOR<PhysicalAccountNullableRelationFilter, PhysicalAccountWhereInput> | null
+  }
+
+  export type TreasuryMovementOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    movementType?: SortOrder
+    fromPhysicalId?: SortOrderInput | SortOrder
+    toPhysicalId?: SortOrderInput | SortOrder
+    amountMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    journalId?: SortOrderInput | SortOrder
+    occurredOn?: SortOrder
+    idempotencyKey?: SortOrder
+    reason?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    originalMovementId?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    fromAccount?: PhysicalAccountOrderByWithRelationInput
+    toAccount?: PhysicalAccountOrderByWithRelationInput
+  }
+
+  export type TreasuryMovementWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_idempotencyKey?: TreasuryMovementTenantIdIdempotencyKeyCompoundUniqueInput
+    AND?: TreasuryMovementWhereInput | TreasuryMovementWhereInput[]
+    OR?: TreasuryMovementWhereInput[]
+    NOT?: TreasuryMovementWhereInput | TreasuryMovementWhereInput[]
+    tenantId?: StringFilter<"TreasuryMovement"> | string
+    shopId?: StringFilter<"TreasuryMovement"> | string
+    movementType?: StringFilter<"TreasuryMovement"> | string
+    fromPhysicalId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    toPhysicalId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    amountMinor?: BigIntFilter<"TreasuryMovement"> | bigint | number
+    financialTransactionId?: StringFilter<"TreasuryMovement"> | string
+    journalId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    occurredOn?: DateTimeFilter<"TreasuryMovement"> | Date | string
+    idempotencyKey?: StringFilter<"TreasuryMovement"> | string
+    reason?: StringNullableFilter<"TreasuryMovement"> | string | null
+    notes?: StringNullableFilter<"TreasuryMovement"> | string | null
+    originalMovementId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    createdBy?: StringNullableFilter<"TreasuryMovement"> | string | null
+    createdAt?: DateTimeFilter<"TreasuryMovement"> | Date | string
+    fromAccount?: XOR<PhysicalAccountNullableRelationFilter, PhysicalAccountWhereInput> | null
+    toAccount?: XOR<PhysicalAccountNullableRelationFilter, PhysicalAccountWhereInput> | null
+  }, "id" | "tenantId_idempotencyKey">
+
+  export type TreasuryMovementOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    movementType?: SortOrder
+    fromPhysicalId?: SortOrderInput | SortOrder
+    toPhysicalId?: SortOrderInput | SortOrder
+    amountMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    journalId?: SortOrderInput | SortOrder
+    occurredOn?: SortOrder
+    idempotencyKey?: SortOrder
+    reason?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    originalMovementId?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: TreasuryMovementCountOrderByAggregateInput
+    _avg?: TreasuryMovementAvgOrderByAggregateInput
+    _max?: TreasuryMovementMaxOrderByAggregateInput
+    _min?: TreasuryMovementMinOrderByAggregateInput
+    _sum?: TreasuryMovementSumOrderByAggregateInput
+  }
+
+  export type TreasuryMovementScalarWhereWithAggregatesInput = {
+    AND?: TreasuryMovementScalarWhereWithAggregatesInput | TreasuryMovementScalarWhereWithAggregatesInput[]
+    OR?: TreasuryMovementScalarWhereWithAggregatesInput[]
+    NOT?: TreasuryMovementScalarWhereWithAggregatesInput | TreasuryMovementScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TreasuryMovement"> | string
+    tenantId?: StringWithAggregatesFilter<"TreasuryMovement"> | string
+    shopId?: StringWithAggregatesFilter<"TreasuryMovement"> | string
+    movementType?: StringWithAggregatesFilter<"TreasuryMovement"> | string
+    fromPhysicalId?: StringNullableWithAggregatesFilter<"TreasuryMovement"> | string | null
+    toPhysicalId?: StringNullableWithAggregatesFilter<"TreasuryMovement"> | string | null
+    amountMinor?: BigIntWithAggregatesFilter<"TreasuryMovement"> | bigint | number
+    financialTransactionId?: StringWithAggregatesFilter<"TreasuryMovement"> | string
+    journalId?: StringNullableWithAggregatesFilter<"TreasuryMovement"> | string | null
+    occurredOn?: DateTimeWithAggregatesFilter<"TreasuryMovement"> | Date | string
+    idempotencyKey?: StringWithAggregatesFilter<"TreasuryMovement"> | string
+    reason?: StringNullableWithAggregatesFilter<"TreasuryMovement"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"TreasuryMovement"> | string | null
+    originalMovementId?: StringNullableWithAggregatesFilter<"TreasuryMovement"> | string | null
+    createdBy?: StringNullableWithAggregatesFilter<"TreasuryMovement"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TreasuryMovement"> | Date | string
+  }
+
+  export type FinancialPeriodWhereInput = {
+    AND?: FinancialPeriodWhereInput | FinancialPeriodWhereInput[]
+    OR?: FinancialPeriodWhereInput[]
+    NOT?: FinancialPeriodWhereInput | FinancialPeriodWhereInput[]
+    id?: StringFilter<"FinancialPeriod"> | string
+    tenantId?: StringFilter<"FinancialPeriod"> | string
+    shopId?: StringFilter<"FinancialPeriod"> | string
+    date?: DateTimeFilter<"FinancialPeriod"> | Date | string
+    createdAt?: DateTimeFilter<"FinancialPeriod"> | Date | string
+    snapshots?: PeriodSnapshotListRelationFilter
+  }
+
+  export type FinancialPeriodOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    snapshots?: PeriodSnapshotOrderByRelationAggregateInput
+  }
+
+  export type FinancialPeriodWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_shopId_date?: FinancialPeriodTenantIdShopIdDateCompoundUniqueInput
+    AND?: FinancialPeriodWhereInput | FinancialPeriodWhereInput[]
+    OR?: FinancialPeriodWhereInput[]
+    NOT?: FinancialPeriodWhereInput | FinancialPeriodWhereInput[]
+    tenantId?: StringFilter<"FinancialPeriod"> | string
+    shopId?: StringFilter<"FinancialPeriod"> | string
+    date?: DateTimeFilter<"FinancialPeriod"> | Date | string
+    createdAt?: DateTimeFilter<"FinancialPeriod"> | Date | string
+    snapshots?: PeriodSnapshotListRelationFilter
+  }, "id" | "tenantId_shopId_date">
+
+  export type FinancialPeriodOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    _count?: FinancialPeriodCountOrderByAggregateInput
+    _max?: FinancialPeriodMaxOrderByAggregateInput
+    _min?: FinancialPeriodMinOrderByAggregateInput
+  }
+
+  export type FinancialPeriodScalarWhereWithAggregatesInput = {
+    AND?: FinancialPeriodScalarWhereWithAggregatesInput | FinancialPeriodScalarWhereWithAggregatesInput[]
+    OR?: FinancialPeriodScalarWhereWithAggregatesInput[]
+    NOT?: FinancialPeriodScalarWhereWithAggregatesInput | FinancialPeriodScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FinancialPeriod"> | string
+    tenantId?: StringWithAggregatesFilter<"FinancialPeriod"> | string
+    shopId?: StringWithAggregatesFilter<"FinancialPeriod"> | string
+    date?: DateTimeWithAggregatesFilter<"FinancialPeriod"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"FinancialPeriod"> | Date | string
+  }
+
+  export type PeriodSnapshotWhereInput = {
+    AND?: PeriodSnapshotWhereInput | PeriodSnapshotWhereInput[]
+    OR?: PeriodSnapshotWhereInput[]
+    NOT?: PeriodSnapshotWhereInput | PeriodSnapshotWhereInput[]
+    id?: StringFilter<"PeriodSnapshot"> | string
+    periodId?: StringFilter<"PeriodSnapshot"> | string
+    scopeType?: StringFilter<"PeriodSnapshot"> | string
+    scopeKey?: StringFilter<"PeriodSnapshot"> | string
+    openingMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    inflowsMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    outflowsMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    adjustmentsMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    closingMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    period?: XOR<FinancialPeriodRelationFilter, FinancialPeriodWhereInput>
+  }
+
+  export type PeriodSnapshotOrderByWithRelationInput = {
+    id?: SortOrder
+    periodId?: SortOrder
+    scopeType?: SortOrder
+    scopeKey?: SortOrder
+    openingMinor?: SortOrder
+    inflowsMinor?: SortOrder
+    outflowsMinor?: SortOrder
+    adjustmentsMinor?: SortOrder
+    closingMinor?: SortOrder
+    period?: FinancialPeriodOrderByWithRelationInput
+  }
+
+  export type PeriodSnapshotWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    periodId_scopeType_scopeKey?: PeriodSnapshotPeriodIdScopeTypeScopeKeyCompoundUniqueInput
+    AND?: PeriodSnapshotWhereInput | PeriodSnapshotWhereInput[]
+    OR?: PeriodSnapshotWhereInput[]
+    NOT?: PeriodSnapshotWhereInput | PeriodSnapshotWhereInput[]
+    periodId?: StringFilter<"PeriodSnapshot"> | string
+    scopeType?: StringFilter<"PeriodSnapshot"> | string
+    scopeKey?: StringFilter<"PeriodSnapshot"> | string
+    openingMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    inflowsMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    outflowsMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    adjustmentsMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    closingMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    period?: XOR<FinancialPeriodRelationFilter, FinancialPeriodWhereInput>
+  }, "id" | "periodId_scopeType_scopeKey">
+
+  export type PeriodSnapshotOrderByWithAggregationInput = {
+    id?: SortOrder
+    periodId?: SortOrder
+    scopeType?: SortOrder
+    scopeKey?: SortOrder
+    openingMinor?: SortOrder
+    inflowsMinor?: SortOrder
+    outflowsMinor?: SortOrder
+    adjustmentsMinor?: SortOrder
+    closingMinor?: SortOrder
+    _count?: PeriodSnapshotCountOrderByAggregateInput
+    _avg?: PeriodSnapshotAvgOrderByAggregateInput
+    _max?: PeriodSnapshotMaxOrderByAggregateInput
+    _min?: PeriodSnapshotMinOrderByAggregateInput
+    _sum?: PeriodSnapshotSumOrderByAggregateInput
+  }
+
+  export type PeriodSnapshotScalarWhereWithAggregatesInput = {
+    AND?: PeriodSnapshotScalarWhereWithAggregatesInput | PeriodSnapshotScalarWhereWithAggregatesInput[]
+    OR?: PeriodSnapshotScalarWhereWithAggregatesInput[]
+    NOT?: PeriodSnapshotScalarWhereWithAggregatesInput | PeriodSnapshotScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PeriodSnapshot"> | string
+    periodId?: StringWithAggregatesFilter<"PeriodSnapshot"> | string
+    scopeType?: StringWithAggregatesFilter<"PeriodSnapshot"> | string
+    scopeKey?: StringWithAggregatesFilter<"PeriodSnapshot"> | string
+    openingMinor?: BigIntWithAggregatesFilter<"PeriodSnapshot"> | bigint | number
+    inflowsMinor?: BigIntWithAggregatesFilter<"PeriodSnapshot"> | bigint | number
+    outflowsMinor?: BigIntWithAggregatesFilter<"PeriodSnapshot"> | bigint | number
+    adjustmentsMinor?: BigIntWithAggregatesFilter<"PeriodSnapshot"> | bigint | number
+    closingMinor?: BigIntWithAggregatesFilter<"PeriodSnapshot"> | bigint | number
+  }
+
+  export type TreasuryObligationWhereInput = {
+    AND?: TreasuryObligationWhereInput | TreasuryObligationWhereInput[]
+    OR?: TreasuryObligationWhereInput[]
+    NOT?: TreasuryObligationWhereInput | TreasuryObligationWhereInput[]
+    id?: StringFilter<"TreasuryObligation"> | string
+    tenantId?: StringFilter<"TreasuryObligation"> | string
+    shopId?: StringFilter<"TreasuryObligation"> | string
+    kind?: StringFilter<"TreasuryObligation"> | string
+    lenderFundCode?: StringNullableFilter<"TreasuryObligation"> | string | null
+    borrowerFundCode?: StringNullableFilter<"TreasuryObligation"> | string | null
+    partyName?: StringFilter<"TreasuryObligation"> | string
+    outstandingMinor?: BigIntFilter<"TreasuryObligation"> | bigint | number
+    financialTransactionId?: StringFilter<"TreasuryObligation"> | string
+    status?: StringFilter<"TreasuryObligation"> | string
+    createdAt?: DateTimeFilter<"TreasuryObligation"> | Date | string
+    updatedAt?: DateTimeFilter<"TreasuryObligation"> | Date | string
+  }
+
+  export type TreasuryObligationOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    lenderFundCode?: SortOrderInput | SortOrder
+    borrowerFundCode?: SortOrderInput | SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TreasuryObligationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TreasuryObligationWhereInput | TreasuryObligationWhereInput[]
+    OR?: TreasuryObligationWhereInput[]
+    NOT?: TreasuryObligationWhereInput | TreasuryObligationWhereInput[]
+    tenantId?: StringFilter<"TreasuryObligation"> | string
+    shopId?: StringFilter<"TreasuryObligation"> | string
+    kind?: StringFilter<"TreasuryObligation"> | string
+    lenderFundCode?: StringNullableFilter<"TreasuryObligation"> | string | null
+    borrowerFundCode?: StringNullableFilter<"TreasuryObligation"> | string | null
+    partyName?: StringFilter<"TreasuryObligation"> | string
+    outstandingMinor?: BigIntFilter<"TreasuryObligation"> | bigint | number
+    financialTransactionId?: StringFilter<"TreasuryObligation"> | string
+    status?: StringFilter<"TreasuryObligation"> | string
+    createdAt?: DateTimeFilter<"TreasuryObligation"> | Date | string
+    updatedAt?: DateTimeFilter<"TreasuryObligation"> | Date | string
+  }, "id">
+
+  export type TreasuryObligationOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    lenderFundCode?: SortOrderInput | SortOrder
+    borrowerFundCode?: SortOrderInput | SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TreasuryObligationCountOrderByAggregateInput
+    _avg?: TreasuryObligationAvgOrderByAggregateInput
+    _max?: TreasuryObligationMaxOrderByAggregateInput
+    _min?: TreasuryObligationMinOrderByAggregateInput
+    _sum?: TreasuryObligationSumOrderByAggregateInput
+  }
+
+  export type TreasuryObligationScalarWhereWithAggregatesInput = {
+    AND?: TreasuryObligationScalarWhereWithAggregatesInput | TreasuryObligationScalarWhereWithAggregatesInput[]
+    OR?: TreasuryObligationScalarWhereWithAggregatesInput[]
+    NOT?: TreasuryObligationScalarWhereWithAggregatesInput | TreasuryObligationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TreasuryObligation"> | string
+    tenantId?: StringWithAggregatesFilter<"TreasuryObligation"> | string
+    shopId?: StringWithAggregatesFilter<"TreasuryObligation"> | string
+    kind?: StringWithAggregatesFilter<"TreasuryObligation"> | string
+    lenderFundCode?: StringNullableWithAggregatesFilter<"TreasuryObligation"> | string | null
+    borrowerFundCode?: StringNullableWithAggregatesFilter<"TreasuryObligation"> | string | null
+    partyName?: StringWithAggregatesFilter<"TreasuryObligation"> | string
+    outstandingMinor?: BigIntWithAggregatesFilter<"TreasuryObligation"> | bigint | number
+    financialTransactionId?: StringWithAggregatesFilter<"TreasuryObligation"> | string
+    status?: StringWithAggregatesFilter<"TreasuryObligation"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"TreasuryObligation"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TreasuryObligation"> | Date | string
+  }
+
+  export type ReconciliationCountWhereInput = {
+    AND?: ReconciliationCountWhereInput | ReconciliationCountWhereInput[]
+    OR?: ReconciliationCountWhereInput[]
+    NOT?: ReconciliationCountWhereInput | ReconciliationCountWhereInput[]
+    id?: StringFilter<"ReconciliationCount"> | string
+    tenantId?: StringFilter<"ReconciliationCount"> | string
+    shopId?: StringFilter<"ReconciliationCount"> | string
+    physicalAccountId?: StringFilter<"ReconciliationCount"> | string
+    expectedMinor?: BigIntFilter<"ReconciliationCount"> | bigint | number
+    countedMinor?: BigIntFilter<"ReconciliationCount"> | bigint | number
+    differenceMinor?: BigIntFilter<"ReconciliationCount"> | bigint | number
+    status?: StringFilter<"ReconciliationCount"> | string
+    countedBy?: StringFilter<"ReconciliationCount"> | string
+    notes?: StringNullableFilter<"ReconciliationCount"> | string | null
+    reason?: StringNullableFilter<"ReconciliationCount"> | string | null
+    approvedBy?: StringNullableFilter<"ReconciliationCount"> | string | null
+    approvedAt?: DateTimeNullableFilter<"ReconciliationCount"> | Date | string | null
+    adjustmentMovementId?: StringNullableFilter<"ReconciliationCount"> | string | null
+    createdAt?: DateTimeFilter<"ReconciliationCount"> | Date | string
+    account?: XOR<PhysicalAccountRelationFilter, PhysicalAccountWhereInput>
+  }
+
+  export type ReconciliationCountOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    physicalAccountId?: SortOrder
+    expectedMinor?: SortOrder
+    countedMinor?: SortOrder
+    differenceMinor?: SortOrder
+    status?: SortOrder
+    countedBy?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    approvedBy?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    adjustmentMovementId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    account?: PhysicalAccountOrderByWithRelationInput
+  }
+
+  export type ReconciliationCountWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ReconciliationCountWhereInput | ReconciliationCountWhereInput[]
+    OR?: ReconciliationCountWhereInput[]
+    NOT?: ReconciliationCountWhereInput | ReconciliationCountWhereInput[]
+    tenantId?: StringFilter<"ReconciliationCount"> | string
+    shopId?: StringFilter<"ReconciliationCount"> | string
+    physicalAccountId?: StringFilter<"ReconciliationCount"> | string
+    expectedMinor?: BigIntFilter<"ReconciliationCount"> | bigint | number
+    countedMinor?: BigIntFilter<"ReconciliationCount"> | bigint | number
+    differenceMinor?: BigIntFilter<"ReconciliationCount"> | bigint | number
+    status?: StringFilter<"ReconciliationCount"> | string
+    countedBy?: StringFilter<"ReconciliationCount"> | string
+    notes?: StringNullableFilter<"ReconciliationCount"> | string | null
+    reason?: StringNullableFilter<"ReconciliationCount"> | string | null
+    approvedBy?: StringNullableFilter<"ReconciliationCount"> | string | null
+    approvedAt?: DateTimeNullableFilter<"ReconciliationCount"> | Date | string | null
+    adjustmentMovementId?: StringNullableFilter<"ReconciliationCount"> | string | null
+    createdAt?: DateTimeFilter<"ReconciliationCount"> | Date | string
+    account?: XOR<PhysicalAccountRelationFilter, PhysicalAccountWhereInput>
+  }, "id">
+
+  export type ReconciliationCountOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    physicalAccountId?: SortOrder
+    expectedMinor?: SortOrder
+    countedMinor?: SortOrder
+    differenceMinor?: SortOrder
+    status?: SortOrder
+    countedBy?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    approvedBy?: SortOrderInput | SortOrder
+    approvedAt?: SortOrderInput | SortOrder
+    adjustmentMovementId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: ReconciliationCountCountOrderByAggregateInput
+    _avg?: ReconciliationCountAvgOrderByAggregateInput
+    _max?: ReconciliationCountMaxOrderByAggregateInput
+    _min?: ReconciliationCountMinOrderByAggregateInput
+    _sum?: ReconciliationCountSumOrderByAggregateInput
+  }
+
+  export type ReconciliationCountScalarWhereWithAggregatesInput = {
+    AND?: ReconciliationCountScalarWhereWithAggregatesInput | ReconciliationCountScalarWhereWithAggregatesInput[]
+    OR?: ReconciliationCountScalarWhereWithAggregatesInput[]
+    NOT?: ReconciliationCountScalarWhereWithAggregatesInput | ReconciliationCountScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ReconciliationCount"> | string
+    tenantId?: StringWithAggregatesFilter<"ReconciliationCount"> | string
+    shopId?: StringWithAggregatesFilter<"ReconciliationCount"> | string
+    physicalAccountId?: StringWithAggregatesFilter<"ReconciliationCount"> | string
+    expectedMinor?: BigIntWithAggregatesFilter<"ReconciliationCount"> | bigint | number
+    countedMinor?: BigIntWithAggregatesFilter<"ReconciliationCount"> | bigint | number
+    differenceMinor?: BigIntWithAggregatesFilter<"ReconciliationCount"> | bigint | number
+    status?: StringWithAggregatesFilter<"ReconciliationCount"> | string
+    countedBy?: StringWithAggregatesFilter<"ReconciliationCount"> | string
+    notes?: StringNullableWithAggregatesFilter<"ReconciliationCount"> | string | null
+    reason?: StringNullableWithAggregatesFilter<"ReconciliationCount"> | string | null
+    approvedBy?: StringNullableWithAggregatesFilter<"ReconciliationCount"> | string | null
+    approvedAt?: DateTimeNullableWithAggregatesFilter<"ReconciliationCount"> | Date | string | null
+    adjustmentMovementId?: StringNullableWithAggregatesFilter<"ReconciliationCount"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ReconciliationCount"> | Date | string
   }
 
   export type PaymentMethodCreateInput = {
@@ -11613,6 +20357,707 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type LogicalFundCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: PhysicalAccountCreateNestedManyWithoutFundInput
+  }
+
+  export type LogicalFundUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: PhysicalAccountUncheckedCreateNestedManyWithoutFundInput
+  }
+
+  export type LogicalFundUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: PhysicalAccountUpdateManyWithoutFundNestedInput
+  }
+
+  export type LogicalFundUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: PhysicalAccountUncheckedUpdateManyWithoutFundNestedInput
+  }
+
+  export type LogicalFundCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LogicalFundUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LogicalFundUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PhysicalAccountCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    fund: LogicalFundCreateNestedOneWithoutAccountsInput
+    outgoing?: TreasuryMovementCreateNestedManyWithoutFromAccountInput
+    incoming?: TreasuryMovementCreateNestedManyWithoutToAccountInput
+    reconCounts?: ReconciliationCountCreateNestedManyWithoutAccountInput
+  }
+
+  export type PhysicalAccountUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    fundId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    outgoing?: TreasuryMovementUncheckedCreateNestedManyWithoutFromAccountInput
+    incoming?: TreasuryMovementUncheckedCreateNestedManyWithoutToAccountInput
+    reconCounts?: ReconciliationCountUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type PhysicalAccountUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fund?: LogicalFundUpdateOneRequiredWithoutAccountsNestedInput
+    outgoing?: TreasuryMovementUpdateManyWithoutFromAccountNestedInput
+    incoming?: TreasuryMovementUpdateManyWithoutToAccountNestedInput
+    reconCounts?: ReconciliationCountUpdateManyWithoutAccountNestedInput
+  }
+
+  export type PhysicalAccountUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    fundId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    outgoing?: TreasuryMovementUncheckedUpdateManyWithoutFromAccountNestedInput
+    incoming?: TreasuryMovementUncheckedUpdateManyWithoutToAccountNestedInput
+    reconCounts?: ReconciliationCountUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type PhysicalAccountCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    fundId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type PhysicalAccountUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PhysicalAccountUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    fundId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryMovementCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    amountMinor: bigint | number
+    financialTransactionId: string
+    journalId?: string | null
+    occurredOn: Date | string
+    idempotencyKey: string
+    reason?: string | null
+    notes?: string | null
+    originalMovementId?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    fromAccount?: PhysicalAccountCreateNestedOneWithoutOutgoingInput
+    toAccount?: PhysicalAccountCreateNestedOneWithoutIncomingInput
+  }
+
+  export type TreasuryMovementUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    fromPhysicalId?: string | null
+    toPhysicalId?: string | null
+    amountMinor: bigint | number
+    financialTransactionId: string
+    journalId?: string | null
+    occurredOn: Date | string
+    idempotencyKey: string
+    reason?: string | null
+    notes?: string | null
+    originalMovementId?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryMovementUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromAccount?: PhysicalAccountUpdateOneWithoutOutgoingNestedInput
+    toAccount?: PhysicalAccountUpdateOneWithoutIncomingNestedInput
+  }
+
+  export type TreasuryMovementUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    fromPhysicalId?: NullableStringFieldUpdateOperationsInput | string | null
+    toPhysicalId?: NullableStringFieldUpdateOperationsInput | string | null
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryMovementCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    fromPhysicalId?: string | null
+    toPhysicalId?: string | null
+    amountMinor: bigint | number
+    financialTransactionId: string
+    journalId?: string | null
+    occurredOn: Date | string
+    idempotencyKey: string
+    reason?: string | null
+    notes?: string | null
+    originalMovementId?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryMovementUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryMovementUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    fromPhysicalId?: NullableStringFieldUpdateOperationsInput | string | null
+    toPhysicalId?: NullableStringFieldUpdateOperationsInput | string | null
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialPeriodCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    date: Date | string
+    createdAt?: Date | string
+    snapshots?: PeriodSnapshotCreateNestedManyWithoutPeriodInput
+  }
+
+  export type FinancialPeriodUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    date: Date | string
+    createdAt?: Date | string
+    snapshots?: PeriodSnapshotUncheckedCreateNestedManyWithoutPeriodInput
+  }
+
+  export type FinancialPeriodUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    snapshots?: PeriodSnapshotUpdateManyWithoutPeriodNestedInput
+  }
+
+  export type FinancialPeriodUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    snapshots?: PeriodSnapshotUncheckedUpdateManyWithoutPeriodNestedInput
+  }
+
+  export type FinancialPeriodCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    date: Date | string
+    createdAt?: Date | string
+  }
+
+  export type FinancialPeriodUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialPeriodUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PeriodSnapshotCreateInput = {
+    id?: string
+    scopeType: string
+    scopeKey: string
+    openingMinor: bigint | number
+    inflowsMinor: bigint | number
+    outflowsMinor: bigint | number
+    adjustmentsMinor: bigint | number
+    closingMinor: bigint | number
+    period: FinancialPeriodCreateNestedOneWithoutSnapshotsInput
+  }
+
+  export type PeriodSnapshotUncheckedCreateInput = {
+    id?: string
+    periodId: string
+    scopeType: string
+    scopeKey: string
+    openingMinor: bigint | number
+    inflowsMinor: bigint | number
+    outflowsMinor: bigint | number
+    adjustmentsMinor: bigint | number
+    closingMinor: bigint | number
+  }
+
+  export type PeriodSnapshotUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scopeType?: StringFieldUpdateOperationsInput | string
+    scopeKey?: StringFieldUpdateOperationsInput | string
+    openingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    inflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    outflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    adjustmentsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    closingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    period?: FinancialPeriodUpdateOneRequiredWithoutSnapshotsNestedInput
+  }
+
+  export type PeriodSnapshotUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    periodId?: StringFieldUpdateOperationsInput | string
+    scopeType?: StringFieldUpdateOperationsInput | string
+    scopeKey?: StringFieldUpdateOperationsInput | string
+    openingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    inflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    outflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    adjustmentsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    closingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type PeriodSnapshotCreateManyInput = {
+    id?: string
+    periodId: string
+    scopeType: string
+    scopeKey: string
+    openingMinor: bigint | number
+    inflowsMinor: bigint | number
+    outflowsMinor: bigint | number
+    adjustmentsMinor: bigint | number
+    closingMinor: bigint | number
+  }
+
+  export type PeriodSnapshotUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scopeType?: StringFieldUpdateOperationsInput | string
+    scopeKey?: StringFieldUpdateOperationsInput | string
+    openingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    inflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    outflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    adjustmentsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    closingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type PeriodSnapshotUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    periodId?: StringFieldUpdateOperationsInput | string
+    scopeType?: StringFieldUpdateOperationsInput | string
+    scopeKey?: StringFieldUpdateOperationsInput | string
+    openingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    inflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    outflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    adjustmentsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    closingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type TreasuryObligationCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    lenderFundCode?: string | null
+    borrowerFundCode?: string | null
+    partyName: string
+    outstandingMinor: bigint | number
+    financialTransactionId: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TreasuryObligationUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    lenderFundCode?: string | null
+    borrowerFundCode?: string | null
+    partyName: string
+    outstandingMinor: bigint | number
+    financialTransactionId: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TreasuryObligationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    lenderFundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    borrowerFundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    partyName?: StringFieldUpdateOperationsInput | string
+    outstandingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryObligationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    lenderFundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    borrowerFundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    partyName?: StringFieldUpdateOperationsInput | string
+    outstandingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryObligationCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    lenderFundCode?: string | null
+    borrowerFundCode?: string | null
+    partyName: string
+    outstandingMinor: bigint | number
+    financialTransactionId: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TreasuryObligationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    lenderFundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    borrowerFundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    partyName?: StringFieldUpdateOperationsInput | string
+    outstandingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryObligationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    lenderFundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    borrowerFundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    partyName?: StringFieldUpdateOperationsInput | string
+    outstandingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReconciliationCountCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    expectedMinor: bigint | number
+    countedMinor: bigint | number
+    differenceMinor: bigint | number
+    status?: string
+    countedBy: string
+    notes?: string | null
+    reason?: string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    adjustmentMovementId?: string | null
+    createdAt?: Date | string
+    account: PhysicalAccountCreateNestedOneWithoutReconCountsInput
+  }
+
+  export type ReconciliationCountUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    physicalAccountId: string
+    expectedMinor: bigint | number
+    countedMinor: bigint | number
+    differenceMinor: bigint | number
+    status?: string
+    countedBy: string
+    notes?: string | null
+    reason?: string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    adjustmentMovementId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ReconciliationCountUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    expectedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    countedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    differenceMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    status?: StringFieldUpdateOperationsInput | string
+    countedBy?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    adjustmentMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: PhysicalAccountUpdateOneRequiredWithoutReconCountsNestedInput
+  }
+
+  export type ReconciliationCountUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    physicalAccountId?: StringFieldUpdateOperationsInput | string
+    expectedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    countedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    differenceMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    status?: StringFieldUpdateOperationsInput | string
+    countedBy?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    adjustmentMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReconciliationCountCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    physicalAccountId: string
+    expectedMinor: bigint | number
+    countedMinor: bigint | number
+    differenceMinor: bigint | number
+    status?: string
+    countedBy: string
+    notes?: string | null
+    reason?: string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    adjustmentMovementId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ReconciliationCountUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    expectedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    countedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    differenceMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    status?: StringFieldUpdateOperationsInput | string
+    countedBy?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    adjustmentMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReconciliationCountUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    physicalAccountId?: StringFieldUpdateOperationsInput | string
+    expectedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    countedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    differenceMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    status?: StringFieldUpdateOperationsInput | string
+    countedBy?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    adjustmentMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -12224,6 +21669,460 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type PhysicalAccountListRelationFilter = {
+    every?: PhysicalAccountWhereInput
+    some?: PhysicalAccountWhereInput
+    none?: PhysicalAccountWhereInput
+  }
+
+  export type PhysicalAccountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LogicalFundTenantIdShopIdCodeCompoundUniqueInput = {
+    tenantId: string
+    shopId: string
+    code: string
+  }
+
+  export type LogicalFundCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LogicalFundMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LogicalFundMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LogicalFundRelationFilter = {
+    is?: LogicalFundWhereInput
+    isNot?: LogicalFundWhereInput
+  }
+
+  export type TreasuryMovementListRelationFilter = {
+    every?: TreasuryMovementWhereInput
+    some?: TreasuryMovementWhereInput
+    none?: TreasuryMovementWhereInput
+  }
+
+  export type ReconciliationCountListRelationFilter = {
+    every?: ReconciliationCountWhereInput
+    some?: ReconciliationCountWhereInput
+    none?: ReconciliationCountWhereInput
+  }
+
+  export type TreasuryMovementOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ReconciliationCountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PhysicalAccountTenantIdShopIdCodeCompoundUniqueInput = {
+    tenantId: string
+    shopId: string
+    code: string
+  }
+
+  export type PhysicalAccountCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    fundId?: SortOrder
+    kind?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PhysicalAccountMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    fundId?: SortOrder
+    kind?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PhysicalAccountMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    fundId?: SortOrder
+    kind?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    currency?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  }
+
+  export type PhysicalAccountNullableRelationFilter = {
+    is?: PhysicalAccountWhereInput | null
+    isNot?: PhysicalAccountWhereInput | null
+  }
+
+  export type TreasuryMovementTenantIdIdempotencyKeyCompoundUniqueInput = {
+    tenantId: string
+    idempotencyKey: string
+  }
+
+  export type TreasuryMovementCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    movementType?: SortOrder
+    fromPhysicalId?: SortOrder
+    toPhysicalId?: SortOrder
+    amountMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    journalId?: SortOrder
+    occurredOn?: SortOrder
+    idempotencyKey?: SortOrder
+    reason?: SortOrder
+    notes?: SortOrder
+    originalMovementId?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TreasuryMovementAvgOrderByAggregateInput = {
+    amountMinor?: SortOrder
+  }
+
+  export type TreasuryMovementMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    movementType?: SortOrder
+    fromPhysicalId?: SortOrder
+    toPhysicalId?: SortOrder
+    amountMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    journalId?: SortOrder
+    occurredOn?: SortOrder
+    idempotencyKey?: SortOrder
+    reason?: SortOrder
+    notes?: SortOrder
+    originalMovementId?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TreasuryMovementMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    movementType?: SortOrder
+    fromPhysicalId?: SortOrder
+    toPhysicalId?: SortOrder
+    amountMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    journalId?: SortOrder
+    occurredOn?: SortOrder
+    idempotencyKey?: SortOrder
+    reason?: SortOrder
+    notes?: SortOrder
+    originalMovementId?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TreasuryMovementSumOrderByAggregateInput = {
+    amountMinor?: SortOrder
+  }
+
+  export type BigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
+  }
+
+  export type PeriodSnapshotListRelationFilter = {
+    every?: PeriodSnapshotWhereInput
+    some?: PeriodSnapshotWhereInput
+    none?: PeriodSnapshotWhereInput
+  }
+
+  export type PeriodSnapshotOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FinancialPeriodTenantIdShopIdDateCompoundUniqueInput = {
+    tenantId: string
+    shopId: string
+    date: Date | string
+  }
+
+  export type FinancialPeriodCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FinancialPeriodMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FinancialPeriodMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FinancialPeriodRelationFilter = {
+    is?: FinancialPeriodWhereInput
+    isNot?: FinancialPeriodWhereInput
+  }
+
+  export type PeriodSnapshotPeriodIdScopeTypeScopeKeyCompoundUniqueInput = {
+    periodId: string
+    scopeType: string
+    scopeKey: string
+  }
+
+  export type PeriodSnapshotCountOrderByAggregateInput = {
+    id?: SortOrder
+    periodId?: SortOrder
+    scopeType?: SortOrder
+    scopeKey?: SortOrder
+    openingMinor?: SortOrder
+    inflowsMinor?: SortOrder
+    outflowsMinor?: SortOrder
+    adjustmentsMinor?: SortOrder
+    closingMinor?: SortOrder
+  }
+
+  export type PeriodSnapshotAvgOrderByAggregateInput = {
+    openingMinor?: SortOrder
+    inflowsMinor?: SortOrder
+    outflowsMinor?: SortOrder
+    adjustmentsMinor?: SortOrder
+    closingMinor?: SortOrder
+  }
+
+  export type PeriodSnapshotMaxOrderByAggregateInput = {
+    id?: SortOrder
+    periodId?: SortOrder
+    scopeType?: SortOrder
+    scopeKey?: SortOrder
+    openingMinor?: SortOrder
+    inflowsMinor?: SortOrder
+    outflowsMinor?: SortOrder
+    adjustmentsMinor?: SortOrder
+    closingMinor?: SortOrder
+  }
+
+  export type PeriodSnapshotMinOrderByAggregateInput = {
+    id?: SortOrder
+    periodId?: SortOrder
+    scopeType?: SortOrder
+    scopeKey?: SortOrder
+    openingMinor?: SortOrder
+    inflowsMinor?: SortOrder
+    outflowsMinor?: SortOrder
+    adjustmentsMinor?: SortOrder
+    closingMinor?: SortOrder
+  }
+
+  export type PeriodSnapshotSumOrderByAggregateInput = {
+    openingMinor?: SortOrder
+    inflowsMinor?: SortOrder
+    outflowsMinor?: SortOrder
+    adjustmentsMinor?: SortOrder
+    closingMinor?: SortOrder
+  }
+
+  export type TreasuryObligationCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    lenderFundCode?: SortOrder
+    borrowerFundCode?: SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TreasuryObligationAvgOrderByAggregateInput = {
+    outstandingMinor?: SortOrder
+  }
+
+  export type TreasuryObligationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    lenderFundCode?: SortOrder
+    borrowerFundCode?: SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TreasuryObligationMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    lenderFundCode?: SortOrder
+    borrowerFundCode?: SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TreasuryObligationSumOrderByAggregateInput = {
+    outstandingMinor?: SortOrder
+  }
+
+  export type PhysicalAccountRelationFilter = {
+    is?: PhysicalAccountWhereInput
+    isNot?: PhysicalAccountWhereInput
+  }
+
+  export type ReconciliationCountCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    physicalAccountId?: SortOrder
+    expectedMinor?: SortOrder
+    countedMinor?: SortOrder
+    differenceMinor?: SortOrder
+    status?: SortOrder
+    countedBy?: SortOrder
+    notes?: SortOrder
+    reason?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    adjustmentMovementId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ReconciliationCountAvgOrderByAggregateInput = {
+    expectedMinor?: SortOrder
+    countedMinor?: SortOrder
+    differenceMinor?: SortOrder
+  }
+
+  export type ReconciliationCountMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    physicalAccountId?: SortOrder
+    expectedMinor?: SortOrder
+    countedMinor?: SortOrder
+    differenceMinor?: SortOrder
+    status?: SortOrder
+    countedBy?: SortOrder
+    notes?: SortOrder
+    reason?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    adjustmentMovementId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ReconciliationCountMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    physicalAccountId?: SortOrder
+    expectedMinor?: SortOrder
+    countedMinor?: SortOrder
+    differenceMinor?: SortOrder
+    status?: SortOrder
+    countedBy?: SortOrder
+    notes?: SortOrder
+    reason?: SortOrder
+    approvedBy?: SortOrder
+    approvedAt?: SortOrder
+    adjustmentMovementId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ReconciliationCountSumOrderByAggregateInput = {
+    expectedMinor?: SortOrder
+    countedMinor?: SortOrder
+    differenceMinor?: SortOrder
+  }
+
   export type TransferCreateNestedManyWithoutFromMethodInput = {
     create?: XOR<TransferCreateWithoutFromMethodInput, TransferUncheckedCreateWithoutFromMethodInput> | TransferCreateWithoutFromMethodInput[] | TransferUncheckedCreateWithoutFromMethodInput[]
     connectOrCreate?: TransferCreateOrConnectWithoutFromMethodInput | TransferCreateOrConnectWithoutFromMethodInput[]
@@ -12700,6 +22599,298 @@ export namespace Prisma {
     update?: XOR<XOR<PaymentMethodUpdateToOneWithWhereWithoutLoanRepaymentsInput, PaymentMethodUpdateWithoutLoanRepaymentsInput>, PaymentMethodUncheckedUpdateWithoutLoanRepaymentsInput>
   }
 
+  export type PhysicalAccountCreateNestedManyWithoutFundInput = {
+    create?: XOR<PhysicalAccountCreateWithoutFundInput, PhysicalAccountUncheckedCreateWithoutFundInput> | PhysicalAccountCreateWithoutFundInput[] | PhysicalAccountUncheckedCreateWithoutFundInput[]
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutFundInput | PhysicalAccountCreateOrConnectWithoutFundInput[]
+    createMany?: PhysicalAccountCreateManyFundInputEnvelope
+    connect?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+  }
+
+  export type PhysicalAccountUncheckedCreateNestedManyWithoutFundInput = {
+    create?: XOR<PhysicalAccountCreateWithoutFundInput, PhysicalAccountUncheckedCreateWithoutFundInput> | PhysicalAccountCreateWithoutFundInput[] | PhysicalAccountUncheckedCreateWithoutFundInput[]
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutFundInput | PhysicalAccountCreateOrConnectWithoutFundInput[]
+    createMany?: PhysicalAccountCreateManyFundInputEnvelope
+    connect?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+  }
+
+  export type PhysicalAccountUpdateManyWithoutFundNestedInput = {
+    create?: XOR<PhysicalAccountCreateWithoutFundInput, PhysicalAccountUncheckedCreateWithoutFundInput> | PhysicalAccountCreateWithoutFundInput[] | PhysicalAccountUncheckedCreateWithoutFundInput[]
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutFundInput | PhysicalAccountCreateOrConnectWithoutFundInput[]
+    upsert?: PhysicalAccountUpsertWithWhereUniqueWithoutFundInput | PhysicalAccountUpsertWithWhereUniqueWithoutFundInput[]
+    createMany?: PhysicalAccountCreateManyFundInputEnvelope
+    set?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+    disconnect?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+    delete?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+    connect?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+    update?: PhysicalAccountUpdateWithWhereUniqueWithoutFundInput | PhysicalAccountUpdateWithWhereUniqueWithoutFundInput[]
+    updateMany?: PhysicalAccountUpdateManyWithWhereWithoutFundInput | PhysicalAccountUpdateManyWithWhereWithoutFundInput[]
+    deleteMany?: PhysicalAccountScalarWhereInput | PhysicalAccountScalarWhereInput[]
+  }
+
+  export type PhysicalAccountUncheckedUpdateManyWithoutFundNestedInput = {
+    create?: XOR<PhysicalAccountCreateWithoutFundInput, PhysicalAccountUncheckedCreateWithoutFundInput> | PhysicalAccountCreateWithoutFundInput[] | PhysicalAccountUncheckedCreateWithoutFundInput[]
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutFundInput | PhysicalAccountCreateOrConnectWithoutFundInput[]
+    upsert?: PhysicalAccountUpsertWithWhereUniqueWithoutFundInput | PhysicalAccountUpsertWithWhereUniqueWithoutFundInput[]
+    createMany?: PhysicalAccountCreateManyFundInputEnvelope
+    set?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+    disconnect?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+    delete?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+    connect?: PhysicalAccountWhereUniqueInput | PhysicalAccountWhereUniqueInput[]
+    update?: PhysicalAccountUpdateWithWhereUniqueWithoutFundInput | PhysicalAccountUpdateWithWhereUniqueWithoutFundInput[]
+    updateMany?: PhysicalAccountUpdateManyWithWhereWithoutFundInput | PhysicalAccountUpdateManyWithWhereWithoutFundInput[]
+    deleteMany?: PhysicalAccountScalarWhereInput | PhysicalAccountScalarWhereInput[]
+  }
+
+  export type LogicalFundCreateNestedOneWithoutAccountsInput = {
+    create?: XOR<LogicalFundCreateWithoutAccountsInput, LogicalFundUncheckedCreateWithoutAccountsInput>
+    connectOrCreate?: LogicalFundCreateOrConnectWithoutAccountsInput
+    connect?: LogicalFundWhereUniqueInput
+  }
+
+  export type TreasuryMovementCreateNestedManyWithoutFromAccountInput = {
+    create?: XOR<TreasuryMovementCreateWithoutFromAccountInput, TreasuryMovementUncheckedCreateWithoutFromAccountInput> | TreasuryMovementCreateWithoutFromAccountInput[] | TreasuryMovementUncheckedCreateWithoutFromAccountInput[]
+    connectOrCreate?: TreasuryMovementCreateOrConnectWithoutFromAccountInput | TreasuryMovementCreateOrConnectWithoutFromAccountInput[]
+    createMany?: TreasuryMovementCreateManyFromAccountInputEnvelope
+    connect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+  }
+
+  export type TreasuryMovementCreateNestedManyWithoutToAccountInput = {
+    create?: XOR<TreasuryMovementCreateWithoutToAccountInput, TreasuryMovementUncheckedCreateWithoutToAccountInput> | TreasuryMovementCreateWithoutToAccountInput[] | TreasuryMovementUncheckedCreateWithoutToAccountInput[]
+    connectOrCreate?: TreasuryMovementCreateOrConnectWithoutToAccountInput | TreasuryMovementCreateOrConnectWithoutToAccountInput[]
+    createMany?: TreasuryMovementCreateManyToAccountInputEnvelope
+    connect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+  }
+
+  export type ReconciliationCountCreateNestedManyWithoutAccountInput = {
+    create?: XOR<ReconciliationCountCreateWithoutAccountInput, ReconciliationCountUncheckedCreateWithoutAccountInput> | ReconciliationCountCreateWithoutAccountInput[] | ReconciliationCountUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: ReconciliationCountCreateOrConnectWithoutAccountInput | ReconciliationCountCreateOrConnectWithoutAccountInput[]
+    createMany?: ReconciliationCountCreateManyAccountInputEnvelope
+    connect?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+  }
+
+  export type TreasuryMovementUncheckedCreateNestedManyWithoutFromAccountInput = {
+    create?: XOR<TreasuryMovementCreateWithoutFromAccountInput, TreasuryMovementUncheckedCreateWithoutFromAccountInput> | TreasuryMovementCreateWithoutFromAccountInput[] | TreasuryMovementUncheckedCreateWithoutFromAccountInput[]
+    connectOrCreate?: TreasuryMovementCreateOrConnectWithoutFromAccountInput | TreasuryMovementCreateOrConnectWithoutFromAccountInput[]
+    createMany?: TreasuryMovementCreateManyFromAccountInputEnvelope
+    connect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+  }
+
+  export type TreasuryMovementUncheckedCreateNestedManyWithoutToAccountInput = {
+    create?: XOR<TreasuryMovementCreateWithoutToAccountInput, TreasuryMovementUncheckedCreateWithoutToAccountInput> | TreasuryMovementCreateWithoutToAccountInput[] | TreasuryMovementUncheckedCreateWithoutToAccountInput[]
+    connectOrCreate?: TreasuryMovementCreateOrConnectWithoutToAccountInput | TreasuryMovementCreateOrConnectWithoutToAccountInput[]
+    createMany?: TreasuryMovementCreateManyToAccountInputEnvelope
+    connect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+  }
+
+  export type ReconciliationCountUncheckedCreateNestedManyWithoutAccountInput = {
+    create?: XOR<ReconciliationCountCreateWithoutAccountInput, ReconciliationCountUncheckedCreateWithoutAccountInput> | ReconciliationCountCreateWithoutAccountInput[] | ReconciliationCountUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: ReconciliationCountCreateOrConnectWithoutAccountInput | ReconciliationCountCreateOrConnectWithoutAccountInput[]
+    createMany?: ReconciliationCountCreateManyAccountInputEnvelope
+    connect?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+  }
+
+  export type LogicalFundUpdateOneRequiredWithoutAccountsNestedInput = {
+    create?: XOR<LogicalFundCreateWithoutAccountsInput, LogicalFundUncheckedCreateWithoutAccountsInput>
+    connectOrCreate?: LogicalFundCreateOrConnectWithoutAccountsInput
+    upsert?: LogicalFundUpsertWithoutAccountsInput
+    connect?: LogicalFundWhereUniqueInput
+    update?: XOR<XOR<LogicalFundUpdateToOneWithWhereWithoutAccountsInput, LogicalFundUpdateWithoutAccountsInput>, LogicalFundUncheckedUpdateWithoutAccountsInput>
+  }
+
+  export type TreasuryMovementUpdateManyWithoutFromAccountNestedInput = {
+    create?: XOR<TreasuryMovementCreateWithoutFromAccountInput, TreasuryMovementUncheckedCreateWithoutFromAccountInput> | TreasuryMovementCreateWithoutFromAccountInput[] | TreasuryMovementUncheckedCreateWithoutFromAccountInput[]
+    connectOrCreate?: TreasuryMovementCreateOrConnectWithoutFromAccountInput | TreasuryMovementCreateOrConnectWithoutFromAccountInput[]
+    upsert?: TreasuryMovementUpsertWithWhereUniqueWithoutFromAccountInput | TreasuryMovementUpsertWithWhereUniqueWithoutFromAccountInput[]
+    createMany?: TreasuryMovementCreateManyFromAccountInputEnvelope
+    set?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    disconnect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    delete?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    connect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    update?: TreasuryMovementUpdateWithWhereUniqueWithoutFromAccountInput | TreasuryMovementUpdateWithWhereUniqueWithoutFromAccountInput[]
+    updateMany?: TreasuryMovementUpdateManyWithWhereWithoutFromAccountInput | TreasuryMovementUpdateManyWithWhereWithoutFromAccountInput[]
+    deleteMany?: TreasuryMovementScalarWhereInput | TreasuryMovementScalarWhereInput[]
+  }
+
+  export type TreasuryMovementUpdateManyWithoutToAccountNestedInput = {
+    create?: XOR<TreasuryMovementCreateWithoutToAccountInput, TreasuryMovementUncheckedCreateWithoutToAccountInput> | TreasuryMovementCreateWithoutToAccountInput[] | TreasuryMovementUncheckedCreateWithoutToAccountInput[]
+    connectOrCreate?: TreasuryMovementCreateOrConnectWithoutToAccountInput | TreasuryMovementCreateOrConnectWithoutToAccountInput[]
+    upsert?: TreasuryMovementUpsertWithWhereUniqueWithoutToAccountInput | TreasuryMovementUpsertWithWhereUniqueWithoutToAccountInput[]
+    createMany?: TreasuryMovementCreateManyToAccountInputEnvelope
+    set?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    disconnect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    delete?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    connect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    update?: TreasuryMovementUpdateWithWhereUniqueWithoutToAccountInput | TreasuryMovementUpdateWithWhereUniqueWithoutToAccountInput[]
+    updateMany?: TreasuryMovementUpdateManyWithWhereWithoutToAccountInput | TreasuryMovementUpdateManyWithWhereWithoutToAccountInput[]
+    deleteMany?: TreasuryMovementScalarWhereInput | TreasuryMovementScalarWhereInput[]
+  }
+
+  export type ReconciliationCountUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<ReconciliationCountCreateWithoutAccountInput, ReconciliationCountUncheckedCreateWithoutAccountInput> | ReconciliationCountCreateWithoutAccountInput[] | ReconciliationCountUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: ReconciliationCountCreateOrConnectWithoutAccountInput | ReconciliationCountCreateOrConnectWithoutAccountInput[]
+    upsert?: ReconciliationCountUpsertWithWhereUniqueWithoutAccountInput | ReconciliationCountUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: ReconciliationCountCreateManyAccountInputEnvelope
+    set?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+    disconnect?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+    delete?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+    connect?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+    update?: ReconciliationCountUpdateWithWhereUniqueWithoutAccountInput | ReconciliationCountUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: ReconciliationCountUpdateManyWithWhereWithoutAccountInput | ReconciliationCountUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: ReconciliationCountScalarWhereInput | ReconciliationCountScalarWhereInput[]
+  }
+
+  export type TreasuryMovementUncheckedUpdateManyWithoutFromAccountNestedInput = {
+    create?: XOR<TreasuryMovementCreateWithoutFromAccountInput, TreasuryMovementUncheckedCreateWithoutFromAccountInput> | TreasuryMovementCreateWithoutFromAccountInput[] | TreasuryMovementUncheckedCreateWithoutFromAccountInput[]
+    connectOrCreate?: TreasuryMovementCreateOrConnectWithoutFromAccountInput | TreasuryMovementCreateOrConnectWithoutFromAccountInput[]
+    upsert?: TreasuryMovementUpsertWithWhereUniqueWithoutFromAccountInput | TreasuryMovementUpsertWithWhereUniqueWithoutFromAccountInput[]
+    createMany?: TreasuryMovementCreateManyFromAccountInputEnvelope
+    set?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    disconnect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    delete?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    connect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    update?: TreasuryMovementUpdateWithWhereUniqueWithoutFromAccountInput | TreasuryMovementUpdateWithWhereUniqueWithoutFromAccountInput[]
+    updateMany?: TreasuryMovementUpdateManyWithWhereWithoutFromAccountInput | TreasuryMovementUpdateManyWithWhereWithoutFromAccountInput[]
+    deleteMany?: TreasuryMovementScalarWhereInput | TreasuryMovementScalarWhereInput[]
+  }
+
+  export type TreasuryMovementUncheckedUpdateManyWithoutToAccountNestedInput = {
+    create?: XOR<TreasuryMovementCreateWithoutToAccountInput, TreasuryMovementUncheckedCreateWithoutToAccountInput> | TreasuryMovementCreateWithoutToAccountInput[] | TreasuryMovementUncheckedCreateWithoutToAccountInput[]
+    connectOrCreate?: TreasuryMovementCreateOrConnectWithoutToAccountInput | TreasuryMovementCreateOrConnectWithoutToAccountInput[]
+    upsert?: TreasuryMovementUpsertWithWhereUniqueWithoutToAccountInput | TreasuryMovementUpsertWithWhereUniqueWithoutToAccountInput[]
+    createMany?: TreasuryMovementCreateManyToAccountInputEnvelope
+    set?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    disconnect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    delete?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    connect?: TreasuryMovementWhereUniqueInput | TreasuryMovementWhereUniqueInput[]
+    update?: TreasuryMovementUpdateWithWhereUniqueWithoutToAccountInput | TreasuryMovementUpdateWithWhereUniqueWithoutToAccountInput[]
+    updateMany?: TreasuryMovementUpdateManyWithWhereWithoutToAccountInput | TreasuryMovementUpdateManyWithWhereWithoutToAccountInput[]
+    deleteMany?: TreasuryMovementScalarWhereInput | TreasuryMovementScalarWhereInput[]
+  }
+
+  export type ReconciliationCountUncheckedUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<ReconciliationCountCreateWithoutAccountInput, ReconciliationCountUncheckedCreateWithoutAccountInput> | ReconciliationCountCreateWithoutAccountInput[] | ReconciliationCountUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: ReconciliationCountCreateOrConnectWithoutAccountInput | ReconciliationCountCreateOrConnectWithoutAccountInput[]
+    upsert?: ReconciliationCountUpsertWithWhereUniqueWithoutAccountInput | ReconciliationCountUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: ReconciliationCountCreateManyAccountInputEnvelope
+    set?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+    disconnect?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+    delete?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+    connect?: ReconciliationCountWhereUniqueInput | ReconciliationCountWhereUniqueInput[]
+    update?: ReconciliationCountUpdateWithWhereUniqueWithoutAccountInput | ReconciliationCountUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: ReconciliationCountUpdateManyWithWhereWithoutAccountInput | ReconciliationCountUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: ReconciliationCountScalarWhereInput | ReconciliationCountScalarWhereInput[]
+  }
+
+  export type PhysicalAccountCreateNestedOneWithoutOutgoingInput = {
+    create?: XOR<PhysicalAccountCreateWithoutOutgoingInput, PhysicalAccountUncheckedCreateWithoutOutgoingInput>
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutOutgoingInput
+    connect?: PhysicalAccountWhereUniqueInput
+  }
+
+  export type PhysicalAccountCreateNestedOneWithoutIncomingInput = {
+    create?: XOR<PhysicalAccountCreateWithoutIncomingInput, PhysicalAccountUncheckedCreateWithoutIncomingInput>
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutIncomingInput
+    connect?: PhysicalAccountWhereUniqueInput
+  }
+
+  export type BigIntFieldUpdateOperationsInput = {
+    set?: bigint | number
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
+  }
+
+  export type PhysicalAccountUpdateOneWithoutOutgoingNestedInput = {
+    create?: XOR<PhysicalAccountCreateWithoutOutgoingInput, PhysicalAccountUncheckedCreateWithoutOutgoingInput>
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutOutgoingInput
+    upsert?: PhysicalAccountUpsertWithoutOutgoingInput
+    disconnect?: PhysicalAccountWhereInput | boolean
+    delete?: PhysicalAccountWhereInput | boolean
+    connect?: PhysicalAccountWhereUniqueInput
+    update?: XOR<XOR<PhysicalAccountUpdateToOneWithWhereWithoutOutgoingInput, PhysicalAccountUpdateWithoutOutgoingInput>, PhysicalAccountUncheckedUpdateWithoutOutgoingInput>
+  }
+
+  export type PhysicalAccountUpdateOneWithoutIncomingNestedInput = {
+    create?: XOR<PhysicalAccountCreateWithoutIncomingInput, PhysicalAccountUncheckedCreateWithoutIncomingInput>
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutIncomingInput
+    upsert?: PhysicalAccountUpsertWithoutIncomingInput
+    disconnect?: PhysicalAccountWhereInput | boolean
+    delete?: PhysicalAccountWhereInput | boolean
+    connect?: PhysicalAccountWhereUniqueInput
+    update?: XOR<XOR<PhysicalAccountUpdateToOneWithWhereWithoutIncomingInput, PhysicalAccountUpdateWithoutIncomingInput>, PhysicalAccountUncheckedUpdateWithoutIncomingInput>
+  }
+
+  export type PeriodSnapshotCreateNestedManyWithoutPeriodInput = {
+    create?: XOR<PeriodSnapshotCreateWithoutPeriodInput, PeriodSnapshotUncheckedCreateWithoutPeriodInput> | PeriodSnapshotCreateWithoutPeriodInput[] | PeriodSnapshotUncheckedCreateWithoutPeriodInput[]
+    connectOrCreate?: PeriodSnapshotCreateOrConnectWithoutPeriodInput | PeriodSnapshotCreateOrConnectWithoutPeriodInput[]
+    createMany?: PeriodSnapshotCreateManyPeriodInputEnvelope
+    connect?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+  }
+
+  export type PeriodSnapshotUncheckedCreateNestedManyWithoutPeriodInput = {
+    create?: XOR<PeriodSnapshotCreateWithoutPeriodInput, PeriodSnapshotUncheckedCreateWithoutPeriodInput> | PeriodSnapshotCreateWithoutPeriodInput[] | PeriodSnapshotUncheckedCreateWithoutPeriodInput[]
+    connectOrCreate?: PeriodSnapshotCreateOrConnectWithoutPeriodInput | PeriodSnapshotCreateOrConnectWithoutPeriodInput[]
+    createMany?: PeriodSnapshotCreateManyPeriodInputEnvelope
+    connect?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+  }
+
+  export type PeriodSnapshotUpdateManyWithoutPeriodNestedInput = {
+    create?: XOR<PeriodSnapshotCreateWithoutPeriodInput, PeriodSnapshotUncheckedCreateWithoutPeriodInput> | PeriodSnapshotCreateWithoutPeriodInput[] | PeriodSnapshotUncheckedCreateWithoutPeriodInput[]
+    connectOrCreate?: PeriodSnapshotCreateOrConnectWithoutPeriodInput | PeriodSnapshotCreateOrConnectWithoutPeriodInput[]
+    upsert?: PeriodSnapshotUpsertWithWhereUniqueWithoutPeriodInput | PeriodSnapshotUpsertWithWhereUniqueWithoutPeriodInput[]
+    createMany?: PeriodSnapshotCreateManyPeriodInputEnvelope
+    set?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+    disconnect?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+    delete?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+    connect?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+    update?: PeriodSnapshotUpdateWithWhereUniqueWithoutPeriodInput | PeriodSnapshotUpdateWithWhereUniqueWithoutPeriodInput[]
+    updateMany?: PeriodSnapshotUpdateManyWithWhereWithoutPeriodInput | PeriodSnapshotUpdateManyWithWhereWithoutPeriodInput[]
+    deleteMany?: PeriodSnapshotScalarWhereInput | PeriodSnapshotScalarWhereInput[]
+  }
+
+  export type PeriodSnapshotUncheckedUpdateManyWithoutPeriodNestedInput = {
+    create?: XOR<PeriodSnapshotCreateWithoutPeriodInput, PeriodSnapshotUncheckedCreateWithoutPeriodInput> | PeriodSnapshotCreateWithoutPeriodInput[] | PeriodSnapshotUncheckedCreateWithoutPeriodInput[]
+    connectOrCreate?: PeriodSnapshotCreateOrConnectWithoutPeriodInput | PeriodSnapshotCreateOrConnectWithoutPeriodInput[]
+    upsert?: PeriodSnapshotUpsertWithWhereUniqueWithoutPeriodInput | PeriodSnapshotUpsertWithWhereUniqueWithoutPeriodInput[]
+    createMany?: PeriodSnapshotCreateManyPeriodInputEnvelope
+    set?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+    disconnect?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+    delete?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+    connect?: PeriodSnapshotWhereUniqueInput | PeriodSnapshotWhereUniqueInput[]
+    update?: PeriodSnapshotUpdateWithWhereUniqueWithoutPeriodInput | PeriodSnapshotUpdateWithWhereUniqueWithoutPeriodInput[]
+    updateMany?: PeriodSnapshotUpdateManyWithWhereWithoutPeriodInput | PeriodSnapshotUpdateManyWithWhereWithoutPeriodInput[]
+    deleteMany?: PeriodSnapshotScalarWhereInput | PeriodSnapshotScalarWhereInput[]
+  }
+
+  export type FinancialPeriodCreateNestedOneWithoutSnapshotsInput = {
+    create?: XOR<FinancialPeriodCreateWithoutSnapshotsInput, FinancialPeriodUncheckedCreateWithoutSnapshotsInput>
+    connectOrCreate?: FinancialPeriodCreateOrConnectWithoutSnapshotsInput
+    connect?: FinancialPeriodWhereUniqueInput
+  }
+
+  export type FinancialPeriodUpdateOneRequiredWithoutSnapshotsNestedInput = {
+    create?: XOR<FinancialPeriodCreateWithoutSnapshotsInput, FinancialPeriodUncheckedCreateWithoutSnapshotsInput>
+    connectOrCreate?: FinancialPeriodCreateOrConnectWithoutSnapshotsInput
+    upsert?: FinancialPeriodUpsertWithoutSnapshotsInput
+    connect?: FinancialPeriodWhereUniqueInput
+    update?: XOR<XOR<FinancialPeriodUpdateToOneWithWhereWithoutSnapshotsInput, FinancialPeriodUpdateWithoutSnapshotsInput>, FinancialPeriodUncheckedUpdateWithoutSnapshotsInput>
+  }
+
+  export type PhysicalAccountCreateNestedOneWithoutReconCountsInput = {
+    create?: XOR<PhysicalAccountCreateWithoutReconCountsInput, PhysicalAccountUncheckedCreateWithoutReconCountsInput>
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutReconCountsInput
+    connect?: PhysicalAccountWhereUniqueInput
+  }
+
+  export type PhysicalAccountUpdateOneRequiredWithoutReconCountsNestedInput = {
+    create?: XOR<PhysicalAccountCreateWithoutReconCountsInput, PhysicalAccountUncheckedCreateWithoutReconCountsInput>
+    connectOrCreate?: PhysicalAccountCreateOrConnectWithoutReconCountsInput
+    upsert?: PhysicalAccountUpsertWithoutReconCountsInput
+    connect?: PhysicalAccountWhereUniqueInput
+    update?: XOR<XOR<PhysicalAccountUpdateToOneWithWhereWithoutReconCountsInput, PhysicalAccountUpdateWithoutReconCountsInput>, PhysicalAccountUncheckedUpdateWithoutReconCountsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -12872,6 +23063,33 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedBigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  }
+
+  export type NestedBigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
   }
 
   export type TransferCreateWithoutFromMethodInput = {
@@ -14154,6 +24372,734 @@ export namespace Prisma {
     loans?: TreasuryLoanUncheckedUpdateManyWithoutMethodNestedInput
   }
 
+  export type PhysicalAccountCreateWithoutFundInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    outgoing?: TreasuryMovementCreateNestedManyWithoutFromAccountInput
+    incoming?: TreasuryMovementCreateNestedManyWithoutToAccountInput
+    reconCounts?: ReconciliationCountCreateNestedManyWithoutAccountInput
+  }
+
+  export type PhysicalAccountUncheckedCreateWithoutFundInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    outgoing?: TreasuryMovementUncheckedCreateNestedManyWithoutFromAccountInput
+    incoming?: TreasuryMovementUncheckedCreateNestedManyWithoutToAccountInput
+    reconCounts?: ReconciliationCountUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type PhysicalAccountCreateOrConnectWithoutFundInput = {
+    where: PhysicalAccountWhereUniqueInput
+    create: XOR<PhysicalAccountCreateWithoutFundInput, PhysicalAccountUncheckedCreateWithoutFundInput>
+  }
+
+  export type PhysicalAccountCreateManyFundInputEnvelope = {
+    data: PhysicalAccountCreateManyFundInput | PhysicalAccountCreateManyFundInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PhysicalAccountUpsertWithWhereUniqueWithoutFundInput = {
+    where: PhysicalAccountWhereUniqueInput
+    update: XOR<PhysicalAccountUpdateWithoutFundInput, PhysicalAccountUncheckedUpdateWithoutFundInput>
+    create: XOR<PhysicalAccountCreateWithoutFundInput, PhysicalAccountUncheckedCreateWithoutFundInput>
+  }
+
+  export type PhysicalAccountUpdateWithWhereUniqueWithoutFundInput = {
+    where: PhysicalAccountWhereUniqueInput
+    data: XOR<PhysicalAccountUpdateWithoutFundInput, PhysicalAccountUncheckedUpdateWithoutFundInput>
+  }
+
+  export type PhysicalAccountUpdateManyWithWhereWithoutFundInput = {
+    where: PhysicalAccountScalarWhereInput
+    data: XOR<PhysicalAccountUpdateManyMutationInput, PhysicalAccountUncheckedUpdateManyWithoutFundInput>
+  }
+
+  export type PhysicalAccountScalarWhereInput = {
+    AND?: PhysicalAccountScalarWhereInput | PhysicalAccountScalarWhereInput[]
+    OR?: PhysicalAccountScalarWhereInput[]
+    NOT?: PhysicalAccountScalarWhereInput | PhysicalAccountScalarWhereInput[]
+    id?: StringFilter<"PhysicalAccount"> | string
+    tenantId?: StringFilter<"PhysicalAccount"> | string
+    shopId?: StringFilter<"PhysicalAccount"> | string
+    fundId?: StringFilter<"PhysicalAccount"> | string
+    kind?: StringFilter<"PhysicalAccount"> | string
+    code?: StringFilter<"PhysicalAccount"> | string
+    name?: StringFilter<"PhysicalAccount"> | string
+    currency?: StringFilter<"PhysicalAccount"> | string
+    isActive?: BoolFilter<"PhysicalAccount"> | boolean
+    createdAt?: DateTimeFilter<"PhysicalAccount"> | Date | string
+    createdBy?: StringNullableFilter<"PhysicalAccount"> | string | null
+    updatedAt?: DateTimeFilter<"PhysicalAccount"> | Date | string
+  }
+
+  export type LogicalFundCreateWithoutAccountsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LogicalFundUncheckedCreateWithoutAccountsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LogicalFundCreateOrConnectWithoutAccountsInput = {
+    where: LogicalFundWhereUniqueInput
+    create: XOR<LogicalFundCreateWithoutAccountsInput, LogicalFundUncheckedCreateWithoutAccountsInput>
+  }
+
+  export type TreasuryMovementCreateWithoutFromAccountInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    amountMinor: bigint | number
+    financialTransactionId: string
+    journalId?: string | null
+    occurredOn: Date | string
+    idempotencyKey: string
+    reason?: string | null
+    notes?: string | null
+    originalMovementId?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    toAccount?: PhysicalAccountCreateNestedOneWithoutIncomingInput
+  }
+
+  export type TreasuryMovementUncheckedCreateWithoutFromAccountInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    toPhysicalId?: string | null
+    amountMinor: bigint | number
+    financialTransactionId: string
+    journalId?: string | null
+    occurredOn: Date | string
+    idempotencyKey: string
+    reason?: string | null
+    notes?: string | null
+    originalMovementId?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryMovementCreateOrConnectWithoutFromAccountInput = {
+    where: TreasuryMovementWhereUniqueInput
+    create: XOR<TreasuryMovementCreateWithoutFromAccountInput, TreasuryMovementUncheckedCreateWithoutFromAccountInput>
+  }
+
+  export type TreasuryMovementCreateManyFromAccountInputEnvelope = {
+    data: TreasuryMovementCreateManyFromAccountInput | TreasuryMovementCreateManyFromAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TreasuryMovementCreateWithoutToAccountInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    amountMinor: bigint | number
+    financialTransactionId: string
+    journalId?: string | null
+    occurredOn: Date | string
+    idempotencyKey: string
+    reason?: string | null
+    notes?: string | null
+    originalMovementId?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+    fromAccount?: PhysicalAccountCreateNestedOneWithoutOutgoingInput
+  }
+
+  export type TreasuryMovementUncheckedCreateWithoutToAccountInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    fromPhysicalId?: string | null
+    amountMinor: bigint | number
+    financialTransactionId: string
+    journalId?: string | null
+    occurredOn: Date | string
+    idempotencyKey: string
+    reason?: string | null
+    notes?: string | null
+    originalMovementId?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryMovementCreateOrConnectWithoutToAccountInput = {
+    where: TreasuryMovementWhereUniqueInput
+    create: XOR<TreasuryMovementCreateWithoutToAccountInput, TreasuryMovementUncheckedCreateWithoutToAccountInput>
+  }
+
+  export type TreasuryMovementCreateManyToAccountInputEnvelope = {
+    data: TreasuryMovementCreateManyToAccountInput | TreasuryMovementCreateManyToAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ReconciliationCountCreateWithoutAccountInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    expectedMinor: bigint | number
+    countedMinor: bigint | number
+    differenceMinor: bigint | number
+    status?: string
+    countedBy: string
+    notes?: string | null
+    reason?: string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    adjustmentMovementId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ReconciliationCountUncheckedCreateWithoutAccountInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    expectedMinor: bigint | number
+    countedMinor: bigint | number
+    differenceMinor: bigint | number
+    status?: string
+    countedBy: string
+    notes?: string | null
+    reason?: string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    adjustmentMovementId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ReconciliationCountCreateOrConnectWithoutAccountInput = {
+    where: ReconciliationCountWhereUniqueInput
+    create: XOR<ReconciliationCountCreateWithoutAccountInput, ReconciliationCountUncheckedCreateWithoutAccountInput>
+  }
+
+  export type ReconciliationCountCreateManyAccountInputEnvelope = {
+    data: ReconciliationCountCreateManyAccountInput | ReconciliationCountCreateManyAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LogicalFundUpsertWithoutAccountsInput = {
+    update: XOR<LogicalFundUpdateWithoutAccountsInput, LogicalFundUncheckedUpdateWithoutAccountsInput>
+    create: XOR<LogicalFundCreateWithoutAccountsInput, LogicalFundUncheckedCreateWithoutAccountsInput>
+    where?: LogicalFundWhereInput
+  }
+
+  export type LogicalFundUpdateToOneWithWhereWithoutAccountsInput = {
+    where?: LogicalFundWhereInput
+    data: XOR<LogicalFundUpdateWithoutAccountsInput, LogicalFundUncheckedUpdateWithoutAccountsInput>
+  }
+
+  export type LogicalFundUpdateWithoutAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LogicalFundUncheckedUpdateWithoutAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryMovementUpsertWithWhereUniqueWithoutFromAccountInput = {
+    where: TreasuryMovementWhereUniqueInput
+    update: XOR<TreasuryMovementUpdateWithoutFromAccountInput, TreasuryMovementUncheckedUpdateWithoutFromAccountInput>
+    create: XOR<TreasuryMovementCreateWithoutFromAccountInput, TreasuryMovementUncheckedCreateWithoutFromAccountInput>
+  }
+
+  export type TreasuryMovementUpdateWithWhereUniqueWithoutFromAccountInput = {
+    where: TreasuryMovementWhereUniqueInput
+    data: XOR<TreasuryMovementUpdateWithoutFromAccountInput, TreasuryMovementUncheckedUpdateWithoutFromAccountInput>
+  }
+
+  export type TreasuryMovementUpdateManyWithWhereWithoutFromAccountInput = {
+    where: TreasuryMovementScalarWhereInput
+    data: XOR<TreasuryMovementUpdateManyMutationInput, TreasuryMovementUncheckedUpdateManyWithoutFromAccountInput>
+  }
+
+  export type TreasuryMovementScalarWhereInput = {
+    AND?: TreasuryMovementScalarWhereInput | TreasuryMovementScalarWhereInput[]
+    OR?: TreasuryMovementScalarWhereInput[]
+    NOT?: TreasuryMovementScalarWhereInput | TreasuryMovementScalarWhereInput[]
+    id?: StringFilter<"TreasuryMovement"> | string
+    tenantId?: StringFilter<"TreasuryMovement"> | string
+    shopId?: StringFilter<"TreasuryMovement"> | string
+    movementType?: StringFilter<"TreasuryMovement"> | string
+    fromPhysicalId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    toPhysicalId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    amountMinor?: BigIntFilter<"TreasuryMovement"> | bigint | number
+    financialTransactionId?: StringFilter<"TreasuryMovement"> | string
+    journalId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    occurredOn?: DateTimeFilter<"TreasuryMovement"> | Date | string
+    idempotencyKey?: StringFilter<"TreasuryMovement"> | string
+    reason?: StringNullableFilter<"TreasuryMovement"> | string | null
+    notes?: StringNullableFilter<"TreasuryMovement"> | string | null
+    originalMovementId?: StringNullableFilter<"TreasuryMovement"> | string | null
+    createdBy?: StringNullableFilter<"TreasuryMovement"> | string | null
+    createdAt?: DateTimeFilter<"TreasuryMovement"> | Date | string
+  }
+
+  export type TreasuryMovementUpsertWithWhereUniqueWithoutToAccountInput = {
+    where: TreasuryMovementWhereUniqueInput
+    update: XOR<TreasuryMovementUpdateWithoutToAccountInput, TreasuryMovementUncheckedUpdateWithoutToAccountInput>
+    create: XOR<TreasuryMovementCreateWithoutToAccountInput, TreasuryMovementUncheckedCreateWithoutToAccountInput>
+  }
+
+  export type TreasuryMovementUpdateWithWhereUniqueWithoutToAccountInput = {
+    where: TreasuryMovementWhereUniqueInput
+    data: XOR<TreasuryMovementUpdateWithoutToAccountInput, TreasuryMovementUncheckedUpdateWithoutToAccountInput>
+  }
+
+  export type TreasuryMovementUpdateManyWithWhereWithoutToAccountInput = {
+    where: TreasuryMovementScalarWhereInput
+    data: XOR<TreasuryMovementUpdateManyMutationInput, TreasuryMovementUncheckedUpdateManyWithoutToAccountInput>
+  }
+
+  export type ReconciliationCountUpsertWithWhereUniqueWithoutAccountInput = {
+    where: ReconciliationCountWhereUniqueInput
+    update: XOR<ReconciliationCountUpdateWithoutAccountInput, ReconciliationCountUncheckedUpdateWithoutAccountInput>
+    create: XOR<ReconciliationCountCreateWithoutAccountInput, ReconciliationCountUncheckedCreateWithoutAccountInput>
+  }
+
+  export type ReconciliationCountUpdateWithWhereUniqueWithoutAccountInput = {
+    where: ReconciliationCountWhereUniqueInput
+    data: XOR<ReconciliationCountUpdateWithoutAccountInput, ReconciliationCountUncheckedUpdateWithoutAccountInput>
+  }
+
+  export type ReconciliationCountUpdateManyWithWhereWithoutAccountInput = {
+    where: ReconciliationCountScalarWhereInput
+    data: XOR<ReconciliationCountUpdateManyMutationInput, ReconciliationCountUncheckedUpdateManyWithoutAccountInput>
+  }
+
+  export type ReconciliationCountScalarWhereInput = {
+    AND?: ReconciliationCountScalarWhereInput | ReconciliationCountScalarWhereInput[]
+    OR?: ReconciliationCountScalarWhereInput[]
+    NOT?: ReconciliationCountScalarWhereInput | ReconciliationCountScalarWhereInput[]
+    id?: StringFilter<"ReconciliationCount"> | string
+    tenantId?: StringFilter<"ReconciliationCount"> | string
+    shopId?: StringFilter<"ReconciliationCount"> | string
+    physicalAccountId?: StringFilter<"ReconciliationCount"> | string
+    expectedMinor?: BigIntFilter<"ReconciliationCount"> | bigint | number
+    countedMinor?: BigIntFilter<"ReconciliationCount"> | bigint | number
+    differenceMinor?: BigIntFilter<"ReconciliationCount"> | bigint | number
+    status?: StringFilter<"ReconciliationCount"> | string
+    countedBy?: StringFilter<"ReconciliationCount"> | string
+    notes?: StringNullableFilter<"ReconciliationCount"> | string | null
+    reason?: StringNullableFilter<"ReconciliationCount"> | string | null
+    approvedBy?: StringNullableFilter<"ReconciliationCount"> | string | null
+    approvedAt?: DateTimeNullableFilter<"ReconciliationCount"> | Date | string | null
+    adjustmentMovementId?: StringNullableFilter<"ReconciliationCount"> | string | null
+    createdAt?: DateTimeFilter<"ReconciliationCount"> | Date | string
+  }
+
+  export type PhysicalAccountCreateWithoutOutgoingInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    fund: LogicalFundCreateNestedOneWithoutAccountsInput
+    incoming?: TreasuryMovementCreateNestedManyWithoutToAccountInput
+    reconCounts?: ReconciliationCountCreateNestedManyWithoutAccountInput
+  }
+
+  export type PhysicalAccountUncheckedCreateWithoutOutgoingInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    fundId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    incoming?: TreasuryMovementUncheckedCreateNestedManyWithoutToAccountInput
+    reconCounts?: ReconciliationCountUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type PhysicalAccountCreateOrConnectWithoutOutgoingInput = {
+    where: PhysicalAccountWhereUniqueInput
+    create: XOR<PhysicalAccountCreateWithoutOutgoingInput, PhysicalAccountUncheckedCreateWithoutOutgoingInput>
+  }
+
+  export type PhysicalAccountCreateWithoutIncomingInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    fund: LogicalFundCreateNestedOneWithoutAccountsInput
+    outgoing?: TreasuryMovementCreateNestedManyWithoutFromAccountInput
+    reconCounts?: ReconciliationCountCreateNestedManyWithoutAccountInput
+  }
+
+  export type PhysicalAccountUncheckedCreateWithoutIncomingInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    fundId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    outgoing?: TreasuryMovementUncheckedCreateNestedManyWithoutFromAccountInput
+    reconCounts?: ReconciliationCountUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type PhysicalAccountCreateOrConnectWithoutIncomingInput = {
+    where: PhysicalAccountWhereUniqueInput
+    create: XOR<PhysicalAccountCreateWithoutIncomingInput, PhysicalAccountUncheckedCreateWithoutIncomingInput>
+  }
+
+  export type PhysicalAccountUpsertWithoutOutgoingInput = {
+    update: XOR<PhysicalAccountUpdateWithoutOutgoingInput, PhysicalAccountUncheckedUpdateWithoutOutgoingInput>
+    create: XOR<PhysicalAccountCreateWithoutOutgoingInput, PhysicalAccountUncheckedCreateWithoutOutgoingInput>
+    where?: PhysicalAccountWhereInput
+  }
+
+  export type PhysicalAccountUpdateToOneWithWhereWithoutOutgoingInput = {
+    where?: PhysicalAccountWhereInput
+    data: XOR<PhysicalAccountUpdateWithoutOutgoingInput, PhysicalAccountUncheckedUpdateWithoutOutgoingInput>
+  }
+
+  export type PhysicalAccountUpdateWithoutOutgoingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fund?: LogicalFundUpdateOneRequiredWithoutAccountsNestedInput
+    incoming?: TreasuryMovementUpdateManyWithoutToAccountNestedInput
+    reconCounts?: ReconciliationCountUpdateManyWithoutAccountNestedInput
+  }
+
+  export type PhysicalAccountUncheckedUpdateWithoutOutgoingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    fundId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    incoming?: TreasuryMovementUncheckedUpdateManyWithoutToAccountNestedInput
+    reconCounts?: ReconciliationCountUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type PhysicalAccountUpsertWithoutIncomingInput = {
+    update: XOR<PhysicalAccountUpdateWithoutIncomingInput, PhysicalAccountUncheckedUpdateWithoutIncomingInput>
+    create: XOR<PhysicalAccountCreateWithoutIncomingInput, PhysicalAccountUncheckedCreateWithoutIncomingInput>
+    where?: PhysicalAccountWhereInput
+  }
+
+  export type PhysicalAccountUpdateToOneWithWhereWithoutIncomingInput = {
+    where?: PhysicalAccountWhereInput
+    data: XOR<PhysicalAccountUpdateWithoutIncomingInput, PhysicalAccountUncheckedUpdateWithoutIncomingInput>
+  }
+
+  export type PhysicalAccountUpdateWithoutIncomingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fund?: LogicalFundUpdateOneRequiredWithoutAccountsNestedInput
+    outgoing?: TreasuryMovementUpdateManyWithoutFromAccountNestedInput
+    reconCounts?: ReconciliationCountUpdateManyWithoutAccountNestedInput
+  }
+
+  export type PhysicalAccountUncheckedUpdateWithoutIncomingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    fundId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    outgoing?: TreasuryMovementUncheckedUpdateManyWithoutFromAccountNestedInput
+    reconCounts?: ReconciliationCountUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type PeriodSnapshotCreateWithoutPeriodInput = {
+    id?: string
+    scopeType: string
+    scopeKey: string
+    openingMinor: bigint | number
+    inflowsMinor: bigint | number
+    outflowsMinor: bigint | number
+    adjustmentsMinor: bigint | number
+    closingMinor: bigint | number
+  }
+
+  export type PeriodSnapshotUncheckedCreateWithoutPeriodInput = {
+    id?: string
+    scopeType: string
+    scopeKey: string
+    openingMinor: bigint | number
+    inflowsMinor: bigint | number
+    outflowsMinor: bigint | number
+    adjustmentsMinor: bigint | number
+    closingMinor: bigint | number
+  }
+
+  export type PeriodSnapshotCreateOrConnectWithoutPeriodInput = {
+    where: PeriodSnapshotWhereUniqueInput
+    create: XOR<PeriodSnapshotCreateWithoutPeriodInput, PeriodSnapshotUncheckedCreateWithoutPeriodInput>
+  }
+
+  export type PeriodSnapshotCreateManyPeriodInputEnvelope = {
+    data: PeriodSnapshotCreateManyPeriodInput | PeriodSnapshotCreateManyPeriodInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PeriodSnapshotUpsertWithWhereUniqueWithoutPeriodInput = {
+    where: PeriodSnapshotWhereUniqueInput
+    update: XOR<PeriodSnapshotUpdateWithoutPeriodInput, PeriodSnapshotUncheckedUpdateWithoutPeriodInput>
+    create: XOR<PeriodSnapshotCreateWithoutPeriodInput, PeriodSnapshotUncheckedCreateWithoutPeriodInput>
+  }
+
+  export type PeriodSnapshotUpdateWithWhereUniqueWithoutPeriodInput = {
+    where: PeriodSnapshotWhereUniqueInput
+    data: XOR<PeriodSnapshotUpdateWithoutPeriodInput, PeriodSnapshotUncheckedUpdateWithoutPeriodInput>
+  }
+
+  export type PeriodSnapshotUpdateManyWithWhereWithoutPeriodInput = {
+    where: PeriodSnapshotScalarWhereInput
+    data: XOR<PeriodSnapshotUpdateManyMutationInput, PeriodSnapshotUncheckedUpdateManyWithoutPeriodInput>
+  }
+
+  export type PeriodSnapshotScalarWhereInput = {
+    AND?: PeriodSnapshotScalarWhereInput | PeriodSnapshotScalarWhereInput[]
+    OR?: PeriodSnapshotScalarWhereInput[]
+    NOT?: PeriodSnapshotScalarWhereInput | PeriodSnapshotScalarWhereInput[]
+    id?: StringFilter<"PeriodSnapshot"> | string
+    periodId?: StringFilter<"PeriodSnapshot"> | string
+    scopeType?: StringFilter<"PeriodSnapshot"> | string
+    scopeKey?: StringFilter<"PeriodSnapshot"> | string
+    openingMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    inflowsMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    outflowsMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    adjustmentsMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+    closingMinor?: BigIntFilter<"PeriodSnapshot"> | bigint | number
+  }
+
+  export type FinancialPeriodCreateWithoutSnapshotsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    date: Date | string
+    createdAt?: Date | string
+  }
+
+  export type FinancialPeriodUncheckedCreateWithoutSnapshotsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    date: Date | string
+    createdAt?: Date | string
+  }
+
+  export type FinancialPeriodCreateOrConnectWithoutSnapshotsInput = {
+    where: FinancialPeriodWhereUniqueInput
+    create: XOR<FinancialPeriodCreateWithoutSnapshotsInput, FinancialPeriodUncheckedCreateWithoutSnapshotsInput>
+  }
+
+  export type FinancialPeriodUpsertWithoutSnapshotsInput = {
+    update: XOR<FinancialPeriodUpdateWithoutSnapshotsInput, FinancialPeriodUncheckedUpdateWithoutSnapshotsInput>
+    create: XOR<FinancialPeriodCreateWithoutSnapshotsInput, FinancialPeriodUncheckedCreateWithoutSnapshotsInput>
+    where?: FinancialPeriodWhereInput
+  }
+
+  export type FinancialPeriodUpdateToOneWithWhereWithoutSnapshotsInput = {
+    where?: FinancialPeriodWhereInput
+    data: XOR<FinancialPeriodUpdateWithoutSnapshotsInput, FinancialPeriodUncheckedUpdateWithoutSnapshotsInput>
+  }
+
+  export type FinancialPeriodUpdateWithoutSnapshotsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialPeriodUncheckedUpdateWithoutSnapshotsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PhysicalAccountCreateWithoutReconCountsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    fund: LogicalFundCreateNestedOneWithoutAccountsInput
+    outgoing?: TreasuryMovementCreateNestedManyWithoutFromAccountInput
+    incoming?: TreasuryMovementCreateNestedManyWithoutToAccountInput
+  }
+
+  export type PhysicalAccountUncheckedCreateWithoutReconCountsInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    fundId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+    outgoing?: TreasuryMovementUncheckedCreateNestedManyWithoutFromAccountInput
+    incoming?: TreasuryMovementUncheckedCreateNestedManyWithoutToAccountInput
+  }
+
+  export type PhysicalAccountCreateOrConnectWithoutReconCountsInput = {
+    where: PhysicalAccountWhereUniqueInput
+    create: XOR<PhysicalAccountCreateWithoutReconCountsInput, PhysicalAccountUncheckedCreateWithoutReconCountsInput>
+  }
+
+  export type PhysicalAccountUpsertWithoutReconCountsInput = {
+    update: XOR<PhysicalAccountUpdateWithoutReconCountsInput, PhysicalAccountUncheckedUpdateWithoutReconCountsInput>
+    create: XOR<PhysicalAccountCreateWithoutReconCountsInput, PhysicalAccountUncheckedCreateWithoutReconCountsInput>
+    where?: PhysicalAccountWhereInput
+  }
+
+  export type PhysicalAccountUpdateToOneWithWhereWithoutReconCountsInput = {
+    where?: PhysicalAccountWhereInput
+    data: XOR<PhysicalAccountUpdateWithoutReconCountsInput, PhysicalAccountUncheckedUpdateWithoutReconCountsInput>
+  }
+
+  export type PhysicalAccountUpdateWithoutReconCountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fund?: LogicalFundUpdateOneRequiredWithoutAccountsNestedInput
+    outgoing?: TreasuryMovementUpdateManyWithoutFromAccountNestedInput
+    incoming?: TreasuryMovementUpdateManyWithoutToAccountNestedInput
+  }
+
+  export type PhysicalAccountUncheckedUpdateWithoutReconCountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    fundId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    outgoing?: TreasuryMovementUncheckedUpdateManyWithoutFromAccountNestedInput
+    incoming?: TreasuryMovementUncheckedUpdateManyWithoutToAccountNestedInput
+  }
+
   export type TransferCreateManyFromMethodInput = {
     id?: string
     tenantId: string
@@ -14544,6 +25490,324 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PhysicalAccountCreateManyFundInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    code: string
+    name: string
+    currency?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type PhysicalAccountUpdateWithoutFundInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    outgoing?: TreasuryMovementUpdateManyWithoutFromAccountNestedInput
+    incoming?: TreasuryMovementUpdateManyWithoutToAccountNestedInput
+    reconCounts?: ReconciliationCountUpdateManyWithoutAccountNestedInput
+  }
+
+  export type PhysicalAccountUncheckedUpdateWithoutFundInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    outgoing?: TreasuryMovementUncheckedUpdateManyWithoutFromAccountNestedInput
+    incoming?: TreasuryMovementUncheckedUpdateManyWithoutToAccountNestedInput
+    reconCounts?: ReconciliationCountUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type PhysicalAccountUncheckedUpdateManyWithoutFundInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryMovementCreateManyFromAccountInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    toPhysicalId?: string | null
+    amountMinor: bigint | number
+    financialTransactionId: string
+    journalId?: string | null
+    occurredOn: Date | string
+    idempotencyKey: string
+    reason?: string | null
+    notes?: string | null
+    originalMovementId?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryMovementCreateManyToAccountInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    movementType: string
+    fromPhysicalId?: string | null
+    amountMinor: bigint | number
+    financialTransactionId: string
+    journalId?: string | null
+    occurredOn: Date | string
+    idempotencyKey: string
+    reason?: string | null
+    notes?: string | null
+    originalMovementId?: string | null
+    createdBy?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ReconciliationCountCreateManyAccountInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    expectedMinor: bigint | number
+    countedMinor: bigint | number
+    differenceMinor: bigint | number
+    status?: string
+    countedBy: string
+    notes?: string | null
+    reason?: string | null
+    approvedBy?: string | null
+    approvedAt?: Date | string | null
+    adjustmentMovementId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TreasuryMovementUpdateWithoutFromAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    toAccount?: PhysicalAccountUpdateOneWithoutIncomingNestedInput
+  }
+
+  export type TreasuryMovementUncheckedUpdateWithoutFromAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    toPhysicalId?: NullableStringFieldUpdateOperationsInput | string | null
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryMovementUncheckedUpdateManyWithoutFromAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    toPhysicalId?: NullableStringFieldUpdateOperationsInput | string | null
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryMovementUpdateWithoutToAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromAccount?: PhysicalAccountUpdateOneWithoutOutgoingNestedInput
+  }
+
+  export type TreasuryMovementUncheckedUpdateWithoutToAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    fromPhysicalId?: NullableStringFieldUpdateOperationsInput | string | null
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreasuryMovementUncheckedUpdateManyWithoutToAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    movementType?: StringFieldUpdateOperationsInput | string
+    fromPhysicalId?: NullableStringFieldUpdateOperationsInput | string | null
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    journalId?: NullableStringFieldUpdateOperationsInput | string | null
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    originalMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReconciliationCountUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    expectedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    countedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    differenceMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    status?: StringFieldUpdateOperationsInput | string
+    countedBy?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    adjustmentMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReconciliationCountUncheckedUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    expectedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    countedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    differenceMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    status?: StringFieldUpdateOperationsInput | string
+    countedBy?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    adjustmentMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReconciliationCountUncheckedUpdateManyWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    expectedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    countedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    differenceMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    status?: StringFieldUpdateOperationsInput | string
+    countedBy?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    adjustmentMovementId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PeriodSnapshotCreateManyPeriodInput = {
+    id?: string
+    scopeType: string
+    scopeKey: string
+    openingMinor: bigint | number
+    inflowsMinor: bigint | number
+    outflowsMinor: bigint | number
+    adjustmentsMinor: bigint | number
+    closingMinor: bigint | number
+  }
+
+  export type PeriodSnapshotUpdateWithoutPeriodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scopeType?: StringFieldUpdateOperationsInput | string
+    scopeKey?: StringFieldUpdateOperationsInput | string
+    openingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    inflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    outflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    adjustmentsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    closingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type PeriodSnapshotUncheckedUpdateWithoutPeriodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scopeType?: StringFieldUpdateOperationsInput | string
+    scopeKey?: StringFieldUpdateOperationsInput | string
+    openingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    inflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    outflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    adjustmentsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    closingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type PeriodSnapshotUncheckedUpdateManyWithoutPeriodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scopeType?: StringFieldUpdateOperationsInput | string
+    scopeKey?: StringFieldUpdateOperationsInput | string
+    openingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    inflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    outflowsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    adjustmentsMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    closingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
 
 
   /**
@@ -14557,6 +25821,18 @@ export namespace Prisma {
      * @deprecated Use TreasuryLoanCountOutputTypeDefaultArgs instead
      */
     export type TreasuryLoanCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TreasuryLoanCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use LogicalFundCountOutputTypeDefaultArgs instead
+     */
+    export type LogicalFundCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = LogicalFundCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PhysicalAccountCountOutputTypeDefaultArgs instead
+     */
+    export type PhysicalAccountCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PhysicalAccountCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use FinancialPeriodCountOutputTypeDefaultArgs instead
+     */
+    export type FinancialPeriodCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = FinancialPeriodCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use PaymentMethodDefaultArgs instead
      */
@@ -14589,6 +25865,30 @@ export namespace Prisma {
      * @deprecated Use AuditLogDefaultArgs instead
      */
     export type AuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AuditLogDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use LogicalFundDefaultArgs instead
+     */
+    export type LogicalFundArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = LogicalFundDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PhysicalAccountDefaultArgs instead
+     */
+    export type PhysicalAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PhysicalAccountDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TreasuryMovementDefaultArgs instead
+     */
+    export type TreasuryMovementArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TreasuryMovementDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use FinancialPeriodDefaultArgs instead
+     */
+    export type FinancialPeriodArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = FinancialPeriodDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PeriodSnapshotDefaultArgs instead
+     */
+    export type PeriodSnapshotArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PeriodSnapshotDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TreasuryObligationDefaultArgs instead
+     */
+    export type TreasuryObligationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TreasuryObligationDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany
