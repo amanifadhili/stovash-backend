@@ -1,52 +1,51 @@
 #!/usr/bin/env bash
-# Activate a new backend release under /home/deploy/stovash/backend
+# Activate a backend release with Docker. Host Node/nvm is not used.
 #
 #   current -> releases/<this version>
-#   current/shared -> ../../shared
-#   current/.env   -> ../../shared/.env
+#   nginx -> 127.0.0.1:5051 -> container :5051
 # Keeps the 3 newest releases.
 set -euo pipefail
 
 ROOT="/home/deploy/stovash/backend"
 RELEASE_DIR="${1:?release directory required}"
 KEEP="${KEEP_RELEASES:-3}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ -f "$SCRIPT_DIR/ensure-docker.sh" ]]; then
+  bash "$SCRIPT_DIR/ensure-docker.sh"
+fi
 
 mkdir -p "$ROOT/shared"
-if [[ -f "$(dirname "$0")/ensure-node.sh" ]]; then
-  bash "$(dirname "$0")/ensure-node.sh"
+if [[ ! -f "$ROOT/shared/.env" ]]; then
+  echo "Missing $ROOT/shared/.env — copy production env before deploy."
+  exit 1
 fi
 
 rm -rf "$RELEASE_DIR/shared"
 ln -sfn "$ROOT/shared" "$RELEASE_DIR/shared"
 ln -sfn "$ROOT/shared/.env" "$RELEASE_DIR/.env"
-chmod +x "$RELEASE_DIR/deploy/start.sh" 2>/dev/null || true
-chown -R deploy:deploy "$RELEASE_DIR" "$ROOT/shared"
+
+export RELEASE_ID
+RELEASE_ID="$(basename "$RELEASE_DIR")"
+set -a
+# shellcheck disable=SC1091
+source "$ROOT/shared/.env"
+set +a
+export NODE_VERSION="${NODE_VERSION:-22-bookworm-slim}"
+export PORT="${PORT:-5051}"
 
 cd "$RELEASE_DIR"
-sudo -u deploy -H bash -c '
-  set -euo pipefail
-  export NVM_DIR="$HOME/.nvm"
-  . "$NVM_DIR/nvm.sh"
-  nvm use --silent || nvm use default
-  node -v
-  npm ci
-  npm run build || true
-'
+docker-compose --env-file "$ROOT/shared/.env" -p stovash-backend up -d --build --remove-orphans --force-recreate
 
 ln -sfn "$RELEASE_DIR" "$ROOT/current"
-chown -h deploy:deploy "$ROOT/current"
-
-if [[ -f "$RELEASE_DIR/deploy/systemd/stovash-backend.service" ]]; then
-  cp "$RELEASE_DIR/deploy/systemd/stovash-backend.service" /etc/systemd/system/stovash-backend.service
-  systemctl daemon-reload
-  systemctl enable stovash-backend.service
-fi
-
-systemctl restart stovash-backend
+chown -h deploy:deploy "$ROOT/current" 2>/dev/null || true
 
 mapfile -t old < <(ls -1dt "$ROOT/releases"/* 2>/dev/null | tail -n +"$((KEEP + 1))")
 if ((${#old[@]})); then
   rm -rf "${old[@]}"
 fi
 
-echo "Backend current -> $RELEASE_DIR (kept $KEEP releases)"
+docker image prune -f >/dev/null 2>&1 || true
+docker-compose -p stovash-backend ps
+systemctl disable --now stovash-backend.service 2>/dev/null || true
+echo "Backend current -> $RELEASE_DIR (docker, kept $KEEP releases)"

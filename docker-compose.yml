@@ -1,0 +1,19 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: ${NODE_VERSION:-22-bookworm-slim}
+    image: stovash-backend:${RELEASE_ID:-latest}
+    container_name: stovash-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:5051:5051"
+    environment:
+      NODE_ENV: production
+      PORT: "5051"
+    volumes:
+      - /home/deploy/stovash/backend/shared/.env:/app/.env:ro

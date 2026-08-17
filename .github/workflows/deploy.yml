@@ -14,7 +14,6 @@ jobs:
     name: Release to /home/deploy/stovash/backend
     if: github.ref == 'refs/heads/production'
     runs-on: ubuntu-latest
-    environment: production
     timeout-minutes: 40
     steps:
       - name: Checkout
@@ -56,7 +55,6 @@ jobs:
             REL="/home/deploy/stovash/backend/releases/$(date -u +%Y%m%d%H%M%S)_${GITHUB_SHA:0:7}"
             mkdir -p "$REL"
             tar xzf /tmp/stovash-backend.tgz -C "$REL"
-            chmod +x "$REL/deploy/release.sh" "$REL/deploy/start.sh" "$REL/deploy/ensure-node.sh"
-            "$REL/deploy/ensure-node.sh"
+            chmod +x "$REL/deploy/release.sh" "$REL/deploy/ensure-docker.sh"
             "$REL/deploy/release.sh" "$REL"
-            systemctl is-active stovash-backend
+            docker-compose -p stovash-backend ps
