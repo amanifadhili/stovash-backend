@@ -1,0 +1,61 @@
+name: Deploy
+
+on:
+  push:
+    branches: [production]
+  workflow_dispatch:
+
+concurrency:
+  group: backend-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Release to /home/deploy/stovash/backend
+    if: github.ref == 'refs/heads/production'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pack source
+        run: |
+          tar czf stovash-backend.tgz \
+            --exclude .git \
+            --exclude node_modules \
+            --exclude dist \
+            --exclude coverage \
+            --exclude '**/src/generated/prisma' \
+            .
+
+      - name: Upload release archive
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT != '' && secrets.VPS_PORT || 22 }}
+          source: stovash-backend.tgz
+          target: /tmp
+
+      - name: Activate release
+        uses: appleboy/ssh-action@v1.2.2
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT != '' && secrets.VPS_PORT || 22 }}
+          envs: GITHUB_SHA
+          script_stop: true
+          script: |
+            set -euo pipefail
+            REL="/home/deploy/stovash/backend/releases/$(date -u +%Y%m%d%H%M%S)_${GITHUB_SHA:0:7}"
+            mkdir -p "$REL"
+            tar xzf /tmp/stovash-backend.tgz -C "$REL"
+            chmod +x "$REL/deploy/release.sh" "$REL/deploy/start.sh"
+            "$REL/deploy/release.sh" "$REL"
+            systemctl is-active stovash-backend
