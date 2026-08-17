@@ -18,17 +18,18 @@ jobs:
     timeout-minutes: 40
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Pack source
         run: |
-          tar czf stovash-backend.tgz \
+          tar czf /tmp/stovash-backend.tgz \
             --exclude .git \
             --exclude node_modules \
             --exclude dist \
             --exclude coverage \
             --exclude '**/src/generated/prisma' \
             .
+          mv /tmp/stovash-backend.tgz .
 
       - name: Upload release archive
         uses: appleboy/scp-action@v0.1.7
