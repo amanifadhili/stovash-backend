@@ -111,6 +111,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetSaleById': ['sales:sale:read'],
   'GetSaleHistory': ['sales:sale:read'],
   'GetDeviceSales': ['sales:sale:read'],
+  'GetSoldUnitProfit': [],
   
   // Purchase commands
   'CreatePurchase': ['purchase:purchase:create'],
@@ -271,6 +272,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetSaleById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetSaleHistory': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetDeviceSales': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetSoldUnitProfit': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   
   // Purchase commands
   'CreatePurchase': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -511,7 +513,7 @@ export class AppController {
         return result;
       }
 
-      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'IssueRefund', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales'].includes(cmd)) {
+      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'IssueRefund', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales', 'GetSoldUnitProfit'].includes(cmd)) {
         const result = await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;

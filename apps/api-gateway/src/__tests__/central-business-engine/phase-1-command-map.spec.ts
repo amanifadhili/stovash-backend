@@ -23,6 +23,7 @@ const ENGINE_COMMANDS_FE_NEEDS = [
   'GetAccountingAccounts',
   'GetReceivables',
   'GetProfitTransferPosition',
+  'GetSoldUnitProfit',
   'GetDailyPosition',
   'GetEngineReport',
   'PostFinancialCorrection',
@@ -145,7 +146,7 @@ describe('CBE Phase 1 — command map (amani working branch)', () => {
       mockClient() as any,
       mockClient() as any,
     );
-    for (const command of ['CreateSale', 'ConfirmSale', 'RecordSalePayment', 'IssueRefund'] as const) {
+    for (const command of ['CreateSale', 'ConfirmSale', 'RecordSalePayment', 'IssueRefund', 'GetSoldUnitProfit'] as const) {
       await controller.handleCommand(adminReq(), { command, payload: {} });
       expect(sales.send).toHaveBeenCalledWith({ cmd: command }, expect.any(Object));
     }
