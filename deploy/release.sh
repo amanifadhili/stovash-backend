@@ -32,10 +32,11 @@ export NODE_VERSION="${NODE_VERSION:-22-bookworm-slim}"
 export PORT="${PORT:-5051}"
 
 cd "$RELEASE_DIR"
-# A previous up without `-p stovash-backend` (or from a different cwd) leaves a
-# container named stovash-backend that this project cannot recreate.
+# Build while the old container still serves traffic, then replace it.
+# A leftover container from a different compose project cannot be recreated by name.
+docker-compose --env-file "$ROOT/shared/.env" -p stovash-backend build
 docker rm -f stovash-backend >/dev/null 2>&1 || true
-docker-compose --env-file "$ROOT/shared/.env" -p stovash-backend up -d --build --remove-orphans --force-recreate
+docker-compose --env-file "$ROOT/shared/.env" -p stovash-backend up -d --no-build --remove-orphans --force-recreate
 
 # Image build does not apply schema. Sync each service DB (additive; fails on data-loss).
 echo "Syncing Prisma schemas..."
