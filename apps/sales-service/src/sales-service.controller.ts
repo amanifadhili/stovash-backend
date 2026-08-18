@@ -7,6 +7,7 @@ import { CancelSaleCommand } from './commands/impl/cancel-sale.command.js';
 import { FulfillSaleCommand } from './commands/impl/fulfill-sale.command.js';
 import { RecordSalePaymentCommand } from './commands/impl/record-sale-payment.command.js';
 import { CreateSaleReturnCommand } from './commands/impl/create-sale-return.command.js';
+import { IssueRefundCommand } from './commands/impl/issue-refund.command.js';
 import { AssessReturnedItemCommand } from './commands/impl/assess-returned-item.command.js';
 import { CreateWarrantyCommand } from './commands/impl/create-warranty.command.js';
 import { ProcessSaleCommand } from './commands/impl/process-sale.command.js';
@@ -18,6 +19,7 @@ import { GetSalesQuery } from './queries/impl/get-sales.query.js';
 import { GetSaleByIdQuery } from './queries/impl/get-sale-by-id.query.js';
 import { GetSaleHistoryQuery } from './queries/impl/get-sale-history.query.js';
 import { GetDeviceSalesQuery } from './queries/impl/get-device-sales.query.js';
+import { GetSoldUnitProfitQuery } from './queries/impl/get-sold-unit-profit.query.js';
 
 @Controller()
 export class SalesServiceController {
@@ -54,6 +56,11 @@ export class SalesServiceController {
   @MessagePattern({ cmd: 'CreateSaleReturn' })
   async handleCreateSaleReturn(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new CreateSaleReturnCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'IssueRefund' })
+  async handleIssueRefund(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new IssueRefundCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'AssessReturnedItem' })
@@ -110,5 +117,10 @@ export class SalesServiceController {
   @MessagePattern({ cmd: 'GetDeviceSales' })
   async handleGetDeviceSales(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetDeviceSalesQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetSoldUnitProfit' })
+  async handleGetSoldUnitProfit(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetSoldUnitProfitQuery(data.payload || {}, data.context));
   }
 }

@@ -173,16 +173,22 @@ export async function seedPurchasesAndStock(
                 receivedById: DEMO.users.admin.id,
                 confirmedById: DEMO.users.admin.id,
                 confirmedAt: new Date(),
+                images: product.imageUrl ? [product.imageUrl] : undefined,
               },
+            });
+          } else if (product.imageUrl) {
+            await clients.purchase.purchaseReceivedItem.update({
+              where: { id: recvId },
+              data: { images: [product.imageUrl] },
             });
           }
 
+          const unitImages = product.imageUrl ? [product.imageUrl] : [];
           await clients.inventory.inventoryItem.upsert({
             where: {
               tenantId_serialNumber: { tenantId: DEMO.tenantId, serialNumber: serial },
             },
             update: {
-              status: 'AVAILABLE',
               shopId: po.shopId,
               productId: product.id,
               purchaseCost: product.cost,
@@ -190,6 +196,8 @@ export async function seedPurchasesAndStock(
               brandId: product.brandId,
               categoryId: product.categoryId,
               name: product.name,
+              imageUrl: product.imageUrl,
+              images: unitImages,
             },
             create: {
               id: invId,
@@ -203,6 +211,8 @@ export async function seedPurchasesAndStock(
               categoryId: product.categoryId,
               name: product.name,
               status: 'AVAILABLE',
+              imageUrl: product.imageUrl,
+              images: unitImages,
               createdBy: DEMO.users.admin.id,
             },
           });
@@ -239,29 +249,11 @@ export async function seedPurchasesAndStock(
       data: {
         grandTotal,
         subtotal: grandTotal,
-        amountPaid: Math.round(grandTotal * 0.4),
-        amountOutstanding: Math.round(grandTotal * 0.6),
+        amountPaid: 0,
+        amountOutstanding: grandTotal,
+        paymentStatus: 'UNPAID',
       },
     });
-
-    const payExists = await clients.purchase.purchasePayment.findUnique({
-      where: { paymentNumber: po.paymentNumber },
-    });
-    if (!payExists) {
-      await clients.purchase.purchasePayment.create({
-        data: {
-          id: po.paymentId,
-          purchaseId: purchase.id,
-          paymentNumber: po.paymentNumber,
-          amount: Math.round(grandTotal * 0.4),
-          currency: 'RWF',
-          paymentMethod: 'MOBILE_MONEY',
-          accountName: 'MoMo',
-          paidById: DEMO.users.admin.id,
-          reference: 'DEMO-SEED',
-        },
-      });
-    }
   }
 
   // Per-shop accessory balances (ShopProductBalance). Catalog qty lives on Product;

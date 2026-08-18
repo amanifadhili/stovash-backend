@@ -4,9 +4,16 @@ import { ConfirmPurchaseCommand } from '../impl/confirm-purchase.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { actorOf } from '../../common/actor.js';
+import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { postPurchasePayableBooks, readPayableProjection } from '../../common/post-purchase-finance.js';
 
 @CommandHandler(ConfirmPurchaseCommand)
 export class ConfirmPurchaseHandler extends BaseCommandHandler<ConfirmPurchaseCommand> {
+  constructor(@Inject('ACCOUNTING_SERVICE') private readonly accountingClient: ClientProxy) {
+    super();
+  }
+
   async execute(command: ConfirmPurchaseCommand): Promise<ICommandResponse<any>> {
     const { payload, context } = command;
     const { tenantId, shopId, userId, userName, traceId } = actorOf(context);
@@ -20,7 +27,7 @@ export class ConfirmPurchaseHandler extends BaseCommandHandler<ConfirmPurchaseCo
       if (!purchase) {
         return { status: 'error', traceId, message: 'Purchase not found', errorCode: ErrorCode.NOT_FOUND };
       }
-      if (purchase.commercialStatus !== 'DRAFT') {
+      if (purchase.commercialStatus !== 'DRAFT' && purchase.commercialStatus !== 'CONFIRMED') {
         return { status: 'error', traceId, message: 'Only DRAFT purchases can be confirmed', errorCode: ErrorCode.VALIDATION_ERROR };
       }
 
@@ -29,10 +36,43 @@ export class ConfirmPurchaseHandler extends BaseCommandHandler<ConfirmPurchaseCo
         return { status: 'error', traceId, message: 'Cannot confirm purchase without items', errorCode: ErrorCode.VALIDATION_ERROR };
       }
 
+      const books = await postPurchasePayableBooks(
+        this.accountingClient,
+        purchase,
+        { tenantId, shopId: purchase.shopId, userId: approvedById, traceId },
+      );
+      if (books.status === 'error') return books;
+      const financeContext = { tenantId, shopId: purchase.shopId, userId: approvedById, traceId };
+      const projection = await readPayableProjection(this.accountingClient, purchase, financeContext);
+      const payableMinor = Number(books.data?.payable?.outstandingMinor || 0);
+      const payableOutstanding =
+        projection?.amountOutstanding ??
+        (Number.isFinite(payableMinor) ? payableMinor / 100 : purchase.grandTotal);
+      const projectedPaid = projection?.amountPaid;
+      const projectedStatus = projection?.paymentStatus;
+
+      if (purchase.commercialStatus === 'CONFIRMED') {
+        await prisma.purchase.update({
+          where: { id: purchaseId },
+          data: {
+            amountOutstanding: payableOutstanding,
+            ...(projectedPaid !== undefined ? { amountPaid: projectedPaid } : {}),
+            ...(projectedStatus ? { paymentStatus: projectedStatus } : {}),
+            accountingStatus: 'POSTED',
+          },
+        });
+        const replayed = await prisma.purchase.findUnique({ where: { id: purchaseId } });
+        return { status: 'success', traceId, data: replayed || purchase };
+      }
+
       const updated = await prisma.purchase.update({
         where: { id: purchaseId },
         data: {
           commercialStatus: 'CONFIRMED',
+          accountingStatus: 'POSTED',
+          amountOutstanding: payableOutstanding,
+          ...(projectedPaid !== undefined ? { amountPaid: projectedPaid } : {}),
+          ...(projectedStatus ? { paymentStatus: projectedStatus } : {}),
           approvedById,
           approvedAt: new Date(),
         },

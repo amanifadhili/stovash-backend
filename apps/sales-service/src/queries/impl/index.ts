@@ -24,3 +24,4 @@ export interface GetSaleHistoryPayload {
 export * from './get-sales.query.js';
 export * from './get-sale-by-id.query.js';
 export * from './get-sale-history.query.js';
+export * from './get-sold-unit-profit.query.js';

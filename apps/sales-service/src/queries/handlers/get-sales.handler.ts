@@ -48,7 +48,7 @@ export class GetSalesHandler implements IQueryHandler<GetSalesQuery> {
           skip: (page - 1) * pageSize,
           take: pageSize,
           include: {
-            items: { select: { id: true, productName: true, productSku: true, quantity: true, unitPrice: true, lineTotal: true } },
+            items: { select: { id: true, productName: true, productSku: true, quantity: true, unitPrice: true, lineTotal: true, serialNumber: true, inventoryItemId: true } },
             payments: { select: { id: true, amount: true, method: true, paidAt: true } },
             _count: { select: { items: true, payments: true, returns: true, documents: true, warranties: true } },
           },

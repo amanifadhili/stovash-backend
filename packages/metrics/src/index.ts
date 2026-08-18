@@ -102,6 +102,31 @@ export const errorCounter = new Counter({
   registers: [metricsRegistry],
 });
 
+/** Phase 10: engine post latency (seconds) for financial write commands. */
+export const financialPostDuration = new Histogram({
+  name: 'financial_post_duration_seconds',
+  help: 'Duration of financial engine posts in seconds',
+  labelNames: ['command', 'status'],
+  registers: [metricsRegistry],
+});
+
+/** Phase 10: fail-closed count when sales/purchase cannot reach accounting or treasury. */
+export const financialFailClosedCounter = new Counter({
+  name: 'financial_fail_closed_total',
+  help: 'Times a commercial payment failed closed because finance TCP was down or timed out',
+  labelNames: ['command'],
+  registers: [metricsRegistry],
+});
+
+/** Phase 10: absolute reconciliation difference in RWF cents. */
+export const financialReconDiff = new Histogram({
+  name: 'financial_recon_diff_minor',
+  help: 'Absolute counted-vs-expected reconciliation difference in RWF cents',
+  buckets: [0, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000],
+  labelNames: ['status'],
+  registers: [metricsRegistry],
+});
+
 // Helper function to get metrics in Prometheus format
 export async function getMetrics(): Promise<string> {
   return await metricsRegistry.metrics();
@@ -146,4 +171,18 @@ export function recordDbQuery(operation: string, table: string, status: string, 
 // Helper function to increment error counter
 export function recordError(service: string, errorType: string) {
   errorCounter.inc({ service, error_type: errorType });
+}
+
+export function recordFinancialPostLatency(command: string, status: string, durationSeconds: number) {
+  financialPostDuration.observe({ command, status }, durationSeconds);
+}
+
+export function recordFinancialFailClosed(command: string) {
+  financialFailClosedCounter.inc({ command });
+}
+
+export function recordFinancialReconDiff(absDiffMinor: number | bigint, status = 'COUNTED') {
+  const value = typeof absDiffMinor === 'bigint' ? Number(absDiffMinor) : absDiffMinor;
+  if (!Number.isFinite(value) || value < 0) return;
+  financialReconDiff.observe({ status }, value);
 }

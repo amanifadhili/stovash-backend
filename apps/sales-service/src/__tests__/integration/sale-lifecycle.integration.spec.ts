@@ -3,12 +3,14 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CreateSaleHandler } from '../../commands/handlers/create-sale.handler.js';
 import { ConfirmSaleHandler } from '../../commands/handlers/confirm-sale.handler.js';
 import { RecordSalePaymentHandler } from '../../commands/handlers/record-sale-payment.handler.js';
+import { IssueRefundHandler } from '../../commands/handlers/issue-refund.handler.js';
 import { FulfillSaleHandler } from '../../commands/handlers/fulfill-sale.handler.js';
 import { CancelSaleHandler } from '../../commands/handlers/cancel-sale.handler.js';
 import { CreateWarrantyHandler } from '../../commands/handlers/create-warranty.handler.js';
 import { CreateSaleCommand, CreateSaleItemInput } from '../../commands/impl/create-sale.command.js';
 import { ConfirmSaleCommand } from '../../commands/impl/confirm-sale.command.js';
 import { RecordSalePaymentCommand } from '../../commands/impl/record-sale-payment.command.js';
+import { IssueRefundCommand } from '../../commands/impl/issue-refund.command.js';
 import { FulfillSaleCommand } from '../../commands/impl/fulfill-sale.command.js';
 import { CancelSaleCommand } from '../../commands/impl/cancel-sale.command.js';
 import { CreateWarrantyCommand } from '../../commands/impl/create-warranty.command.js';
@@ -45,6 +47,17 @@ const inventoryClientMock = {
     }),
 };
 
+function treasuryMovementOk(id = 'mv-1') {
+  return of({
+    status: 'success',
+    data: {
+      id,
+      financialTransactionId: `ft-${id}`,
+      journalId: `je-${id}`,
+    },
+  });
+}
+
 describe('Sale lifecycle integration', () => {
   let createHandler: CreateSaleHandler;
   let confirmHandler: ConfirmSaleHandler;
@@ -74,6 +87,8 @@ describe('Sale lifecycle integration', () => {
         CreateWarrantyHandler,
         { provide: 'EVENT_BUS', useClass: CapturingEventBus },
         { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: () => of({ status: 'success', data: { ok: true } }) } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => treasuryMovementOk() } },
       ],
     }).compile();
 
@@ -153,7 +168,7 @@ describe('Sale lifecycle integration', () => {
     expect(result.errorCode).toBe('BUSINESS_RULE_VIOLATION');
   });
 
-  it('confirms, pays partially then in full, and records credit receivable', async () => {
+  it('confirms, pays partially, and rejects CREDIT as a till method', async () => {
     const created = await createHandler.execute(
       new CreateSaleCommand({ customerId: 'cus-002', customerName: 'Marie', items: baseItems }, ctx),
     );
@@ -162,33 +177,205 @@ describe('Sale lifecycle integration', () => {
     const confirmed = await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
     expect(confirmed.status).toBe('success');
     expect(confirmed.data.commercialStatus).toBe('CONFIRMED');
+    expect(confirmed.data.accountingStatus).toBe('POSTED');
 
-    // Double confirm must fail
     const reConfirm = await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
-    expect(reConfirm.status).toBe('error');
-    expect(reConfirm.errorCode).toBe('BUSINESS_RULE_VIOLATION');
+    expect(reConfirm.status).toBe('success');
+    expect(reConfirm.data.accountingStatus).toBe('POSTED');
 
-    // Partial payment: 300,000 cash
+    const remaining = created.data.grandTotal - 300000;
     const pay1 = await payHandler.execute(new RecordSalePaymentCommand({ saleId, amount: 300000, method: 'CASH' }, ctx));
     expect(pay1.status).toBe('success');
     expect(pay1.data.sale.paymentStatus).toBe('PARTIALLY_PAID');
     expect(pay1.data.payment.paymentNumber).toMatch(/^PAY-\d{4}-\d{6}$/);
+    expect(pay1.data.sale.amountDue).toBeCloseTo(remaining);
+    expect(pay1.data.financeRefs.treasuryMovementId).toBe('mv-1');
+    expect(pay1.data.financeRefs.treasuryFinancialTransactionId).toBe('ft-mv-1');
+    expect(pay1.data.financeRefs.treasuryJournalId).toBe('je-mv-1');
+    const savedPay = await prisma.salePayment.findFirst({ where: { saleId } });
+    expect(savedPay?.accountingRef).toBeTruthy();
+    const refs = JSON.parse(String(savedPay?.accountingRef || '{}'));
+    expect(refs.treasuryMovementId).toBe('mv-1');
+    expect(refs.treasuryFinancialTransactionId).toBe('ft-mv-1');
+    expect(refs.treasuryJournalId).toBe('je-mv-1');
 
-    // Remaining covered partly by credit: creates receivable
-    const remaining = created.data.grandTotal - 300000;
-    const pay2 = await payHandler.execute(new RecordSalePaymentCommand({ saleId, amount: remaining, method: 'CREDIT' }, ctx));
-    expect(pay2.status).toBe('success');
-    expect(pay2.data.sale.paymentStatus).toBe('PAID');
-    expect(pay2.data.sale.amountDue).toBe(0);
-
-    const receivable = await prisma.customerReceivable.findFirst({
-      where: { saleId, customerId: 'cus-002' },
-    });
-    expect(receivable).toBeDefined();
-    expect(receivable?.debit).toBeCloseTo(remaining);
+    const credit = await payHandler.execute(new RecordSalePaymentCommand({ saleId, amount: remaining, method: 'CREDIT' }, ctx));
+    expect(credit.status).toBe('error');
+    expect(credit.errorCode).toBe('BUSINESS_RULE_VIOLATION');
 
     const history = await prisma.saleHistory.findMany({ where: { saleId } });
     expect(history.map((h) => h.eventType)).toContain('PAYMENT_RECEIVED');
+  });
+
+  it('is idempotent for RecordSalePayment with the same idempotencyKey', async () => {
+    const created = await createHandler.execute(
+      new CreateSaleCommand({ customerId: 'cus-003', customerName: 'Ken', items: baseItems }, ctx),
+    );
+    const saleId = created.data.id;
+
+    await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
+
+    const due = created.data.grandTotal; // no payments yet
+    const idempotencyKey = 'pay-idem-1';
+
+    const first = await payHandler.execute(
+      new RecordSalePaymentCommand({ saleId, amount: 100000, method: 'CASH', idempotencyKey }, ctx),
+    );
+    expect(first.status).toBe('success');
+
+    const second = await payHandler.execute(
+      new RecordSalePaymentCommand({ saleId, amount: 100000, method: 'CASH', idempotencyKey }, ctx),
+    );
+    expect(second.status).toBe('success');
+
+    const count = await prisma.salePayment.count({ where: { saleId } });
+    expect(count).toBe(1);
+
+    const updated = await prisma.sale.findUnique({ where: { id: saleId } });
+    expect(updated?.amountPaid).toBeCloseTo(100000);
+    expect(updated?.amountDue).toBeCloseTo(due - 100000);
+    const replayed = await prisma.salePayment.findFirst({ where: { saleId } });
+    expect(JSON.parse(String(replayed?.accountingRef || '{}')).treasuryMovementId).toBe('mv-1');
+  });
+
+  it('rejects payment amount greater than remaining due', async () => {
+    const created = await createHandler.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    const saleId = created.data.id;
+    await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
+
+    const tooMuch = created.data.grandTotal + 5000;
+    const result = await payHandler.execute(
+      new RecordSalePaymentCommand({ saleId, amount: tooMuch, method: 'CASH', idempotencyKey: 'pay-oom-1' }, ctx),
+    );
+    expect(result.status).toBe('error');
+    expect(result.errorCode).toBe('BUSINESS_RULE_VIOLATION');
+
+    const count = await prisma.salePayment.count({ where: { saleId } });
+    expect(count).toBe(0);
+  });
+
+  it('projects amountDue/amountPaid from engine receivable obligation when available', async () => {
+    let obligationSourceId = '';
+    const accountingSend = ({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleConfirmation') {
+        return of({ status: 'success', data: { ok: true } });
+      }
+      if (cmd === 'GetReceivables') {
+        return of({
+          status: 'success',
+          data: {
+            receivables: [
+              {
+                kind: 'CUSTOMER_RECEIVABLE',
+                sourceId: obligationSourceId,
+                outstandingMinor: '85000000',
+                status: 'OPEN',
+              },
+            ],
+          },
+        });
+      }
+      return of({ status: 'success', data: { ok: true } });
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        RecordSalePaymentHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => treasuryMovementOk('mv-proj') } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const localPay = module.get(RecordSalePaymentHandler);
+
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    const saleId = created.data.id;
+    obligationSourceId = saleId;
+
+    await localConfirm.execute(new ConfirmSaleCommand({ saleId }, ctx));
+    const pay = await localPay.execute(
+      new RecordSalePaymentCommand({ saleId, amount: 300000, method: 'CASH', idempotencyKey: 'phase6-proj-1' }, ctx),
+    );
+    expect(pay.status).toBe('success');
+    expect(pay.data.projectionSource).toBe('engine_obligation');
+    expect(pay.data.sale.amountDue).toBe(850000);
+    expect(pay.data.sale.amountPaid).toBeCloseTo(created.data.grandTotal - 850000);
+  });
+
+  it('does not confirm (stays DRAFT) when PostSaleConfirmation books fail', async () => {
+    const accountingErrorSend = () =>
+      of({
+        status: 'error',
+        message: 'PostSaleConfirmation failed (test)',
+        errorCode: 'INTERNAL_ERROR',
+      });
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingErrorSend } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    const saleId = created.data.id;
+
+    const confirmed = await localConfirm.execute(new ConfirmSaleCommand({ saleId }, ctx));
+    expect(confirmed.status).toBe('error');
+
+    const fromDb = await prisma.sale.findUnique({ where: { id: saleId } });
+    expect(fromDb?.commercialStatus).toBe('DRAFT');
+    expect(fromDb?.accountingStatus).toBe('UNPOSTED');
+
+    await prisma.$disconnect();
+  });
+
+  it('caches Sale.profit from engine profitEarnedMinor (display cache only)', async () => {
+    const accountingSend = ({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleConfirmation') {
+        return of({
+          status: 'success',
+          data: { ok: true, profitEarnedMinor: '12000000' },
+        });
+      }
+      return of({ status: 'success', data: { ok: true } });
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    expect(created.data.profit).toBeCloseTo(created.data.grandTotal);
+
+    const confirmed = await localConfirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    expect(confirmed.status).toBe('success');
+    expect(confirmed.data.profit).toBe(120000);
+    const fromDb = await prisma.sale.findUnique({ where: { id: created.data.id } });
+    expect(fromDb?.profit).toBe(120000);
   });
 
   it('fulfills only confirmed sales and emits exact inventory item ids', async () => {
@@ -254,5 +441,312 @@ describe('Sale lifecycle integration', () => {
 
     const history = await prisma.saleHistory.findMany({ where: { saleId: created.data.id } });
     expect(history.map((h) => h.eventType)).toContain('WARRANTY_CREATED');
+  });
+
+  it('scenario 30: retries ConfirmSale after books fail without a second commercial confirmation', async () => {
+    let booksFail = true;
+    const inventorySend = jest.fn(() => of({ status: 'success', data: { applied: 1, skippedIdempotent: 0 } }));
+    const accountingSend = ({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleConfirmation') {
+        if (booksFail) {
+          return of({ status: 'error', message: 'PostSaleConfirmation failed (test)', errorCode: 'INTERNAL_ERROR' });
+        }
+        return of({
+          status: 'success',
+          data: { profitEarnedMinor: '12000000', financialTransaction: { id: 'ft-rev-1' } },
+        });
+      }
+      return of({ status: 'success', data: { ok: true } });
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: { send: inventorySend } },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    const saleId = created.data.id;
+
+    const first = await localConfirm.execute(new ConfirmSaleCommand({ saleId }, ctx));
+    expect(first.status).toBe('error');
+    expect((await prisma.sale.findUnique({ where: { id: saleId } }))?.commercialStatus).toBe('DRAFT');
+
+    booksFail = false;
+    const second = await localConfirm.execute(new ConfirmSaleCommand({ saleId }, ctx));
+    expect(second.status).toBe('success');
+    expect((await prisma.sale.findUnique({ where: { id: saleId } }))?.commercialStatus).toBe('CONFIRMED');
+    expect(inventorySend).toHaveBeenCalledTimes(2);
+  });
+
+  it('scenario 22: IssueRefund PHYSICAL restocks then posts refund books', async () => {
+    const inventorySend = jest.fn(() => of({ status: 'success', data: { applied: 1, skippedIdempotent: 0 } }));
+    const accountingSend = jest.fn(({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleRefund') {
+        return of({
+          status: 'success',
+          data: {
+            remainingRevenueMinor: '0',
+            receivable: { outstandingMinor: '0' },
+            profitReversedMinor: '12000000',
+            financialTransaction: { id: 'ft-ref-22' },
+          },
+        });
+      }
+      return of({ status: 'success', data: { profitEarnedMinor: '12000000', financialTransaction: { id: 'ft-rev' } } });
+    });
+    const treasurySend = jest.fn(() => treasuryMovementOk('mv-ref-22'));
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        IssueRefundHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: { send: inventorySend } },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: treasurySend } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const localRefund = module.get(IssueRefundHandler);
+    const created = await localCreate.execute(
+      new CreateSaleCommand(
+        {
+          customerName: 'Jean',
+          items: [{ productId: 'prod-phone', inventoryItemId: 'inv-22', serialNumber: 'SN-22', quantity: 1, unitPrice: 500000, unitCost: 380000 }],
+        },
+        ctx,
+      ),
+    );
+    await localConfirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const saleItem = await prisma.saleItem.findFirst({ where: { saleId: created.data.id } });
+
+    const refund = await localRefund.execute(
+      new IssueRefundCommand(
+        {
+          saleId: created.data.id,
+          kind: 'PHYSICAL',
+          amountMinor: '50000000',
+          reason: 'Customer returned the device',
+          idempotencyKey: 'ref-22',
+          items: [{ saleItemId: saleItem!.id, inventoryItemId: 'inv-22', quantity: 1, unitCost: 380000 }],
+        },
+        ctx,
+      ),
+    );
+    expect(refund.status).toBe('success');
+    expect(inventorySend).toHaveBeenCalledWith({ cmd: 'ApplySaleReturn' }, expect.any(Object));
+    expect(accountingSend).toHaveBeenCalledWith({ cmd: 'PostSaleRefund' }, expect.any(Object));
+    expect(treasurySend).not.toHaveBeenCalled();
+    const ret = await prisma.saleReturn.findFirst({ where: { saleId: created.data.id } });
+    expect(ret?.status).toBe('COMPLETED');
+    expect(ret?.refundMethod).toBe('PHYSICAL');
+  });
+
+  it('scenario 23: IssueRefund GOODWILL skips inventory and still posts books', async () => {
+    const inventorySend = jest.fn(() => of({ status: 'success', data: { applied: 1 } }));
+    const accountingSend = jest.fn(({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleRefund') {
+        return of({
+          status: 'success',
+          data: {
+            remainingRevenueMinor: '0',
+            receivable: { outstandingMinor: '0' },
+            profitReversedMinor: '50000000',
+            financialTransaction: { id: 'ft-ref-23' },
+          },
+        });
+      }
+      return of({ status: 'success', data: { profitEarnedMinor: '12000000' } });
+    });
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        IssueRefundHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: { send: inventorySend } },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => treasuryMovementOk() } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const localRefund = module.get(IssueRefundHandler);
+    const created = await localCreate.execute(
+      new CreateSaleCommand(
+        {
+          customerName: 'Marie',
+          items: [{ productId: 'prod-phone', inventoryItemId: 'inv-23', serialNumber: 'SN-23', quantity: 1, unitPrice: 500000, unitCost: 380000 }],
+        },
+        ctx,
+      ),
+    );
+    await localConfirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+
+    const refund = await localRefund.execute(
+      new IssueRefundCommand(
+        {
+          saleId: created.data.id,
+          kind: 'GOODWILL',
+          amountMinor: '50000000',
+          reason: 'Delayed delivery goodwill',
+          idempotencyKey: 'ref-23',
+        },
+        ctx,
+      ),
+    );
+    expect(refund.status).toBe('success');
+    expect(inventorySend.mock.calls.some((c) => c[0]?.cmd === 'ApplySaleReturn')).toBe(false);
+    expect(accountingSend).toHaveBeenCalledWith({ cmd: 'PostSaleRefund' }, expect.any(Object));
+  });
+
+  it('rejects IssueRefund without a reason', async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        IssueRefundHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: () => of({ status: 'success', data: { ok: true } }) } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => treasuryMovementOk() } },
+      ],
+    }).compile();
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const localRefund = module.get(IssueRefundHandler);
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    await localConfirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const refund = await localRefund.execute(
+      new IssueRefundCommand(
+        { saleId: created.data.id, kind: 'GOODWILL', amountMinor: '100', reason: '   ', idempotencyKey: 'no-reason' },
+        ctx,
+      ),
+    );
+    expect(refund.status).toBe('error');
+  });
+});
+
+describe('Phase 9 sale payment fail-closed', () => {
+  const ctx: any = {
+    tenantId: 'tenant-sale-failclosed',
+    shopId: 'shop-sale-failclosed',
+    userId: 'user-sale-failclosed',
+    traceId: 'trace-sale-failclosed',
+    email: 'seller@test.com',
+  };
+  const items: CreateSaleItemInput[] = [
+    { productId: 'prod-phone', inventoryItemId: 'inv-FC-1', serialNumber: 'FC-1', quantity: 1, unitPrice: 500000 },
+  ];
+
+  async function makeHandlers(treasurySend: () => any) {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        RecordSalePaymentHandler,
+        FulfillSaleHandler,
+        CancelSaleHandler,
+        CreateWarrantyHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: () => of({ status: 'success', data: { ok: true } }) } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: treasurySend } },
+      ],
+    }).compile();
+    return {
+      create: module.get(CreateSaleHandler),
+      confirm: module.get(ConfirmSaleHandler),
+      pay: module.get(RecordSalePaymentHandler),
+    };
+  }
+
+  beforeEach(async () => {
+    await prisma.saleHistory.deleteMany();
+    await prisma.saleWarranty.deleteMany();
+    await prisma.customerReceivable.deleteMany();
+    await prisma.saleReturnItem.deleteMany();
+    await prisma.saleReturn.deleteMany();
+    await prisma.salePayment.deleteMany();
+    await prisma.saleItem.deleteMany();
+    await prisma.sale.deleteMany();
+  });
+
+  it('scenario 29: timeout retry with the same idempotencyKey is one payment row', async () => {
+    let fail = true;
+    const { create, confirm, pay } = await makeHandlers(() => {
+      if (fail) throw new Error('TCP timeout');
+      return treasuryMovementOk('mv-29');
+    });
+    const created = await create.execute(new CreateSaleCommand({ customerName: 'Jean', items }, ctx));
+    await confirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const first = await pay.execute(
+      new RecordSalePaymentCommand(
+        { saleId: created.data.id, amount: 200000, method: 'CASH', idempotencyKey: 'retry-29' },
+        ctx,
+      ),
+    );
+    expect(first.status).toBe('error');
+    expect(await prisma.salePayment.count({ where: { saleId: created.data.id } })).toBe(0);
+
+    fail = false;
+    const second = await pay.execute(
+      new RecordSalePaymentCommand(
+        { saleId: created.data.id, amount: 200000, method: 'CASH', idempotencyKey: 'retry-29' },
+        ctx,
+      ),
+    );
+    expect(second.status).toBe('success');
+    expect(await prisma.salePayment.count({ where: { saleId: created.data.id } })).toBe(1);
+  });
+
+  it('compensates the payment row when treasury/accounting books are down', async () => {
+    const { create, confirm, pay } = await makeHandlers(() => {
+      throw new Error('Accounting TCP down');
+    });
+    const created = await create.execute(new CreateSaleCommand({ customerName: 'Jean', items }, ctx));
+    await confirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const paid = await pay.execute(
+      new RecordSalePaymentCommand({ saleId: created.data.id, amount: 200000, method: 'CASH' }, ctx),
+    );
+    expect(paid.status).toBe('error');
+    const payments = await prisma.salePayment.findMany({ where: { saleId: created.data.id } });
+    expect(payments).toHaveLength(0);
+    const sale = await prisma.sale.findUniqueOrThrow({ where: { id: created.data.id } });
+    expect(sale.amountPaid).toBe(0);
+  });
+
+  it('keeps two concurrent payments consistent with recorded rows', async () => {
+    const { create, confirm, pay } = await makeHandlers(() => treasuryMovementOk());
+    const created = await create.execute(new CreateSaleCommand({ customerName: 'Marie', items }, ctx));
+    await confirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const [a, b] = await Promise.all([
+      pay.execute(new RecordSalePaymentCommand({ saleId: created.data.id, amount: 100000, method: 'CASH' }, ctx)),
+      pay.execute(new RecordSalePaymentCommand({ saleId: created.data.id, amount: 150000, method: 'MOMO' }, ctx)),
+    ]);
+    const successes = [a, b].filter((r) => r.status === 'success');
+    expect(successes.length).toBeGreaterThanOrEqual(1);
+    const payments = await prisma.salePayment.findMany({ where: { saleId: created.data.id } });
+    const sum = payments.reduce((s, p) => s + p.amount, 0);
+    const sale = await prisma.sale.findUniqueOrThrow({ where: { id: created.data.id } });
+    expect(sale.amountPaid).toBe(sum);
+    expect(sum).toBeLessThanOrEqual(sale.grandTotal);
   });
 });

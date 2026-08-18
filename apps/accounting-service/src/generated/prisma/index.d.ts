@@ -15,12 +15,13 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 /**
  * Model LedgerAccount
- * 
+ * LEGACY (Phase 10): unread by the engine. Kept read-only so a backup can still dump history.
+ * DROP SQL is in electronic-shop/docs/FINANCIAL_BACKUP_RESTORE.md — do not run until a verified backup and operator sign-off.
  */
 export type LedgerAccount = $Result.DefaultSelection<Prisma.$LedgerAccountPayload>
 /**
  * Model JournalEntry
- * 
+ * LEGACY (Phase 10): unread. Engine posts to PostedJournal instead.
  */
 export type JournalEntry = $Result.DefaultSelection<Prisma.$JournalEntryPayload>
 /**
@@ -35,7 +36,7 @@ export type PostingBatch = $Result.DefaultSelection<Prisma.$PostingBatchPayload>
 export type LedgerEntry = $Result.DefaultSelection<Prisma.$LedgerEntryPayload>
 /**
  * Model WorkPeriod
- * 
+ * LEGACY (Phase 10): unread. Shop calendar is FinancialPeriod + shopTodayIso, not WorkPeriod.
  */
 export type WorkPeriod = $Result.DefaultSelection<Prisma.$WorkPeriodPayload>
 /**
@@ -43,6 +44,37 @@ export type WorkPeriod = $Result.DefaultSelection<Prisma.$WorkPeriodPayload>
  * 
  */
 export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
+/**
+ * Model FinancialTransaction
+ * Canonical money event. Phase 2 persists the typed row only — no journal legs,
+ * no LedgerAccount.balance / till updates. Amount is integer RWF cents (BigInt).
+ */
+export type FinancialTransaction = $Result.DefaultSelection<Prisma.$FinancialTransactionPayload>
+/**
+ * Model ChartAccount
+ * Phase 4 engine chart. Balances are derived from PostedJournalLine, never stored.
+ */
+export type ChartAccount = $Result.DefaultSelection<Prisma.$ChartAccountPayload>
+/**
+ * Model PostedJournal
+ * 
+ */
+export type PostedJournal = $Result.DefaultSelection<Prisma.$PostedJournalPayload>
+/**
+ * Model PostedJournalLine
+ * 
+ */
+export type PostedJournalLine = $Result.DefaultSelection<Prisma.$PostedJournalLinePayload>
+/**
+ * Model Obligation
+ * 
+ */
+export type Obligation = $Result.DefaultSelection<Prisma.$ObligationPayload>
+/**
+ * Model ProfitAllocation
+ * 
+ */
+export type ProfitAllocation = $Result.DefaultSelection<Prisma.$ProfitAllocationPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -226,6 +258,66 @@ export class PrismaClient<
     * ```
     */
   get auditLog(): Prisma.AuditLogDelegate<ExtArgs>;
+
+  /**
+   * `prisma.financialTransaction`: Exposes CRUD operations for the **FinancialTransaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FinancialTransactions
+    * const financialTransactions = await prisma.financialTransaction.findMany()
+    * ```
+    */
+  get financialTransaction(): Prisma.FinancialTransactionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.chartAccount`: Exposes CRUD operations for the **ChartAccount** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ChartAccounts
+    * const chartAccounts = await prisma.chartAccount.findMany()
+    * ```
+    */
+  get chartAccount(): Prisma.ChartAccountDelegate<ExtArgs>;
+
+  /**
+   * `prisma.postedJournal`: Exposes CRUD operations for the **PostedJournal** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PostedJournals
+    * const postedJournals = await prisma.postedJournal.findMany()
+    * ```
+    */
+  get postedJournal(): Prisma.PostedJournalDelegate<ExtArgs>;
+
+  /**
+   * `prisma.postedJournalLine`: Exposes CRUD operations for the **PostedJournalLine** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PostedJournalLines
+    * const postedJournalLines = await prisma.postedJournalLine.findMany()
+    * ```
+    */
+  get postedJournalLine(): Prisma.PostedJournalLineDelegate<ExtArgs>;
+
+  /**
+   * `prisma.obligation`: Exposes CRUD operations for the **Obligation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Obligations
+    * const obligations = await prisma.obligation.findMany()
+    * ```
+    */
+  get obligation(): Prisma.ObligationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.profitAllocation`: Exposes CRUD operations for the **ProfitAllocation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ProfitAllocations
+    * const profitAllocations = await prisma.profitAllocation.findMany()
+    * ```
+    */
+  get profitAllocation(): Prisma.ProfitAllocationDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -672,7 +764,13 @@ export namespace Prisma {
     PostingBatch: 'PostingBatch',
     LedgerEntry: 'LedgerEntry',
     WorkPeriod: 'WorkPeriod',
-    AuditLog: 'AuditLog'
+    AuditLog: 'AuditLog',
+    FinancialTransaction: 'FinancialTransaction',
+    ChartAccount: 'ChartAccount',
+    PostedJournal: 'PostedJournal',
+    PostedJournalLine: 'PostedJournalLine',
+    Obligation: 'Obligation',
+    ProfitAllocation: 'ProfitAllocation'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -688,7 +786,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "ledgerAccount" | "journalEntry" | "postingBatch" | "ledgerEntry" | "workPeriod" | "auditLog"
+      modelProps: "ledgerAccount" | "journalEntry" | "postingBatch" | "ledgerEntry" | "workPeriod" | "auditLog" | "financialTransaction" | "chartAccount" | "postedJournal" | "postedJournalLine" | "obligation" | "profitAllocation"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1112,6 +1210,426 @@ export namespace Prisma {
           }
         }
       }
+      FinancialTransaction: {
+        payload: Prisma.$FinancialTransactionPayload<ExtArgs>
+        fields: Prisma.FinancialTransactionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FinancialTransactionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FinancialTransactionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload>
+          }
+          findFirst: {
+            args: Prisma.FinancialTransactionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FinancialTransactionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload>
+          }
+          findMany: {
+            args: Prisma.FinancialTransactionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload>[]
+          }
+          create: {
+            args: Prisma.FinancialTransactionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload>
+          }
+          createMany: {
+            args: Prisma.FinancialTransactionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FinancialTransactionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload>[]
+          }
+          delete: {
+            args: Prisma.FinancialTransactionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload>
+          }
+          update: {
+            args: Prisma.FinancialTransactionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload>
+          }
+          deleteMany: {
+            args: Prisma.FinancialTransactionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FinancialTransactionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.FinancialTransactionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialTransactionPayload>
+          }
+          aggregate: {
+            args: Prisma.FinancialTransactionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFinancialTransaction>
+          }
+          groupBy: {
+            args: Prisma.FinancialTransactionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FinancialTransactionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FinancialTransactionCountArgs<ExtArgs>
+            result: $Utils.Optional<FinancialTransactionCountAggregateOutputType> | number
+          }
+        }
+      }
+      ChartAccount: {
+        payload: Prisma.$ChartAccountPayload<ExtArgs>
+        fields: Prisma.ChartAccountFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ChartAccountFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ChartAccountFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload>
+          }
+          findFirst: {
+            args: Prisma.ChartAccountFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ChartAccountFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload>
+          }
+          findMany: {
+            args: Prisma.ChartAccountFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload>[]
+          }
+          create: {
+            args: Prisma.ChartAccountCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload>
+          }
+          createMany: {
+            args: Prisma.ChartAccountCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ChartAccountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload>[]
+          }
+          delete: {
+            args: Prisma.ChartAccountDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload>
+          }
+          update: {
+            args: Prisma.ChartAccountUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload>
+          }
+          deleteMany: {
+            args: Prisma.ChartAccountDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ChartAccountUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ChartAccountUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChartAccountPayload>
+          }
+          aggregate: {
+            args: Prisma.ChartAccountAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateChartAccount>
+          }
+          groupBy: {
+            args: Prisma.ChartAccountGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ChartAccountGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ChartAccountCountArgs<ExtArgs>
+            result: $Utils.Optional<ChartAccountCountAggregateOutputType> | number
+          }
+        }
+      }
+      PostedJournal: {
+        payload: Prisma.$PostedJournalPayload<ExtArgs>
+        fields: Prisma.PostedJournalFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PostedJournalFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PostedJournalFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload>
+          }
+          findFirst: {
+            args: Prisma.PostedJournalFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PostedJournalFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload>
+          }
+          findMany: {
+            args: Prisma.PostedJournalFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload>[]
+          }
+          create: {
+            args: Prisma.PostedJournalCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload>
+          }
+          createMany: {
+            args: Prisma.PostedJournalCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PostedJournalCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload>[]
+          }
+          delete: {
+            args: Prisma.PostedJournalDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload>
+          }
+          update: {
+            args: Prisma.PostedJournalUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload>
+          }
+          deleteMany: {
+            args: Prisma.PostedJournalDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PostedJournalUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PostedJournalUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalPayload>
+          }
+          aggregate: {
+            args: Prisma.PostedJournalAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePostedJournal>
+          }
+          groupBy: {
+            args: Prisma.PostedJournalGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PostedJournalGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PostedJournalCountArgs<ExtArgs>
+            result: $Utils.Optional<PostedJournalCountAggregateOutputType> | number
+          }
+        }
+      }
+      PostedJournalLine: {
+        payload: Prisma.$PostedJournalLinePayload<ExtArgs>
+        fields: Prisma.PostedJournalLineFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PostedJournalLineFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PostedJournalLineFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload>
+          }
+          findFirst: {
+            args: Prisma.PostedJournalLineFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PostedJournalLineFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload>
+          }
+          findMany: {
+            args: Prisma.PostedJournalLineFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload>[]
+          }
+          create: {
+            args: Prisma.PostedJournalLineCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload>
+          }
+          createMany: {
+            args: Prisma.PostedJournalLineCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PostedJournalLineCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload>[]
+          }
+          delete: {
+            args: Prisma.PostedJournalLineDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload>
+          }
+          update: {
+            args: Prisma.PostedJournalLineUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload>
+          }
+          deleteMany: {
+            args: Prisma.PostedJournalLineDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PostedJournalLineUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PostedJournalLineUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PostedJournalLinePayload>
+          }
+          aggregate: {
+            args: Prisma.PostedJournalLineAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePostedJournalLine>
+          }
+          groupBy: {
+            args: Prisma.PostedJournalLineGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PostedJournalLineGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PostedJournalLineCountArgs<ExtArgs>
+            result: $Utils.Optional<PostedJournalLineCountAggregateOutputType> | number
+          }
+        }
+      }
+      Obligation: {
+        payload: Prisma.$ObligationPayload<ExtArgs>
+        fields: Prisma.ObligationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ObligationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ObligationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload>
+          }
+          findFirst: {
+            args: Prisma.ObligationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ObligationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload>
+          }
+          findMany: {
+            args: Prisma.ObligationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload>[]
+          }
+          create: {
+            args: Prisma.ObligationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload>
+          }
+          createMany: {
+            args: Prisma.ObligationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ObligationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload>[]
+          }
+          delete: {
+            args: Prisma.ObligationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload>
+          }
+          update: {
+            args: Prisma.ObligationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload>
+          }
+          deleteMany: {
+            args: Prisma.ObligationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ObligationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ObligationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ObligationPayload>
+          }
+          aggregate: {
+            args: Prisma.ObligationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateObligation>
+          }
+          groupBy: {
+            args: Prisma.ObligationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ObligationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ObligationCountArgs<ExtArgs>
+            result: $Utils.Optional<ObligationCountAggregateOutputType> | number
+          }
+        }
+      }
+      ProfitAllocation: {
+        payload: Prisma.$ProfitAllocationPayload<ExtArgs>
+        fields: Prisma.ProfitAllocationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProfitAllocationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProfitAllocationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload>
+          }
+          findFirst: {
+            args: Prisma.ProfitAllocationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProfitAllocationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload>
+          }
+          findMany: {
+            args: Prisma.ProfitAllocationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload>[]
+          }
+          create: {
+            args: Prisma.ProfitAllocationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload>
+          }
+          createMany: {
+            args: Prisma.ProfitAllocationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ProfitAllocationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload>[]
+          }
+          delete: {
+            args: Prisma.ProfitAllocationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload>
+          }
+          update: {
+            args: Prisma.ProfitAllocationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload>
+          }
+          deleteMany: {
+            args: Prisma.ProfitAllocationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProfitAllocationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ProfitAllocationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfitAllocationPayload>
+          }
+          aggregate: {
+            args: Prisma.ProfitAllocationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProfitAllocation>
+          }
+          groupBy: {
+            args: Prisma.ProfitAllocationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProfitAllocationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProfitAllocationCountArgs<ExtArgs>
+            result: $Utils.Optional<ProfitAllocationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1367,6 +1885,68 @@ export namespace Prisma {
    */
   export type PostingBatchCountOutputTypeCountJournalEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: JournalEntryWhereInput
+  }
+
+
+  /**
+   * Count Type ChartAccountCountOutputType
+   */
+
+  export type ChartAccountCountOutputType = {
+    lines: number
+  }
+
+  export type ChartAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lines?: boolean | ChartAccountCountOutputTypeCountLinesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ChartAccountCountOutputType without action
+   */
+  export type ChartAccountCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccountCountOutputType
+     */
+    select?: ChartAccountCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ChartAccountCountOutputType without action
+   */
+  export type ChartAccountCountOutputTypeCountLinesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostedJournalLineWhereInput
+  }
+
+
+  /**
+   * Count Type PostedJournalCountOutputType
+   */
+
+  export type PostedJournalCountOutputType = {
+    lines: number
+  }
+
+  export type PostedJournalCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lines?: boolean | PostedJournalCountOutputTypeCountLinesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PostedJournalCountOutputType without action
+   */
+  export type PostedJournalCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalCountOutputType
+     */
+    select?: PostedJournalCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PostedJournalCountOutputType without action
+   */
+  export type PostedJournalCountOutputTypeCountLinesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostedJournalLineWhereInput
   }
 
 
@@ -7768,6 +8348,5947 @@ export namespace Prisma {
 
 
   /**
+   * Model FinancialTransaction
+   */
+
+  export type AggregateFinancialTransaction = {
+    _count: FinancialTransactionCountAggregateOutputType | null
+    _avg: FinancialTransactionAvgAggregateOutputType | null
+    _sum: FinancialTransactionSumAggregateOutputType | null
+    _min: FinancialTransactionMinAggregateOutputType | null
+    _max: FinancialTransactionMaxAggregateOutputType | null
+  }
+
+  export type FinancialTransactionAvgAggregateOutputType = {
+    amountMinor: number | null
+  }
+
+  export type FinancialTransactionSumAggregateOutputType = {
+    amountMinor: bigint | null
+  }
+
+  export type FinancialTransactionMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    type: string | null
+    occurredOn: Date | null
+    occurredAt: Date | null
+    actorUserId: string | null
+    sourceDomain: string | null
+    sourceCommand: string | null
+    sourceId: string | null
+    idempotencyKey: string | null
+    amountMinor: bigint | null
+    currency: string | null
+    description: string | null
+    reason: string | null
+    originalTransactionId: string | null
+    status: string | null
+    createdAt: Date | null
+    createdBy: string | null
+    updatedAt: Date | null
+  }
+
+  export type FinancialTransactionMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    type: string | null
+    occurredOn: Date | null
+    occurredAt: Date | null
+    actorUserId: string | null
+    sourceDomain: string | null
+    sourceCommand: string | null
+    sourceId: string | null
+    idempotencyKey: string | null
+    amountMinor: bigint | null
+    currency: string | null
+    description: string | null
+    reason: string | null
+    originalTransactionId: string | null
+    status: string | null
+    createdAt: Date | null
+    createdBy: string | null
+    updatedAt: Date | null
+  }
+
+  export type FinancialTransactionCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    type: number
+    occurredOn: number
+    occurredAt: number
+    actorUserId: number
+    sourceDomain: number
+    sourceCommand: number
+    sourceId: number
+    idempotencyKey: number
+    amountMinor: number
+    currency: number
+    description: number
+    reason: number
+    originalTransactionId: number
+    status: number
+    metadata: number
+    createdAt: number
+    createdBy: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type FinancialTransactionAvgAggregateInputType = {
+    amountMinor?: true
+  }
+
+  export type FinancialTransactionSumAggregateInputType = {
+    amountMinor?: true
+  }
+
+  export type FinancialTransactionMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    type?: true
+    occurredOn?: true
+    occurredAt?: true
+    actorUserId?: true
+    sourceDomain?: true
+    sourceCommand?: true
+    sourceId?: true
+    idempotencyKey?: true
+    amountMinor?: true
+    currency?: true
+    description?: true
+    reason?: true
+    originalTransactionId?: true
+    status?: true
+    createdAt?: true
+    createdBy?: true
+    updatedAt?: true
+  }
+
+  export type FinancialTransactionMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    type?: true
+    occurredOn?: true
+    occurredAt?: true
+    actorUserId?: true
+    sourceDomain?: true
+    sourceCommand?: true
+    sourceId?: true
+    idempotencyKey?: true
+    amountMinor?: true
+    currency?: true
+    description?: true
+    reason?: true
+    originalTransactionId?: true
+    status?: true
+    createdAt?: true
+    createdBy?: true
+    updatedAt?: true
+  }
+
+  export type FinancialTransactionCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    type?: true
+    occurredOn?: true
+    occurredAt?: true
+    actorUserId?: true
+    sourceDomain?: true
+    sourceCommand?: true
+    sourceId?: true
+    idempotencyKey?: true
+    amountMinor?: true
+    currency?: true
+    description?: true
+    reason?: true
+    originalTransactionId?: true
+    status?: true
+    metadata?: true
+    createdAt?: true
+    createdBy?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type FinancialTransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FinancialTransaction to aggregate.
+     */
+    where?: FinancialTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FinancialTransactions to fetch.
+     */
+    orderBy?: FinancialTransactionOrderByWithRelationInput | FinancialTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FinancialTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FinancialTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FinancialTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FinancialTransactions
+    **/
+    _count?: true | FinancialTransactionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FinancialTransactionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FinancialTransactionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FinancialTransactionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FinancialTransactionMaxAggregateInputType
+  }
+
+  export type GetFinancialTransactionAggregateType<T extends FinancialTransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregateFinancialTransaction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFinancialTransaction[P]>
+      : GetScalarType<T[P], AggregateFinancialTransaction[P]>
+  }
+
+
+
+
+  export type FinancialTransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FinancialTransactionWhereInput
+    orderBy?: FinancialTransactionOrderByWithAggregationInput | FinancialTransactionOrderByWithAggregationInput[]
+    by: FinancialTransactionScalarFieldEnum[] | FinancialTransactionScalarFieldEnum
+    having?: FinancialTransactionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FinancialTransactionCountAggregateInputType | true
+    _avg?: FinancialTransactionAvgAggregateInputType
+    _sum?: FinancialTransactionSumAggregateInputType
+    _min?: FinancialTransactionMinAggregateInputType
+    _max?: FinancialTransactionMaxAggregateInputType
+  }
+
+  export type FinancialTransactionGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    type: string
+    occurredOn: Date
+    occurredAt: Date
+    actorUserId: string | null
+    sourceDomain: string
+    sourceCommand: string
+    sourceId: string
+    idempotencyKey: string
+    amountMinor: bigint
+    currency: string
+    description: string | null
+    reason: string | null
+    originalTransactionId: string | null
+    status: string
+    metadata: JsonValue | null
+    createdAt: Date
+    createdBy: string | null
+    updatedAt: Date
+    _count: FinancialTransactionCountAggregateOutputType | null
+    _avg: FinancialTransactionAvgAggregateOutputType | null
+    _sum: FinancialTransactionSumAggregateOutputType | null
+    _min: FinancialTransactionMinAggregateOutputType | null
+    _max: FinancialTransactionMaxAggregateOutputType | null
+  }
+
+  type GetFinancialTransactionGroupByPayload<T extends FinancialTransactionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FinancialTransactionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FinancialTransactionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FinancialTransactionGroupByOutputType[P]>
+            : GetScalarType<T[P], FinancialTransactionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FinancialTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    type?: boolean
+    occurredOn?: boolean
+    occurredAt?: boolean
+    actorUserId?: boolean
+    sourceDomain?: boolean
+    sourceCommand?: boolean
+    sourceId?: boolean
+    idempotencyKey?: boolean
+    amountMinor?: boolean
+    currency?: boolean
+    description?: boolean
+    reason?: boolean
+    originalTransactionId?: boolean
+    status?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["financialTransaction"]>
+
+  export type FinancialTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    type?: boolean
+    occurredOn?: boolean
+    occurredAt?: boolean
+    actorUserId?: boolean
+    sourceDomain?: boolean
+    sourceCommand?: boolean
+    sourceId?: boolean
+    idempotencyKey?: boolean
+    amountMinor?: boolean
+    currency?: boolean
+    description?: boolean
+    reason?: boolean
+    originalTransactionId?: boolean
+    status?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["financialTransaction"]>
+
+  export type FinancialTransactionSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    type?: boolean
+    occurredOn?: boolean
+    occurredAt?: boolean
+    actorUserId?: boolean
+    sourceDomain?: boolean
+    sourceCommand?: boolean
+    sourceId?: boolean
+    idempotencyKey?: boolean
+    amountMinor?: boolean
+    currency?: boolean
+    description?: boolean
+    reason?: boolean
+    originalTransactionId?: boolean
+    status?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $FinancialTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FinancialTransaction"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      type: string
+      occurredOn: Date
+      occurredAt: Date
+      actorUserId: string | null
+      sourceDomain: string
+      sourceCommand: string
+      sourceId: string
+      idempotencyKey: string
+      amountMinor: bigint
+      currency: string
+      description: string | null
+      reason: string | null
+      originalTransactionId: string | null
+      status: string
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+      createdBy: string | null
+      updatedAt: Date
+    }, ExtArgs["result"]["financialTransaction"]>
+    composites: {}
+  }
+
+  type FinancialTransactionGetPayload<S extends boolean | null | undefined | FinancialTransactionDefaultArgs> = $Result.GetResult<Prisma.$FinancialTransactionPayload, S>
+
+  type FinancialTransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<FinancialTransactionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: FinancialTransactionCountAggregateInputType | true
+    }
+
+  export interface FinancialTransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FinancialTransaction'], meta: { name: 'FinancialTransaction' } }
+    /**
+     * Find zero or one FinancialTransaction that matches the filter.
+     * @param {FinancialTransactionFindUniqueArgs} args - Arguments to find a FinancialTransaction
+     * @example
+     * // Get one FinancialTransaction
+     * const financialTransaction = await prisma.financialTransaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FinancialTransactionFindUniqueArgs>(args: SelectSubset<T, FinancialTransactionFindUniqueArgs<ExtArgs>>): Prisma__FinancialTransactionClient<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one FinancialTransaction that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {FinancialTransactionFindUniqueOrThrowArgs} args - Arguments to find a FinancialTransaction
+     * @example
+     * // Get one FinancialTransaction
+     * const financialTransaction = await prisma.financialTransaction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FinancialTransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, FinancialTransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FinancialTransactionClient<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first FinancialTransaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialTransactionFindFirstArgs} args - Arguments to find a FinancialTransaction
+     * @example
+     * // Get one FinancialTransaction
+     * const financialTransaction = await prisma.financialTransaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FinancialTransactionFindFirstArgs>(args?: SelectSubset<T, FinancialTransactionFindFirstArgs<ExtArgs>>): Prisma__FinancialTransactionClient<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first FinancialTransaction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialTransactionFindFirstOrThrowArgs} args - Arguments to find a FinancialTransaction
+     * @example
+     * // Get one FinancialTransaction
+     * const financialTransaction = await prisma.financialTransaction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FinancialTransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, FinancialTransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__FinancialTransactionClient<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more FinancialTransactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialTransactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FinancialTransactions
+     * const financialTransactions = await prisma.financialTransaction.findMany()
+     * 
+     * // Get first 10 FinancialTransactions
+     * const financialTransactions = await prisma.financialTransaction.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const financialTransactionWithIdOnly = await prisma.financialTransaction.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FinancialTransactionFindManyArgs>(args?: SelectSubset<T, FinancialTransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a FinancialTransaction.
+     * @param {FinancialTransactionCreateArgs} args - Arguments to create a FinancialTransaction.
+     * @example
+     * // Create one FinancialTransaction
+     * const FinancialTransaction = await prisma.financialTransaction.create({
+     *   data: {
+     *     // ... data to create a FinancialTransaction
+     *   }
+     * })
+     * 
+     */
+    create<T extends FinancialTransactionCreateArgs>(args: SelectSubset<T, FinancialTransactionCreateArgs<ExtArgs>>): Prisma__FinancialTransactionClient<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many FinancialTransactions.
+     * @param {FinancialTransactionCreateManyArgs} args - Arguments to create many FinancialTransactions.
+     * @example
+     * // Create many FinancialTransactions
+     * const financialTransaction = await prisma.financialTransaction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FinancialTransactionCreateManyArgs>(args?: SelectSubset<T, FinancialTransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FinancialTransactions and returns the data saved in the database.
+     * @param {FinancialTransactionCreateManyAndReturnArgs} args - Arguments to create many FinancialTransactions.
+     * @example
+     * // Create many FinancialTransactions
+     * const financialTransaction = await prisma.financialTransaction.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FinancialTransactions and only return the `id`
+     * const financialTransactionWithIdOnly = await prisma.financialTransaction.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FinancialTransactionCreateManyAndReturnArgs>(args?: SelectSubset<T, FinancialTransactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a FinancialTransaction.
+     * @param {FinancialTransactionDeleteArgs} args - Arguments to delete one FinancialTransaction.
+     * @example
+     * // Delete one FinancialTransaction
+     * const FinancialTransaction = await prisma.financialTransaction.delete({
+     *   where: {
+     *     // ... filter to delete one FinancialTransaction
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FinancialTransactionDeleteArgs>(args: SelectSubset<T, FinancialTransactionDeleteArgs<ExtArgs>>): Prisma__FinancialTransactionClient<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one FinancialTransaction.
+     * @param {FinancialTransactionUpdateArgs} args - Arguments to update one FinancialTransaction.
+     * @example
+     * // Update one FinancialTransaction
+     * const financialTransaction = await prisma.financialTransaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FinancialTransactionUpdateArgs>(args: SelectSubset<T, FinancialTransactionUpdateArgs<ExtArgs>>): Prisma__FinancialTransactionClient<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more FinancialTransactions.
+     * @param {FinancialTransactionDeleteManyArgs} args - Arguments to filter FinancialTransactions to delete.
+     * @example
+     * // Delete a few FinancialTransactions
+     * const { count } = await prisma.financialTransaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FinancialTransactionDeleteManyArgs>(args?: SelectSubset<T, FinancialTransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FinancialTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialTransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FinancialTransactions
+     * const financialTransaction = await prisma.financialTransaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FinancialTransactionUpdateManyArgs>(args: SelectSubset<T, FinancialTransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one FinancialTransaction.
+     * @param {FinancialTransactionUpsertArgs} args - Arguments to update or create a FinancialTransaction.
+     * @example
+     * // Update or create a FinancialTransaction
+     * const financialTransaction = await prisma.financialTransaction.upsert({
+     *   create: {
+     *     // ... data to create a FinancialTransaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FinancialTransaction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FinancialTransactionUpsertArgs>(args: SelectSubset<T, FinancialTransactionUpsertArgs<ExtArgs>>): Prisma__FinancialTransactionClient<$Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of FinancialTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialTransactionCountArgs} args - Arguments to filter FinancialTransactions to count.
+     * @example
+     * // Count the number of FinancialTransactions
+     * const count = await prisma.financialTransaction.count({
+     *   where: {
+     *     // ... the filter for the FinancialTransactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends FinancialTransactionCountArgs>(
+      args?: Subset<T, FinancialTransactionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FinancialTransactionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FinancialTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FinancialTransactionAggregateArgs>(args: Subset<T, FinancialTransactionAggregateArgs>): Prisma.PrismaPromise<GetFinancialTransactionAggregateType<T>>
+
+    /**
+     * Group by FinancialTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FinancialTransactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FinancialTransactionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FinancialTransactionGroupByArgs['orderBy'] }
+        : { orderBy?: FinancialTransactionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FinancialTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFinancialTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FinancialTransaction model
+   */
+  readonly fields: FinancialTransactionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FinancialTransaction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FinancialTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FinancialTransaction model
+   */ 
+  interface FinancialTransactionFieldRefs {
+    readonly id: FieldRef<"FinancialTransaction", 'String'>
+    readonly tenantId: FieldRef<"FinancialTransaction", 'String'>
+    readonly shopId: FieldRef<"FinancialTransaction", 'String'>
+    readonly type: FieldRef<"FinancialTransaction", 'String'>
+    readonly occurredOn: FieldRef<"FinancialTransaction", 'DateTime'>
+    readonly occurredAt: FieldRef<"FinancialTransaction", 'DateTime'>
+    readonly actorUserId: FieldRef<"FinancialTransaction", 'String'>
+    readonly sourceDomain: FieldRef<"FinancialTransaction", 'String'>
+    readonly sourceCommand: FieldRef<"FinancialTransaction", 'String'>
+    readonly sourceId: FieldRef<"FinancialTransaction", 'String'>
+    readonly idempotencyKey: FieldRef<"FinancialTransaction", 'String'>
+    readonly amountMinor: FieldRef<"FinancialTransaction", 'BigInt'>
+    readonly currency: FieldRef<"FinancialTransaction", 'String'>
+    readonly description: FieldRef<"FinancialTransaction", 'String'>
+    readonly reason: FieldRef<"FinancialTransaction", 'String'>
+    readonly originalTransactionId: FieldRef<"FinancialTransaction", 'String'>
+    readonly status: FieldRef<"FinancialTransaction", 'String'>
+    readonly metadata: FieldRef<"FinancialTransaction", 'Json'>
+    readonly createdAt: FieldRef<"FinancialTransaction", 'DateTime'>
+    readonly createdBy: FieldRef<"FinancialTransaction", 'String'>
+    readonly updatedAt: FieldRef<"FinancialTransaction", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FinancialTransaction findUnique
+   */
+  export type FinancialTransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which FinancialTransaction to fetch.
+     */
+    where: FinancialTransactionWhereUniqueInput
+  }
+
+  /**
+   * FinancialTransaction findUniqueOrThrow
+   */
+  export type FinancialTransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which FinancialTransaction to fetch.
+     */
+    where: FinancialTransactionWhereUniqueInput
+  }
+
+  /**
+   * FinancialTransaction findFirst
+   */
+  export type FinancialTransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which FinancialTransaction to fetch.
+     */
+    where?: FinancialTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FinancialTransactions to fetch.
+     */
+    orderBy?: FinancialTransactionOrderByWithRelationInput | FinancialTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FinancialTransactions.
+     */
+    cursor?: FinancialTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FinancialTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FinancialTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FinancialTransactions.
+     */
+    distinct?: FinancialTransactionScalarFieldEnum | FinancialTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * FinancialTransaction findFirstOrThrow
+   */
+  export type FinancialTransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which FinancialTransaction to fetch.
+     */
+    where?: FinancialTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FinancialTransactions to fetch.
+     */
+    orderBy?: FinancialTransactionOrderByWithRelationInput | FinancialTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FinancialTransactions.
+     */
+    cursor?: FinancialTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FinancialTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FinancialTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FinancialTransactions.
+     */
+    distinct?: FinancialTransactionScalarFieldEnum | FinancialTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * FinancialTransaction findMany
+   */
+  export type FinancialTransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+    /**
+     * Filter, which FinancialTransactions to fetch.
+     */
+    where?: FinancialTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FinancialTransactions to fetch.
+     */
+    orderBy?: FinancialTransactionOrderByWithRelationInput | FinancialTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FinancialTransactions.
+     */
+    cursor?: FinancialTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FinancialTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FinancialTransactions.
+     */
+    skip?: number
+    distinct?: FinancialTransactionScalarFieldEnum | FinancialTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * FinancialTransaction create
+   */
+  export type FinancialTransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+    /**
+     * The data needed to create a FinancialTransaction.
+     */
+    data: XOR<FinancialTransactionCreateInput, FinancialTransactionUncheckedCreateInput>
+  }
+
+  /**
+   * FinancialTransaction createMany
+   */
+  export type FinancialTransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FinancialTransactions.
+     */
+    data: FinancialTransactionCreateManyInput | FinancialTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FinancialTransaction createManyAndReturn
+   */
+  export type FinancialTransactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many FinancialTransactions.
+     */
+    data: FinancialTransactionCreateManyInput | FinancialTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FinancialTransaction update
+   */
+  export type FinancialTransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+    /**
+     * The data needed to update a FinancialTransaction.
+     */
+    data: XOR<FinancialTransactionUpdateInput, FinancialTransactionUncheckedUpdateInput>
+    /**
+     * Choose, which FinancialTransaction to update.
+     */
+    where: FinancialTransactionWhereUniqueInput
+  }
+
+  /**
+   * FinancialTransaction updateMany
+   */
+  export type FinancialTransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FinancialTransactions.
+     */
+    data: XOR<FinancialTransactionUpdateManyMutationInput, FinancialTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which FinancialTransactions to update
+     */
+    where?: FinancialTransactionWhereInput
+  }
+
+  /**
+   * FinancialTransaction upsert
+   */
+  export type FinancialTransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+    /**
+     * The filter to search for the FinancialTransaction to update in case it exists.
+     */
+    where: FinancialTransactionWhereUniqueInput
+    /**
+     * In case the FinancialTransaction found by the `where` argument doesn't exist, create a new FinancialTransaction with this data.
+     */
+    create: XOR<FinancialTransactionCreateInput, FinancialTransactionUncheckedCreateInput>
+    /**
+     * In case the FinancialTransaction was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FinancialTransactionUpdateInput, FinancialTransactionUncheckedUpdateInput>
+  }
+
+  /**
+   * FinancialTransaction delete
+   */
+  export type FinancialTransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+    /**
+     * Filter which FinancialTransaction to delete.
+     */
+    where: FinancialTransactionWhereUniqueInput
+  }
+
+  /**
+   * FinancialTransaction deleteMany
+   */
+  export type FinancialTransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FinancialTransactions to delete
+     */
+    where?: FinancialTransactionWhereInput
+  }
+
+  /**
+   * FinancialTransaction without action
+   */
+  export type FinancialTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialTransaction
+     */
+    select?: FinancialTransactionSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ChartAccount
+   */
+
+  export type AggregateChartAccount = {
+    _count: ChartAccountCountAggregateOutputType | null
+    _min: ChartAccountMinAggregateOutputType | null
+    _max: ChartAccountMaxAggregateOutputType | null
+  }
+
+  export type ChartAccountMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    code: string | null
+    name: string | null
+    type: string | null
+    fundCode: string | null
+    createdAt: Date | null
+  }
+
+  export type ChartAccountMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    code: string | null
+    name: string | null
+    type: string | null
+    fundCode: string | null
+    createdAt: Date | null
+  }
+
+  export type ChartAccountCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    code: number
+    name: number
+    type: number
+    fundCode: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ChartAccountMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    code?: true
+    name?: true
+    type?: true
+    fundCode?: true
+    createdAt?: true
+  }
+
+  export type ChartAccountMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    code?: true
+    name?: true
+    type?: true
+    fundCode?: true
+    createdAt?: true
+  }
+
+  export type ChartAccountCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    code?: true
+    name?: true
+    type?: true
+    fundCode?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ChartAccountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChartAccount to aggregate.
+     */
+    where?: ChartAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChartAccounts to fetch.
+     */
+    orderBy?: ChartAccountOrderByWithRelationInput | ChartAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ChartAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChartAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChartAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ChartAccounts
+    **/
+    _count?: true | ChartAccountCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ChartAccountMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ChartAccountMaxAggregateInputType
+  }
+
+  export type GetChartAccountAggregateType<T extends ChartAccountAggregateArgs> = {
+        [P in keyof T & keyof AggregateChartAccount]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateChartAccount[P]>
+      : GetScalarType<T[P], AggregateChartAccount[P]>
+  }
+
+
+
+
+  export type ChartAccountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChartAccountWhereInput
+    orderBy?: ChartAccountOrderByWithAggregationInput | ChartAccountOrderByWithAggregationInput[]
+    by: ChartAccountScalarFieldEnum[] | ChartAccountScalarFieldEnum
+    having?: ChartAccountScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ChartAccountCountAggregateInputType | true
+    _min?: ChartAccountMinAggregateInputType
+    _max?: ChartAccountMaxAggregateInputType
+  }
+
+  export type ChartAccountGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    type: string
+    fundCode: string | null
+    createdAt: Date
+    _count: ChartAccountCountAggregateOutputType | null
+    _min: ChartAccountMinAggregateOutputType | null
+    _max: ChartAccountMaxAggregateOutputType | null
+  }
+
+  type GetChartAccountGroupByPayload<T extends ChartAccountGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ChartAccountGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ChartAccountGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ChartAccountGroupByOutputType[P]>
+            : GetScalarType<T[P], ChartAccountGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ChartAccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    code?: boolean
+    name?: boolean
+    type?: boolean
+    fundCode?: boolean
+    createdAt?: boolean
+    lines?: boolean | ChartAccount$linesArgs<ExtArgs>
+    _count?: boolean | ChartAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["chartAccount"]>
+
+  export type ChartAccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    code?: boolean
+    name?: boolean
+    type?: boolean
+    fundCode?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["chartAccount"]>
+
+  export type ChartAccountSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    code?: boolean
+    name?: boolean
+    type?: boolean
+    fundCode?: boolean
+    createdAt?: boolean
+  }
+
+  export type ChartAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lines?: boolean | ChartAccount$linesArgs<ExtArgs>
+    _count?: boolean | ChartAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ChartAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $ChartAccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ChartAccount"
+    objects: {
+      lines: Prisma.$PostedJournalLinePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      code: string
+      name: string
+      type: string
+      fundCode: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["chartAccount"]>
+    composites: {}
+  }
+
+  type ChartAccountGetPayload<S extends boolean | null | undefined | ChartAccountDefaultArgs> = $Result.GetResult<Prisma.$ChartAccountPayload, S>
+
+  type ChartAccountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ChartAccountFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ChartAccountCountAggregateInputType | true
+    }
+
+  export interface ChartAccountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ChartAccount'], meta: { name: 'ChartAccount' } }
+    /**
+     * Find zero or one ChartAccount that matches the filter.
+     * @param {ChartAccountFindUniqueArgs} args - Arguments to find a ChartAccount
+     * @example
+     * // Get one ChartAccount
+     * const chartAccount = await prisma.chartAccount.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ChartAccountFindUniqueArgs>(args: SelectSubset<T, ChartAccountFindUniqueArgs<ExtArgs>>): Prisma__ChartAccountClient<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ChartAccount that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ChartAccountFindUniqueOrThrowArgs} args - Arguments to find a ChartAccount
+     * @example
+     * // Get one ChartAccount
+     * const chartAccount = await prisma.chartAccount.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ChartAccountFindUniqueOrThrowArgs>(args: SelectSubset<T, ChartAccountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChartAccountClient<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ChartAccount that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChartAccountFindFirstArgs} args - Arguments to find a ChartAccount
+     * @example
+     * // Get one ChartAccount
+     * const chartAccount = await prisma.chartAccount.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ChartAccountFindFirstArgs>(args?: SelectSubset<T, ChartAccountFindFirstArgs<ExtArgs>>): Prisma__ChartAccountClient<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ChartAccount that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChartAccountFindFirstOrThrowArgs} args - Arguments to find a ChartAccount
+     * @example
+     * // Get one ChartAccount
+     * const chartAccount = await prisma.chartAccount.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ChartAccountFindFirstOrThrowArgs>(args?: SelectSubset<T, ChartAccountFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChartAccountClient<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ChartAccounts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChartAccountFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ChartAccounts
+     * const chartAccounts = await prisma.chartAccount.findMany()
+     * 
+     * // Get first 10 ChartAccounts
+     * const chartAccounts = await prisma.chartAccount.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const chartAccountWithIdOnly = await prisma.chartAccount.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ChartAccountFindManyArgs>(args?: SelectSubset<T, ChartAccountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ChartAccount.
+     * @param {ChartAccountCreateArgs} args - Arguments to create a ChartAccount.
+     * @example
+     * // Create one ChartAccount
+     * const ChartAccount = await prisma.chartAccount.create({
+     *   data: {
+     *     // ... data to create a ChartAccount
+     *   }
+     * })
+     * 
+     */
+    create<T extends ChartAccountCreateArgs>(args: SelectSubset<T, ChartAccountCreateArgs<ExtArgs>>): Prisma__ChartAccountClient<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ChartAccounts.
+     * @param {ChartAccountCreateManyArgs} args - Arguments to create many ChartAccounts.
+     * @example
+     * // Create many ChartAccounts
+     * const chartAccount = await prisma.chartAccount.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ChartAccountCreateManyArgs>(args?: SelectSubset<T, ChartAccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ChartAccounts and returns the data saved in the database.
+     * @param {ChartAccountCreateManyAndReturnArgs} args - Arguments to create many ChartAccounts.
+     * @example
+     * // Create many ChartAccounts
+     * const chartAccount = await prisma.chartAccount.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ChartAccounts and only return the `id`
+     * const chartAccountWithIdOnly = await prisma.chartAccount.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ChartAccountCreateManyAndReturnArgs>(args?: SelectSubset<T, ChartAccountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ChartAccount.
+     * @param {ChartAccountDeleteArgs} args - Arguments to delete one ChartAccount.
+     * @example
+     * // Delete one ChartAccount
+     * const ChartAccount = await prisma.chartAccount.delete({
+     *   where: {
+     *     // ... filter to delete one ChartAccount
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ChartAccountDeleteArgs>(args: SelectSubset<T, ChartAccountDeleteArgs<ExtArgs>>): Prisma__ChartAccountClient<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ChartAccount.
+     * @param {ChartAccountUpdateArgs} args - Arguments to update one ChartAccount.
+     * @example
+     * // Update one ChartAccount
+     * const chartAccount = await prisma.chartAccount.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ChartAccountUpdateArgs>(args: SelectSubset<T, ChartAccountUpdateArgs<ExtArgs>>): Prisma__ChartAccountClient<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ChartAccounts.
+     * @param {ChartAccountDeleteManyArgs} args - Arguments to filter ChartAccounts to delete.
+     * @example
+     * // Delete a few ChartAccounts
+     * const { count } = await prisma.chartAccount.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ChartAccountDeleteManyArgs>(args?: SelectSubset<T, ChartAccountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ChartAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChartAccountUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ChartAccounts
+     * const chartAccount = await prisma.chartAccount.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ChartAccountUpdateManyArgs>(args: SelectSubset<T, ChartAccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ChartAccount.
+     * @param {ChartAccountUpsertArgs} args - Arguments to update or create a ChartAccount.
+     * @example
+     * // Update or create a ChartAccount
+     * const chartAccount = await prisma.chartAccount.upsert({
+     *   create: {
+     *     // ... data to create a ChartAccount
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ChartAccount we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ChartAccountUpsertArgs>(args: SelectSubset<T, ChartAccountUpsertArgs<ExtArgs>>): Prisma__ChartAccountClient<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ChartAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChartAccountCountArgs} args - Arguments to filter ChartAccounts to count.
+     * @example
+     * // Count the number of ChartAccounts
+     * const count = await prisma.chartAccount.count({
+     *   where: {
+     *     // ... the filter for the ChartAccounts we want to count
+     *   }
+     * })
+    **/
+    count<T extends ChartAccountCountArgs>(
+      args?: Subset<T, ChartAccountCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ChartAccountCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ChartAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChartAccountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ChartAccountAggregateArgs>(args: Subset<T, ChartAccountAggregateArgs>): Prisma.PrismaPromise<GetChartAccountAggregateType<T>>
+
+    /**
+     * Group by ChartAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChartAccountGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ChartAccountGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ChartAccountGroupByArgs['orderBy'] }
+        : { orderBy?: ChartAccountGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ChartAccountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChartAccountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ChartAccount model
+   */
+  readonly fields: ChartAccountFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ChartAccount.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ChartAccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    lines<T extends ChartAccount$linesArgs<ExtArgs> = {}>(args?: Subset<T, ChartAccount$linesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ChartAccount model
+   */ 
+  interface ChartAccountFieldRefs {
+    readonly id: FieldRef<"ChartAccount", 'String'>
+    readonly tenantId: FieldRef<"ChartAccount", 'String'>
+    readonly shopId: FieldRef<"ChartAccount", 'String'>
+    readonly code: FieldRef<"ChartAccount", 'String'>
+    readonly name: FieldRef<"ChartAccount", 'String'>
+    readonly type: FieldRef<"ChartAccount", 'String'>
+    readonly fundCode: FieldRef<"ChartAccount", 'String'>
+    readonly createdAt: FieldRef<"ChartAccount", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ChartAccount findUnique
+   */
+  export type ChartAccountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which ChartAccount to fetch.
+     */
+    where: ChartAccountWhereUniqueInput
+  }
+
+  /**
+   * ChartAccount findUniqueOrThrow
+   */
+  export type ChartAccountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which ChartAccount to fetch.
+     */
+    where: ChartAccountWhereUniqueInput
+  }
+
+  /**
+   * ChartAccount findFirst
+   */
+  export type ChartAccountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which ChartAccount to fetch.
+     */
+    where?: ChartAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChartAccounts to fetch.
+     */
+    orderBy?: ChartAccountOrderByWithRelationInput | ChartAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChartAccounts.
+     */
+    cursor?: ChartAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChartAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChartAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChartAccounts.
+     */
+    distinct?: ChartAccountScalarFieldEnum | ChartAccountScalarFieldEnum[]
+  }
+
+  /**
+   * ChartAccount findFirstOrThrow
+   */
+  export type ChartAccountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which ChartAccount to fetch.
+     */
+    where?: ChartAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChartAccounts to fetch.
+     */
+    orderBy?: ChartAccountOrderByWithRelationInput | ChartAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChartAccounts.
+     */
+    cursor?: ChartAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChartAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChartAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChartAccounts.
+     */
+    distinct?: ChartAccountScalarFieldEnum | ChartAccountScalarFieldEnum[]
+  }
+
+  /**
+   * ChartAccount findMany
+   */
+  export type ChartAccountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which ChartAccounts to fetch.
+     */
+    where?: ChartAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChartAccounts to fetch.
+     */
+    orderBy?: ChartAccountOrderByWithRelationInput | ChartAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ChartAccounts.
+     */
+    cursor?: ChartAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChartAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChartAccounts.
+     */
+    skip?: number
+    distinct?: ChartAccountScalarFieldEnum | ChartAccountScalarFieldEnum[]
+  }
+
+  /**
+   * ChartAccount create
+   */
+  export type ChartAccountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ChartAccount.
+     */
+    data: XOR<ChartAccountCreateInput, ChartAccountUncheckedCreateInput>
+  }
+
+  /**
+   * ChartAccount createMany
+   */
+  export type ChartAccountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ChartAccounts.
+     */
+    data: ChartAccountCreateManyInput | ChartAccountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ChartAccount createManyAndReturn
+   */
+  export type ChartAccountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ChartAccounts.
+     */
+    data: ChartAccountCreateManyInput | ChartAccountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ChartAccount update
+   */
+  export type ChartAccountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ChartAccount.
+     */
+    data: XOR<ChartAccountUpdateInput, ChartAccountUncheckedUpdateInput>
+    /**
+     * Choose, which ChartAccount to update.
+     */
+    where: ChartAccountWhereUniqueInput
+  }
+
+  /**
+   * ChartAccount updateMany
+   */
+  export type ChartAccountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ChartAccounts.
+     */
+    data: XOR<ChartAccountUpdateManyMutationInput, ChartAccountUncheckedUpdateManyInput>
+    /**
+     * Filter which ChartAccounts to update
+     */
+    where?: ChartAccountWhereInput
+  }
+
+  /**
+   * ChartAccount upsert
+   */
+  export type ChartAccountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ChartAccount to update in case it exists.
+     */
+    where: ChartAccountWhereUniqueInput
+    /**
+     * In case the ChartAccount found by the `where` argument doesn't exist, create a new ChartAccount with this data.
+     */
+    create: XOR<ChartAccountCreateInput, ChartAccountUncheckedCreateInput>
+    /**
+     * In case the ChartAccount was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ChartAccountUpdateInput, ChartAccountUncheckedUpdateInput>
+  }
+
+  /**
+   * ChartAccount delete
+   */
+  export type ChartAccountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+    /**
+     * Filter which ChartAccount to delete.
+     */
+    where: ChartAccountWhereUniqueInput
+  }
+
+  /**
+   * ChartAccount deleteMany
+   */
+  export type ChartAccountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChartAccounts to delete
+     */
+    where?: ChartAccountWhereInput
+  }
+
+  /**
+   * ChartAccount.lines
+   */
+  export type ChartAccount$linesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    where?: PostedJournalLineWhereInput
+    orderBy?: PostedJournalLineOrderByWithRelationInput | PostedJournalLineOrderByWithRelationInput[]
+    cursor?: PostedJournalLineWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PostedJournalLineScalarFieldEnum | PostedJournalLineScalarFieldEnum[]
+  }
+
+  /**
+   * ChartAccount without action
+   */
+  export type ChartAccountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChartAccount
+     */
+    select?: ChartAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChartAccountInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PostedJournal
+   */
+
+  export type AggregatePostedJournal = {
+    _count: PostedJournalCountAggregateOutputType | null
+    _min: PostedJournalMinAggregateOutputType | null
+    _max: PostedJournalMaxAggregateOutputType | null
+  }
+
+  export type PostedJournalMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    financialTransactionId: string | null
+    description: string | null
+    status: string | null
+    postedBy: string | null
+    occurredOn: Date | null
+    createdAt: Date | null
+  }
+
+  export type PostedJournalMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    financialTransactionId: string | null
+    description: string | null
+    status: string | null
+    postedBy: string | null
+    occurredOn: Date | null
+    createdAt: Date | null
+  }
+
+  export type PostedJournalCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    financialTransactionId: number
+    description: number
+    status: number
+    postedBy: number
+    occurredOn: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PostedJournalMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    financialTransactionId?: true
+    description?: true
+    status?: true
+    postedBy?: true
+    occurredOn?: true
+    createdAt?: true
+  }
+
+  export type PostedJournalMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    financialTransactionId?: true
+    description?: true
+    status?: true
+    postedBy?: true
+    occurredOn?: true
+    createdAt?: true
+  }
+
+  export type PostedJournalCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    financialTransactionId?: true
+    description?: true
+    status?: true
+    postedBy?: true
+    occurredOn?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PostedJournalAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PostedJournal to aggregate.
+     */
+    where?: PostedJournalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostedJournals to fetch.
+     */
+    orderBy?: PostedJournalOrderByWithRelationInput | PostedJournalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PostedJournalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostedJournals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostedJournals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PostedJournals
+    **/
+    _count?: true | PostedJournalCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PostedJournalMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PostedJournalMaxAggregateInputType
+  }
+
+  export type GetPostedJournalAggregateType<T extends PostedJournalAggregateArgs> = {
+        [P in keyof T & keyof AggregatePostedJournal]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePostedJournal[P]>
+      : GetScalarType<T[P], AggregatePostedJournal[P]>
+  }
+
+
+
+
+  export type PostedJournalGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostedJournalWhereInput
+    orderBy?: PostedJournalOrderByWithAggregationInput | PostedJournalOrderByWithAggregationInput[]
+    by: PostedJournalScalarFieldEnum[] | PostedJournalScalarFieldEnum
+    having?: PostedJournalScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PostedJournalCountAggregateInputType | true
+    _min?: PostedJournalMinAggregateInputType
+    _max?: PostedJournalMaxAggregateInputType
+  }
+
+  export type PostedJournalGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    financialTransactionId: string
+    description: string
+    status: string
+    postedBy: string
+    occurredOn: Date
+    createdAt: Date
+    _count: PostedJournalCountAggregateOutputType | null
+    _min: PostedJournalMinAggregateOutputType | null
+    _max: PostedJournalMaxAggregateOutputType | null
+  }
+
+  type GetPostedJournalGroupByPayload<T extends PostedJournalGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PostedJournalGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PostedJournalGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PostedJournalGroupByOutputType[P]>
+            : GetScalarType<T[P], PostedJournalGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PostedJournalSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    financialTransactionId?: boolean
+    description?: boolean
+    status?: boolean
+    postedBy?: boolean
+    occurredOn?: boolean
+    createdAt?: boolean
+    lines?: boolean | PostedJournal$linesArgs<ExtArgs>
+    _count?: boolean | PostedJournalCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["postedJournal"]>
+
+  export type PostedJournalSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    financialTransactionId?: boolean
+    description?: boolean
+    status?: boolean
+    postedBy?: boolean
+    occurredOn?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["postedJournal"]>
+
+  export type PostedJournalSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    financialTransactionId?: boolean
+    description?: boolean
+    status?: boolean
+    postedBy?: boolean
+    occurredOn?: boolean
+    createdAt?: boolean
+  }
+
+  export type PostedJournalInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lines?: boolean | PostedJournal$linesArgs<ExtArgs>
+    _count?: boolean | PostedJournalCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PostedJournalIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $PostedJournalPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PostedJournal"
+    objects: {
+      lines: Prisma.$PostedJournalLinePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      financialTransactionId: string
+      description: string
+      status: string
+      postedBy: string
+      occurredOn: Date
+      createdAt: Date
+    }, ExtArgs["result"]["postedJournal"]>
+    composites: {}
+  }
+
+  type PostedJournalGetPayload<S extends boolean | null | undefined | PostedJournalDefaultArgs> = $Result.GetResult<Prisma.$PostedJournalPayload, S>
+
+  type PostedJournalCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PostedJournalFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PostedJournalCountAggregateInputType | true
+    }
+
+  export interface PostedJournalDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PostedJournal'], meta: { name: 'PostedJournal' } }
+    /**
+     * Find zero or one PostedJournal that matches the filter.
+     * @param {PostedJournalFindUniqueArgs} args - Arguments to find a PostedJournal
+     * @example
+     * // Get one PostedJournal
+     * const postedJournal = await prisma.postedJournal.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PostedJournalFindUniqueArgs>(args: SelectSubset<T, PostedJournalFindUniqueArgs<ExtArgs>>): Prisma__PostedJournalClient<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PostedJournal that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PostedJournalFindUniqueOrThrowArgs} args - Arguments to find a PostedJournal
+     * @example
+     * // Get one PostedJournal
+     * const postedJournal = await prisma.postedJournal.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PostedJournalFindUniqueOrThrowArgs>(args: SelectSubset<T, PostedJournalFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PostedJournalClient<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PostedJournal that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalFindFirstArgs} args - Arguments to find a PostedJournal
+     * @example
+     * // Get one PostedJournal
+     * const postedJournal = await prisma.postedJournal.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PostedJournalFindFirstArgs>(args?: SelectSubset<T, PostedJournalFindFirstArgs<ExtArgs>>): Prisma__PostedJournalClient<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PostedJournal that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalFindFirstOrThrowArgs} args - Arguments to find a PostedJournal
+     * @example
+     * // Get one PostedJournal
+     * const postedJournal = await prisma.postedJournal.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PostedJournalFindFirstOrThrowArgs>(args?: SelectSubset<T, PostedJournalFindFirstOrThrowArgs<ExtArgs>>): Prisma__PostedJournalClient<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PostedJournals that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PostedJournals
+     * const postedJournals = await prisma.postedJournal.findMany()
+     * 
+     * // Get first 10 PostedJournals
+     * const postedJournals = await prisma.postedJournal.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const postedJournalWithIdOnly = await prisma.postedJournal.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PostedJournalFindManyArgs>(args?: SelectSubset<T, PostedJournalFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PostedJournal.
+     * @param {PostedJournalCreateArgs} args - Arguments to create a PostedJournal.
+     * @example
+     * // Create one PostedJournal
+     * const PostedJournal = await prisma.postedJournal.create({
+     *   data: {
+     *     // ... data to create a PostedJournal
+     *   }
+     * })
+     * 
+     */
+    create<T extends PostedJournalCreateArgs>(args: SelectSubset<T, PostedJournalCreateArgs<ExtArgs>>): Prisma__PostedJournalClient<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PostedJournals.
+     * @param {PostedJournalCreateManyArgs} args - Arguments to create many PostedJournals.
+     * @example
+     * // Create many PostedJournals
+     * const postedJournal = await prisma.postedJournal.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PostedJournalCreateManyArgs>(args?: SelectSubset<T, PostedJournalCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PostedJournals and returns the data saved in the database.
+     * @param {PostedJournalCreateManyAndReturnArgs} args - Arguments to create many PostedJournals.
+     * @example
+     * // Create many PostedJournals
+     * const postedJournal = await prisma.postedJournal.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PostedJournals and only return the `id`
+     * const postedJournalWithIdOnly = await prisma.postedJournal.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PostedJournalCreateManyAndReturnArgs>(args?: SelectSubset<T, PostedJournalCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PostedJournal.
+     * @param {PostedJournalDeleteArgs} args - Arguments to delete one PostedJournal.
+     * @example
+     * // Delete one PostedJournal
+     * const PostedJournal = await prisma.postedJournal.delete({
+     *   where: {
+     *     // ... filter to delete one PostedJournal
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PostedJournalDeleteArgs>(args: SelectSubset<T, PostedJournalDeleteArgs<ExtArgs>>): Prisma__PostedJournalClient<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PostedJournal.
+     * @param {PostedJournalUpdateArgs} args - Arguments to update one PostedJournal.
+     * @example
+     * // Update one PostedJournal
+     * const postedJournal = await prisma.postedJournal.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PostedJournalUpdateArgs>(args: SelectSubset<T, PostedJournalUpdateArgs<ExtArgs>>): Prisma__PostedJournalClient<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PostedJournals.
+     * @param {PostedJournalDeleteManyArgs} args - Arguments to filter PostedJournals to delete.
+     * @example
+     * // Delete a few PostedJournals
+     * const { count } = await prisma.postedJournal.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PostedJournalDeleteManyArgs>(args?: SelectSubset<T, PostedJournalDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PostedJournals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PostedJournals
+     * const postedJournal = await prisma.postedJournal.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PostedJournalUpdateManyArgs>(args: SelectSubset<T, PostedJournalUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PostedJournal.
+     * @param {PostedJournalUpsertArgs} args - Arguments to update or create a PostedJournal.
+     * @example
+     * // Update or create a PostedJournal
+     * const postedJournal = await prisma.postedJournal.upsert({
+     *   create: {
+     *     // ... data to create a PostedJournal
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PostedJournal we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PostedJournalUpsertArgs>(args: SelectSubset<T, PostedJournalUpsertArgs<ExtArgs>>): Prisma__PostedJournalClient<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PostedJournals.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalCountArgs} args - Arguments to filter PostedJournals to count.
+     * @example
+     * // Count the number of PostedJournals
+     * const count = await prisma.postedJournal.count({
+     *   where: {
+     *     // ... the filter for the PostedJournals we want to count
+     *   }
+     * })
+    **/
+    count<T extends PostedJournalCountArgs>(
+      args?: Subset<T, PostedJournalCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PostedJournalCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PostedJournal.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PostedJournalAggregateArgs>(args: Subset<T, PostedJournalAggregateArgs>): Prisma.PrismaPromise<GetPostedJournalAggregateType<T>>
+
+    /**
+     * Group by PostedJournal.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PostedJournalGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PostedJournalGroupByArgs['orderBy'] }
+        : { orderBy?: PostedJournalGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PostedJournalGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPostedJournalGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PostedJournal model
+   */
+  readonly fields: PostedJournalFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PostedJournal.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PostedJournalClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    lines<T extends PostedJournal$linesArgs<ExtArgs> = {}>(args?: Subset<T, PostedJournal$linesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PostedJournal model
+   */ 
+  interface PostedJournalFieldRefs {
+    readonly id: FieldRef<"PostedJournal", 'String'>
+    readonly tenantId: FieldRef<"PostedJournal", 'String'>
+    readonly shopId: FieldRef<"PostedJournal", 'String'>
+    readonly financialTransactionId: FieldRef<"PostedJournal", 'String'>
+    readonly description: FieldRef<"PostedJournal", 'String'>
+    readonly status: FieldRef<"PostedJournal", 'String'>
+    readonly postedBy: FieldRef<"PostedJournal", 'String'>
+    readonly occurredOn: FieldRef<"PostedJournal", 'DateTime'>
+    readonly createdAt: FieldRef<"PostedJournal", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PostedJournal findUnique
+   */
+  export type PostedJournalFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournal to fetch.
+     */
+    where: PostedJournalWhereUniqueInput
+  }
+
+  /**
+   * PostedJournal findUniqueOrThrow
+   */
+  export type PostedJournalFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournal to fetch.
+     */
+    where: PostedJournalWhereUniqueInput
+  }
+
+  /**
+   * PostedJournal findFirst
+   */
+  export type PostedJournalFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournal to fetch.
+     */
+    where?: PostedJournalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostedJournals to fetch.
+     */
+    orderBy?: PostedJournalOrderByWithRelationInput | PostedJournalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PostedJournals.
+     */
+    cursor?: PostedJournalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostedJournals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostedJournals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PostedJournals.
+     */
+    distinct?: PostedJournalScalarFieldEnum | PostedJournalScalarFieldEnum[]
+  }
+
+  /**
+   * PostedJournal findFirstOrThrow
+   */
+  export type PostedJournalFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournal to fetch.
+     */
+    where?: PostedJournalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostedJournals to fetch.
+     */
+    orderBy?: PostedJournalOrderByWithRelationInput | PostedJournalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PostedJournals.
+     */
+    cursor?: PostedJournalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostedJournals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostedJournals.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PostedJournals.
+     */
+    distinct?: PostedJournalScalarFieldEnum | PostedJournalScalarFieldEnum[]
+  }
+
+  /**
+   * PostedJournal findMany
+   */
+  export type PostedJournalFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournals to fetch.
+     */
+    where?: PostedJournalWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostedJournals to fetch.
+     */
+    orderBy?: PostedJournalOrderByWithRelationInput | PostedJournalOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PostedJournals.
+     */
+    cursor?: PostedJournalWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostedJournals from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostedJournals.
+     */
+    skip?: number
+    distinct?: PostedJournalScalarFieldEnum | PostedJournalScalarFieldEnum[]
+  }
+
+  /**
+   * PostedJournal create
+   */
+  export type PostedJournalCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PostedJournal.
+     */
+    data: XOR<PostedJournalCreateInput, PostedJournalUncheckedCreateInput>
+  }
+
+  /**
+   * PostedJournal createMany
+   */
+  export type PostedJournalCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PostedJournals.
+     */
+    data: PostedJournalCreateManyInput | PostedJournalCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PostedJournal createManyAndReturn
+   */
+  export type PostedJournalCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PostedJournals.
+     */
+    data: PostedJournalCreateManyInput | PostedJournalCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PostedJournal update
+   */
+  export type PostedJournalUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PostedJournal.
+     */
+    data: XOR<PostedJournalUpdateInput, PostedJournalUncheckedUpdateInput>
+    /**
+     * Choose, which PostedJournal to update.
+     */
+    where: PostedJournalWhereUniqueInput
+  }
+
+  /**
+   * PostedJournal updateMany
+   */
+  export type PostedJournalUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PostedJournals.
+     */
+    data: XOR<PostedJournalUpdateManyMutationInput, PostedJournalUncheckedUpdateManyInput>
+    /**
+     * Filter which PostedJournals to update
+     */
+    where?: PostedJournalWhereInput
+  }
+
+  /**
+   * PostedJournal upsert
+   */
+  export type PostedJournalUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PostedJournal to update in case it exists.
+     */
+    where: PostedJournalWhereUniqueInput
+    /**
+     * In case the PostedJournal found by the `where` argument doesn't exist, create a new PostedJournal with this data.
+     */
+    create: XOR<PostedJournalCreateInput, PostedJournalUncheckedCreateInput>
+    /**
+     * In case the PostedJournal was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PostedJournalUpdateInput, PostedJournalUncheckedUpdateInput>
+  }
+
+  /**
+   * PostedJournal delete
+   */
+  export type PostedJournalDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+    /**
+     * Filter which PostedJournal to delete.
+     */
+    where: PostedJournalWhereUniqueInput
+  }
+
+  /**
+   * PostedJournal deleteMany
+   */
+  export type PostedJournalDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PostedJournals to delete
+     */
+    where?: PostedJournalWhereInput
+  }
+
+  /**
+   * PostedJournal.lines
+   */
+  export type PostedJournal$linesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    where?: PostedJournalLineWhereInput
+    orderBy?: PostedJournalLineOrderByWithRelationInput | PostedJournalLineOrderByWithRelationInput[]
+    cursor?: PostedJournalLineWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PostedJournalLineScalarFieldEnum | PostedJournalLineScalarFieldEnum[]
+  }
+
+  /**
+   * PostedJournal without action
+   */
+  export type PostedJournalDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournal
+     */
+    select?: PostedJournalSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PostedJournalLine
+   */
+
+  export type AggregatePostedJournalLine = {
+    _count: PostedJournalLineCountAggregateOutputType | null
+    _avg: PostedJournalLineAvgAggregateOutputType | null
+    _sum: PostedJournalLineSumAggregateOutputType | null
+    _min: PostedJournalLineMinAggregateOutputType | null
+    _max: PostedJournalLineMaxAggregateOutputType | null
+  }
+
+  export type PostedJournalLineAvgAggregateOutputType = {
+    amountMinor: number | null
+  }
+
+  export type PostedJournalLineSumAggregateOutputType = {
+    amountMinor: bigint | null
+  }
+
+  export type PostedJournalLineMinAggregateOutputType = {
+    id: string | null
+    journalId: string | null
+    accountId: string | null
+    side: string | null
+    amountMinor: bigint | null
+  }
+
+  export type PostedJournalLineMaxAggregateOutputType = {
+    id: string | null
+    journalId: string | null
+    accountId: string | null
+    side: string | null
+    amountMinor: bigint | null
+  }
+
+  export type PostedJournalLineCountAggregateOutputType = {
+    id: number
+    journalId: number
+    accountId: number
+    side: number
+    amountMinor: number
+    _all: number
+  }
+
+
+  export type PostedJournalLineAvgAggregateInputType = {
+    amountMinor?: true
+  }
+
+  export type PostedJournalLineSumAggregateInputType = {
+    amountMinor?: true
+  }
+
+  export type PostedJournalLineMinAggregateInputType = {
+    id?: true
+    journalId?: true
+    accountId?: true
+    side?: true
+    amountMinor?: true
+  }
+
+  export type PostedJournalLineMaxAggregateInputType = {
+    id?: true
+    journalId?: true
+    accountId?: true
+    side?: true
+    amountMinor?: true
+  }
+
+  export type PostedJournalLineCountAggregateInputType = {
+    id?: true
+    journalId?: true
+    accountId?: true
+    side?: true
+    amountMinor?: true
+    _all?: true
+  }
+
+  export type PostedJournalLineAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PostedJournalLine to aggregate.
+     */
+    where?: PostedJournalLineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostedJournalLines to fetch.
+     */
+    orderBy?: PostedJournalLineOrderByWithRelationInput | PostedJournalLineOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PostedJournalLineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostedJournalLines from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostedJournalLines.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PostedJournalLines
+    **/
+    _count?: true | PostedJournalLineCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PostedJournalLineAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PostedJournalLineSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PostedJournalLineMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PostedJournalLineMaxAggregateInputType
+  }
+
+  export type GetPostedJournalLineAggregateType<T extends PostedJournalLineAggregateArgs> = {
+        [P in keyof T & keyof AggregatePostedJournalLine]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePostedJournalLine[P]>
+      : GetScalarType<T[P], AggregatePostedJournalLine[P]>
+  }
+
+
+
+
+  export type PostedJournalLineGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PostedJournalLineWhereInput
+    orderBy?: PostedJournalLineOrderByWithAggregationInput | PostedJournalLineOrderByWithAggregationInput[]
+    by: PostedJournalLineScalarFieldEnum[] | PostedJournalLineScalarFieldEnum
+    having?: PostedJournalLineScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PostedJournalLineCountAggregateInputType | true
+    _avg?: PostedJournalLineAvgAggregateInputType
+    _sum?: PostedJournalLineSumAggregateInputType
+    _min?: PostedJournalLineMinAggregateInputType
+    _max?: PostedJournalLineMaxAggregateInputType
+  }
+
+  export type PostedJournalLineGroupByOutputType = {
+    id: string
+    journalId: string
+    accountId: string
+    side: string
+    amountMinor: bigint
+    _count: PostedJournalLineCountAggregateOutputType | null
+    _avg: PostedJournalLineAvgAggregateOutputType | null
+    _sum: PostedJournalLineSumAggregateOutputType | null
+    _min: PostedJournalLineMinAggregateOutputType | null
+    _max: PostedJournalLineMaxAggregateOutputType | null
+  }
+
+  type GetPostedJournalLineGroupByPayload<T extends PostedJournalLineGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PostedJournalLineGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PostedJournalLineGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PostedJournalLineGroupByOutputType[P]>
+            : GetScalarType<T[P], PostedJournalLineGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PostedJournalLineSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    journalId?: boolean
+    accountId?: boolean
+    side?: boolean
+    amountMinor?: boolean
+    journal?: boolean | PostedJournalDefaultArgs<ExtArgs>
+    account?: boolean | ChartAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["postedJournalLine"]>
+
+  export type PostedJournalLineSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    journalId?: boolean
+    accountId?: boolean
+    side?: boolean
+    amountMinor?: boolean
+    journal?: boolean | PostedJournalDefaultArgs<ExtArgs>
+    account?: boolean | ChartAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["postedJournalLine"]>
+
+  export type PostedJournalLineSelectScalar = {
+    id?: boolean
+    journalId?: boolean
+    accountId?: boolean
+    side?: boolean
+    amountMinor?: boolean
+  }
+
+  export type PostedJournalLineInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    journal?: boolean | PostedJournalDefaultArgs<ExtArgs>
+    account?: boolean | ChartAccountDefaultArgs<ExtArgs>
+  }
+  export type PostedJournalLineIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    journal?: boolean | PostedJournalDefaultArgs<ExtArgs>
+    account?: boolean | ChartAccountDefaultArgs<ExtArgs>
+  }
+
+  export type $PostedJournalLinePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PostedJournalLine"
+    objects: {
+      journal: Prisma.$PostedJournalPayload<ExtArgs>
+      account: Prisma.$ChartAccountPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      journalId: string
+      accountId: string
+      side: string
+      amountMinor: bigint
+    }, ExtArgs["result"]["postedJournalLine"]>
+    composites: {}
+  }
+
+  type PostedJournalLineGetPayload<S extends boolean | null | undefined | PostedJournalLineDefaultArgs> = $Result.GetResult<Prisma.$PostedJournalLinePayload, S>
+
+  type PostedJournalLineCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PostedJournalLineFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PostedJournalLineCountAggregateInputType | true
+    }
+
+  export interface PostedJournalLineDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PostedJournalLine'], meta: { name: 'PostedJournalLine' } }
+    /**
+     * Find zero or one PostedJournalLine that matches the filter.
+     * @param {PostedJournalLineFindUniqueArgs} args - Arguments to find a PostedJournalLine
+     * @example
+     * // Get one PostedJournalLine
+     * const postedJournalLine = await prisma.postedJournalLine.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PostedJournalLineFindUniqueArgs>(args: SelectSubset<T, PostedJournalLineFindUniqueArgs<ExtArgs>>): Prisma__PostedJournalLineClient<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PostedJournalLine that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PostedJournalLineFindUniqueOrThrowArgs} args - Arguments to find a PostedJournalLine
+     * @example
+     * // Get one PostedJournalLine
+     * const postedJournalLine = await prisma.postedJournalLine.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PostedJournalLineFindUniqueOrThrowArgs>(args: SelectSubset<T, PostedJournalLineFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PostedJournalLineClient<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PostedJournalLine that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalLineFindFirstArgs} args - Arguments to find a PostedJournalLine
+     * @example
+     * // Get one PostedJournalLine
+     * const postedJournalLine = await prisma.postedJournalLine.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PostedJournalLineFindFirstArgs>(args?: SelectSubset<T, PostedJournalLineFindFirstArgs<ExtArgs>>): Prisma__PostedJournalLineClient<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PostedJournalLine that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalLineFindFirstOrThrowArgs} args - Arguments to find a PostedJournalLine
+     * @example
+     * // Get one PostedJournalLine
+     * const postedJournalLine = await prisma.postedJournalLine.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PostedJournalLineFindFirstOrThrowArgs>(args?: SelectSubset<T, PostedJournalLineFindFirstOrThrowArgs<ExtArgs>>): Prisma__PostedJournalLineClient<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PostedJournalLines that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalLineFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PostedJournalLines
+     * const postedJournalLines = await prisma.postedJournalLine.findMany()
+     * 
+     * // Get first 10 PostedJournalLines
+     * const postedJournalLines = await prisma.postedJournalLine.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const postedJournalLineWithIdOnly = await prisma.postedJournalLine.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PostedJournalLineFindManyArgs>(args?: SelectSubset<T, PostedJournalLineFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PostedJournalLine.
+     * @param {PostedJournalLineCreateArgs} args - Arguments to create a PostedJournalLine.
+     * @example
+     * // Create one PostedJournalLine
+     * const PostedJournalLine = await prisma.postedJournalLine.create({
+     *   data: {
+     *     // ... data to create a PostedJournalLine
+     *   }
+     * })
+     * 
+     */
+    create<T extends PostedJournalLineCreateArgs>(args: SelectSubset<T, PostedJournalLineCreateArgs<ExtArgs>>): Prisma__PostedJournalLineClient<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PostedJournalLines.
+     * @param {PostedJournalLineCreateManyArgs} args - Arguments to create many PostedJournalLines.
+     * @example
+     * // Create many PostedJournalLines
+     * const postedJournalLine = await prisma.postedJournalLine.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PostedJournalLineCreateManyArgs>(args?: SelectSubset<T, PostedJournalLineCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PostedJournalLines and returns the data saved in the database.
+     * @param {PostedJournalLineCreateManyAndReturnArgs} args - Arguments to create many PostedJournalLines.
+     * @example
+     * // Create many PostedJournalLines
+     * const postedJournalLine = await prisma.postedJournalLine.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PostedJournalLines and only return the `id`
+     * const postedJournalLineWithIdOnly = await prisma.postedJournalLine.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PostedJournalLineCreateManyAndReturnArgs>(args?: SelectSubset<T, PostedJournalLineCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PostedJournalLine.
+     * @param {PostedJournalLineDeleteArgs} args - Arguments to delete one PostedJournalLine.
+     * @example
+     * // Delete one PostedJournalLine
+     * const PostedJournalLine = await prisma.postedJournalLine.delete({
+     *   where: {
+     *     // ... filter to delete one PostedJournalLine
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PostedJournalLineDeleteArgs>(args: SelectSubset<T, PostedJournalLineDeleteArgs<ExtArgs>>): Prisma__PostedJournalLineClient<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PostedJournalLine.
+     * @param {PostedJournalLineUpdateArgs} args - Arguments to update one PostedJournalLine.
+     * @example
+     * // Update one PostedJournalLine
+     * const postedJournalLine = await prisma.postedJournalLine.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PostedJournalLineUpdateArgs>(args: SelectSubset<T, PostedJournalLineUpdateArgs<ExtArgs>>): Prisma__PostedJournalLineClient<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PostedJournalLines.
+     * @param {PostedJournalLineDeleteManyArgs} args - Arguments to filter PostedJournalLines to delete.
+     * @example
+     * // Delete a few PostedJournalLines
+     * const { count } = await prisma.postedJournalLine.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PostedJournalLineDeleteManyArgs>(args?: SelectSubset<T, PostedJournalLineDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PostedJournalLines.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalLineUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PostedJournalLines
+     * const postedJournalLine = await prisma.postedJournalLine.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PostedJournalLineUpdateManyArgs>(args: SelectSubset<T, PostedJournalLineUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PostedJournalLine.
+     * @param {PostedJournalLineUpsertArgs} args - Arguments to update or create a PostedJournalLine.
+     * @example
+     * // Update or create a PostedJournalLine
+     * const postedJournalLine = await prisma.postedJournalLine.upsert({
+     *   create: {
+     *     // ... data to create a PostedJournalLine
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PostedJournalLine we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PostedJournalLineUpsertArgs>(args: SelectSubset<T, PostedJournalLineUpsertArgs<ExtArgs>>): Prisma__PostedJournalLineClient<$Result.GetResult<Prisma.$PostedJournalLinePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PostedJournalLines.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalLineCountArgs} args - Arguments to filter PostedJournalLines to count.
+     * @example
+     * // Count the number of PostedJournalLines
+     * const count = await prisma.postedJournalLine.count({
+     *   where: {
+     *     // ... the filter for the PostedJournalLines we want to count
+     *   }
+     * })
+    **/
+    count<T extends PostedJournalLineCountArgs>(
+      args?: Subset<T, PostedJournalLineCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PostedJournalLineCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PostedJournalLine.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalLineAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PostedJournalLineAggregateArgs>(args: Subset<T, PostedJournalLineAggregateArgs>): Prisma.PrismaPromise<GetPostedJournalLineAggregateType<T>>
+
+    /**
+     * Group by PostedJournalLine.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PostedJournalLineGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PostedJournalLineGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PostedJournalLineGroupByArgs['orderBy'] }
+        : { orderBy?: PostedJournalLineGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PostedJournalLineGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPostedJournalLineGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PostedJournalLine model
+   */
+  readonly fields: PostedJournalLineFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PostedJournalLine.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PostedJournalLineClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    journal<T extends PostedJournalDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PostedJournalDefaultArgs<ExtArgs>>): Prisma__PostedJournalClient<$Result.GetResult<Prisma.$PostedJournalPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    account<T extends ChartAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChartAccountDefaultArgs<ExtArgs>>): Prisma__ChartAccountClient<$Result.GetResult<Prisma.$ChartAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PostedJournalLine model
+   */ 
+  interface PostedJournalLineFieldRefs {
+    readonly id: FieldRef<"PostedJournalLine", 'String'>
+    readonly journalId: FieldRef<"PostedJournalLine", 'String'>
+    readonly accountId: FieldRef<"PostedJournalLine", 'String'>
+    readonly side: FieldRef<"PostedJournalLine", 'String'>
+    readonly amountMinor: FieldRef<"PostedJournalLine", 'BigInt'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PostedJournalLine findUnique
+   */
+  export type PostedJournalLineFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournalLine to fetch.
+     */
+    where: PostedJournalLineWhereUniqueInput
+  }
+
+  /**
+   * PostedJournalLine findUniqueOrThrow
+   */
+  export type PostedJournalLineFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournalLine to fetch.
+     */
+    where: PostedJournalLineWhereUniqueInput
+  }
+
+  /**
+   * PostedJournalLine findFirst
+   */
+  export type PostedJournalLineFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournalLine to fetch.
+     */
+    where?: PostedJournalLineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostedJournalLines to fetch.
+     */
+    orderBy?: PostedJournalLineOrderByWithRelationInput | PostedJournalLineOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PostedJournalLines.
+     */
+    cursor?: PostedJournalLineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostedJournalLines from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostedJournalLines.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PostedJournalLines.
+     */
+    distinct?: PostedJournalLineScalarFieldEnum | PostedJournalLineScalarFieldEnum[]
+  }
+
+  /**
+   * PostedJournalLine findFirstOrThrow
+   */
+  export type PostedJournalLineFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournalLine to fetch.
+     */
+    where?: PostedJournalLineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostedJournalLines to fetch.
+     */
+    orderBy?: PostedJournalLineOrderByWithRelationInput | PostedJournalLineOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PostedJournalLines.
+     */
+    cursor?: PostedJournalLineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostedJournalLines from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostedJournalLines.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PostedJournalLines.
+     */
+    distinct?: PostedJournalLineScalarFieldEnum | PostedJournalLineScalarFieldEnum[]
+  }
+
+  /**
+   * PostedJournalLine findMany
+   */
+  export type PostedJournalLineFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    /**
+     * Filter, which PostedJournalLines to fetch.
+     */
+    where?: PostedJournalLineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PostedJournalLines to fetch.
+     */
+    orderBy?: PostedJournalLineOrderByWithRelationInput | PostedJournalLineOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PostedJournalLines.
+     */
+    cursor?: PostedJournalLineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PostedJournalLines from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PostedJournalLines.
+     */
+    skip?: number
+    distinct?: PostedJournalLineScalarFieldEnum | PostedJournalLineScalarFieldEnum[]
+  }
+
+  /**
+   * PostedJournalLine create
+   */
+  export type PostedJournalLineCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PostedJournalLine.
+     */
+    data: XOR<PostedJournalLineCreateInput, PostedJournalLineUncheckedCreateInput>
+  }
+
+  /**
+   * PostedJournalLine createMany
+   */
+  export type PostedJournalLineCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PostedJournalLines.
+     */
+    data: PostedJournalLineCreateManyInput | PostedJournalLineCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PostedJournalLine createManyAndReturn
+   */
+  export type PostedJournalLineCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PostedJournalLines.
+     */
+    data: PostedJournalLineCreateManyInput | PostedJournalLineCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PostedJournalLine update
+   */
+  export type PostedJournalLineUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PostedJournalLine.
+     */
+    data: XOR<PostedJournalLineUpdateInput, PostedJournalLineUncheckedUpdateInput>
+    /**
+     * Choose, which PostedJournalLine to update.
+     */
+    where: PostedJournalLineWhereUniqueInput
+  }
+
+  /**
+   * PostedJournalLine updateMany
+   */
+  export type PostedJournalLineUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PostedJournalLines.
+     */
+    data: XOR<PostedJournalLineUpdateManyMutationInput, PostedJournalLineUncheckedUpdateManyInput>
+    /**
+     * Filter which PostedJournalLines to update
+     */
+    where?: PostedJournalLineWhereInput
+  }
+
+  /**
+   * PostedJournalLine upsert
+   */
+  export type PostedJournalLineUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PostedJournalLine to update in case it exists.
+     */
+    where: PostedJournalLineWhereUniqueInput
+    /**
+     * In case the PostedJournalLine found by the `where` argument doesn't exist, create a new PostedJournalLine with this data.
+     */
+    create: XOR<PostedJournalLineCreateInput, PostedJournalLineUncheckedCreateInput>
+    /**
+     * In case the PostedJournalLine was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PostedJournalLineUpdateInput, PostedJournalLineUncheckedUpdateInput>
+  }
+
+  /**
+   * PostedJournalLine delete
+   */
+  export type PostedJournalLineDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+    /**
+     * Filter which PostedJournalLine to delete.
+     */
+    where: PostedJournalLineWhereUniqueInput
+  }
+
+  /**
+   * PostedJournalLine deleteMany
+   */
+  export type PostedJournalLineDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PostedJournalLines to delete
+     */
+    where?: PostedJournalLineWhereInput
+  }
+
+  /**
+   * PostedJournalLine without action
+   */
+  export type PostedJournalLineDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PostedJournalLine
+     */
+    select?: PostedJournalLineSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PostedJournalLineInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Obligation
+   */
+
+  export type AggregateObligation = {
+    _count: ObligationCountAggregateOutputType | null
+    _avg: ObligationAvgAggregateOutputType | null
+    _sum: ObligationSumAggregateOutputType | null
+    _min: ObligationMinAggregateOutputType | null
+    _max: ObligationMaxAggregateOutputType | null
+  }
+
+  export type ObligationAvgAggregateOutputType = {
+    outstandingMinor: number | null
+  }
+
+  export type ObligationSumAggregateOutputType = {
+    outstandingMinor: bigint | null
+  }
+
+  export type ObligationMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    kind: string | null
+    partyName: string | null
+    outstandingMinor: bigint | null
+    financialTransactionId: string | null
+    status: string | null
+    createdAt: Date | null
+  }
+
+  export type ObligationMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    kind: string | null
+    partyName: string | null
+    outstandingMinor: bigint | null
+    financialTransactionId: string | null
+    status: string | null
+    createdAt: Date | null
+  }
+
+  export type ObligationCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    kind: number
+    partyName: number
+    outstandingMinor: number
+    financialTransactionId: number
+    status: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ObligationAvgAggregateInputType = {
+    outstandingMinor?: true
+  }
+
+  export type ObligationSumAggregateInputType = {
+    outstandingMinor?: true
+  }
+
+  export type ObligationMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    kind?: true
+    partyName?: true
+    outstandingMinor?: true
+    financialTransactionId?: true
+    status?: true
+    createdAt?: true
+  }
+
+  export type ObligationMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    kind?: true
+    partyName?: true
+    outstandingMinor?: true
+    financialTransactionId?: true
+    status?: true
+    createdAt?: true
+  }
+
+  export type ObligationCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    kind?: true
+    partyName?: true
+    outstandingMinor?: true
+    financialTransactionId?: true
+    status?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ObligationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Obligation to aggregate.
+     */
+    where?: ObligationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Obligations to fetch.
+     */
+    orderBy?: ObligationOrderByWithRelationInput | ObligationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ObligationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Obligations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Obligations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Obligations
+    **/
+    _count?: true | ObligationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ObligationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ObligationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ObligationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ObligationMaxAggregateInputType
+  }
+
+  export type GetObligationAggregateType<T extends ObligationAggregateArgs> = {
+        [P in keyof T & keyof AggregateObligation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateObligation[P]>
+      : GetScalarType<T[P], AggregateObligation[P]>
+  }
+
+
+
+
+  export type ObligationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ObligationWhereInput
+    orderBy?: ObligationOrderByWithAggregationInput | ObligationOrderByWithAggregationInput[]
+    by: ObligationScalarFieldEnum[] | ObligationScalarFieldEnum
+    having?: ObligationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ObligationCountAggregateInputType | true
+    _avg?: ObligationAvgAggregateInputType
+    _sum?: ObligationSumAggregateInputType
+    _min?: ObligationMinAggregateInputType
+    _max?: ObligationMaxAggregateInputType
+  }
+
+  export type ObligationGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    kind: string
+    partyName: string
+    outstandingMinor: bigint
+    financialTransactionId: string
+    status: string
+    createdAt: Date
+    _count: ObligationCountAggregateOutputType | null
+    _avg: ObligationAvgAggregateOutputType | null
+    _sum: ObligationSumAggregateOutputType | null
+    _min: ObligationMinAggregateOutputType | null
+    _max: ObligationMaxAggregateOutputType | null
+  }
+
+  type GetObligationGroupByPayload<T extends ObligationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ObligationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ObligationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ObligationGroupByOutputType[P]>
+            : GetScalarType<T[P], ObligationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ObligationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    kind?: boolean
+    partyName?: boolean
+    outstandingMinor?: boolean
+    financialTransactionId?: boolean
+    status?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["obligation"]>
+
+  export type ObligationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    kind?: boolean
+    partyName?: boolean
+    outstandingMinor?: boolean
+    financialTransactionId?: boolean
+    status?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["obligation"]>
+
+  export type ObligationSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    kind?: boolean
+    partyName?: boolean
+    outstandingMinor?: boolean
+    financialTransactionId?: boolean
+    status?: boolean
+    createdAt?: boolean
+  }
+
+
+  export type $ObligationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Obligation"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      kind: string
+      partyName: string
+      outstandingMinor: bigint
+      financialTransactionId: string
+      status: string
+      createdAt: Date
+    }, ExtArgs["result"]["obligation"]>
+    composites: {}
+  }
+
+  type ObligationGetPayload<S extends boolean | null | undefined | ObligationDefaultArgs> = $Result.GetResult<Prisma.$ObligationPayload, S>
+
+  type ObligationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ObligationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ObligationCountAggregateInputType | true
+    }
+
+  export interface ObligationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Obligation'], meta: { name: 'Obligation' } }
+    /**
+     * Find zero or one Obligation that matches the filter.
+     * @param {ObligationFindUniqueArgs} args - Arguments to find a Obligation
+     * @example
+     * // Get one Obligation
+     * const obligation = await prisma.obligation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ObligationFindUniqueArgs>(args: SelectSubset<T, ObligationFindUniqueArgs<ExtArgs>>): Prisma__ObligationClient<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Obligation that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ObligationFindUniqueOrThrowArgs} args - Arguments to find a Obligation
+     * @example
+     * // Get one Obligation
+     * const obligation = await prisma.obligation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ObligationFindUniqueOrThrowArgs>(args: SelectSubset<T, ObligationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ObligationClient<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Obligation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ObligationFindFirstArgs} args - Arguments to find a Obligation
+     * @example
+     * // Get one Obligation
+     * const obligation = await prisma.obligation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ObligationFindFirstArgs>(args?: SelectSubset<T, ObligationFindFirstArgs<ExtArgs>>): Prisma__ObligationClient<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Obligation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ObligationFindFirstOrThrowArgs} args - Arguments to find a Obligation
+     * @example
+     * // Get one Obligation
+     * const obligation = await prisma.obligation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ObligationFindFirstOrThrowArgs>(args?: SelectSubset<T, ObligationFindFirstOrThrowArgs<ExtArgs>>): Prisma__ObligationClient<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Obligations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ObligationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Obligations
+     * const obligations = await prisma.obligation.findMany()
+     * 
+     * // Get first 10 Obligations
+     * const obligations = await prisma.obligation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const obligationWithIdOnly = await prisma.obligation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ObligationFindManyArgs>(args?: SelectSubset<T, ObligationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Obligation.
+     * @param {ObligationCreateArgs} args - Arguments to create a Obligation.
+     * @example
+     * // Create one Obligation
+     * const Obligation = await prisma.obligation.create({
+     *   data: {
+     *     // ... data to create a Obligation
+     *   }
+     * })
+     * 
+     */
+    create<T extends ObligationCreateArgs>(args: SelectSubset<T, ObligationCreateArgs<ExtArgs>>): Prisma__ObligationClient<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Obligations.
+     * @param {ObligationCreateManyArgs} args - Arguments to create many Obligations.
+     * @example
+     * // Create many Obligations
+     * const obligation = await prisma.obligation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ObligationCreateManyArgs>(args?: SelectSubset<T, ObligationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Obligations and returns the data saved in the database.
+     * @param {ObligationCreateManyAndReturnArgs} args - Arguments to create many Obligations.
+     * @example
+     * // Create many Obligations
+     * const obligation = await prisma.obligation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Obligations and only return the `id`
+     * const obligationWithIdOnly = await prisma.obligation.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ObligationCreateManyAndReturnArgs>(args?: SelectSubset<T, ObligationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Obligation.
+     * @param {ObligationDeleteArgs} args - Arguments to delete one Obligation.
+     * @example
+     * // Delete one Obligation
+     * const Obligation = await prisma.obligation.delete({
+     *   where: {
+     *     // ... filter to delete one Obligation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ObligationDeleteArgs>(args: SelectSubset<T, ObligationDeleteArgs<ExtArgs>>): Prisma__ObligationClient<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Obligation.
+     * @param {ObligationUpdateArgs} args - Arguments to update one Obligation.
+     * @example
+     * // Update one Obligation
+     * const obligation = await prisma.obligation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ObligationUpdateArgs>(args: SelectSubset<T, ObligationUpdateArgs<ExtArgs>>): Prisma__ObligationClient<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Obligations.
+     * @param {ObligationDeleteManyArgs} args - Arguments to filter Obligations to delete.
+     * @example
+     * // Delete a few Obligations
+     * const { count } = await prisma.obligation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ObligationDeleteManyArgs>(args?: SelectSubset<T, ObligationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Obligations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ObligationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Obligations
+     * const obligation = await prisma.obligation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ObligationUpdateManyArgs>(args: SelectSubset<T, ObligationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Obligation.
+     * @param {ObligationUpsertArgs} args - Arguments to update or create a Obligation.
+     * @example
+     * // Update or create a Obligation
+     * const obligation = await prisma.obligation.upsert({
+     *   create: {
+     *     // ... data to create a Obligation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Obligation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ObligationUpsertArgs>(args: SelectSubset<T, ObligationUpsertArgs<ExtArgs>>): Prisma__ObligationClient<$Result.GetResult<Prisma.$ObligationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Obligations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ObligationCountArgs} args - Arguments to filter Obligations to count.
+     * @example
+     * // Count the number of Obligations
+     * const count = await prisma.obligation.count({
+     *   where: {
+     *     // ... the filter for the Obligations we want to count
+     *   }
+     * })
+    **/
+    count<T extends ObligationCountArgs>(
+      args?: Subset<T, ObligationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ObligationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Obligation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ObligationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ObligationAggregateArgs>(args: Subset<T, ObligationAggregateArgs>): Prisma.PrismaPromise<GetObligationAggregateType<T>>
+
+    /**
+     * Group by Obligation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ObligationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ObligationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ObligationGroupByArgs['orderBy'] }
+        : { orderBy?: ObligationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ObligationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetObligationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Obligation model
+   */
+  readonly fields: ObligationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Obligation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ObligationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Obligation model
+   */ 
+  interface ObligationFieldRefs {
+    readonly id: FieldRef<"Obligation", 'String'>
+    readonly tenantId: FieldRef<"Obligation", 'String'>
+    readonly shopId: FieldRef<"Obligation", 'String'>
+    readonly kind: FieldRef<"Obligation", 'String'>
+    readonly partyName: FieldRef<"Obligation", 'String'>
+    readonly outstandingMinor: FieldRef<"Obligation", 'BigInt'>
+    readonly financialTransactionId: FieldRef<"Obligation", 'String'>
+    readonly status: FieldRef<"Obligation", 'String'>
+    readonly createdAt: FieldRef<"Obligation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Obligation findUnique
+   */
+  export type ObligationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which Obligation to fetch.
+     */
+    where: ObligationWhereUniqueInput
+  }
+
+  /**
+   * Obligation findUniqueOrThrow
+   */
+  export type ObligationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which Obligation to fetch.
+     */
+    where: ObligationWhereUniqueInput
+  }
+
+  /**
+   * Obligation findFirst
+   */
+  export type ObligationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which Obligation to fetch.
+     */
+    where?: ObligationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Obligations to fetch.
+     */
+    orderBy?: ObligationOrderByWithRelationInput | ObligationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Obligations.
+     */
+    cursor?: ObligationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Obligations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Obligations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Obligations.
+     */
+    distinct?: ObligationScalarFieldEnum | ObligationScalarFieldEnum[]
+  }
+
+  /**
+   * Obligation findFirstOrThrow
+   */
+  export type ObligationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which Obligation to fetch.
+     */
+    where?: ObligationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Obligations to fetch.
+     */
+    orderBy?: ObligationOrderByWithRelationInput | ObligationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Obligations.
+     */
+    cursor?: ObligationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Obligations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Obligations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Obligations.
+     */
+    distinct?: ObligationScalarFieldEnum | ObligationScalarFieldEnum[]
+  }
+
+  /**
+   * Obligation findMany
+   */
+  export type ObligationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+    /**
+     * Filter, which Obligations to fetch.
+     */
+    where?: ObligationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Obligations to fetch.
+     */
+    orderBy?: ObligationOrderByWithRelationInput | ObligationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Obligations.
+     */
+    cursor?: ObligationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Obligations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Obligations.
+     */
+    skip?: number
+    distinct?: ObligationScalarFieldEnum | ObligationScalarFieldEnum[]
+  }
+
+  /**
+   * Obligation create
+   */
+  export type ObligationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+    /**
+     * The data needed to create a Obligation.
+     */
+    data: XOR<ObligationCreateInput, ObligationUncheckedCreateInput>
+  }
+
+  /**
+   * Obligation createMany
+   */
+  export type ObligationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Obligations.
+     */
+    data: ObligationCreateManyInput | ObligationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Obligation createManyAndReturn
+   */
+  export type ObligationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Obligations.
+     */
+    data: ObligationCreateManyInput | ObligationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Obligation update
+   */
+  export type ObligationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+    /**
+     * The data needed to update a Obligation.
+     */
+    data: XOR<ObligationUpdateInput, ObligationUncheckedUpdateInput>
+    /**
+     * Choose, which Obligation to update.
+     */
+    where: ObligationWhereUniqueInput
+  }
+
+  /**
+   * Obligation updateMany
+   */
+  export type ObligationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Obligations.
+     */
+    data: XOR<ObligationUpdateManyMutationInput, ObligationUncheckedUpdateManyInput>
+    /**
+     * Filter which Obligations to update
+     */
+    where?: ObligationWhereInput
+  }
+
+  /**
+   * Obligation upsert
+   */
+  export type ObligationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+    /**
+     * The filter to search for the Obligation to update in case it exists.
+     */
+    where: ObligationWhereUniqueInput
+    /**
+     * In case the Obligation found by the `where` argument doesn't exist, create a new Obligation with this data.
+     */
+    create: XOR<ObligationCreateInput, ObligationUncheckedCreateInput>
+    /**
+     * In case the Obligation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ObligationUpdateInput, ObligationUncheckedUpdateInput>
+  }
+
+  /**
+   * Obligation delete
+   */
+  export type ObligationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+    /**
+     * Filter which Obligation to delete.
+     */
+    where: ObligationWhereUniqueInput
+  }
+
+  /**
+   * Obligation deleteMany
+   */
+  export type ObligationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Obligations to delete
+     */
+    where?: ObligationWhereInput
+  }
+
+  /**
+   * Obligation without action
+   */
+  export type ObligationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Obligation
+     */
+    select?: ObligationSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ProfitAllocation
+   */
+
+  export type AggregateProfitAllocation = {
+    _count: ProfitAllocationCountAggregateOutputType | null
+    _avg: ProfitAllocationAvgAggregateOutputType | null
+    _sum: ProfitAllocationSumAggregateOutputType | null
+    _min: ProfitAllocationMinAggregateOutputType | null
+    _max: ProfitAllocationMaxAggregateOutputType | null
+  }
+
+  export type ProfitAllocationAvgAggregateOutputType = {
+    earnedMinor: number | null
+    transferredMinor: number | null
+  }
+
+  export type ProfitAllocationSumAggregateOutputType = {
+    earnedMinor: bigint | null
+    transferredMinor: bigint | null
+  }
+
+  export type ProfitAllocationMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    earnedMinor: bigint | null
+    transferredMinor: bigint | null
+    updatedAt: Date | null
+  }
+
+  export type ProfitAllocationMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    shopId: string | null
+    earnedMinor: bigint | null
+    transferredMinor: bigint | null
+    updatedAt: Date | null
+  }
+
+  export type ProfitAllocationCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    shopId: number
+    earnedMinor: number
+    transferredMinor: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ProfitAllocationAvgAggregateInputType = {
+    earnedMinor?: true
+    transferredMinor?: true
+  }
+
+  export type ProfitAllocationSumAggregateInputType = {
+    earnedMinor?: true
+    transferredMinor?: true
+  }
+
+  export type ProfitAllocationMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    earnedMinor?: true
+    transferredMinor?: true
+    updatedAt?: true
+  }
+
+  export type ProfitAllocationMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    earnedMinor?: true
+    transferredMinor?: true
+    updatedAt?: true
+  }
+
+  export type ProfitAllocationCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    shopId?: true
+    earnedMinor?: true
+    transferredMinor?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ProfitAllocationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProfitAllocation to aggregate.
+     */
+    where?: ProfitAllocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProfitAllocations to fetch.
+     */
+    orderBy?: ProfitAllocationOrderByWithRelationInput | ProfitAllocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProfitAllocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProfitAllocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProfitAllocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ProfitAllocations
+    **/
+    _count?: true | ProfitAllocationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ProfitAllocationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ProfitAllocationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProfitAllocationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProfitAllocationMaxAggregateInputType
+  }
+
+  export type GetProfitAllocationAggregateType<T extends ProfitAllocationAggregateArgs> = {
+        [P in keyof T & keyof AggregateProfitAllocation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProfitAllocation[P]>
+      : GetScalarType<T[P], AggregateProfitAllocation[P]>
+  }
+
+
+
+
+  export type ProfitAllocationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProfitAllocationWhereInput
+    orderBy?: ProfitAllocationOrderByWithAggregationInput | ProfitAllocationOrderByWithAggregationInput[]
+    by: ProfitAllocationScalarFieldEnum[] | ProfitAllocationScalarFieldEnum
+    having?: ProfitAllocationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProfitAllocationCountAggregateInputType | true
+    _avg?: ProfitAllocationAvgAggregateInputType
+    _sum?: ProfitAllocationSumAggregateInputType
+    _min?: ProfitAllocationMinAggregateInputType
+    _max?: ProfitAllocationMaxAggregateInputType
+  }
+
+  export type ProfitAllocationGroupByOutputType = {
+    id: string
+    tenantId: string
+    shopId: string
+    earnedMinor: bigint
+    transferredMinor: bigint
+    updatedAt: Date
+    _count: ProfitAllocationCountAggregateOutputType | null
+    _avg: ProfitAllocationAvgAggregateOutputType | null
+    _sum: ProfitAllocationSumAggregateOutputType | null
+    _min: ProfitAllocationMinAggregateOutputType | null
+    _max: ProfitAllocationMaxAggregateOutputType | null
+  }
+
+  type GetProfitAllocationGroupByPayload<T extends ProfitAllocationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProfitAllocationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProfitAllocationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProfitAllocationGroupByOutputType[P]>
+            : GetScalarType<T[P], ProfitAllocationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProfitAllocationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    earnedMinor?: boolean
+    transferredMinor?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["profitAllocation"]>
+
+  export type ProfitAllocationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    earnedMinor?: boolean
+    transferredMinor?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["profitAllocation"]>
+
+  export type ProfitAllocationSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    shopId?: boolean
+    earnedMinor?: boolean
+    transferredMinor?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $ProfitAllocationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProfitAllocation"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      shopId: string
+      earnedMinor: bigint
+      transferredMinor: bigint
+      updatedAt: Date
+    }, ExtArgs["result"]["profitAllocation"]>
+    composites: {}
+  }
+
+  type ProfitAllocationGetPayload<S extends boolean | null | undefined | ProfitAllocationDefaultArgs> = $Result.GetResult<Prisma.$ProfitAllocationPayload, S>
+
+  type ProfitAllocationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ProfitAllocationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ProfitAllocationCountAggregateInputType | true
+    }
+
+  export interface ProfitAllocationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProfitAllocation'], meta: { name: 'ProfitAllocation' } }
+    /**
+     * Find zero or one ProfitAllocation that matches the filter.
+     * @param {ProfitAllocationFindUniqueArgs} args - Arguments to find a ProfitAllocation
+     * @example
+     * // Get one ProfitAllocation
+     * const profitAllocation = await prisma.profitAllocation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProfitAllocationFindUniqueArgs>(args: SelectSubset<T, ProfitAllocationFindUniqueArgs<ExtArgs>>): Prisma__ProfitAllocationClient<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ProfitAllocation that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ProfitAllocationFindUniqueOrThrowArgs} args - Arguments to find a ProfitAllocation
+     * @example
+     * // Get one ProfitAllocation
+     * const profitAllocation = await prisma.profitAllocation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProfitAllocationFindUniqueOrThrowArgs>(args: SelectSubset<T, ProfitAllocationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProfitAllocationClient<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ProfitAllocation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfitAllocationFindFirstArgs} args - Arguments to find a ProfitAllocation
+     * @example
+     * // Get one ProfitAllocation
+     * const profitAllocation = await prisma.profitAllocation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProfitAllocationFindFirstArgs>(args?: SelectSubset<T, ProfitAllocationFindFirstArgs<ExtArgs>>): Prisma__ProfitAllocationClient<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ProfitAllocation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfitAllocationFindFirstOrThrowArgs} args - Arguments to find a ProfitAllocation
+     * @example
+     * // Get one ProfitAllocation
+     * const profitAllocation = await prisma.profitAllocation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProfitAllocationFindFirstOrThrowArgs>(args?: SelectSubset<T, ProfitAllocationFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProfitAllocationClient<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ProfitAllocations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfitAllocationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ProfitAllocations
+     * const profitAllocations = await prisma.profitAllocation.findMany()
+     * 
+     * // Get first 10 ProfitAllocations
+     * const profitAllocations = await prisma.profitAllocation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const profitAllocationWithIdOnly = await prisma.profitAllocation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProfitAllocationFindManyArgs>(args?: SelectSubset<T, ProfitAllocationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ProfitAllocation.
+     * @param {ProfitAllocationCreateArgs} args - Arguments to create a ProfitAllocation.
+     * @example
+     * // Create one ProfitAllocation
+     * const ProfitAllocation = await prisma.profitAllocation.create({
+     *   data: {
+     *     // ... data to create a ProfitAllocation
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProfitAllocationCreateArgs>(args: SelectSubset<T, ProfitAllocationCreateArgs<ExtArgs>>): Prisma__ProfitAllocationClient<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ProfitAllocations.
+     * @param {ProfitAllocationCreateManyArgs} args - Arguments to create many ProfitAllocations.
+     * @example
+     * // Create many ProfitAllocations
+     * const profitAllocation = await prisma.profitAllocation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProfitAllocationCreateManyArgs>(args?: SelectSubset<T, ProfitAllocationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ProfitAllocations and returns the data saved in the database.
+     * @param {ProfitAllocationCreateManyAndReturnArgs} args - Arguments to create many ProfitAllocations.
+     * @example
+     * // Create many ProfitAllocations
+     * const profitAllocation = await prisma.profitAllocation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ProfitAllocations and only return the `id`
+     * const profitAllocationWithIdOnly = await prisma.profitAllocation.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ProfitAllocationCreateManyAndReturnArgs>(args?: SelectSubset<T, ProfitAllocationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ProfitAllocation.
+     * @param {ProfitAllocationDeleteArgs} args - Arguments to delete one ProfitAllocation.
+     * @example
+     * // Delete one ProfitAllocation
+     * const ProfitAllocation = await prisma.profitAllocation.delete({
+     *   where: {
+     *     // ... filter to delete one ProfitAllocation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProfitAllocationDeleteArgs>(args: SelectSubset<T, ProfitAllocationDeleteArgs<ExtArgs>>): Prisma__ProfitAllocationClient<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ProfitAllocation.
+     * @param {ProfitAllocationUpdateArgs} args - Arguments to update one ProfitAllocation.
+     * @example
+     * // Update one ProfitAllocation
+     * const profitAllocation = await prisma.profitAllocation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProfitAllocationUpdateArgs>(args: SelectSubset<T, ProfitAllocationUpdateArgs<ExtArgs>>): Prisma__ProfitAllocationClient<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ProfitAllocations.
+     * @param {ProfitAllocationDeleteManyArgs} args - Arguments to filter ProfitAllocations to delete.
+     * @example
+     * // Delete a few ProfitAllocations
+     * const { count } = await prisma.profitAllocation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProfitAllocationDeleteManyArgs>(args?: SelectSubset<T, ProfitAllocationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProfitAllocations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfitAllocationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ProfitAllocations
+     * const profitAllocation = await prisma.profitAllocation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProfitAllocationUpdateManyArgs>(args: SelectSubset<T, ProfitAllocationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ProfitAllocation.
+     * @param {ProfitAllocationUpsertArgs} args - Arguments to update or create a ProfitAllocation.
+     * @example
+     * // Update or create a ProfitAllocation
+     * const profitAllocation = await prisma.profitAllocation.upsert({
+     *   create: {
+     *     // ... data to create a ProfitAllocation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ProfitAllocation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProfitAllocationUpsertArgs>(args: SelectSubset<T, ProfitAllocationUpsertArgs<ExtArgs>>): Prisma__ProfitAllocationClient<$Result.GetResult<Prisma.$ProfitAllocationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ProfitAllocations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfitAllocationCountArgs} args - Arguments to filter ProfitAllocations to count.
+     * @example
+     * // Count the number of ProfitAllocations
+     * const count = await prisma.profitAllocation.count({
+     *   where: {
+     *     // ... the filter for the ProfitAllocations we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProfitAllocationCountArgs>(
+      args?: Subset<T, ProfitAllocationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProfitAllocationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ProfitAllocation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfitAllocationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProfitAllocationAggregateArgs>(args: Subset<T, ProfitAllocationAggregateArgs>): Prisma.PrismaPromise<GetProfitAllocationAggregateType<T>>
+
+    /**
+     * Group by ProfitAllocation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProfitAllocationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProfitAllocationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProfitAllocationGroupByArgs['orderBy'] }
+        : { orderBy?: ProfitAllocationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProfitAllocationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProfitAllocationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ProfitAllocation model
+   */
+  readonly fields: ProfitAllocationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ProfitAllocation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProfitAllocationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ProfitAllocation model
+   */ 
+  interface ProfitAllocationFieldRefs {
+    readonly id: FieldRef<"ProfitAllocation", 'String'>
+    readonly tenantId: FieldRef<"ProfitAllocation", 'String'>
+    readonly shopId: FieldRef<"ProfitAllocation", 'String'>
+    readonly earnedMinor: FieldRef<"ProfitAllocation", 'BigInt'>
+    readonly transferredMinor: FieldRef<"ProfitAllocation", 'BigInt'>
+    readonly updatedAt: FieldRef<"ProfitAllocation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ProfitAllocation findUnique
+   */
+  export type ProfitAllocationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+    /**
+     * Filter, which ProfitAllocation to fetch.
+     */
+    where: ProfitAllocationWhereUniqueInput
+  }
+
+  /**
+   * ProfitAllocation findUniqueOrThrow
+   */
+  export type ProfitAllocationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+    /**
+     * Filter, which ProfitAllocation to fetch.
+     */
+    where: ProfitAllocationWhereUniqueInput
+  }
+
+  /**
+   * ProfitAllocation findFirst
+   */
+  export type ProfitAllocationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+    /**
+     * Filter, which ProfitAllocation to fetch.
+     */
+    where?: ProfitAllocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProfitAllocations to fetch.
+     */
+    orderBy?: ProfitAllocationOrderByWithRelationInput | ProfitAllocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProfitAllocations.
+     */
+    cursor?: ProfitAllocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProfitAllocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProfitAllocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProfitAllocations.
+     */
+    distinct?: ProfitAllocationScalarFieldEnum | ProfitAllocationScalarFieldEnum[]
+  }
+
+  /**
+   * ProfitAllocation findFirstOrThrow
+   */
+  export type ProfitAllocationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+    /**
+     * Filter, which ProfitAllocation to fetch.
+     */
+    where?: ProfitAllocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProfitAllocations to fetch.
+     */
+    orderBy?: ProfitAllocationOrderByWithRelationInput | ProfitAllocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProfitAllocations.
+     */
+    cursor?: ProfitAllocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProfitAllocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProfitAllocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProfitAllocations.
+     */
+    distinct?: ProfitAllocationScalarFieldEnum | ProfitAllocationScalarFieldEnum[]
+  }
+
+  /**
+   * ProfitAllocation findMany
+   */
+  export type ProfitAllocationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+    /**
+     * Filter, which ProfitAllocations to fetch.
+     */
+    where?: ProfitAllocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProfitAllocations to fetch.
+     */
+    orderBy?: ProfitAllocationOrderByWithRelationInput | ProfitAllocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ProfitAllocations.
+     */
+    cursor?: ProfitAllocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProfitAllocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProfitAllocations.
+     */
+    skip?: number
+    distinct?: ProfitAllocationScalarFieldEnum | ProfitAllocationScalarFieldEnum[]
+  }
+
+  /**
+   * ProfitAllocation create
+   */
+  export type ProfitAllocationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+    /**
+     * The data needed to create a ProfitAllocation.
+     */
+    data: XOR<ProfitAllocationCreateInput, ProfitAllocationUncheckedCreateInput>
+  }
+
+  /**
+   * ProfitAllocation createMany
+   */
+  export type ProfitAllocationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ProfitAllocations.
+     */
+    data: ProfitAllocationCreateManyInput | ProfitAllocationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProfitAllocation createManyAndReturn
+   */
+  export type ProfitAllocationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ProfitAllocations.
+     */
+    data: ProfitAllocationCreateManyInput | ProfitAllocationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProfitAllocation update
+   */
+  export type ProfitAllocationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+    /**
+     * The data needed to update a ProfitAllocation.
+     */
+    data: XOR<ProfitAllocationUpdateInput, ProfitAllocationUncheckedUpdateInput>
+    /**
+     * Choose, which ProfitAllocation to update.
+     */
+    where: ProfitAllocationWhereUniqueInput
+  }
+
+  /**
+   * ProfitAllocation updateMany
+   */
+  export type ProfitAllocationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ProfitAllocations.
+     */
+    data: XOR<ProfitAllocationUpdateManyMutationInput, ProfitAllocationUncheckedUpdateManyInput>
+    /**
+     * Filter which ProfitAllocations to update
+     */
+    where?: ProfitAllocationWhereInput
+  }
+
+  /**
+   * ProfitAllocation upsert
+   */
+  export type ProfitAllocationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+    /**
+     * The filter to search for the ProfitAllocation to update in case it exists.
+     */
+    where: ProfitAllocationWhereUniqueInput
+    /**
+     * In case the ProfitAllocation found by the `where` argument doesn't exist, create a new ProfitAllocation with this data.
+     */
+    create: XOR<ProfitAllocationCreateInput, ProfitAllocationUncheckedCreateInput>
+    /**
+     * In case the ProfitAllocation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProfitAllocationUpdateInput, ProfitAllocationUncheckedUpdateInput>
+  }
+
+  /**
+   * ProfitAllocation delete
+   */
+  export type ProfitAllocationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+    /**
+     * Filter which ProfitAllocation to delete.
+     */
+    where: ProfitAllocationWhereUniqueInput
+  }
+
+  /**
+   * ProfitAllocation deleteMany
+   */
+  export type ProfitAllocationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProfitAllocations to delete
+     */
+    where?: ProfitAllocationWhereInput
+  }
+
+  /**
+   * ProfitAllocation without action
+   */
+  export type ProfitAllocationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProfitAllocation
+     */
+    select?: ProfitAllocationSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -7896,12 +14417,114 @@ export namespace Prisma {
   export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
+  export const FinancialTransactionScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    type: 'type',
+    occurredOn: 'occurredOn',
+    occurredAt: 'occurredAt',
+    actorUserId: 'actorUserId',
+    sourceDomain: 'sourceDomain',
+    sourceCommand: 'sourceCommand',
+    sourceId: 'sourceId',
+    idempotencyKey: 'idempotencyKey',
+    amountMinor: 'amountMinor',
+    currency: 'currency',
+    description: 'description',
+    reason: 'reason',
+    originalTransactionId: 'originalTransactionId',
+    status: 'status',
+    metadata: 'metadata',
+    createdAt: 'createdAt',
+    createdBy: 'createdBy',
+    updatedAt: 'updatedAt'
+  };
+
+  export type FinancialTransactionScalarFieldEnum = (typeof FinancialTransactionScalarFieldEnum)[keyof typeof FinancialTransactionScalarFieldEnum]
+
+
+  export const ChartAccountScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    code: 'code',
+    name: 'name',
+    type: 'type',
+    fundCode: 'fundCode',
+    createdAt: 'createdAt'
+  };
+
+  export type ChartAccountScalarFieldEnum = (typeof ChartAccountScalarFieldEnum)[keyof typeof ChartAccountScalarFieldEnum]
+
+
+  export const PostedJournalScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    financialTransactionId: 'financialTransactionId',
+    description: 'description',
+    status: 'status',
+    postedBy: 'postedBy',
+    occurredOn: 'occurredOn',
+    createdAt: 'createdAt'
+  };
+
+  export type PostedJournalScalarFieldEnum = (typeof PostedJournalScalarFieldEnum)[keyof typeof PostedJournalScalarFieldEnum]
+
+
+  export const PostedJournalLineScalarFieldEnum: {
+    id: 'id',
+    journalId: 'journalId',
+    accountId: 'accountId',
+    side: 'side',
+    amountMinor: 'amountMinor'
+  };
+
+  export type PostedJournalLineScalarFieldEnum = (typeof PostedJournalLineScalarFieldEnum)[keyof typeof PostedJournalLineScalarFieldEnum]
+
+
+  export const ObligationScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    kind: 'kind',
+    partyName: 'partyName',
+    outstandingMinor: 'outstandingMinor',
+    financialTransactionId: 'financialTransactionId',
+    status: 'status',
+    createdAt: 'createdAt'
+  };
+
+  export type ObligationScalarFieldEnum = (typeof ObligationScalarFieldEnum)[keyof typeof ObligationScalarFieldEnum]
+
+
+  export const ProfitAllocationScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    shopId: 'shopId',
+    earnedMinor: 'earnedMinor',
+    transferredMinor: 'transferredMinor',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ProfitAllocationScalarFieldEnum = (typeof ProfitAllocationScalarFieldEnum)[keyof typeof ProfitAllocationScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
   export const QueryMode: {
@@ -7918,6 +14541,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -7978,6 +14610,27 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt'
+   */
+  export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt[]'
+   */
+  export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
     
   /**
    * Deep Input Types
@@ -8573,6 +15226,481 @@ export namespace Prisma {
     traceId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     details?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+  }
+
+  export type FinancialTransactionWhereInput = {
+    AND?: FinancialTransactionWhereInput | FinancialTransactionWhereInput[]
+    OR?: FinancialTransactionWhereInput[]
+    NOT?: FinancialTransactionWhereInput | FinancialTransactionWhereInput[]
+    id?: StringFilter<"FinancialTransaction"> | string
+    tenantId?: StringFilter<"FinancialTransaction"> | string
+    shopId?: StringFilter<"FinancialTransaction"> | string
+    type?: StringFilter<"FinancialTransaction"> | string
+    occurredOn?: DateTimeFilter<"FinancialTransaction"> | Date | string
+    occurredAt?: DateTimeFilter<"FinancialTransaction"> | Date | string
+    actorUserId?: StringNullableFilter<"FinancialTransaction"> | string | null
+    sourceDomain?: StringFilter<"FinancialTransaction"> | string
+    sourceCommand?: StringFilter<"FinancialTransaction"> | string
+    sourceId?: StringFilter<"FinancialTransaction"> | string
+    idempotencyKey?: StringFilter<"FinancialTransaction"> | string
+    amountMinor?: BigIntFilter<"FinancialTransaction"> | bigint | number
+    currency?: StringFilter<"FinancialTransaction"> | string
+    description?: StringNullableFilter<"FinancialTransaction"> | string | null
+    reason?: StringNullableFilter<"FinancialTransaction"> | string | null
+    originalTransactionId?: StringNullableFilter<"FinancialTransaction"> | string | null
+    status?: StringFilter<"FinancialTransaction"> | string
+    metadata?: JsonNullableFilter<"FinancialTransaction">
+    createdAt?: DateTimeFilter<"FinancialTransaction"> | Date | string
+    createdBy?: StringNullableFilter<"FinancialTransaction"> | string | null
+    updatedAt?: DateTimeFilter<"FinancialTransaction"> | Date | string
+  }
+
+  export type FinancialTransactionOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    type?: SortOrder
+    occurredOn?: SortOrder
+    occurredAt?: SortOrder
+    actorUserId?: SortOrderInput | SortOrder
+    sourceDomain?: SortOrder
+    sourceCommand?: SortOrder
+    sourceId?: SortOrder
+    idempotencyKey?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    description?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    originalTransactionId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FinancialTransactionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_idempotencyKey?: FinancialTransactionTenantIdIdempotencyKeyCompoundUniqueInput
+    AND?: FinancialTransactionWhereInput | FinancialTransactionWhereInput[]
+    OR?: FinancialTransactionWhereInput[]
+    NOT?: FinancialTransactionWhereInput | FinancialTransactionWhereInput[]
+    tenantId?: StringFilter<"FinancialTransaction"> | string
+    shopId?: StringFilter<"FinancialTransaction"> | string
+    type?: StringFilter<"FinancialTransaction"> | string
+    occurredOn?: DateTimeFilter<"FinancialTransaction"> | Date | string
+    occurredAt?: DateTimeFilter<"FinancialTransaction"> | Date | string
+    actorUserId?: StringNullableFilter<"FinancialTransaction"> | string | null
+    sourceDomain?: StringFilter<"FinancialTransaction"> | string
+    sourceCommand?: StringFilter<"FinancialTransaction"> | string
+    sourceId?: StringFilter<"FinancialTransaction"> | string
+    idempotencyKey?: StringFilter<"FinancialTransaction"> | string
+    amountMinor?: BigIntFilter<"FinancialTransaction"> | bigint | number
+    currency?: StringFilter<"FinancialTransaction"> | string
+    description?: StringNullableFilter<"FinancialTransaction"> | string | null
+    reason?: StringNullableFilter<"FinancialTransaction"> | string | null
+    originalTransactionId?: StringNullableFilter<"FinancialTransaction"> | string | null
+    status?: StringFilter<"FinancialTransaction"> | string
+    metadata?: JsonNullableFilter<"FinancialTransaction">
+    createdAt?: DateTimeFilter<"FinancialTransaction"> | Date | string
+    createdBy?: StringNullableFilter<"FinancialTransaction"> | string | null
+    updatedAt?: DateTimeFilter<"FinancialTransaction"> | Date | string
+  }, "id" | "tenantId_idempotencyKey">
+
+  export type FinancialTransactionOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    type?: SortOrder
+    occurredOn?: SortOrder
+    occurredAt?: SortOrder
+    actorUserId?: SortOrderInput | SortOrder
+    sourceDomain?: SortOrder
+    sourceCommand?: SortOrder
+    sourceId?: SortOrder
+    idempotencyKey?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    description?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    originalTransactionId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    _count?: FinancialTransactionCountOrderByAggregateInput
+    _avg?: FinancialTransactionAvgOrderByAggregateInput
+    _max?: FinancialTransactionMaxOrderByAggregateInput
+    _min?: FinancialTransactionMinOrderByAggregateInput
+    _sum?: FinancialTransactionSumOrderByAggregateInput
+  }
+
+  export type FinancialTransactionScalarWhereWithAggregatesInput = {
+    AND?: FinancialTransactionScalarWhereWithAggregatesInput | FinancialTransactionScalarWhereWithAggregatesInput[]
+    OR?: FinancialTransactionScalarWhereWithAggregatesInput[]
+    NOT?: FinancialTransactionScalarWhereWithAggregatesInput | FinancialTransactionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    tenantId?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    shopId?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    type?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    occurredOn?: DateTimeWithAggregatesFilter<"FinancialTransaction"> | Date | string
+    occurredAt?: DateTimeWithAggregatesFilter<"FinancialTransaction"> | Date | string
+    actorUserId?: StringNullableWithAggregatesFilter<"FinancialTransaction"> | string | null
+    sourceDomain?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    sourceCommand?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    sourceId?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    idempotencyKey?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    amountMinor?: BigIntWithAggregatesFilter<"FinancialTransaction"> | bigint | number
+    currency?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    description?: StringNullableWithAggregatesFilter<"FinancialTransaction"> | string | null
+    reason?: StringNullableWithAggregatesFilter<"FinancialTransaction"> | string | null
+    originalTransactionId?: StringNullableWithAggregatesFilter<"FinancialTransaction"> | string | null
+    status?: StringWithAggregatesFilter<"FinancialTransaction"> | string
+    metadata?: JsonNullableWithAggregatesFilter<"FinancialTransaction">
+    createdAt?: DateTimeWithAggregatesFilter<"FinancialTransaction"> | Date | string
+    createdBy?: StringNullableWithAggregatesFilter<"FinancialTransaction"> | string | null
+    updatedAt?: DateTimeWithAggregatesFilter<"FinancialTransaction"> | Date | string
+  }
+
+  export type ChartAccountWhereInput = {
+    AND?: ChartAccountWhereInput | ChartAccountWhereInput[]
+    OR?: ChartAccountWhereInput[]
+    NOT?: ChartAccountWhereInput | ChartAccountWhereInput[]
+    id?: StringFilter<"ChartAccount"> | string
+    tenantId?: StringFilter<"ChartAccount"> | string
+    shopId?: StringFilter<"ChartAccount"> | string
+    code?: StringFilter<"ChartAccount"> | string
+    name?: StringFilter<"ChartAccount"> | string
+    type?: StringFilter<"ChartAccount"> | string
+    fundCode?: StringNullableFilter<"ChartAccount"> | string | null
+    createdAt?: DateTimeFilter<"ChartAccount"> | Date | string
+    lines?: PostedJournalLineListRelationFilter
+  }
+
+  export type ChartAccountOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    fundCode?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    lines?: PostedJournalLineOrderByRelationAggregateInput
+  }
+
+  export type ChartAccountWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_shopId_code?: ChartAccountTenantIdShopIdCodeCompoundUniqueInput
+    AND?: ChartAccountWhereInput | ChartAccountWhereInput[]
+    OR?: ChartAccountWhereInput[]
+    NOT?: ChartAccountWhereInput | ChartAccountWhereInput[]
+    tenantId?: StringFilter<"ChartAccount"> | string
+    shopId?: StringFilter<"ChartAccount"> | string
+    code?: StringFilter<"ChartAccount"> | string
+    name?: StringFilter<"ChartAccount"> | string
+    type?: StringFilter<"ChartAccount"> | string
+    fundCode?: StringNullableFilter<"ChartAccount"> | string | null
+    createdAt?: DateTimeFilter<"ChartAccount"> | Date | string
+    lines?: PostedJournalLineListRelationFilter
+  }, "id" | "tenantId_shopId_code">
+
+  export type ChartAccountOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    fundCode?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: ChartAccountCountOrderByAggregateInput
+    _max?: ChartAccountMaxOrderByAggregateInput
+    _min?: ChartAccountMinOrderByAggregateInput
+  }
+
+  export type ChartAccountScalarWhereWithAggregatesInput = {
+    AND?: ChartAccountScalarWhereWithAggregatesInput | ChartAccountScalarWhereWithAggregatesInput[]
+    OR?: ChartAccountScalarWhereWithAggregatesInput[]
+    NOT?: ChartAccountScalarWhereWithAggregatesInput | ChartAccountScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ChartAccount"> | string
+    tenantId?: StringWithAggregatesFilter<"ChartAccount"> | string
+    shopId?: StringWithAggregatesFilter<"ChartAccount"> | string
+    code?: StringWithAggregatesFilter<"ChartAccount"> | string
+    name?: StringWithAggregatesFilter<"ChartAccount"> | string
+    type?: StringWithAggregatesFilter<"ChartAccount"> | string
+    fundCode?: StringNullableWithAggregatesFilter<"ChartAccount"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ChartAccount"> | Date | string
+  }
+
+  export type PostedJournalWhereInput = {
+    AND?: PostedJournalWhereInput | PostedJournalWhereInput[]
+    OR?: PostedJournalWhereInput[]
+    NOT?: PostedJournalWhereInput | PostedJournalWhereInput[]
+    id?: StringFilter<"PostedJournal"> | string
+    tenantId?: StringFilter<"PostedJournal"> | string
+    shopId?: StringFilter<"PostedJournal"> | string
+    financialTransactionId?: StringFilter<"PostedJournal"> | string
+    description?: StringFilter<"PostedJournal"> | string
+    status?: StringFilter<"PostedJournal"> | string
+    postedBy?: StringFilter<"PostedJournal"> | string
+    occurredOn?: DateTimeFilter<"PostedJournal"> | Date | string
+    createdAt?: DateTimeFilter<"PostedJournal"> | Date | string
+    lines?: PostedJournalLineListRelationFilter
+  }
+
+  export type PostedJournalOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    financialTransactionId?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    postedBy?: SortOrder
+    occurredOn?: SortOrder
+    createdAt?: SortOrder
+    lines?: PostedJournalLineOrderByRelationAggregateInput
+  }
+
+  export type PostedJournalWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    financialTransactionId?: string
+    AND?: PostedJournalWhereInput | PostedJournalWhereInput[]
+    OR?: PostedJournalWhereInput[]
+    NOT?: PostedJournalWhereInput | PostedJournalWhereInput[]
+    tenantId?: StringFilter<"PostedJournal"> | string
+    shopId?: StringFilter<"PostedJournal"> | string
+    description?: StringFilter<"PostedJournal"> | string
+    status?: StringFilter<"PostedJournal"> | string
+    postedBy?: StringFilter<"PostedJournal"> | string
+    occurredOn?: DateTimeFilter<"PostedJournal"> | Date | string
+    createdAt?: DateTimeFilter<"PostedJournal"> | Date | string
+    lines?: PostedJournalLineListRelationFilter
+  }, "id" | "financialTransactionId">
+
+  export type PostedJournalOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    financialTransactionId?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    postedBy?: SortOrder
+    occurredOn?: SortOrder
+    createdAt?: SortOrder
+    _count?: PostedJournalCountOrderByAggregateInput
+    _max?: PostedJournalMaxOrderByAggregateInput
+    _min?: PostedJournalMinOrderByAggregateInput
+  }
+
+  export type PostedJournalScalarWhereWithAggregatesInput = {
+    AND?: PostedJournalScalarWhereWithAggregatesInput | PostedJournalScalarWhereWithAggregatesInput[]
+    OR?: PostedJournalScalarWhereWithAggregatesInput[]
+    NOT?: PostedJournalScalarWhereWithAggregatesInput | PostedJournalScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PostedJournal"> | string
+    tenantId?: StringWithAggregatesFilter<"PostedJournal"> | string
+    shopId?: StringWithAggregatesFilter<"PostedJournal"> | string
+    financialTransactionId?: StringWithAggregatesFilter<"PostedJournal"> | string
+    description?: StringWithAggregatesFilter<"PostedJournal"> | string
+    status?: StringWithAggregatesFilter<"PostedJournal"> | string
+    postedBy?: StringWithAggregatesFilter<"PostedJournal"> | string
+    occurredOn?: DateTimeWithAggregatesFilter<"PostedJournal"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"PostedJournal"> | Date | string
+  }
+
+  export type PostedJournalLineWhereInput = {
+    AND?: PostedJournalLineWhereInput | PostedJournalLineWhereInput[]
+    OR?: PostedJournalLineWhereInput[]
+    NOT?: PostedJournalLineWhereInput | PostedJournalLineWhereInput[]
+    id?: StringFilter<"PostedJournalLine"> | string
+    journalId?: StringFilter<"PostedJournalLine"> | string
+    accountId?: StringFilter<"PostedJournalLine"> | string
+    side?: StringFilter<"PostedJournalLine"> | string
+    amountMinor?: BigIntFilter<"PostedJournalLine"> | bigint | number
+    journal?: XOR<PostedJournalRelationFilter, PostedJournalWhereInput>
+    account?: XOR<ChartAccountRelationFilter, ChartAccountWhereInput>
+  }
+
+  export type PostedJournalLineOrderByWithRelationInput = {
+    id?: SortOrder
+    journalId?: SortOrder
+    accountId?: SortOrder
+    side?: SortOrder
+    amountMinor?: SortOrder
+    journal?: PostedJournalOrderByWithRelationInput
+    account?: ChartAccountOrderByWithRelationInput
+  }
+
+  export type PostedJournalLineWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PostedJournalLineWhereInput | PostedJournalLineWhereInput[]
+    OR?: PostedJournalLineWhereInput[]
+    NOT?: PostedJournalLineWhereInput | PostedJournalLineWhereInput[]
+    journalId?: StringFilter<"PostedJournalLine"> | string
+    accountId?: StringFilter<"PostedJournalLine"> | string
+    side?: StringFilter<"PostedJournalLine"> | string
+    amountMinor?: BigIntFilter<"PostedJournalLine"> | bigint | number
+    journal?: XOR<PostedJournalRelationFilter, PostedJournalWhereInput>
+    account?: XOR<ChartAccountRelationFilter, ChartAccountWhereInput>
+  }, "id">
+
+  export type PostedJournalLineOrderByWithAggregationInput = {
+    id?: SortOrder
+    journalId?: SortOrder
+    accountId?: SortOrder
+    side?: SortOrder
+    amountMinor?: SortOrder
+    _count?: PostedJournalLineCountOrderByAggregateInput
+    _avg?: PostedJournalLineAvgOrderByAggregateInput
+    _max?: PostedJournalLineMaxOrderByAggregateInput
+    _min?: PostedJournalLineMinOrderByAggregateInput
+    _sum?: PostedJournalLineSumOrderByAggregateInput
+  }
+
+  export type PostedJournalLineScalarWhereWithAggregatesInput = {
+    AND?: PostedJournalLineScalarWhereWithAggregatesInput | PostedJournalLineScalarWhereWithAggregatesInput[]
+    OR?: PostedJournalLineScalarWhereWithAggregatesInput[]
+    NOT?: PostedJournalLineScalarWhereWithAggregatesInput | PostedJournalLineScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PostedJournalLine"> | string
+    journalId?: StringWithAggregatesFilter<"PostedJournalLine"> | string
+    accountId?: StringWithAggregatesFilter<"PostedJournalLine"> | string
+    side?: StringWithAggregatesFilter<"PostedJournalLine"> | string
+    amountMinor?: BigIntWithAggregatesFilter<"PostedJournalLine"> | bigint | number
+  }
+
+  export type ObligationWhereInput = {
+    AND?: ObligationWhereInput | ObligationWhereInput[]
+    OR?: ObligationWhereInput[]
+    NOT?: ObligationWhereInput | ObligationWhereInput[]
+    id?: StringFilter<"Obligation"> | string
+    tenantId?: StringFilter<"Obligation"> | string
+    shopId?: StringFilter<"Obligation"> | string
+    kind?: StringFilter<"Obligation"> | string
+    partyName?: StringFilter<"Obligation"> | string
+    outstandingMinor?: BigIntFilter<"Obligation"> | bigint | number
+    financialTransactionId?: StringFilter<"Obligation"> | string
+    status?: StringFilter<"Obligation"> | string
+    createdAt?: DateTimeFilter<"Obligation"> | Date | string
+  }
+
+  export type ObligationOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ObligationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ObligationWhereInput | ObligationWhereInput[]
+    OR?: ObligationWhereInput[]
+    NOT?: ObligationWhereInput | ObligationWhereInput[]
+    tenantId?: StringFilter<"Obligation"> | string
+    shopId?: StringFilter<"Obligation"> | string
+    kind?: StringFilter<"Obligation"> | string
+    partyName?: StringFilter<"Obligation"> | string
+    outstandingMinor?: BigIntFilter<"Obligation"> | bigint | number
+    financialTransactionId?: StringFilter<"Obligation"> | string
+    status?: StringFilter<"Obligation"> | string
+    createdAt?: DateTimeFilter<"Obligation"> | Date | string
+  }, "id">
+
+  export type ObligationOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    _count?: ObligationCountOrderByAggregateInput
+    _avg?: ObligationAvgOrderByAggregateInput
+    _max?: ObligationMaxOrderByAggregateInput
+    _min?: ObligationMinOrderByAggregateInput
+    _sum?: ObligationSumOrderByAggregateInput
+  }
+
+  export type ObligationScalarWhereWithAggregatesInput = {
+    AND?: ObligationScalarWhereWithAggregatesInput | ObligationScalarWhereWithAggregatesInput[]
+    OR?: ObligationScalarWhereWithAggregatesInput[]
+    NOT?: ObligationScalarWhereWithAggregatesInput | ObligationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Obligation"> | string
+    tenantId?: StringWithAggregatesFilter<"Obligation"> | string
+    shopId?: StringWithAggregatesFilter<"Obligation"> | string
+    kind?: StringWithAggregatesFilter<"Obligation"> | string
+    partyName?: StringWithAggregatesFilter<"Obligation"> | string
+    outstandingMinor?: BigIntWithAggregatesFilter<"Obligation"> | bigint | number
+    financialTransactionId?: StringWithAggregatesFilter<"Obligation"> | string
+    status?: StringWithAggregatesFilter<"Obligation"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Obligation"> | Date | string
+  }
+
+  export type ProfitAllocationWhereInput = {
+    AND?: ProfitAllocationWhereInput | ProfitAllocationWhereInput[]
+    OR?: ProfitAllocationWhereInput[]
+    NOT?: ProfitAllocationWhereInput | ProfitAllocationWhereInput[]
+    id?: StringFilter<"ProfitAllocation"> | string
+    tenantId?: StringFilter<"ProfitAllocation"> | string
+    shopId?: StringFilter<"ProfitAllocation"> | string
+    earnedMinor?: BigIntFilter<"ProfitAllocation"> | bigint | number
+    transferredMinor?: BigIntFilter<"ProfitAllocation"> | bigint | number
+    updatedAt?: DateTimeFilter<"ProfitAllocation"> | Date | string
+  }
+
+  export type ProfitAllocationOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    earnedMinor?: SortOrder
+    transferredMinor?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProfitAllocationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_shopId?: ProfitAllocationTenantIdShopIdCompoundUniqueInput
+    AND?: ProfitAllocationWhereInput | ProfitAllocationWhereInput[]
+    OR?: ProfitAllocationWhereInput[]
+    NOT?: ProfitAllocationWhereInput | ProfitAllocationWhereInput[]
+    tenantId?: StringFilter<"ProfitAllocation"> | string
+    shopId?: StringFilter<"ProfitAllocation"> | string
+    earnedMinor?: BigIntFilter<"ProfitAllocation"> | bigint | number
+    transferredMinor?: BigIntFilter<"ProfitAllocation"> | bigint | number
+    updatedAt?: DateTimeFilter<"ProfitAllocation"> | Date | string
+  }, "id" | "tenantId_shopId">
+
+  export type ProfitAllocationOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    earnedMinor?: SortOrder
+    transferredMinor?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ProfitAllocationCountOrderByAggregateInput
+    _avg?: ProfitAllocationAvgOrderByAggregateInput
+    _max?: ProfitAllocationMaxOrderByAggregateInput
+    _min?: ProfitAllocationMinOrderByAggregateInput
+    _sum?: ProfitAllocationSumOrderByAggregateInput
+  }
+
+  export type ProfitAllocationScalarWhereWithAggregatesInput = {
+    AND?: ProfitAllocationScalarWhereWithAggregatesInput | ProfitAllocationScalarWhereWithAggregatesInput[]
+    OR?: ProfitAllocationScalarWhereWithAggregatesInput[]
+    NOT?: ProfitAllocationScalarWhereWithAggregatesInput | ProfitAllocationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ProfitAllocation"> | string
+    tenantId?: StringWithAggregatesFilter<"ProfitAllocation"> | string
+    shopId?: StringWithAggregatesFilter<"ProfitAllocation"> | string
+    earnedMinor?: BigIntWithAggregatesFilter<"ProfitAllocation"> | bigint | number
+    transferredMinor?: BigIntWithAggregatesFilter<"ProfitAllocation"> | bigint | number
+    updatedAt?: DateTimeWithAggregatesFilter<"ProfitAllocation"> | Date | string
   }
 
   export type LedgerAccountCreateInput = {
@@ -9266,6 +16394,544 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type FinancialTransactionCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    type: string
+    occurredOn: Date | string
+    occurredAt?: Date | string
+    actorUserId?: string | null
+    sourceDomain: string
+    sourceCommand: string
+    sourceId: string
+    idempotencyKey: string
+    amountMinor: bigint | number
+    currency?: string
+    description?: string | null
+    reason?: string | null
+    originalTransactionId?: string | null
+    status?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type FinancialTransactionUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    type: string
+    occurredOn: Date | string
+    occurredAt?: Date | string
+    actorUserId?: string | null
+    sourceDomain: string
+    sourceCommand: string
+    sourceId: string
+    idempotencyKey: string
+    amountMinor: bigint | number
+    currency?: string
+    description?: string | null
+    reason?: string | null
+    originalTransactionId?: string | null
+    status?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type FinancialTransactionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    actorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceDomain?: StringFieldUpdateOperationsInput | string
+    sourceCommand?: StringFieldUpdateOperationsInput | string
+    sourceId?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    currency?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialTransactionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    actorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceDomain?: StringFieldUpdateOperationsInput | string
+    sourceCommand?: StringFieldUpdateOperationsInput | string
+    sourceId?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    currency?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialTransactionCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    type: string
+    occurredOn: Date | string
+    occurredAt?: Date | string
+    actorUserId?: string | null
+    sourceDomain: string
+    sourceCommand: string
+    sourceId: string
+    idempotencyKey: string
+    amountMinor: bigint | number
+    currency?: string
+    description?: string | null
+    reason?: string | null
+    originalTransactionId?: string | null
+    status?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    createdBy?: string | null
+    updatedAt?: Date | string
+  }
+
+  export type FinancialTransactionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    actorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceDomain?: StringFieldUpdateOperationsInput | string
+    sourceCommand?: StringFieldUpdateOperationsInput | string
+    sourceId?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    currency?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialTransactionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    occurredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    actorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceDomain?: StringFieldUpdateOperationsInput | string
+    sourceCommand?: StringFieldUpdateOperationsInput | string
+    sourceId?: StringFieldUpdateOperationsInput | string
+    idempotencyKey?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    currency?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    originalTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChartAccountCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    type: string
+    fundCode?: string | null
+    createdAt?: Date | string
+    lines?: PostedJournalLineCreateNestedManyWithoutAccountInput
+  }
+
+  export type ChartAccountUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    type: string
+    fundCode?: string | null
+    createdAt?: Date | string
+    lines?: PostedJournalLineUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type ChartAccountUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    fundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lines?: PostedJournalLineUpdateManyWithoutAccountNestedInput
+  }
+
+  export type ChartAccountUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    fundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lines?: PostedJournalLineUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type ChartAccountCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    type: string
+    fundCode?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ChartAccountUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    fundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChartAccountUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    fundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostedJournalCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    financialTransactionId: string
+    description: string
+    status?: string
+    postedBy: string
+    occurredOn: Date | string
+    createdAt?: Date | string
+    lines?: PostedJournalLineCreateNestedManyWithoutJournalInput
+  }
+
+  export type PostedJournalUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    financialTransactionId: string
+    description: string
+    status?: string
+    postedBy: string
+    occurredOn: Date | string
+    createdAt?: Date | string
+    lines?: PostedJournalLineUncheckedCreateNestedManyWithoutJournalInput
+  }
+
+  export type PostedJournalUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    postedBy?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lines?: PostedJournalLineUpdateManyWithoutJournalNestedInput
+  }
+
+  export type PostedJournalUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    postedBy?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lines?: PostedJournalLineUncheckedUpdateManyWithoutJournalNestedInput
+  }
+
+  export type PostedJournalCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    financialTransactionId: string
+    description: string
+    status?: string
+    postedBy: string
+    occurredOn: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PostedJournalUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    postedBy?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostedJournalUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    postedBy?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostedJournalLineCreateInput = {
+    id?: string
+    side: string
+    amountMinor: bigint | number
+    journal: PostedJournalCreateNestedOneWithoutLinesInput
+    account: ChartAccountCreateNestedOneWithoutLinesInput
+  }
+
+  export type PostedJournalLineUncheckedCreateInput = {
+    id?: string
+    journalId: string
+    accountId: string
+    side: string
+    amountMinor: bigint | number
+  }
+
+  export type PostedJournalLineUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    journal?: PostedJournalUpdateOneRequiredWithoutLinesNestedInput
+    account?: ChartAccountUpdateOneRequiredWithoutLinesNestedInput
+  }
+
+  export type PostedJournalLineUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    journalId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type PostedJournalLineCreateManyInput = {
+    id?: string
+    journalId: string
+    accountId: string
+    side: string
+    amountMinor: bigint | number
+  }
+
+  export type PostedJournalLineUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type PostedJournalLineUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    journalId?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type ObligationCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    partyName: string
+    outstandingMinor: bigint | number
+    financialTransactionId: string
+    status?: string
+    createdAt?: Date | string
+  }
+
+  export type ObligationUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    partyName: string
+    outstandingMinor: bigint | number
+    financialTransactionId: string
+    status?: string
+    createdAt?: Date | string
+  }
+
+  export type ObligationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    partyName?: StringFieldUpdateOperationsInput | string
+    outstandingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ObligationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    partyName?: StringFieldUpdateOperationsInput | string
+    outstandingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ObligationCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    kind: string
+    partyName: string
+    outstandingMinor: bigint | number
+    financialTransactionId: string
+    status?: string
+    createdAt?: Date | string
+  }
+
+  export type ObligationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    partyName?: StringFieldUpdateOperationsInput | string
+    outstandingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ObligationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    partyName?: StringFieldUpdateOperationsInput | string
+    outstandingMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProfitAllocationCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    earnedMinor?: bigint | number
+    transferredMinor?: bigint | number
+    updatedAt?: Date | string
+  }
+
+  export type ProfitAllocationUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    earnedMinor?: bigint | number
+    transferredMinor?: bigint | number
+    updatedAt?: Date | string
+  }
+
+  export type ProfitAllocationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    earnedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    transferredMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProfitAllocationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    earnedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    transferredMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProfitAllocationCreateManyInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    earnedMinor?: bigint | number
+    transferredMinor?: bigint | number
+    updatedAt?: Date | string
+  }
+
+  export type ProfitAllocationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    earnedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    transferredMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProfitAllocationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    earnedMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    transferredMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -9832,6 +17498,376 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type BigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  }
+  export type JsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type FinancialTransactionTenantIdIdempotencyKeyCompoundUniqueInput = {
+    tenantId: string
+    idempotencyKey: string
+  }
+
+  export type FinancialTransactionCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    type?: SortOrder
+    occurredOn?: SortOrder
+    occurredAt?: SortOrder
+    actorUserId?: SortOrder
+    sourceDomain?: SortOrder
+    sourceCommand?: SortOrder
+    sourceId?: SortOrder
+    idempotencyKey?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    description?: SortOrder
+    reason?: SortOrder
+    originalTransactionId?: SortOrder
+    status?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FinancialTransactionAvgOrderByAggregateInput = {
+    amountMinor?: SortOrder
+  }
+
+  export type FinancialTransactionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    type?: SortOrder
+    occurredOn?: SortOrder
+    occurredAt?: SortOrder
+    actorUserId?: SortOrder
+    sourceDomain?: SortOrder
+    sourceCommand?: SortOrder
+    sourceId?: SortOrder
+    idempotencyKey?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    description?: SortOrder
+    reason?: SortOrder
+    originalTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FinancialTransactionMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    type?: SortOrder
+    occurredOn?: SortOrder
+    occurredAt?: SortOrder
+    actorUserId?: SortOrder
+    sourceDomain?: SortOrder
+    sourceCommand?: SortOrder
+    sourceId?: SortOrder
+    idempotencyKey?: SortOrder
+    amountMinor?: SortOrder
+    currency?: SortOrder
+    description?: SortOrder
+    reason?: SortOrder
+    originalTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FinancialTransactionSumOrderByAggregateInput = {
+    amountMinor?: SortOrder
+  }
+
+  export type BigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type PostedJournalLineListRelationFilter = {
+    every?: PostedJournalLineWhereInput
+    some?: PostedJournalLineWhereInput
+    none?: PostedJournalLineWhereInput
+  }
+
+  export type PostedJournalLineOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ChartAccountTenantIdShopIdCodeCompoundUniqueInput = {
+    tenantId: string
+    shopId: string
+    code: string
+  }
+
+  export type ChartAccountCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    fundCode?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ChartAccountMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    fundCode?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ChartAccountMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    code?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    fundCode?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PostedJournalCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    financialTransactionId?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    postedBy?: SortOrder
+    occurredOn?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PostedJournalMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    financialTransactionId?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    postedBy?: SortOrder
+    occurredOn?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PostedJournalMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    financialTransactionId?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    postedBy?: SortOrder
+    occurredOn?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PostedJournalRelationFilter = {
+    is?: PostedJournalWhereInput
+    isNot?: PostedJournalWhereInput
+  }
+
+  export type ChartAccountRelationFilter = {
+    is?: ChartAccountWhereInput
+    isNot?: ChartAccountWhereInput
+  }
+
+  export type PostedJournalLineCountOrderByAggregateInput = {
+    id?: SortOrder
+    journalId?: SortOrder
+    accountId?: SortOrder
+    side?: SortOrder
+    amountMinor?: SortOrder
+  }
+
+  export type PostedJournalLineAvgOrderByAggregateInput = {
+    amountMinor?: SortOrder
+  }
+
+  export type PostedJournalLineMaxOrderByAggregateInput = {
+    id?: SortOrder
+    journalId?: SortOrder
+    accountId?: SortOrder
+    side?: SortOrder
+    amountMinor?: SortOrder
+  }
+
+  export type PostedJournalLineMinOrderByAggregateInput = {
+    id?: SortOrder
+    journalId?: SortOrder
+    accountId?: SortOrder
+    side?: SortOrder
+    amountMinor?: SortOrder
+  }
+
+  export type PostedJournalLineSumOrderByAggregateInput = {
+    amountMinor?: SortOrder
+  }
+
+  export type ObligationCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ObligationAvgOrderByAggregateInput = {
+    outstandingMinor?: SortOrder
+  }
+
+  export type ObligationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ObligationMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    kind?: SortOrder
+    partyName?: SortOrder
+    outstandingMinor?: SortOrder
+    financialTransactionId?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ObligationSumOrderByAggregateInput = {
+    outstandingMinor?: SortOrder
+  }
+
+  export type ProfitAllocationTenantIdShopIdCompoundUniqueInput = {
+    tenantId: string
+    shopId: string
+  }
+
+  export type ProfitAllocationCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    earnedMinor?: SortOrder
+    transferredMinor?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProfitAllocationAvgOrderByAggregateInput = {
+    earnedMinor?: SortOrder
+    transferredMinor?: SortOrder
+  }
+
+  export type ProfitAllocationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    earnedMinor?: SortOrder
+    transferredMinor?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProfitAllocationMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    shopId?: SortOrder
+    earnedMinor?: SortOrder
+    transferredMinor?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProfitAllocationSumOrderByAggregateInput = {
+    earnedMinor?: SortOrder
+    transferredMinor?: SortOrder
+  }
+
   export type LedgerAccountCreateNestedOneWithoutChildrenInput = {
     create?: XOR<LedgerAccountCreateWithoutChildrenInput, LedgerAccountUncheckedCreateWithoutChildrenInput>
     connectOrCreate?: LedgerAccountCreateOrConnectWithoutChildrenInput
@@ -10092,6 +18128,126 @@ export namespace Prisma {
     update?: XOR<XOR<JournalEntryUpdateToOneWithWhereWithoutEntriesInput, JournalEntryUpdateWithoutEntriesInput>, JournalEntryUncheckedUpdateWithoutEntriesInput>
   }
 
+  export type BigIntFieldUpdateOperationsInput = {
+    set?: bigint | number
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
+  }
+
+  export type PostedJournalLineCreateNestedManyWithoutAccountInput = {
+    create?: XOR<PostedJournalLineCreateWithoutAccountInput, PostedJournalLineUncheckedCreateWithoutAccountInput> | PostedJournalLineCreateWithoutAccountInput[] | PostedJournalLineUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: PostedJournalLineCreateOrConnectWithoutAccountInput | PostedJournalLineCreateOrConnectWithoutAccountInput[]
+    createMany?: PostedJournalLineCreateManyAccountInputEnvelope
+    connect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+  }
+
+  export type PostedJournalLineUncheckedCreateNestedManyWithoutAccountInput = {
+    create?: XOR<PostedJournalLineCreateWithoutAccountInput, PostedJournalLineUncheckedCreateWithoutAccountInput> | PostedJournalLineCreateWithoutAccountInput[] | PostedJournalLineUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: PostedJournalLineCreateOrConnectWithoutAccountInput | PostedJournalLineCreateOrConnectWithoutAccountInput[]
+    createMany?: PostedJournalLineCreateManyAccountInputEnvelope
+    connect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+  }
+
+  export type PostedJournalLineUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<PostedJournalLineCreateWithoutAccountInput, PostedJournalLineUncheckedCreateWithoutAccountInput> | PostedJournalLineCreateWithoutAccountInput[] | PostedJournalLineUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: PostedJournalLineCreateOrConnectWithoutAccountInput | PostedJournalLineCreateOrConnectWithoutAccountInput[]
+    upsert?: PostedJournalLineUpsertWithWhereUniqueWithoutAccountInput | PostedJournalLineUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: PostedJournalLineCreateManyAccountInputEnvelope
+    set?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    disconnect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    delete?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    connect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    update?: PostedJournalLineUpdateWithWhereUniqueWithoutAccountInput | PostedJournalLineUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: PostedJournalLineUpdateManyWithWhereWithoutAccountInput | PostedJournalLineUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: PostedJournalLineScalarWhereInput | PostedJournalLineScalarWhereInput[]
+  }
+
+  export type PostedJournalLineUncheckedUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<PostedJournalLineCreateWithoutAccountInput, PostedJournalLineUncheckedCreateWithoutAccountInput> | PostedJournalLineCreateWithoutAccountInput[] | PostedJournalLineUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: PostedJournalLineCreateOrConnectWithoutAccountInput | PostedJournalLineCreateOrConnectWithoutAccountInput[]
+    upsert?: PostedJournalLineUpsertWithWhereUniqueWithoutAccountInput | PostedJournalLineUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: PostedJournalLineCreateManyAccountInputEnvelope
+    set?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    disconnect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    delete?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    connect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    update?: PostedJournalLineUpdateWithWhereUniqueWithoutAccountInput | PostedJournalLineUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: PostedJournalLineUpdateManyWithWhereWithoutAccountInput | PostedJournalLineUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: PostedJournalLineScalarWhereInput | PostedJournalLineScalarWhereInput[]
+  }
+
+  export type PostedJournalLineCreateNestedManyWithoutJournalInput = {
+    create?: XOR<PostedJournalLineCreateWithoutJournalInput, PostedJournalLineUncheckedCreateWithoutJournalInput> | PostedJournalLineCreateWithoutJournalInput[] | PostedJournalLineUncheckedCreateWithoutJournalInput[]
+    connectOrCreate?: PostedJournalLineCreateOrConnectWithoutJournalInput | PostedJournalLineCreateOrConnectWithoutJournalInput[]
+    createMany?: PostedJournalLineCreateManyJournalInputEnvelope
+    connect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+  }
+
+  export type PostedJournalLineUncheckedCreateNestedManyWithoutJournalInput = {
+    create?: XOR<PostedJournalLineCreateWithoutJournalInput, PostedJournalLineUncheckedCreateWithoutJournalInput> | PostedJournalLineCreateWithoutJournalInput[] | PostedJournalLineUncheckedCreateWithoutJournalInput[]
+    connectOrCreate?: PostedJournalLineCreateOrConnectWithoutJournalInput | PostedJournalLineCreateOrConnectWithoutJournalInput[]
+    createMany?: PostedJournalLineCreateManyJournalInputEnvelope
+    connect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+  }
+
+  export type PostedJournalLineUpdateManyWithoutJournalNestedInput = {
+    create?: XOR<PostedJournalLineCreateWithoutJournalInput, PostedJournalLineUncheckedCreateWithoutJournalInput> | PostedJournalLineCreateWithoutJournalInput[] | PostedJournalLineUncheckedCreateWithoutJournalInput[]
+    connectOrCreate?: PostedJournalLineCreateOrConnectWithoutJournalInput | PostedJournalLineCreateOrConnectWithoutJournalInput[]
+    upsert?: PostedJournalLineUpsertWithWhereUniqueWithoutJournalInput | PostedJournalLineUpsertWithWhereUniqueWithoutJournalInput[]
+    createMany?: PostedJournalLineCreateManyJournalInputEnvelope
+    set?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    disconnect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    delete?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    connect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    update?: PostedJournalLineUpdateWithWhereUniqueWithoutJournalInput | PostedJournalLineUpdateWithWhereUniqueWithoutJournalInput[]
+    updateMany?: PostedJournalLineUpdateManyWithWhereWithoutJournalInput | PostedJournalLineUpdateManyWithWhereWithoutJournalInput[]
+    deleteMany?: PostedJournalLineScalarWhereInput | PostedJournalLineScalarWhereInput[]
+  }
+
+  export type PostedJournalLineUncheckedUpdateManyWithoutJournalNestedInput = {
+    create?: XOR<PostedJournalLineCreateWithoutJournalInput, PostedJournalLineUncheckedCreateWithoutJournalInput> | PostedJournalLineCreateWithoutJournalInput[] | PostedJournalLineUncheckedCreateWithoutJournalInput[]
+    connectOrCreate?: PostedJournalLineCreateOrConnectWithoutJournalInput | PostedJournalLineCreateOrConnectWithoutJournalInput[]
+    upsert?: PostedJournalLineUpsertWithWhereUniqueWithoutJournalInput | PostedJournalLineUpsertWithWhereUniqueWithoutJournalInput[]
+    createMany?: PostedJournalLineCreateManyJournalInputEnvelope
+    set?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    disconnect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    delete?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    connect?: PostedJournalLineWhereUniqueInput | PostedJournalLineWhereUniqueInput[]
+    update?: PostedJournalLineUpdateWithWhereUniqueWithoutJournalInput | PostedJournalLineUpdateWithWhereUniqueWithoutJournalInput[]
+    updateMany?: PostedJournalLineUpdateManyWithWhereWithoutJournalInput | PostedJournalLineUpdateManyWithWhereWithoutJournalInput[]
+    deleteMany?: PostedJournalLineScalarWhereInput | PostedJournalLineScalarWhereInput[]
+  }
+
+  export type PostedJournalCreateNestedOneWithoutLinesInput = {
+    create?: XOR<PostedJournalCreateWithoutLinesInput, PostedJournalUncheckedCreateWithoutLinesInput>
+    connectOrCreate?: PostedJournalCreateOrConnectWithoutLinesInput
+    connect?: PostedJournalWhereUniqueInput
+  }
+
+  export type ChartAccountCreateNestedOneWithoutLinesInput = {
+    create?: XOR<ChartAccountCreateWithoutLinesInput, ChartAccountUncheckedCreateWithoutLinesInput>
+    connectOrCreate?: ChartAccountCreateOrConnectWithoutLinesInput
+    connect?: ChartAccountWhereUniqueInput
+  }
+
+  export type PostedJournalUpdateOneRequiredWithoutLinesNestedInput = {
+    create?: XOR<PostedJournalCreateWithoutLinesInput, PostedJournalUncheckedCreateWithoutLinesInput>
+    connectOrCreate?: PostedJournalCreateOrConnectWithoutLinesInput
+    upsert?: PostedJournalUpsertWithoutLinesInput
+    connect?: PostedJournalWhereUniqueInput
+    update?: XOR<XOR<PostedJournalUpdateToOneWithWhereWithoutLinesInput, PostedJournalUpdateWithoutLinesInput>, PostedJournalUncheckedUpdateWithoutLinesInput>
+  }
+
+  export type ChartAccountUpdateOneRequiredWithoutLinesNestedInput = {
+    create?: XOR<ChartAccountCreateWithoutLinesInput, ChartAccountUncheckedCreateWithoutLinesInput>
+    connectOrCreate?: ChartAccountCreateOrConnectWithoutLinesInput
+    upsert?: ChartAccountUpsertWithoutLinesInput
+    connect?: ChartAccountWhereUniqueInput
+    update?: XOR<XOR<ChartAccountUpdateToOneWithWhereWithoutLinesInput, ChartAccountUpdateWithoutLinesInput>, ChartAccountUncheckedUpdateWithoutLinesInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -10267,6 +18423,55 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedBigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  }
+
+  export type NestedBigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type LedgerAccountCreateWithoutChildrenInput = {
@@ -10897,6 +19102,221 @@ export namespace Prisma {
     version?: IntFieldUpdateOperationsInput | number
   }
 
+  export type PostedJournalLineCreateWithoutAccountInput = {
+    id?: string
+    side: string
+    amountMinor: bigint | number
+    journal: PostedJournalCreateNestedOneWithoutLinesInput
+  }
+
+  export type PostedJournalLineUncheckedCreateWithoutAccountInput = {
+    id?: string
+    journalId: string
+    side: string
+    amountMinor: bigint | number
+  }
+
+  export type PostedJournalLineCreateOrConnectWithoutAccountInput = {
+    where: PostedJournalLineWhereUniqueInput
+    create: XOR<PostedJournalLineCreateWithoutAccountInput, PostedJournalLineUncheckedCreateWithoutAccountInput>
+  }
+
+  export type PostedJournalLineCreateManyAccountInputEnvelope = {
+    data: PostedJournalLineCreateManyAccountInput | PostedJournalLineCreateManyAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PostedJournalLineUpsertWithWhereUniqueWithoutAccountInput = {
+    where: PostedJournalLineWhereUniqueInput
+    update: XOR<PostedJournalLineUpdateWithoutAccountInput, PostedJournalLineUncheckedUpdateWithoutAccountInput>
+    create: XOR<PostedJournalLineCreateWithoutAccountInput, PostedJournalLineUncheckedCreateWithoutAccountInput>
+  }
+
+  export type PostedJournalLineUpdateWithWhereUniqueWithoutAccountInput = {
+    where: PostedJournalLineWhereUniqueInput
+    data: XOR<PostedJournalLineUpdateWithoutAccountInput, PostedJournalLineUncheckedUpdateWithoutAccountInput>
+  }
+
+  export type PostedJournalLineUpdateManyWithWhereWithoutAccountInput = {
+    where: PostedJournalLineScalarWhereInput
+    data: XOR<PostedJournalLineUpdateManyMutationInput, PostedJournalLineUncheckedUpdateManyWithoutAccountInput>
+  }
+
+  export type PostedJournalLineScalarWhereInput = {
+    AND?: PostedJournalLineScalarWhereInput | PostedJournalLineScalarWhereInput[]
+    OR?: PostedJournalLineScalarWhereInput[]
+    NOT?: PostedJournalLineScalarWhereInput | PostedJournalLineScalarWhereInput[]
+    id?: StringFilter<"PostedJournalLine"> | string
+    journalId?: StringFilter<"PostedJournalLine"> | string
+    accountId?: StringFilter<"PostedJournalLine"> | string
+    side?: StringFilter<"PostedJournalLine"> | string
+    amountMinor?: BigIntFilter<"PostedJournalLine"> | bigint | number
+  }
+
+  export type PostedJournalLineCreateWithoutJournalInput = {
+    id?: string
+    side: string
+    amountMinor: bigint | number
+    account: ChartAccountCreateNestedOneWithoutLinesInput
+  }
+
+  export type PostedJournalLineUncheckedCreateWithoutJournalInput = {
+    id?: string
+    accountId: string
+    side: string
+    amountMinor: bigint | number
+  }
+
+  export type PostedJournalLineCreateOrConnectWithoutJournalInput = {
+    where: PostedJournalLineWhereUniqueInput
+    create: XOR<PostedJournalLineCreateWithoutJournalInput, PostedJournalLineUncheckedCreateWithoutJournalInput>
+  }
+
+  export type PostedJournalLineCreateManyJournalInputEnvelope = {
+    data: PostedJournalLineCreateManyJournalInput | PostedJournalLineCreateManyJournalInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PostedJournalLineUpsertWithWhereUniqueWithoutJournalInput = {
+    where: PostedJournalLineWhereUniqueInput
+    update: XOR<PostedJournalLineUpdateWithoutJournalInput, PostedJournalLineUncheckedUpdateWithoutJournalInput>
+    create: XOR<PostedJournalLineCreateWithoutJournalInput, PostedJournalLineUncheckedCreateWithoutJournalInput>
+  }
+
+  export type PostedJournalLineUpdateWithWhereUniqueWithoutJournalInput = {
+    where: PostedJournalLineWhereUniqueInput
+    data: XOR<PostedJournalLineUpdateWithoutJournalInput, PostedJournalLineUncheckedUpdateWithoutJournalInput>
+  }
+
+  export type PostedJournalLineUpdateManyWithWhereWithoutJournalInput = {
+    where: PostedJournalLineScalarWhereInput
+    data: XOR<PostedJournalLineUpdateManyMutationInput, PostedJournalLineUncheckedUpdateManyWithoutJournalInput>
+  }
+
+  export type PostedJournalCreateWithoutLinesInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    financialTransactionId: string
+    description: string
+    status?: string
+    postedBy: string
+    occurredOn: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PostedJournalUncheckedCreateWithoutLinesInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    financialTransactionId: string
+    description: string
+    status?: string
+    postedBy: string
+    occurredOn: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PostedJournalCreateOrConnectWithoutLinesInput = {
+    where: PostedJournalWhereUniqueInput
+    create: XOR<PostedJournalCreateWithoutLinesInput, PostedJournalUncheckedCreateWithoutLinesInput>
+  }
+
+  export type ChartAccountCreateWithoutLinesInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    type: string
+    fundCode?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ChartAccountUncheckedCreateWithoutLinesInput = {
+    id?: string
+    tenantId: string
+    shopId: string
+    code: string
+    name: string
+    type: string
+    fundCode?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ChartAccountCreateOrConnectWithoutLinesInput = {
+    where: ChartAccountWhereUniqueInput
+    create: XOR<ChartAccountCreateWithoutLinesInput, ChartAccountUncheckedCreateWithoutLinesInput>
+  }
+
+  export type PostedJournalUpsertWithoutLinesInput = {
+    update: XOR<PostedJournalUpdateWithoutLinesInput, PostedJournalUncheckedUpdateWithoutLinesInput>
+    create: XOR<PostedJournalCreateWithoutLinesInput, PostedJournalUncheckedCreateWithoutLinesInput>
+    where?: PostedJournalWhereInput
+  }
+
+  export type PostedJournalUpdateToOneWithWhereWithoutLinesInput = {
+    where?: PostedJournalWhereInput
+    data: XOR<PostedJournalUpdateWithoutLinesInput, PostedJournalUncheckedUpdateWithoutLinesInput>
+  }
+
+  export type PostedJournalUpdateWithoutLinesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    postedBy?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PostedJournalUncheckedUpdateWithoutLinesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    financialTransactionId?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    postedBy?: StringFieldUpdateOperationsInput | string
+    occurredOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChartAccountUpsertWithoutLinesInput = {
+    update: XOR<ChartAccountUpdateWithoutLinesInput, ChartAccountUncheckedUpdateWithoutLinesInput>
+    create: XOR<ChartAccountCreateWithoutLinesInput, ChartAccountUncheckedCreateWithoutLinesInput>
+    where?: ChartAccountWhereInput
+  }
+
+  export type ChartAccountUpdateToOneWithWhereWithoutLinesInput = {
+    where?: ChartAccountWhereInput
+    data: XOR<ChartAccountUpdateWithoutLinesInput, ChartAccountUncheckedUpdateWithoutLinesInput>
+  }
+
+  export type ChartAccountUpdateWithoutLinesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    fundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChartAccountUncheckedUpdateWithoutLinesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    shopId?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    fundCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type LedgerAccountCreateManyParentInput = {
     id?: string
     tenantId: string
@@ -11103,6 +19523,62 @@ export namespace Prisma {
     version?: IntFieldUpdateOperationsInput | number
   }
 
+  export type PostedJournalLineCreateManyAccountInput = {
+    id?: string
+    journalId: string
+    side: string
+    amountMinor: bigint | number
+  }
+
+  export type PostedJournalLineUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    journal?: PostedJournalUpdateOneRequiredWithoutLinesNestedInput
+  }
+
+  export type PostedJournalLineUncheckedUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    journalId?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type PostedJournalLineUncheckedUpdateManyWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    journalId?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type PostedJournalLineCreateManyJournalInput = {
+    id?: string
+    accountId: string
+    side: string
+    amountMinor: bigint | number
+  }
+
+  export type PostedJournalLineUpdateWithoutJournalInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+    account?: ChartAccountUpdateOneRequiredWithoutLinesNestedInput
+  }
+
+  export type PostedJournalLineUncheckedUpdateWithoutJournalInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type PostedJournalLineUncheckedUpdateManyWithoutJournalInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    amountMinor?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
 
 
   /**
@@ -11120,6 +19596,14 @@ export namespace Prisma {
      * @deprecated Use PostingBatchCountOutputTypeDefaultArgs instead
      */
     export type PostingBatchCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PostingBatchCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ChartAccountCountOutputTypeDefaultArgs instead
+     */
+    export type ChartAccountCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ChartAccountCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PostedJournalCountOutputTypeDefaultArgs instead
+     */
+    export type PostedJournalCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PostedJournalCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use LedgerAccountDefaultArgs instead
      */
@@ -11144,6 +19628,30 @@ export namespace Prisma {
      * @deprecated Use AuditLogDefaultArgs instead
      */
     export type AuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AuditLogDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use FinancialTransactionDefaultArgs instead
+     */
+    export type FinancialTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = FinancialTransactionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ChartAccountDefaultArgs instead
+     */
+    export type ChartAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ChartAccountDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PostedJournalDefaultArgs instead
+     */
+    export type PostedJournalArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PostedJournalDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PostedJournalLineDefaultArgs instead
+     */
+    export type PostedJournalLineArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PostedJournalLineDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ObligationDefaultArgs instead
+     */
+    export type ObligationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ObligationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ProfitAllocationDefaultArgs instead
+     */
+    export type ProfitAllocationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProfitAllocationDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

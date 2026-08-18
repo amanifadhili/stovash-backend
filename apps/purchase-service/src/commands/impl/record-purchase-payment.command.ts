@@ -3,7 +3,8 @@ import { IRequestContext } from '@electronic-shop/types';
 
 export interface RecordPurchasePaymentPayload {
   purchaseId: string;
-  paymentNumber: string;
+  paymentNumber?: string;
+  idempotencyKey?: string;
   amount: number;
   currency?: string;
   exchangeRate?: number;

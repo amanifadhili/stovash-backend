@@ -27,6 +27,8 @@ const REQUIRED_ENV = [
   'CUSTOMER_DATABASE_URL',
 ] as const;
 
+loadSeedEnv();
+
 export function loadSeedEnv(): void {
   try {
     process.loadEnvFile(path.join(ROOT, '.env'));

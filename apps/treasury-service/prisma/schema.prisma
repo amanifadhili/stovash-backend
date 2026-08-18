@@ -11,6 +11,8 @@ datasource db {
   url      = env("TREASURY_DATABASE_URL")
 }
 
+/// LEGACY (Phase 10): unread. Engine money lives on PhysicalAccount + TreasuryMovement (derived Σ).
+/// DROP SQL is in electronic-shop/docs/FINANCIAL_BACKUP_RESTORE.md — do not run until a verified backup and operator sign-off.
 model PaymentMethod {
   id          String   @id @default(uuid())
   tenantId    String
@@ -185,4 +187,150 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+/// Phase 3 fund tree. Balances are never stored here — they are Σ of treasury
+/// movements (Phase 5). Until then every derived balance is 0.
+model LogicalFund {
+  id        String            @id @default(uuid())
+  tenantId  String
+  shopId    String
+  code      String
+  name      String
+  currency  String            @default("RWF")
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  accounts  PhysicalAccount[]
+
+  @@unique([tenantId, shopId, code])
+  @@index([tenantId, shopId])
+  @@map("logical_funds")
+}
+
+model PhysicalAccount {
+  id        String      @id @default(uuid())
+  tenantId  String
+  shopId    String
+  fundId    String
+  kind      String
+  code      String
+  name      String
+  currency  String      @default("RWF")
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  createdBy String?
+  updatedAt DateTime    @updatedAt
+  fund      LogicalFund @relation(fields: [fundId], references: [id])
+  outgoing  TreasuryMovement[] @relation("MovementFrom")
+  incoming  TreasuryMovement[] @relation("MovementTo")
+  reconCounts ReconciliationCount[]
+
+  @@unique([tenantId, shopId, code])
+  @@index([tenantId, shopId])
+  @@index([fundId])
+  @@index([kind])
+  @@map("physical_accounts")
+}
+
+/// Phase 5 money movements. Totals are Σ incoming − Σ outgoing. No stored SoT column.
+model TreasuryMovement {
+  id                     String           @id @default(uuid())
+  tenantId               String
+  shopId                 String
+  movementType           String
+  fromPhysicalId         String?
+  toPhysicalId           String?
+  amountMinor            BigInt
+  financialTransactionId String
+  journalId              String?
+  occurredOn             DateTime         @db.Date
+  idempotencyKey         String
+  reason                 String?
+  notes                  String?
+  originalMovementId     String?
+  createdBy              String?
+  createdAt              DateTime         @default(now())
+  fromAccount            PhysicalAccount? @relation("MovementFrom", fields: [fromPhysicalId], references: [id])
+  toAccount              PhysicalAccount? @relation("MovementTo", fields: [toPhysicalId], references: [id])
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, shopId, occurredOn])
+  @@index([tenantId, shopId, fromPhysicalId])
+  @@index([tenantId, shopId, toPhysicalId])
+  @@index([financialTransactionId])
+  @@index([originalMovementId])
+  @@map("treasury_movements")
+}
+
+/// Phase 7 calendar day. Identity is tenant + shop + date. Never opened or closed by a button.
+model FinancialPeriod {
+  id        String           @id @default(uuid())
+  tenantId  String
+  shopId    String
+  date      DateTime         @db.Date
+  createdAt DateTime         @default(now())
+  snapshots PeriodSnapshot[]
+
+  @@unique([tenantId, shopId, date])
+  @@map("financial_periods")
+}
+
+/// Opening + inflows − outflows ± adjustments = closing. Derived from TreasuryMovement, then stored.
+model PeriodSnapshot {
+  id               String          @id @default(uuid())
+  periodId         String
+  scopeType        String
+  scopeKey         String
+  openingMinor     BigInt
+  inflowsMinor     BigInt
+  outflowsMinor    BigInt
+  adjustmentsMinor BigInt
+  closingMinor     BigInt
+  period           FinancialPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@unique([periodId, scopeType, scopeKey])
+  @@index([periodId])
+  @@map("period_snapshots")
+}
+
+model TreasuryObligation {
+  id                     String   @id @default(uuid())
+  tenantId               String
+  shopId                 String
+  kind                   String
+  lenderFundCode         String?
+  borrowerFundCode       String?
+  partyName              String
+  outstandingMinor       BigInt
+  financialTransactionId String
+  status                 String   @default("OPEN")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([tenantId, shopId, kind])
+  @@index([financialTransactionId])
+  @@map("treasury_obligations")
+}
+
+model ReconciliationCount {
+  id                     String          @id @default(uuid())
+  tenantId               String
+  shopId                 String
+  physicalAccountId      String
+  expectedMinor          BigInt
+  countedMinor           BigInt
+  differenceMinor        BigInt
+  status                 String          @default("COUNTED")
+  countedBy              String
+  notes                  String?
+  reason                 String?
+  approvedBy             String?
+  approvedAt             DateTime?
+  adjustmentMovementId   String?
+  createdAt              DateTime        @default(now())
+  account                PhysicalAccount @relation(fields: [physicalAccountId], references: [id])
+
+  @@index([tenantId, shopId, status])
+  @@index([physicalAccountId])
+  @@map("reconciliation_counts")
 }

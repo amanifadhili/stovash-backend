@@ -228,6 +228,104 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.LogicalFundScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  code: 'code',
+  name: 'name',
+  currency: 'currency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PhysicalAccountScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  fundId: 'fundId',
+  kind: 'kind',
+  code: 'code',
+  name: 'name',
+  currency: 'currency',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TreasuryMovementScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  movementType: 'movementType',
+  fromPhysicalId: 'fromPhysicalId',
+  toPhysicalId: 'toPhysicalId',
+  amountMinor: 'amountMinor',
+  financialTransactionId: 'financialTransactionId',
+  journalId: 'journalId',
+  occurredOn: 'occurredOn',
+  idempotencyKey: 'idempotencyKey',
+  reason: 'reason',
+  notes: 'notes',
+  originalMovementId: 'originalMovementId',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.FinancialPeriodScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  date: 'date',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PeriodSnapshotScalarFieldEnum = {
+  id: 'id',
+  periodId: 'periodId',
+  scopeType: 'scopeType',
+  scopeKey: 'scopeKey',
+  openingMinor: 'openingMinor',
+  inflowsMinor: 'inflowsMinor',
+  outflowsMinor: 'outflowsMinor',
+  adjustmentsMinor: 'adjustmentsMinor',
+  closingMinor: 'closingMinor'
+};
+
+exports.Prisma.TreasuryObligationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  kind: 'kind',
+  lenderFundCode: 'lenderFundCode',
+  borrowerFundCode: 'borrowerFundCode',
+  partyName: 'partyName',
+  outstandingMinor: 'outstandingMinor',
+  financialTransactionId: 'financialTransactionId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReconciliationCountScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  shopId: 'shopId',
+  physicalAccountId: 'physicalAccountId',
+  expectedMinor: 'expectedMinor',
+  countedMinor: 'countedMinor',
+  differenceMinor: 'differenceMinor',
+  status: 'status',
+  countedBy: 'countedBy',
+  notes: 'notes',
+  reason: 'reason',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt',
+  adjustmentMovementId: 'adjustmentMovementId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -252,7 +350,14 @@ exports.Prisma.ModelName = {
   Reconciliation: 'Reconciliation',
   TreasuryLoan: 'TreasuryLoan',
   TreasuryLoanRepayment: 'TreasuryLoanRepayment',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  LogicalFund: 'LogicalFund',
+  PhysicalAccount: 'PhysicalAccount',
+  TreasuryMovement: 'TreasuryMovement',
+  FinancialPeriod: 'FinancialPeriod',
+  PeriodSnapshot: 'PeriodSnapshot',
+  TreasuryObligation: 'TreasuryObligation',
+  ReconciliationCount: 'ReconciliationCount'
 };
 
 /**

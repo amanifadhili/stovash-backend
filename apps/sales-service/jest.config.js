@@ -13,6 +13,7 @@ export default {
   },
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^@cbe-integrity/(.*)$': '<rootDir>/../../scripts/cbe-integrity/$1',
   },
   collectCoverageFrom: [
     'src/**/*.ts',

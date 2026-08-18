@@ -23,6 +23,7 @@
     "@electronic-shop/framework-event": "^1.0.0",
     "@electronic-shop/framework-permission": "^1.0.0",
     "@electronic-shop/framework-validation": "^1.0.0",
+    "@electronic-shop/metrics": "*",
     "@electronic-shop/types": "*",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
