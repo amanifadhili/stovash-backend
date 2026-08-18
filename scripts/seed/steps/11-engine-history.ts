@@ -2,9 +2,9 @@
  * Three busy months of engine activity for the demo shops (Mon–Sat, Kigali).
  * Opening money is OWNER_CAPITAL_IN. Sales/purchases post through engine books.
  * Does not write PaymentMethod.balance.
+ * Leaves a sellable floor on each shop; never consumes Kigali Main gallery serials.
  */
-import type { IRequestContext } from '@electronic-shop/types';
-import { DEMO } from '../demo-ids.js';
+import { DEMO, DEMO_MAIN_GALLERY_SERIAL_PREFIX } from '../demo-ids.js';
 import type { SeedClients } from '../prisma-clients.js';
 import {
   SEED_RANGE,
@@ -72,16 +72,21 @@ async function move(shopId: string, payload: Parameters<typeof createTreasuryMov
   return requireOk(await createTreasuryMovement(payload, ctx(shopId), engineBooks), payload.movementType);
 }
 
-async function seedMoveCash(payload: Record<string, unknown>, context?: IRequestContext) {
-  return createTreasuryMovement(
-    payload as Parameters<typeof createTreasuryMovement>[0],
-    context,
-    engineBooks,
-  );
+function moveCash() {
+  return (payload: Record<string, unknown>, context?: Parameters<typeof createTreasuryMovement>[1]) =>
+    createTreasuryMovement(payload as Parameters<typeof createTreasuryMovement>[0], context, engineBooks);
 }
 
 function minorOf(accounts: Record<string, Physical>, kind: string): bigint {
   return BigInt(accounts[kind]?.balanceMinor ?? '0');
+}
+
+/** Owned units left AVAILABLE after busy sales (In shop on Kigali Main / Ndera). */
+const MAIN_FLOOR_RESERVE = 24;
+const BRANCH_FLOOR_RESERVE = 16;
+
+function salePool<T>(items: T[], reserve: number): T[] {
+  return items.slice(0, Math.max(0, items.length - reserve));
 }
 
 function opsLiquidity(accounts: Record<string, Physical>): bigint {
@@ -186,7 +191,12 @@ export async function seedEngineHistory(clients: SeedClients): Promise<void> {
   }
 
   const mainItems = await clients.inventory.inventoryItem.findMany({
-    where: { tenantId: DEMO.tenantId, shopId: mainId, status: 'AVAILABLE' },
+    where: {
+      tenantId: DEMO.tenantId,
+      shopId: mainId,
+      status: 'AVAILABLE',
+      NOT: { serialNumber: { startsWith: DEMO_MAIN_GALLERY_SERIAL_PREFIX } },
+    },
     include: { product: true },
     orderBy: { serialNumber: 'asc' },
   });
@@ -195,6 +205,8 @@ export async function seedEngineHistory(clients: SeedClients): Promise<void> {
     include: { product: true },
     orderBy: { serialNumber: 'asc' },
   });
+  const mainForSale = salePool(mainItems, MAIN_FLOOR_RESERVE);
+  const branchForSale = salePool(branchItems, BRANCH_FLOOR_RESERVE);
   let mainCursor = 0;
   let branchCursor = 0;
   let saleSeq = 0;
@@ -262,7 +274,7 @@ export async function seedEngineHistory(clients: SeedClients): Promise<void> {
         shopId: mainId,
         day,
         seq: ++saleSeq,
-        item: mainItems[mainCursor] ?? null,
+        item: mainForSale[mainCursor] ?? null,
         payPattern: (di + s) % 6,
         paySeq: () => ++paySeq,
       });
@@ -275,7 +287,7 @@ export async function seedEngineHistory(clients: SeedClients): Promise<void> {
         shopId: branchId,
         day,
         seq: ++saleSeq,
-        item: branchItems[branchCursor] ?? null,
+        item: branchForSale[branchCursor] ?? null,
         payPattern: 0,
         paySeq: () => ++paySeq,
       });
@@ -324,7 +336,7 @@ export async function seedEngineHistory(clients: SeedClients): Promise<void> {
               idempotencyKey: `demo-exp-${expense.category}-${day}`,
             },
             ctx(mainId),
-            seedMoveCash,
+            moveCash(),
           ),
           `expense ${expense.category}`,
         );
@@ -343,7 +355,7 @@ export async function seedEngineHistory(clients: SeedClients): Promise<void> {
             idempotencyKey: `demo-advance-${day}`,
           },
           ctx(mainId),
-          seedMoveCash,
+          moveCash(),
         ),
         'worker advance',
       );
@@ -483,7 +495,7 @@ export async function seedEngineHistory(clients: SeedClients): Promise<void> {
 
   setSeedShopToday(null);
   console.log(
-    `  engine history: ${days.length} working days ${SEED_RANGE.start}→${SEED_RANGE.end}; ${salesPosted} sales; ${expensesPosted} expenses; opening OWNER_CAPITAL_IN`,
+    `  engine history: ${days.length} working days ${SEED_RANGE.start}→${SEED_RANGE.end}; ${salesPosted} sales; ${expensesPosted} expenses; opening OWNER_CAPITAL_IN; floor reserve Main ${MAIN_FLOOR_RESERVE} / Branch ${BRANCH_FLOOR_RESERVE}`,
   );
 }
 

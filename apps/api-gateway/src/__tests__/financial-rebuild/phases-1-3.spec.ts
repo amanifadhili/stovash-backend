@@ -460,6 +460,7 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       const recv = read('apps/accounting-service/src/engine-ledger/queries.ts');
       expect(recv).toContain('prisma.obligation.findMany');
       expect(recv).toContain("authority: 'engine_obligations'");
+      expect(recv).toContain('occurredOn: ft?.occurredOn');
       expect(recv).not.toMatch(/customerReceivable\./);
     });
 
@@ -655,6 +656,8 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       const history = read('scripts/seed/steps/11-engine-history.ts');
       const bridge = read('scripts/seed/engine-bridge.ts');
       expect(seed).toContain('seedEngineHistory');
+      expect(seed).toContain('seedMainStatusGallery');
+      expect(history).toContain('MAIN_FLOOR_RESERVE');
       expect(history).toContain('OWNER_CAPITAL_IN');
       expect(history).toContain('postSaleConfirmation');
       expect(history).toContain('SALE_PAYMENT');

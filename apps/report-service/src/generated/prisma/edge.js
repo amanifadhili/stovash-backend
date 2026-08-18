@@ -254,7 +254,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/report-service/src/generated/prisma",
+      "value": "/mnt/Code/javascript/nextjs/stovash/electronic-shop/apps/report-service/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -268,12 +268,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/report-service/prisma/schema.prisma",
+    "sourceFilePath": "/mnt/Code/javascript/nextjs/stovash/electronic-shop/apps/report-service/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma",
   "clientVersion": "5.22.0",

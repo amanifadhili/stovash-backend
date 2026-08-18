@@ -162,6 +162,7 @@ describe('Engine ledger (Phase 4 / 7)', () => {
     expect(receivables.data.receivables).toHaveLength(1);
     expect(receivables.data.receivables[0].kind).toBe('WORKER_ADVANCE');
     expect(receivables.data.receivables[0].partyName).toBe('Jean');
+    expect(receivables.data.receivables[0].occurredOn).toBe('2026-08-17');
 
     const accounts = await getAccountingAccounts(context);
     const expenseBalances = accounts.data.accounts

@@ -25,6 +25,7 @@ import { seedSales } from './seed/steps/08-sales.js';
 import { seedCustomers } from './seed/steps/09-customers.js';
 import { seedContactsAndRentals } from './seed/steps/10-contacts-rentals.js';
 import { seedEngineHistory } from './seed/steps/11-engine-history.js';
+import { seedMainStatusGallery } from './seed/steps/12-main-status-gallery.js';
 import { SEED_RANGE } from './seed/engine-bridge.js';
 
 async function main() {
@@ -32,38 +33,41 @@ async function main() {
   const clients = createSeedClients();
 
   try {
-    console.log('1/11 Identity');
+    console.log('1/12 Identity');
     await seedIdentity(clients);
 
-    console.log('2/11 Tenant');
+    console.log('2/12 Tenant');
     await seedTenant(clients);
 
-    console.log('3/11 Suppliers');
+    console.log('3/12 Suppliers');
     await seedSuppliers(clients);
 
-    console.log('4/11 Accounting leftover rows (not SoT)');
+    console.log('4/12 Accounting leftover rows (not SoT)');
     await seedAccounting(clients);
 
-    console.log('5/11 Treasury fund tree');
+    console.log('5/12 Treasury fund tree');
     await seedTreasury();
 
-    console.log('6/11 Catalog');
+    console.log('6/12 Catalog');
     const products = await seedCatalog(clients);
 
-    console.log('7/11 Purchases + stock');
+    console.log('7/12 Purchases + stock');
     await seedPurchasesAndStock(clients, products);
 
-    console.log('8/11 Draft / cancelled sales (no money)');
+    console.log('8/12 Draft / cancelled sales (no money)');
     await seedSales(clients);
 
-    console.log('9/11 Customers');
+    console.log('9/12 Customers');
     await seedCustomers(clients);
 
-    console.log('10/11 Contacts + rentals');
+    console.log('10/12 Contacts + rentals');
     await seedContactsAndRentals(clients);
 
-    console.log(`11/11 Engine history ${SEED_RANGE.start} → ${SEED_RANGE.end} (Mon–Sat)`);
+    console.log(`11/12 Engine history ${SEED_RANGE.start} → ${SEED_RANGE.end} (Mon–Sat)`);
     await seedEngineHistory(clients);
+
+    console.log('12/12 Kigali Main status gallery');
+    await seedMainStatusGallery(clients, products);
 
     console.log('\n----------------------------------------');
     console.log('Demo seed complete. Login cheat-sheet:');
@@ -76,6 +80,7 @@ async function main() {
     console.log('  Sample SKU: STOVASH-DEMO-APL-MBA-M2');
     console.log('  Purchases : PO-DEMO-001, PO-DEMO-002 (AP via engine)');
     console.log(`  Busy books: ${SEED_RANGE.start} → ${SEED_RANGE.end} working days`);
+    console.log('  Kigali Main: status gallery + engine sales + Available floor');
     console.log('  Open /accounting/reports and /treasury/balances after login.');
     console.log('----------------------------------------\n');
   } finally {
