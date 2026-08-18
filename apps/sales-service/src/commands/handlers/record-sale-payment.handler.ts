@@ -7,6 +7,7 @@ import { Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { EventBus } from '@electronic-shop/framework-event';
 import { actorOf } from '../../common/actor.js';
+import { createHash } from 'node:crypto';
 import {
   francsToMinor,
   isoDay,
@@ -82,43 +83,117 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
         };
       }
 
-      // Generate a unique payment number (retry loop on unique clash).
       const date = payload.paidAt ? new Date(payload.paidAt) : new Date();
       const year = date.getFullYear();
       const prefix = `PAY-${year}-`;
+      const amount = Number(payload.amount);
+
+      const idempotencyKey = payload.idempotencyKey || null;
+      const keyForNumber = idempotencyKey ? `${sale.id}:${idempotencyKey}` : null;
+      const stablePaymentNumber = keyForNumber
+        ? (() => {
+            // Stable 6-digit suffix from key; keeps paymentNumber formatting for existing UI/tests.
+            const hex = createHash('sha256').update(keyForNumber).digest('hex');
+            const seq = parseInt(hex.slice(-6), 16) % 1_000_000;
+            return `${prefix}${String(seq).padStart(6, '0')}`;
+          })()
+        : null;
+
       let payment: any = null;
-      for (let attempt = 0; attempt < 10 && !payment; attempt++) {
-        const last = await prisma.salePayment.findFirst({
-          where: { paymentNumber: { startsWith: prefix } },
-          orderBy: { paymentNumber: 'desc' },
-          select: { paymentNumber: true },
+      let didCreatePayment = false;
+
+      // Phase 3: enforce amount <= remaining due for new payment rows.
+      // For idempotent retries: if the payment row already exists, we allow the request to replay.
+      if (stablePaymentNumber) {
+        payment = await prisma.salePayment.findFirst({
+          where: { saleId: sale.id, paymentNumber: stablePaymentNumber },
         });
-        let nextNumber = 1;
-        if (last) {
-          const parsed = parseInt(String(last.paymentNumber).split('-')[2] || '0', 10);
-          if (!Number.isNaN(parsed)) nextNumber = parsed + 1;
+      }
+
+      if (!payment) {
+        const existingPayments = await prisma.salePayment.findMany({
+          where: { saleId: sale.id },
+          select: { amount: true },
+        });
+        const amountPaid = existingPayments.reduce((s, p) => s + p.amount, 0);
+        const amountDue = Math.max(0, sale.grandTotal - amountPaid);
+
+        if (amount > amountDue + 0.0001) {
+          return {
+            status: 'error',
+            traceId,
+            message: 'Payment amount exceeds remaining due',
+            errorCode: ErrorCode.BUSINESS_RULE_VIOLATION,
+          };
         }
-        const paymentNumber = `${prefix}${String(nextNumber).padStart(6, '0')}`;
-        try {
-          payment = await prisma.salePayment.create({
-            data: {
-              saleId: sale.id,
-              paymentNumber,
-              amount: Number(payload.amount),
-              currency: payload.currency || sale.currency || 'RWF',
-              exchangeRate: payload.exchangeRate || 1.0,
-              method: payload.method,
-              reference: payload.reference || null,
-              accountId: payload.accountId || null,
-              accountName: payload.accountName || null,
-              paidById: createdById,
-              paidAt: date,
-              notes: payload.notes || null,
-            },
-          });
-        } catch (createErr: any) {
-          if (createErr?.code === 'P2002') continue;
-          throw createErr;
+
+        if (stablePaymentNumber) {
+          try {
+            payment = await prisma.salePayment.create({
+              data: {
+                saleId: sale.id,
+                paymentNumber: stablePaymentNumber,
+                amount,
+                currency: payload.currency || sale.currency || 'RWF',
+                exchangeRate: payload.exchangeRate || 1.0,
+                method: payload.method,
+                reference: payload.reference || null,
+                accountId: payload.accountId || null,
+                accountName: payload.accountName || null,
+                paidById: createdById,
+                paidAt: date,
+                notes: payload.notes || null,
+              },
+            });
+            didCreatePayment = true;
+          } catch (createErr: any) {
+            // Unique clash during retry: treat as replay if the row exists.
+            if (createErr?.code === 'P2002') {
+              payment = await prisma.salePayment.findFirst({
+                where: { saleId: sale.id, paymentNumber: stablePaymentNumber },
+              });
+              didCreatePayment = false;
+            } else {
+              throw createErr;
+            }
+          }
+        } else {
+          // Non-idempotent legacy behavior: generate a unique payment number.
+          for (let attempt = 0; attempt < 10 && !payment; attempt++) {
+            const last = await prisma.salePayment.findFirst({
+              where: { paymentNumber: { startsWith: prefix } },
+              orderBy: { paymentNumber: 'desc' },
+              select: { paymentNumber: true },
+            });
+            let nextNumber = 1;
+            if (last) {
+              const parsed = parseInt(String(last.paymentNumber).split('-')[2] || '0', 10);
+              if (!Number.isNaN(parsed)) nextNumber = parsed + 1;
+            }
+            const paymentNumber = `${prefix}${String(nextNumber).padStart(6, '0')}`;
+            try {
+              payment = await prisma.salePayment.create({
+                data: {
+                  saleId: sale.id,
+                  paymentNumber,
+                  amount,
+                  currency: payload.currency || sale.currency || 'RWF',
+                  exchangeRate: payload.exchangeRate || 1.0,
+                  method: payload.method,
+                  reference: payload.reference || null,
+                  accountId: payload.accountId || null,
+                  accountName: payload.accountName || null,
+                  paidById: createdById,
+                  paidAt: date,
+                  notes: payload.notes || null,
+                },
+              });
+              didCreatePayment = true;
+            } catch (createErr: any) {
+              if (createErr?.code === 'P2002') continue;
+              throw createErr;
+            }
+          }
         }
       }
 
@@ -126,7 +201,7 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
         return {
           status: 'error',
           traceId,
-          message: 'Unable to generate a unique payment number',
+          message: 'Unable to create (or replay) the sale payment',
           errorCode: ErrorCode.INTERNAL_ERROR,
         };
       }
@@ -147,7 +222,9 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
 
       const amountMinor = francsToMinor(payment.amount);
       if (!amountMinor) {
-        await this.compensatePayment(sale.id, payment.id);
+        if (didCreatePayment) {
+          await this.compensatePayment(sale.id, payment.id);
+        }
         return {
           status: 'error',
           traceId,
@@ -166,76 +243,80 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
           toPhysicalId: payload.accountId || undefined,
           toKind,
           obligationSourceId: sale.id,
-          idempotencyKey: payment.id,
+          idempotencyKey: idempotencyKey || payment.id,
           notes: payload.reference || undefined,
         },
         { tenantId, shopId: sale.shopId, userId: createdById, traceId },
       );
       if (movement.status === 'error') {
-        await this.compensatePayment(sale.id, payment.id);
+        if (didCreatePayment) {
+          await this.compensatePayment(sale.id, payment.id);
+        }
         return movement;
       }
 
-      await prisma.saleHistory.create({
-        data: {
-          saleId: sale.id,
-          eventType: 'PAYMENT_RECEIVED',
-          eventData: JSON.stringify({
-            paymentNumber: payment.paymentNumber,
-            amount: payment.amount,
-            method: payment.method,
-            paymentStatus,
-            amountPaid,
-            amountDue,
-            recordedBy: userName,
-          }),
-          userId: createdById,
-          userName,
-          traceId,
-        },
-      });
-
-      await prisma.auditLog.create({
-        data: {
-          tenantId,
-          shopId: sale.shopId,
-          userId: createdById,
-          action: 'RecordSalePayment',
-          resource: 'Sale',
-          resourceId: sale.id,
-          traceId,
-          details: JSON.stringify({ paymentNumber: payment.paymentNumber, amount: payment.amount, method: payment.method }),
-        },
-      });
-
-      await this.eventBus.publish(
-        {
-          eventType: 'SalePaymentRecorded',
-          aggregateId: payment.id,
-          aggregateType: 'SalePayment',
-          tenantId,
-          shopId: sale.shopId,
-          payload: {
-            paymentId: payment.id,
-            paymentNumber: payment.paymentNumber,
+      if (didCreatePayment) {
+        await prisma.saleHistory.create({
+          data: {
             saleId: sale.id,
-            orderNumber: sale.orderNumber,
-            amount: payment.amount,
-            method: payment.method,
-            reference: payment.reference || null,
-            accountId: payment.accountId || null,
-            paidAt: date.toISOString(),
-            paymentStatus,
-            amountPaid,
-            amountDue,
-            recordedBy: createdById,
+            eventType: 'PAYMENT_RECEIVED',
+            eventData: JSON.stringify({
+              paymentNumber: payment.paymentNumber,
+              amount: payment.amount,
+              method: payment.method,
+              paymentStatus,
+              amountPaid,
+              amountDue,
+              recordedBy: userName,
+            }),
+            userId: createdById,
+            userName,
+            traceId,
           },
-          timestamp: new Date().toISOString(),
-          correlationId: traceId,
-          createdBy: createdById,
-        },
-        'sale.payment-recorded',
-      );
+        });
+
+        await prisma.auditLog.create({
+          data: {
+            tenantId,
+            shopId: sale.shopId,
+            userId: createdById,
+            action: 'RecordSalePayment',
+            resource: 'Sale',
+            resourceId: sale.id,
+            traceId,
+            details: JSON.stringify({ paymentNumber: payment.paymentNumber, amount: payment.amount, method: payment.method }),
+          },
+        });
+
+        await this.eventBus.publish(
+          {
+            eventType: 'SalePaymentRecorded',
+            aggregateId: payment.id,
+            aggregateType: 'SalePayment',
+            tenantId,
+            shopId: sale.shopId,
+            payload: {
+              paymentId: payment.id,
+              paymentNumber: payment.paymentNumber,
+              saleId: sale.id,
+              orderNumber: sale.orderNumber,
+              amount: payment.amount,
+              method: payment.method,
+              reference: payment.reference || null,
+              accountId: payment.accountId || null,
+              paidAt: date.toISOString(),
+              paymentStatus,
+              amountPaid,
+              amountDue,
+              recordedBy: createdById,
+            },
+            timestamp: new Date().toISOString(),
+            correlationId: traceId,
+            createdBy: createdById,
+          },
+          'sale.payment-recorded',
+        );
+      }
 
       return {
         status: 'success',

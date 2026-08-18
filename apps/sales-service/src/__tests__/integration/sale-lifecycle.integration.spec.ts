@@ -164,9 +164,11 @@ describe('Sale lifecycle integration', () => {
     const confirmed = await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
     expect(confirmed.status).toBe('success');
     expect(confirmed.data.commercialStatus).toBe('CONFIRMED');
+    expect(confirmed.data.accountingStatus).toBe('POSTED');
 
     const reConfirm = await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
     expect(reConfirm.status).toBe('success');
+    expect(reConfirm.data.accountingStatus).toBe('POSTED');
 
     const remaining = created.data.grandTotal - 300000;
     const pay1 = await payHandler.execute(new RecordSalePaymentCommand({ saleId, amount: 300000, method: 'CASH' }, ctx));
@@ -181,6 +183,85 @@ describe('Sale lifecycle integration', () => {
 
     const history = await prisma.saleHistory.findMany({ where: { saleId } });
     expect(history.map((h) => h.eventType)).toContain('PAYMENT_RECEIVED');
+  });
+
+  it('is idempotent for RecordSalePayment with the same idempotencyKey', async () => {
+    const created = await createHandler.execute(
+      new CreateSaleCommand({ customerId: 'cus-003', customerName: 'Ken', items: baseItems }, ctx),
+    );
+    const saleId = created.data.id;
+
+    await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
+
+    const due = created.data.grandTotal; // no payments yet
+    const idempotencyKey = 'pay-idem-1';
+
+    const first = await payHandler.execute(
+      new RecordSalePaymentCommand({ saleId, amount: 100000, method: 'CASH', idempotencyKey }, ctx),
+    );
+    expect(first.status).toBe('success');
+
+    const second = await payHandler.execute(
+      new RecordSalePaymentCommand({ saleId, amount: 100000, method: 'CASH', idempotencyKey }, ctx),
+    );
+    expect(second.status).toBe('success');
+
+    const count = await prisma.salePayment.count({ where: { saleId } });
+    expect(count).toBe(1);
+
+    const updated = await prisma.sale.findUnique({ where: { id: saleId } });
+    expect(updated?.amountPaid).toBeCloseTo(100000);
+    expect(updated?.amountDue).toBeCloseTo(due - 100000);
+  });
+
+  it('rejects payment amount greater than remaining due', async () => {
+    const created = await createHandler.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    const saleId = created.data.id;
+    await confirmHandler.execute(new ConfirmSaleCommand({ saleId }, ctx));
+
+    const tooMuch = created.data.grandTotal + 5000;
+    const result = await payHandler.execute(
+      new RecordSalePaymentCommand({ saleId, amount: tooMuch, method: 'CASH', idempotencyKey: 'pay-oom-1' }, ctx),
+    );
+    expect(result.status).toBe('error');
+    expect(result.errorCode).toBe('BUSINESS_RULE_VIOLATION');
+
+    const count = await prisma.salePayment.count({ where: { saleId } });
+    expect(count).toBe(0);
+  });
+
+  it('does not confirm (stays DRAFT) when PostSaleConfirmation books fail', async () => {
+    const accountingErrorSend = () =>
+      of({
+        status: 'error',
+        message: 'PostSaleConfirmation failed (test)',
+        errorCode: 'INTERNAL_ERROR',
+      });
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingErrorSend } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    const saleId = created.data.id;
+
+    const confirmed = await localConfirm.execute(new ConfirmSaleCommand({ saleId }, ctx));
+    expect(confirmed.status).toBe('error');
+
+    const fromDb = await prisma.sale.findUnique({ where: { id: saleId } });
+    expect(fromDb?.commercialStatus).toBe('DRAFT');
+
+    await prisma.$disconnect();
   });
 
   it('fulfills only confirmed sales and emits exact inventory item ids', async () => {

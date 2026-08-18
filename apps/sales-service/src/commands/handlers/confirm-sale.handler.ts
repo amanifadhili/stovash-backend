@@ -82,7 +82,13 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
       if (sale.commercialStatus === 'CONFIRMED') {
         const replay = await this.postSaleBooks(sale, financeContext, traceId);
         if (replay.status === 'error') return replay;
-        return { status: 'success', traceId, data: sale };
+        // On replay (retry same ConfirmSale), we still want the sale to reflect that
+        // engine books exist. This must be idempotent: setting POSTED again is safe.
+        const updatedOnReplay = await prisma.sale.update({
+          where: { id: sale.id },
+          data: { accountingStatus: 'POSTED' },
+        });
+        return { status: 'success', traceId, data: updatedOnReplay };
       }
 
       const stockResult = await firstValueFrom(
@@ -127,6 +133,7 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
           commercialStatus: 'CONFIRMED',
           status: 'COMPLETED',
           fulfillmentStatus: 'FULFILLED',
+          accountingStatus: 'POSTED',
           confirmedById: createdById,
           confirmedAt: new Date(),
           fulfilledById: createdById,
