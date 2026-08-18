@@ -42,15 +42,27 @@ export class ConfirmPurchaseHandler extends BaseCommandHandler<ConfirmPurchaseCo
         { tenantId, shopId: purchase.shopId, userId: approvedById, traceId },
       );
       if (books.status === 'error') return books;
+      const payableMinor = Number(books.data?.payable?.outstandingMinor || 0);
+      const payableOutstanding = Number.isFinite(payableMinor) ? payableMinor / 100 : purchase.grandTotal;
 
       if (purchase.commercialStatus === 'CONFIRMED') {
-        return { status: 'success', traceId, data: purchase };
+        await prisma.purchase.update({
+          where: { id: purchaseId },
+          data: {
+            amountOutstanding: payableOutstanding,
+            accountingStatus: 'POSTED',
+          },
+        });
+        const replayed = await prisma.purchase.findUnique({ where: { id: purchaseId } });
+        return { status: 'success', traceId, data: replayed || purchase };
       }
 
       const updated = await prisma.purchase.update({
         where: { id: purchaseId },
         data: {
           commercialStatus: 'CONFIRMED',
+          accountingStatus: 'POSTED',
+          amountOutstanding: payableOutstanding,
           approvedById,
           approvedAt: new Date(),
         },

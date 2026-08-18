@@ -5,23 +5,12 @@ import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { actorOf } from '../../common/actor.js';
 import { firstValueFrom } from 'rxjs';
-import { Inject, Logger } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { EventBus } from '@electronic-shop/framework-event';
-import { recomputePurchaseItemCounts, recomputePurchaseReceivingStatus } from '../../common/receiving-counts.js';
-import { publishPurchaseUnitConfirmed } from '../../common/publish-purchase-unit-confirmed.js';
-import { postPurchasePayableBooks } from '../../common/post-purchase-finance.js';
 
 @CommandHandler(CreatePurchaseCommand)
 export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseCommand> {
-  private readonly logger = new Logger(CreatePurchaseHandler.name);
-
-  constructor(
-    @Inject('SUPPLIER_SERVICE') private readonly supplierClient: ClientProxy,
-    @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
-    @Inject('ACCOUNTING_SERVICE') private readonly accountingClient: ClientProxy,
-    @Inject('EVENT_BUS') private readonly eventBus: EventBus,
-  ) {
+  constructor(@Inject('SUPPLIER_SERVICE') private readonly supplierClient: ClientProxy) {
     super();
   }
 
@@ -192,129 +181,9 @@ export class CreatePurchaseHandler extends BaseCommandHandler<CreatePurchaseComm
         });
       }
 
-      // Inline per-unit receive: if any item carries serialized units, auto-confirm
-      // the order (receiving requires CONFIRMED) and create the received units.
-      const hasUnits = Array.isArray(items) && items.some((it) => Array.isArray(it.units) && it.units.length > 0);
-      if (hasUnits) {
-        await prisma.purchase.update({
-          where: { id: purchase.id },
-          data: { commercialStatus: 'CONFIRMED', approvedById: createdById, approvedAt: new Date() },
-        });
-
-        await prisma.purchaseHistory.create({
-          data: {
-            purchaseId: purchase.id,
-            eventType: 'CONFIRMED',
-            eventData: JSON.stringify({ approvedBy: createdByName, auto: true }),
-            userId: createdById,
-            userName: createdByName,
-            traceId,
-          },
-        });
-
-        for (const it of items) {
-          if (!Array.isArray(it.units) || it.units.length === 0) continue;
-          const purchaseItem = await prisma.purchaseItem.findFirst({
-            where: { purchaseId: purchase.id, productId: it.productId },
-          });
-          if (!purchaseItem) continue;
-
-          const lineImages =
-            Array.isArray(it.images) && it.images.length > 0 ? it.images.slice(0, 5) : undefined;
-
-          for (const unit of it.units) {
-            if (unit.serialNumber) {
-              const existing = await prisma.purchaseReceivedItem.findFirst({
-                where: { serialNumber: unit.serialNumber, purchase: { tenantId, shopId } },
-              });
-              if (existing) {
-                return { status: 'error', traceId, message: `Serial ${unit.serialNumber} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
-              }
-            }
-            if (unit.imei1) {
-              const existing = await prisma.purchaseReceivedItem.findFirst({
-                where: { imei1: unit.imei1, purchase: { tenantId, shopId } },
-              });
-              if (existing) {
-                return { status: 'error', traceId, message: `IMEI ${unit.imei1} already exists`, errorCode: ErrorCode.VALIDATION_ERROR };
-              }
-            }
-
-            const isConfirmed = unit.received === true;
-            const createdReceived = await prisma.purchaseReceivedItem.create({
-              data: {
-                purchaseId: purchase.id,
-                purchaseItemId: purchaseItem.id,
-                serialNumber: unit.serialNumber,
-                imei1: unit.imei1,
-                imei2: unit.imei2,
-                condition: unit.condition || 'GOOD',
-                unitAcquisitionCost: Number(unit.unitAcquisitionCost) || 0,
-                status: isConfirmed ? 'CONFIRMED' : 'PENDING',
-                confirmedAt: isConfirmed ? new Date() : undefined,
-                confirmedById: isConfirmed ? createdById : undefined,
-                receivedAt: new Date(),
-                receivedById: createdById,
-                notes: unit.notes,
-                images:
-                  Array.isArray(unit.images) && unit.images.length > 0
-                    ? unit.images.slice(0, 5)
-                    : lineImages,
-              },
-            });
-
-            // Inline confirmed units also stock the inventory (sync RPC + event, idempotent).
-            if (isConfirmed) {
-              const batchQty =
-                purchaseItem.productTracking === 'NON_SERIALIZED'
-                  ? Math.max(1, Number(unit.quantity) || Number(purchaseItem.orderedQty) || 1)
-                  : 1;
-              await publishPurchaseUnitConfirmed(
-                this.inventoryClient,
-                this.eventBus,
-                createdReceived,
-                purchaseItem,
-                context,
-                batchQty,
-              );
-            }
-          }
-
-          // Status-aware counts: only CONFIRMED units count as received.
-          // NON_SERIALIZED batch may be one received row representing orderedQty.
-          if (purchaseItem.productTracking === 'NON_SERIALIZED') {
-            const confirmed = await prisma.purchaseReceivedItem.findMany({
-              where: { purchaseItemId: purchaseItem.id, status: 'CONFIRMED' },
-            });
-            const stockable = confirmed.filter((i) =>
-              ['ACCEPTED', 'EXCELLENT', 'GOOD', 'FAIR'].includes(i.condition),
-            );
-            const qty = purchaseItem.orderedQty;
-            await prisma.purchaseItem.update({
-              where: { id: purchaseItem.id },
-              data: {
-                receivedQty: confirmed.length > 0 ? qty : 0,
-                acceptedQty: stockable.length > 0 ? qty : 0,
-                rejectedQty: confirmed.length > 0 && stockable.length === 0 ? qty : 0,
-              },
-            });
-          } else {
-            await recomputePurchaseItemCounts(purchaseItem.id);
-          }
-        }
-
-        await recomputePurchaseReceivingStatus(purchase.id);
-      }
-
-      const latest = await prisma.purchase.findUnique({ where: { id: purchase.id } });
-      if (latest?.commercialStatus === 'CONFIRMED' && Number(latest.grandTotal) > 0) {
-        const books = await postPurchasePayableBooks(
-          this.accountingClient,
-          latest,
-          { tenantId, shopId, userId: createdById, traceId },
-        );
-        if (books.status === 'error') return books;
-      }
+      // Phase 4 rule: CreatePurchase is intake only.
+      // It must not auto-confirm, stock units, or post AP books.
+      // Receiving + stock-in now happens through explicit receiving/confirm unit commands.
 
       // Create history entry
       await prisma.purchaseHistory.create({

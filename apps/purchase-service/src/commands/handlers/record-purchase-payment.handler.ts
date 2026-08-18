@@ -7,6 +7,7 @@ import { actorOf } from '../../common/actor.js';
 import { Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { postPurchasePayableBooks } from '../../common/post-purchase-finance.js';
+import { createHash } from 'node:crypto';
 import {
   francsToMinor,
   isoDay,
@@ -32,6 +33,7 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
       const {
         purchaseId,
         paymentNumber,
+        idempotencyKey,
         amount,
         currency = 'RWF',
         exchangeRate = 1.0,
@@ -74,35 +76,90 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
       }
 
       const financeContext = { tenantId, shopId: purchase.shopId, userId: paidById, traceId };
+      let payableBooks: ICommandResponse<any> | null = null;
       if (purchase.commercialStatus === 'CONFIRMED' && Number(purchase.grandTotal) > 0) {
-        const payable = await postPurchasePayableBooks(this.accountingClient, purchase, financeContext);
-        if (payable.status === 'error') return payable;
+        payableBooks = await postPurchasePayableBooks(this.accountingClient, purchase, financeContext);
+        if (payableBooks.status === 'error') return payableBooks;
       }
 
-      const payment = await prisma.purchasePayment.create({
-        data: {
-          purchaseId,
-          paymentNumber,
-          amount,
-          currency,
-          exchangeRate,
-          paymentMethod: String(paymentMethod).toUpperCase() === 'MOMO' ? 'MOBILE_MONEY' : paymentMethod,
-          accountId,
-          accountName,
-          reference,
-          paidById,
-          paidAt: paidAt ? new Date(paidAt) : new Date(),
-          notes,
-          accountingRef,
-        },
+      // Phase 4: idempotency + remaining-due invariants.
+      // - FE supplies a stable `idempotencyKey`; we deterministically derive `paymentNumber`.
+      // - Replays (same paymentNumber) do not double-write history/audit.
+      const stableIdempotencyKey = idempotencyKey ? String(idempotencyKey) : undefined;
+      const derivedPaymentNumber = stableIdempotencyKey
+        ? `PAY-${purchaseId}-${createHash('sha256').update(stableIdempotencyKey).digest('hex').slice(0, 12)}`
+        : paymentNumber;
+
+      if (!derivedPaymentNumber) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'paymentNumber is required (or provide idempotencyKey)',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
+      const existing = await prisma.purchasePayment.findFirst({
+        where: { purchaseId, paymentNumber: derivedPaymentNumber },
       });
+
+      // DB authority rule:
+      // - CONFIRMED purchases project from AP obligation (engine books),
+      // - DRAFT fallback uses local arithmetic (no AP yet).
+      const payableMinorBefore = Number(payableBooks?.data?.payable?.outstandingMinor ?? NaN);
+      const amountOutstandingFromAp = Number.isFinite(payableMinorBefore) ? payableMinorBefore / 100 : null;
+      const totalPaidBefore = await prisma.purchasePayment.aggregate({
+        where: { purchaseId },
+        _sum: { amount: true },
+      });
+      const amountPaidBefore = totalPaidBefore._sum.amount || 0;
+      const amountOutstandingBefore =
+        amountOutstandingFromAp !== null
+          ? amountOutstandingFromAp
+          : purchase.grandTotal - amountPaidBefore;
+
+      const didCreatePayment = !existing;
+      const payment = didCreatePayment
+        ? await prisma.purchasePayment.create({
+            data: {
+              purchaseId,
+              paymentNumber: derivedPaymentNumber,
+              amount,
+              currency,
+              exchangeRate,
+              paymentMethod: String(paymentMethod).toUpperCase() === 'MOMO' ? 'MOBILE_MONEY' : paymentMethod,
+              accountId,
+              accountName,
+              reference,
+              paidById,
+              paidAt: paidAt ? new Date(paidAt) : new Date(),
+              notes,
+              accountingRef,
+            },
+          })
+        : existing;
+
+      if (didCreatePayment) {
+        if (amount > amountOutstandingBefore + 0.0001) {
+          await this.compensatePayment(purchaseId, payment.id, purchase.grandTotal);
+          return {
+            status: 'error',
+            traceId,
+            message: 'Payment amount cannot exceed remaining supplier payable',
+            errorCode: ErrorCode.BUSINESS_RULE_VIOLATION,
+          };
+        }
+      }
 
       const totalPaid = await prisma.purchasePayment.aggregate({
         where: { purchaseId },
         _sum: { amount: true },
       });
       const amountPaid = totalPaid._sum.amount || 0;
-      const amountOutstanding = purchase.grandTotal - amountPaid;
+      const amountOutstanding =
+        amountOutstandingFromAp !== null
+          ? Math.max(0, didCreatePayment ? amountOutstandingFromAp - Number(payment.amount) : amountOutstandingFromAp)
+          : purchase.grandTotal - amountPaid;
 
       let paymentStatus: 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' = 'UNPAID';
       if (amountPaid === 0) paymentStatus = 'UNPAID';
@@ -114,9 +171,11 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
         data: { amountPaid, amountOutstanding, paymentStatus },
       });
 
-      const amountMinor = francsToMinor(amount);
+      const amountMinor = francsToMinor(payment.amount);
       if (!amountMinor) {
-        await this.compensatePayment(purchaseId, payment.id, purchase.grandTotal);
+        if (didCreatePayment) {
+          await this.compensatePayment(purchaseId, payment.id, purchase.grandTotal);
+        }
         return {
           status: 'error',
           traceId,
@@ -125,6 +184,7 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
         };
       }
 
+      const movementIdempotencyKey = stableIdempotencyKey || derivedPaymentNumber || payment.id;
       const movement = await sendFinanceCommand(
         this.treasuryClient,
         'CreateTreasuryMovement',
@@ -135,41 +195,72 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
           fromPhysicalId: accountId || undefined,
           fromKind,
           obligationSourceId: purchase.id,
-          idempotencyKey: payment.id,
+          idempotencyKey: movementIdempotencyKey,
           notes: reference || undefined,
         },
         financeContext,
       );
       if (movement.status === 'error') {
-        await this.compensatePayment(purchaseId, payment.id, purchase.grandTotal);
+        if (didCreatePayment) {
+          await this.compensatePayment(purchaseId, payment.id, purchase.grandTotal);
+        }
         return movement;
       }
 
-      await prisma.purchaseHistory.create({
-        data: {
-          purchaseId,
-          eventType: 'PAYMENT_RECEIVED',
-          eventData: JSON.stringify({ paymentNumber, amount, method: paymentMethod, paidBy: paidByName }),
-          userId: paidById,
-          userName: paidByName,
-          traceId,
-        },
+      const financeRefs = {
+        treasuryMovementId: movement.data?.id || null,
+        treasuryFinancialTransactionId: movement.data?.financialTransactionId || null,
+        treasuryJournalId: movement.data?.journalId || null,
+        purchasePayableFinancialTransactionId: payableBooks?.data?.financialTransaction?.id || null,
+      };
+      const accountingRefValue = JSON.stringify(financeRefs);
+      await prisma.purchasePayment.update({
+        where: { id: payment.id },
+        data: { accountingRef: accountingRefValue },
       });
 
-      await prisma.auditLog.create({
-        data: {
-          tenantId: purchase.tenantId,
-          shopId: purchase.shopId,
-          userId: paidById,
-          action: 'RecordPurchasePayment',
-          resource: 'PurchasePayment',
-          resourceId: payment.id,
-          traceId,
-          details: JSON.stringify({ paymentNumber, amount, method: paymentMethod }),
-        },
-      });
+      if (didCreatePayment) {
+        await prisma.purchaseHistory.create({
+          data: {
+            purchaseId,
+            eventType: 'PAYMENT_RECEIVED',
+            eventData: JSON.stringify({
+              paymentNumber: derivedPaymentNumber,
+              amount: payment.amount,
+              method: paymentMethod,
+              paidBy: paidByName,
+            }),
+            userId: paidById,
+            userName: paidByName,
+            traceId,
+          },
+        });
 
-      return { status: 'success', traceId, data: { ...payment, treasuryMovement: movement.data } };
+        await prisma.auditLog.create({
+          data: {
+            tenantId: purchase.tenantId,
+            shopId: purchase.shopId,
+            userId: paidById,
+            action: 'RecordPurchasePayment',
+            resource: 'PurchasePayment',
+            resourceId: payment.id,
+            traceId,
+            details: JSON.stringify({ paymentNumber: derivedPaymentNumber, amount: payment.amount, method: paymentMethod }),
+          },
+        });
+      }
+
+      return {
+        status: 'success',
+        traceId,
+        data: {
+          ...payment,
+          accountingRef: accountingRefValue,
+          financeRefs,
+          treasuryMovement: movement.data,
+          idempotencyKey: stableIdempotencyKey,
+        },
+      };
     } catch (error: any) {
       return {
         status: 'error',
