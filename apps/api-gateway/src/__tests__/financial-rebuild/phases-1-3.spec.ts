@@ -815,8 +815,13 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       expect(runbook).toContain('EXPLAIN');
       expect(runbook).toContain('DROP TABLE IF EXISTS payment_methods');
       expect(runbook).toContain('do not run yet');
+      expect(runbook).toContain('2026-08-17');
+      expect(read('docs/CBE_OPERATOR_SIGN_OFF.md')).toContain('production money system of record');
+      expect(read('docs/CBE_OPERATOR_SIGN_OFF.md')).toMatch(/\| Name \| \|/);
       expect(read('apps/sales-service/src/common/commercial-finance.ts')).toContain('recordFinancialFailClosed');
       expect(read('apps/treasury-service/src/treasury-movement/reconciliation.ts')).toContain('recordFinancialReconDiff');
+      expect(read('apps/accounting-service/src/__tests__/engine-ledger/golden-path.spec.ts')).toContain('Phase 10 golden path');
+      expect(read('apps/treasury-service/src/__tests__/treasury-movement/golden-path.spec.ts')).toContain('closing = opening');
     });
 
     it('product command handlers do not mutate legacy PaymentMethod/LedgerAccount balances', () => {
