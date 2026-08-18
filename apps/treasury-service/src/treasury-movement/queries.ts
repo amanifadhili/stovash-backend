@@ -27,6 +27,7 @@ export async function getTreasuryMovements(
       shopId,
       ...(types.length > 0 ? { movementType: { in: types } } : {}),
     },
+    include: { fromAccount: true, toAccount: true },
     orderBy: { createdAt: 'desc' },
     take,
   });

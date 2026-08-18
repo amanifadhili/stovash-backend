@@ -115,4 +115,7 @@ export const DEMO = {
   ],
 } as const;
 
+/** Serials engine history must never sell — Kigali Main status gallery. */
+export const DEMO_MAIN_GALLERY_SERIAL_PREFIX = 'STOVASH-DEMO-MAIN-G-';
+
 export type DemoUserKey = keyof typeof DEMO.users;

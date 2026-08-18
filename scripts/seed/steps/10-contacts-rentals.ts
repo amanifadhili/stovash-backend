@@ -1,4 +1,4 @@
-import { DEMO } from '../demo-ids.js';
+import { DEMO, DEMO_MAIN_GALLERY_SERIAL_PREFIX } from '../demo-ids.js';
 import type { SeedClients } from '../prisma-clients.js';
 
 const CONTACTS = [
@@ -47,6 +47,7 @@ export async function seedContactsAndRentals(clients: SeedClients): Promise<void
       tenantId: DEMO.tenantId,
       shopId: DEMO.shops.main.id,
       status: 'AVAILABLE',
+      NOT: { serialNumber: { startsWith: DEMO_MAIN_GALLERY_SERIAL_PREFIX } },
     },
     take: 2,
     orderBy: { serialNumber: 'asc' },

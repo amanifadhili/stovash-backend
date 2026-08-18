@@ -3,7 +3,7 @@ import { prisma } from '../database/client.js';
 import { ENGINE_CHART_ACCOUNTS, GENERAL_EXPENSE_CATEGORIES } from './chart.js';
 import { ensureEngineChart } from './ensure-chart.js';
 import { serializeJournal } from './serialize.js';
-import { parseOccurredOn } from '../financial-transaction/serialize.js';
+import { parseOccurredOn, toIsoDate } from '../financial-transaction/serialize.js';
 import { shopTodayIso } from '../financial-transaction/calendar.js';
 
 function signedMinor(type: string, side: string, amount: bigint): bigint {
@@ -165,23 +165,36 @@ export async function getReceivables(
   const ftRows = ftIds.length
     ? await prisma.financialTransaction.findMany({
         where: { tenantId, shopId, id: { in: ftIds } },
-        select: { id: true, sourceId: true, sourceCommand: true, sourceDomain: true, type: true },
+        select: {
+          id: true,
+          sourceId: true,
+          sourceCommand: true,
+          sourceDomain: true,
+          type: true,
+          occurredOn: true,
+          description: true,
+        },
       })
     : [];
   const ftById = new Map(ftRows.map((row) => [row.id, row]));
 
-  const mapped = rows.map((r) => ({
-    id: r.id,
-    kind: r.kind,
-    partyName: r.partyName,
-    outstandingMinor: r.outstandingMinor.toString(),
-    status: r.status,
-    financialTransactionId: r.financialTransactionId,
-    sourceId: ftById.get(r.financialTransactionId)?.sourceId ?? null,
-    sourceCommand: ftById.get(r.financialTransactionId)?.sourceCommand ?? null,
-    sourceDomain: ftById.get(r.financialTransactionId)?.sourceDomain ?? null,
-    originType: ftById.get(r.financialTransactionId)?.type ?? null,
-  }));
+  const mapped = rows.map((r) => {
+    const ft = ftById.get(r.financialTransactionId);
+    return {
+      id: r.id,
+      kind: r.kind,
+      partyName: r.partyName,
+      outstandingMinor: r.outstandingMinor.toString(),
+      status: r.status,
+      financialTransactionId: r.financialTransactionId,
+      occurredOn: ft?.occurredOn ? toIsoDate(ft.occurredOn) : null,
+      description: ft?.description ?? null,
+      sourceId: ft?.sourceId ?? null,
+      sourceCommand: ft?.sourceCommand ?? null,
+      sourceDomain: ft?.sourceDomain ?? null,
+      originType: ft?.type ?? null,
+    };
+  });
   const scoped = payload?.sourceId ? mapped.filter((r) => r.sourceId === payload.sourceId) : mapped;
 
   return {

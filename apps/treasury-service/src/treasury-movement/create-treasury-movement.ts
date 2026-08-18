@@ -432,17 +432,23 @@ function descriptionFor(
 }
 
 export function serializeMovement(row: any, replay: boolean, obligationId?: string | null) {
+  const fromName = row.fromAccount?.name ?? null;
+  const toName = row.toAccount?.name ?? null;
   return {
     id: row.id,
     movementType: row.movementType,
     fromPhysicalId: row.fromPhysicalId,
     toPhysicalId: row.toPhysicalId,
+    fromName,
+    toName,
     amountMinor: row.amountMinor.toString(),
     financialTransactionId: row.financialTransactionId,
     journalId: row.journalId,
     occurredOn: row.occurredOn instanceof Date ? row.occurredOn.toISOString().slice(0, 10) : row.occurredOn,
     originalMovementId: row.originalMovementId ?? null,
     reason: row.reason ?? null,
+    notes: row.notes ?? null,
+    summary: row.notes || descriptionFor(row.movementType, fromName ?? undefined, toName ?? undefined),
     existingIfReplay: replay,
     obligationId: obligationId ?? null,
   };
