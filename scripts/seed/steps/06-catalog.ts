@@ -1,4 +1,5 @@
 import { DEMO } from '../demo-ids.js';
+import { demoImageUrl } from '../demo-images.js';
 import type { SeedClients } from '../prisma-clients.js';
 
 export type CatalogProduct = {
@@ -13,6 +14,7 @@ export type CatalogProduct = {
   cost: number;
   units: number; // serial units to create (0 for non-serialized → qtyOnHand)
   qtyOnHand?: number;
+  imageUrl?: string;
 };
 
 /** ~25 products across brands/categories for POS + inventory testing */
@@ -333,6 +335,7 @@ export function buildCatalogProducts(): CatalogProduct[] {
   ];
 
   for (const product of products) {
+    product.imageUrl = demoImageUrl(product.sku);
     if (product.trackingMethod === 'SERIALIZED') {
       product.units = 20;
     } else if (product.qtyOnHand) {
@@ -414,6 +417,8 @@ export async function seedCatalog(clients: SeedClients): Promise<CatalogProduct[
         status: 'ACTIVE',
         quantityOnHand: p.qtyOnHand ?? 0,
         shopId: null,
+        imageUrl: p.imageUrl,
+        images: p.imageUrl ? [p.imageUrl] : [],
       },
       create: {
         id: p.id,
@@ -427,6 +432,8 @@ export async function seedCatalog(clients: SeedClients): Promise<CatalogProduct[
         type: p.type,
         status: 'ACTIVE',
         quantityOnHand: p.qtyOnHand ?? 0,
+        imageUrl: p.imageUrl,
+        images: p.imageUrl ? [p.imageUrl] : [],
         createdBy: DEMO.users.admin.id,
       },
     });
