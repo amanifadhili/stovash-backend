@@ -329,4 +329,82 @@ describe('Phase 9 treasury invariants', () => {
     expect(blocked.status).toBe('error');
     expect(blocked.errorCode).toBe(ErrorCode.VALIDATION_ERROR);
   });
+
+  it('treasury identity equation: closing = Σ incoming − Σ outgoing', async () => {
+    const byKind = await accounts();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 8_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'id-eq-cap',
+      },
+      context,
+      books,
+    );
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_TRANSFER',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.PETTY_CASH.id,
+        amountMinor: 1_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'id-eq-xfer',
+      },
+      context,
+      books,
+    );
+    const movements = await prisma.treasuryMovement.findMany({ where: { tenantId, shopId } });
+    const closing = await derivedBalances(tenantId, shopId);
+    for (const account of Object.values(byKind) as Array<{ id: string }>) {
+      const inflows = movements.filter((m) => m.toPhysicalId === account.id).reduce((s, m) => s + m.amountMinor, 0n);
+      const outflows = movements.filter((m) => m.fromPhysicalId === account.id).reduce((s, m) => s + m.amountMinor, 0n);
+      expect(balanceOf(closing, account.id)).toBe(inflows - outflows);
+    }
+  });
+
+  it('loan identity equation: principal − repayments = outstanding', async () => {
+    const byKind = await accounts();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 5_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'id-loan-cap',
+      },
+      context,
+      books,
+    );
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_CASH.id,
+        amountMinor: 3_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'id-loan-out',
+      },
+      context,
+      books,
+    );
+    const loans = await getTreasuryLoans(context);
+    const open = loans.data.loans.find((l: any) => l.status === 'OPEN');
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN_REPAY',
+        fromPhysicalId: byKind.OPS_CASH.id,
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        loanId: open.id,
+        amountMinor: 1_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'id-loan-repay',
+      },
+      context,
+      books,
+    );
+    const after = await getTreasuryLoans(context);
+    expect(after.data.loans.find((l: any) => l.id === open.id).outstandingMinor).toBe('2000000');
+  });
 });

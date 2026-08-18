@@ -11,6 +11,7 @@ import {
   ACCOUNT_SALES_REVENUE,
   ACCOUNT_SUPPLIER_PAYABLE,
 } from '../../engine-ledger/chart.js';
+import { setShopTodayForTests } from '../../financial-transaction/calendar.js';
 
 const DAY = '2026-08-17';
 const SALE_500K = 50000000; // 500,000 RWF
@@ -38,15 +39,59 @@ describe('Sale and purchase books (Phase 6)', () => {
   }
 
   beforeEach(async () => {
+    setShopTodayForTests(DAY);
     await wipe();
   });
 
   afterAll(async () => {
+    setShopTodayForTests(DAY);
     await wipe();
     await prisma.$disconnect();
   });
 
-  it('500k sale / 380k cost earns 120k profit with AR for the full sale', async () => {
+  // scenario 1: full cash sale
+  // scenario 2: full MoMo sale
+  // scenario 3: full bank sale
+  it.each([
+    [1, 'OPS_CASH', 'full cash sale'],
+    [2, 'OPS_MOMO', 'full MoMo sale'],
+    [3, 'OPS_MAIN_BANK', 'full bank sale'],
+  ] as const)('scenario %i: %s settles AR without extra revenue', async (n, toKind, _label) => {
+    const saleId = `sale-full-${n}`;
+    await postSaleConfirmation(
+      {
+        saleId,
+        customerName: 'Full',
+        revenueMinor: SALE_500K,
+        cogsMinor: COST_380K,
+        occurredOn: DAY,
+      },
+      context,
+    );
+    const pay = await postTreasuryBooks(
+      {
+        type: 'SALE_PAYMENT',
+        amountMinor: SALE_500K,
+        occurredOn: DAY,
+        toKind,
+        obligationSourceId: saleId,
+        idempotencyKey: `full-pay-${n}`,
+      },
+      context,
+    );
+    expect(pay.status).toBe('success');
+    const ar = (await getReceivables(undefined, context)).data.receivables.find(
+      (r: any) => r.sourceId === saleId,
+    );
+    expect(ar.outstandingMinor).toBe('0');
+    const accounts = await getAccountingAccounts(context);
+    expect(accounts.data.accounts.find((a: any) => a.code === ACCOUNT_SALES_REVENUE).balanceMinor).toBe(
+      String(SALE_500K),
+    );
+    expect(accounts.data.profitAllocation.earnedMinor).toBe(String(PROFIT_120K));
+  });
+
+  it('scenario 7: credit sale — economics without requiring cash', async () => {
     const result = await postSaleConfirmation(
       {
         saleId: 'sale-gold-1',
@@ -76,7 +121,7 @@ describe('Sale and purchase books (Phase 6)', () => {
     expect(cogsLines).toEqual([`DEBIT:${ACCOUNT_COGS}`, `CREDIT:${ACCOUNT_INVENTORY}`]);
   });
 
-  it('200k paid / 300k AR / profit still 120k, and later 300k repayment does not create revenue', async () => {
+  it('scenario 5 and scenario 6: partial payment then later repayment does not create revenue', async () => {
     await postSaleConfirmation(
       {
         saleId: 'sale-gold-2',
@@ -141,7 +186,7 @@ describe('Sale and purchase books (Phase 6)', () => {
     expect(arAfter.status).toBe('SETTLED');
   });
 
-  it('split tender hits Cash, MoMo, and Bank with no extra revenue', async () => {
+  it('scenario 4: mixed payment sale hits Cash, MoMo, and Bank with no extra revenue', async () => {
     await postSaleConfirmation(
       {
         saleId: 'sale-gold-3',
@@ -177,7 +222,7 @@ describe('Sale and purchase books (Phase 6)', () => {
     expect(accounts.data.accounts.find((a: any) => a.code === ACCOUNT_SALES_REVENUE).balanceMinor).toBe(String(SALE_500K));
   });
 
-  it('purchase partial payment leaves matching payable outstanding', async () => {
+  it('scenario 8 and scenario 9: unpaid purchase then partial supplier payment', async () => {
     const payable = await postPurchasePayable(
       {
         purchaseId: 'pur-gold-1',
@@ -210,7 +255,7 @@ describe('Sale and purchase books (Phase 6)', () => {
     expect(ap.balanceMinor).toBe(String(AR_300K));
   });
 
-  it('retry of the same sale payment is one journal (idempotent)', async () => {
+  it('scenario 28: duplicate sale payment request is one journal', async () => {
     await postSaleConfirmation(
       {
         saleId: 'sale-gold-retry',

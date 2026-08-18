@@ -2,6 +2,7 @@ import { prisma } from '../../database/client.js';
 import { postTreasuryBooks } from '../../engine-ledger/post-treasury-books.js';
 import { getAccountingAccounts } from '../../engine-ledger/queries.js';
 import { ACCOUNT_RECON_ADJUSTMENT } from '../../engine-ledger/chart.js';
+import { setShopTodayForTests } from '../../financial-transaction/calendar.js';
 
 const DAY = '2026-08-17';
 const DIFF = 10000000; // 100,000 RWF
@@ -22,6 +23,7 @@ describe('Reconciliation adjustment books (Phase 9)', () => {
   }
 
   beforeEach(async () => {
+    setShopTodayForTests(DAY);
     await wipe();
   });
 

@@ -1,6 +1,7 @@
 import { prisma } from '../../database/client.js';
 import { postTreasuryBooks } from '../../engine-ledger/post-treasury-books.js';
 import { ACCOUNT_CAPITAL_BANK, ACCOUNT_INTEREST_EXPENSE, ACCOUNT_OWNER_EQUITY } from '../../engine-ledger/chart.js';
+import { setShopTodayForTests } from '../../financial-transaction/calendar.js';
 
 describe('Treasury books journals (Phase 5)', () => {
   const tenantId = 'tenant-tb-phase5';
@@ -17,10 +18,12 @@ describe('Treasury books journals (Phase 5)', () => {
   }
 
   beforeEach(async () => {
+    setShopTodayForTests('2026-08-17');
     await wipe();
   });
 
   afterAll(async () => {
+    setShopTodayForTests('2026-08-17');
     await wipe();
     await prisma.$disconnect();
   });

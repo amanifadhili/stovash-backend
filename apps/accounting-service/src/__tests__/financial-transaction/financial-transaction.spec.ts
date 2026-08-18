@@ -4,6 +4,7 @@ import { postFinancialTransaction } from '../../financial-transaction/post-finan
 import { getFinancialTransaction } from '../../financial-transaction/get-financial-transaction.js';
 import { parseAmountMinor } from '../../financial-transaction/serialize.js';
 import { PostFinancialTransactionPayload } from '../../financial-transaction/types.js';
+import { setShopTodayForTests } from '../../financial-transaction/calendar.js';
 
 describe('FinancialTransaction engine', () => {
   const tenantId = 'tenant-ft-phase2';
@@ -31,6 +32,7 @@ describe('FinancialTransaction engine', () => {
   }
 
   beforeEach(async () => {
+    setShopTodayForTests('2026-08-17');
     await prisma.auditLog.deleteMany({ where: { tenantId } });
     await prisma.financialTransaction.deleteMany({ where: { tenantId } });
   });

@@ -2,7 +2,7 @@ import { ErrorCode } from '@electronic-shop/types';
 import { prisma } from '../../database/client.js';
 import { postSaleConfirmation } from '../../engine-ledger/post-sale-books.js';
 import { postTreasuryBooks } from '../../engine-ledger/post-treasury-books.js';
-import { getAccountingAccounts } from '../../engine-ledger/queries.js';
+import { getAccountingAccounts, getReceivables } from '../../engine-ledger/queries.js';
 import { getEngineReport } from '../../engine-ledger/engine-report.js';
 import { recordGeneralExpense } from '../../engine-ledger/record-general-expense.js';
 import { postFinancialCorrection } from '../../engine-ledger/post-financial-correction.js';
@@ -172,5 +172,224 @@ describe('Phase 9 accounting invariants', () => {
     const report = await getEngineReport(context);
     expect(report.data.interestMinor).toBe('18000000');
     expect(report.data.expensesMinor).toBe('18000000');
+  });
+
+  it('receivable identity equation: original − payments = outstanding', async () => {
+    await postSale('sale-id-recv');
+    await postTreasuryBooks(
+      {
+        type: 'SALE_PAYMENT',
+        occurredOn: DAY,
+        amountMinor: PAID_200K,
+        toKind: 'OPS_CASH',
+        obligationSourceId: 'sale-id-recv',
+        idempotencyKey: 'id-recv-pay',
+      },
+      context,
+    );
+    const listed = await getReceivables({ sourceId: 'sale-id-recv', kind: 'CUSTOMER_RECEIVABLE' }, context);
+    expect(listed.data.receivables[0].outstandingMinor).toBe(String(SALE_500K - PAID_200K));
+  });
+
+  it('payment ≠ revenue', async () => {
+    await postSale('sale-id-pay-rev');
+    const before = await getAccountingAccounts(context);
+    await postTreasuryBooks(
+      {
+        type: 'SALE_PAYMENT',
+        occurredOn: DAY,
+        amountMinor: PAID_200K,
+        toKind: 'OPS_CASH',
+        obligationSourceId: 'sale-id-pay-rev',
+        idempotencyKey: 'id-pay-rev',
+      },
+      context,
+    );
+    const after = await getAccountingAccounts(context);
+    expect(after.data.accounts.find((a: any) => a.code === ACCOUNT_SALES_REVENUE).balanceMinor).toBe(
+      before.data.accounts.find((a: any) => a.code === ACCOUNT_SALES_REVENUE).balanceMinor,
+    );
+  });
+
+  it('payment ≠ profit', async () => {
+    await postSale('sale-id-pay-profit');
+    await postTreasuryBooks(
+      {
+        type: 'SALE_PAYMENT',
+        occurredOn: DAY,
+        amountMinor: PAID_200K,
+        toKind: 'OPS_CASH',
+        obligationSourceId: 'sale-id-pay-profit',
+        idempotencyKey: 'id-pay-profit',
+      },
+      context,
+    );
+    const report = await getEngineReport(context);
+    expect(report.data.profit.earnedMinor).toBe(String(PROFIT_120K));
+  });
+
+  it('loan ≠ profit', async () => {
+    await postSale('sale-id-loan-profit');
+    await postTreasuryBooks(
+      {
+        type: 'OWNER_CAPITAL_IN',
+        occurredOn: DAY,
+        amountMinor: '8000000',
+        toKind: 'CAPITAL_BANK',
+        idempotencyKey: 'id-loan-cap',
+      },
+      context,
+    );
+    await postTreasuryBooks(
+      {
+        type: 'INTERNAL_LOAN',
+        occurredOn: DAY,
+        amountMinor: '3000000',
+        fromKind: 'CAPITAL_BANK',
+        toKind: 'OPS_CASH',
+        idempotencyKey: 'id-loan-ops',
+      },
+      context,
+    );
+    const report = await getEngineReport(context);
+    expect(report.data.profit.earnedMinor).toBe(String(PROFIT_120K));
+  });
+
+  it('capital loan ≠ capital increase', async () => {
+    await postTreasuryBooks(
+      {
+        type: 'OWNER_CAPITAL_IN',
+        occurredOn: DAY,
+        amountMinor: '8000000',
+        toKind: 'CAPITAL_BANK',
+        idempotencyKey: 'id-cap-in',
+      },
+      context,
+    );
+    const equityBefore = (await getAccountingAccounts(context)).data.accounts.find((a: any) => a.code === '3000');
+    await postTreasuryBooks(
+      {
+        type: 'INTERNAL_LOAN',
+        occurredOn: DAY,
+        amountMinor: '3000000',
+        fromKind: 'CAPITAL_BANK',
+        toKind: 'OPS_CASH',
+        idempotencyKey: 'id-cap-loan',
+      },
+      context,
+    );
+    const after = await getAccountingAccounts(context);
+    expect(after.data.accounts.find((a: any) => a.code === '3000').balanceMinor).toBe(equityBefore.balanceMinor);
+    expect(after.data.accounts.find((a: any) => a.code === '1140').balanceMinor).toBe('5000000');
+  });
+
+  it('Profit→Capital increases capital with no liability', async () => {
+    await postTreasuryBooks(
+      {
+        type: 'OWNER_CAPITAL_IN',
+        occurredOn: DAY,
+        amountMinor: '5000000',
+        toKind: 'CAPITAL_BANK',
+        idempotencyKey: 'id-g-cap',
+      },
+      context,
+    );
+    await postTreasuryBooks(
+      {
+        type: 'INTERNAL_LOAN',
+        occurredOn: DAY,
+        amountMinor: '2000000',
+        fromKind: 'CAPITAL_BANK',
+        toKind: 'OPS_MAIN_BANK',
+        idempotencyKey: 'id-g-loan',
+      },
+      context,
+    );
+    await prisma.profitAllocation.upsert({
+      where: { tenantId_shopId: { tenantId, shopId } },
+      create: { tenantId, shopId, earnedMinor: 400000n, transferredMinor: 0n },
+      update: { earnedMinor: 400000n },
+    });
+    await postTreasuryBooks(
+      {
+        type: 'PROFIT_TRANSFER',
+        occurredOn: DAY,
+        amountMinor: '400000',
+        fromKind: 'OPS_MAIN_BANK',
+        toKind: 'PROFIT_BANK',
+        idempotencyKey: 'id-g-pt',
+      },
+      context,
+    );
+    const growth = await postTreasuryBooks(
+      {
+        type: 'CAPITAL_GROWTH',
+        occurredOn: DAY,
+        amountMinor: '400000',
+        fromKind: 'PROFIT_BANK',
+        toKind: 'CAPITAL_BANK',
+        idempotencyKey: 'id-g-growth',
+      },
+      context,
+    );
+    expect(growth.status).toBe('success');
+    const after = await getAccountingAccounts(context);
+    expect(after.data.accounts.find((a: any) => a.code === '1140').balanceMinor).toBe('3400000');
+    expect(after.data.accounts.find((a: any) => a.code === '2200').balanceMinor).toBe('0');
+    expect(growth.data.journal.lines.every((l: any) => l.accountType === 'ASSET')).toBe(true);
+  });
+
+  it('Petty Cash is traceable to Capital', async () => {
+    await postTreasuryBooks(
+      {
+        type: 'OWNER_CAPITAL_IN',
+        occurredOn: DAY,
+        amountMinor: '1000000',
+        toKind: 'CAPITAL_BANK',
+        idempotencyKey: 'id-petty-cap',
+      },
+      context,
+    );
+    await postTreasuryBooks(
+      {
+        type: 'INTERNAL_TRANSFER',
+        occurredOn: DAY,
+        amountMinor: '300000',
+        fromKind: 'CAPITAL_BANK',
+        toKind: 'PETTY_CASH',
+        idempotencyKey: 'id-petty-xfer',
+      },
+      context,
+    );
+    const after = await getAccountingAccounts(context);
+    const petty = after.data.accounts.find((a: any) => a.code === '1150');
+    expect(petty.fundCode).toBe('CAPITAL');
+    expect(petty.balanceMinor).toBe('300000');
+    expect(after.data.accounts.find((a: any) => a.code === '1140').balanceMinor).toBe('700000');
+  });
+
+  it('loan identity equation: principal − repayments = outstanding', async () => {
+    await postTreasuryBooks(
+      {
+        type: 'EXTERNAL_LOAN',
+        occurredOn: DAY,
+        amountMinor: '3000000',
+        toKind: 'OPS_CASH',
+        idempotencyKey: 'id-ext',
+      },
+      context,
+    );
+    await postTreasuryBooks(
+      {
+        type: 'EXTERNAL_LOAN_REPAY_PRINCIPAL',
+        occurredOn: DAY,
+        amountMinor: '1000000',
+        fromKind: 'OPS_CASH',
+        idempotencyKey: 'id-ext-repay',
+      },
+      context,
+    );
+    const after = await getAccountingAccounts(context);
+    expect(after.data.accounts.find((a: any) => a.code === '2200').balanceMinor).toBe('2000000');
   });
 });

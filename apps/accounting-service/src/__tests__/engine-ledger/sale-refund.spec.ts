@@ -9,6 +9,7 @@ import {
   ACCOUNT_INVENTORY,
   ACCOUNT_SALES_REVENUE,
 } from '../../engine-ledger/chart.js';
+import { setShopTodayForTests } from '../../financial-transaction/calendar.js';
 
 const DAY = '2026-08-17';
 const SALE_500K = 50000000;
@@ -31,6 +32,7 @@ describe('Sale refund books (Phase 8)', () => {
   }
 
   beforeEach(async () => {
+    setShopTodayForTests(DAY);
     await wipe();
   });
 

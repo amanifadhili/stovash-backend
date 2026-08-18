@@ -9,6 +9,9 @@ import { assertJournalBalanced, UnbalancedJournalError } from '../../engine-ledg
 import { ACCOUNT_COGS, ACCOUNT_INVENTORY, ACCOUNT_PETTY_CASH, ACCOUNT_PROFIT_RESERVE_BANK, ACCOUNT_WORKER_ADVANCE } from '../../engine-ledger/chart.js';
 import { postTreasuryBooks } from '../../engine-ledger/post-treasury-books.js';
 import { ICommandResponse, IRequestContext } from '@electronic-shop/types';
+import { setShopTodayForTests } from '../../financial-transaction/calendar.js';
+
+const DAY = '2026-08-17';
 
 const TYPE_FOR: Record<string, string> = {
   GENERAL_EXPENSE_FUNDING: 'GENERAL_EXPENSE_FUNDING',
@@ -75,15 +78,17 @@ describe('Engine ledger (Phase 4 / 7)', () => {
   }
 
   beforeEach(async () => {
+    setShopTodayForTests(DAY);
     await wipe();
   });
 
   afterAll(async () => {
+    setShopTodayForTests(DAY);
     await wipe();
     await prisma.$disconnect();
   });
 
-  it('posts rent 1,000,000 RWF as PR Bank → Operational → payee (not a loan)', async () => {
+  it('scenario 10 analog: posts rent 1,000,000 RWF as PR Bank → Operational → payee (not a loan)', async () => {
     const ledgerUpdate = jest.spyOn(prisma.ledgerAccount, 'update');
     const result = await recordGeneralExpense(
       {
@@ -130,7 +135,7 @@ describe('Engine ledger (Phase 4 / 7)', () => {
     expect(report.data.netBusinessProfitMinor).toBe(String(-RENT_1M_FRANCS_CENTS));
   });
 
-  it('records a 30,000 RWF worker advance as receivable, not expense', async () => {
+  it('scenario 11: records a 30,000 RWF worker advance as receivable, not expense', async () => {
     const result = await recordWorkerAdvance(
       {
         workerName: 'Jean',
@@ -165,7 +170,7 @@ describe('Engine ledger (Phase 4 / 7)', () => {
     expect(expenseBalances.every((b: string) => b === '0')).toBe(true);
   });
 
-  it('repays a worker advance back to Petty Cash and reduces AR', async () => {
+  it('scenario 12: repays a worker advance back to Petty Cash and reduces AR', async () => {
     const advanced = await recordWorkerAdvance(
       {
         workerName: 'Jean',
@@ -195,7 +200,7 @@ describe('Engine ledger (Phase 4 / 7)', () => {
     expect(accounts.data.accounts.find((a: any) => a.code === ACCOUNT_PETTY_CASH).balanceMinor).toBe('0');
   });
 
-  it('posts petty minor expense from Petty Cash, not Operational', async () => {
+  it('scenario 13: posts petty minor expense from Petty Cash, not Operational', async () => {
     const result = await recordPettyCashExpense(
       {
         category: 'MINOR',

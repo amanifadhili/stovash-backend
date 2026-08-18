@@ -689,6 +689,34 @@ describe('Phase 9 sale payment fail-closed', () => {
     await prisma.sale.deleteMany();
   });
 
+  it('scenario 29: timeout retry with the same idempotencyKey is one payment row', async () => {
+    let fail = true;
+    const { create, confirm, pay } = await makeHandlers(() => {
+      if (fail) throw new Error('TCP timeout');
+      return treasuryMovementOk('mv-29');
+    });
+    const created = await create.execute(new CreateSaleCommand({ customerName: 'Jean', items }, ctx));
+    await confirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const first = await pay.execute(
+      new RecordSalePaymentCommand(
+        { saleId: created.data.id, amount: 200000, method: 'CASH', idempotencyKey: 'retry-29' },
+        ctx,
+      ),
+    );
+    expect(first.status).toBe('error');
+    expect(await prisma.salePayment.count({ where: { saleId: created.data.id } })).toBe(0);
+
+    fail = false;
+    const second = await pay.execute(
+      new RecordSalePaymentCommand(
+        { saleId: created.data.id, amount: 200000, method: 'CASH', idempotencyKey: 'retry-29' },
+        ctx,
+      ),
+    );
+    expect(second.status).toBe('success');
+    expect(await prisma.salePayment.count({ where: { saleId: created.data.id } })).toBe(1);
+  });
+
   it('compensates the payment row when treasury/accounting books are down', async () => {
     const { create, confirm, pay } = await makeHandlers(() => {
       throw new Error('Accounting TCP down');

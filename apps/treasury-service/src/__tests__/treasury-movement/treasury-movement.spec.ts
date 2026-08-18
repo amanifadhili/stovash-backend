@@ -6,6 +6,7 @@ import { getTreasuryLoans, getProfitTransferPosition } from '../../treasury-move
 import { recordReconciliation, approveReconciliationAdjustment } from '../../treasury-movement/reconciliation.js';
 import { TreasuryBooksClient } from '../../treasury-movement/types.js';
 import { balanceOf, derivedBalances } from '../../treasury-movement/balances.js';
+import { setShopTodayForTests } from '../../treasury-movement/calendar.js';
 
 const DAY = '2026-08-17';
 
@@ -51,15 +52,17 @@ describe('Treasury movements (Phase 5)', () => {
   }
 
   beforeEach(async () => {
+    setShopTodayForTests(DAY);
     await wipe();
   });
 
   afterAll(async () => {
+    setShopTodayForTests(DAY);
     await wipe();
     await prisma.$disconnect();
   });
 
-  it('Capital→Operational creates an obligation; repayment reduces it', async () => {
+  it('scenario 17 and scenario 18: Capital→Operational creates an obligation; repayment reduces it', async () => {
     const byKind = await accountsByKind();
     await createTreasuryMovement(
       {
@@ -111,7 +114,7 @@ describe('Treasury movements (Phase 5)', () => {
     expect(loans.data.loans[0].status).toBe('REPAID');
   });
 
-  it('Profit→Capital increases Capital and does not create a loan', async () => {
+  it('scenario 14 and scenario 21: manager profit transfer then Profit→Capital growth creates no loan', async () => {
     const byKind = await accountsByKind();
     await createTreasuryMovement(
       {
@@ -627,5 +630,139 @@ describe('Treasury movements (Phase 5)', () => {
       structure.data!.funds.find((f) => f.code === 'CAPITAL')?.accounts.find((a) => a.kind === 'CAPITAL_BANK')
         ?.balanceMinor,
     ).toBe('6500000');
+  });
+
+  it('scenario 16: Profit→Operational is an internal loan, not a transfer of profit ownership', async () => {
+    const byKind = await accountsByKind();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 5_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 's16-cap',
+      },
+      context,
+      books,
+    );
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_CASH.id,
+        amountMinor: 5_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 's16-setup',
+      },
+      context,
+      books,
+    );
+    earned = 5_000_000n;
+    await createTreasuryMovement(
+      {
+        movementType: 'PROFIT_TRANSFER',
+        fromPhysicalId: byKind.OPS_CASH.id,
+        toPhysicalId: byKind.PROFIT_BANK.id,
+        amountMinor: 5_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 's16-pt',
+      },
+      context,
+      books,
+    );
+    const loan = await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN',
+        fromPhysicalId: byKind.PROFIT_BANK.id,
+        toPhysicalId: byKind.OPS_CASH.id,
+        amountMinor: 2_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 's16-pr-loan',
+      },
+      context,
+      books,
+    );
+    expect(loan.status).toBe('success');
+    const loans = await getTreasuryLoans(context);
+    const open = loans.data.loans.find((l: any) => l.status === 'OPEN');
+    expect(open.kind).toBe('INTERNAL_LOAN');
+    expect(open.lenderFundCode).toBe('PROFIT_RESERVE');
+    expect(open.outstandingMinor).toBe('2000000');
+    expect(bookCalls[bookCalls.length - 1].type).toBe('INTERNAL_LOAN');
+    expect(bookCalls[bookCalls.length - 1].type).not.toBe('CAPITAL_GROWTH');
+  });
+
+  it('scenario 19: external loan received credits a destination and creates a liability', async () => {
+    const byKind = await accountsByKind();
+    const received = await createTreasuryMovement(
+      {
+        movementType: 'EXTERNAL_LOAN',
+        toPhysicalId: byKind.OPS_MAIN_BANK.id,
+        amountMinor: 3_000_000,
+        occurredOn: DAY,
+        counterpartyName: 'Bank of Kigali',
+        idempotencyKey: 's19-ext',
+      },
+      context,
+      books,
+    );
+    expect(received.status).toBe('success');
+    const loans = await getTreasuryLoans(context);
+    const ext = loans.data.loans.find((l: any) => l.kind === 'EXTERNAL_LOAN');
+    expect(ext.outstandingMinor).toBe('3000000');
+    expect(ext.partyName).toBe('Bank of Kigali');
+    expect(bookCalls[bookCalls.length - 1].type).toBe('EXTERNAL_LOAN');
+    const balances = await derivedBalances(tenantId, shopId);
+    expect(balanceOf(balances, byKind.OPS_MAIN_BANK.id)).toBe(3_000_000n);
+  });
+
+  it('scenario 20: external repayment splits principal vs interest', async () => {
+    const byKind = await accountsByKind();
+    await createTreasuryMovement(
+      {
+        movementType: 'EXTERNAL_LOAN',
+        toPhysicalId: byKind.OPS_CASH.id,
+        amountMinor: 3_000_000,
+        occurredOn: DAY,
+        counterpartyName: 'Bank of Kigali',
+        idempotencyKey: 's20-ext',
+      },
+      context,
+      books,
+    );
+    const loans = await getTreasuryLoans(context);
+    const ext = loans.data.loans.find((l: any) => l.kind === 'EXTERNAL_LOAN' && l.status === 'OPEN');
+    const principal = await createTreasuryMovement(
+      {
+        movementType: 'EXTERNAL_LOAN_REPAY_PRINCIPAL',
+        fromPhysicalId: byKind.OPS_CASH.id,
+        loanId: ext.id,
+        amountMinor: 1_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 's20-prin',
+      },
+      context,
+      books,
+    );
+    expect(principal.status).toBe('success');
+    const interest = await createTreasuryMovement(
+      {
+        movementType: 'EXTERNAL_LOAN_INTEREST',
+        fromPhysicalId: byKind.OPS_CASH.id,
+        amountMinor: 200_000,
+        occurredOn: DAY,
+        idempotencyKey: 's20-int',
+      },
+      context,
+      books,
+    );
+    expect(interest.status).toBe('success');
+    const after = await getTreasuryLoans(context);
+    expect(after.data.loans.find((l: any) => l.id === ext.id).outstandingMinor).toBe('2000000');
+    expect(bookCalls.map((c) => c.type)).toEqual(
+      expect.arrayContaining(['EXTERNAL_LOAN', 'EXTERNAL_LOAN_REPAY_PRINCIPAL', 'EXTERNAL_LOAN_INTEREST']),
+    );
+    const balances = await derivedBalances(tenantId, shopId);
+    expect(balanceOf(balances, byKind.OPS_CASH.id)).toBe(1_800_000n);
   });
 });
