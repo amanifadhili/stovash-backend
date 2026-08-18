@@ -124,6 +124,14 @@ function journalLines(
     ];
   }
 
+  if (type === 'SALE_REFUND') {
+    if (!fromChart) return { error: 'SALE_REFUND requires an Operational source account' };
+    return [
+      { accountCode: ACCOUNT_CUSTOMER_RECEIVABLE, side: 'DEBIT', amountMinor: amount },
+      { accountCode: fromChart, side: 'CREDIT', amountMinor: amount },
+    ];
+  }
+
   if (type === 'PURCHASE_PAYMENT') {
     if (!fromChart) return { error: 'PURCHASE_PAYMENT requires an Operational source account' };
     return [

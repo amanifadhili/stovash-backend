@@ -14,6 +14,7 @@ import { PostTreasuryBooksHandler } from './post-treasury-books.handler.js';
 import { PostSaleConfirmationHandler } from './post-sale-confirmation.handler.js';
 import { PostPurchasePayableHandler } from './post-purchase-payable.handler.js';
 import { PostFinancialCorrectionHandler } from './post-financial-correction.handler.js';
+import { PostSaleRefundHandler } from './post-sale-refund.handler.js';
 
 export const CommandHandlers = [
   PostJournalEntryHandler,
@@ -32,6 +33,7 @@ export const CommandHandlers = [
   PostSaleConfirmationHandler,
   PostPurchasePayableHandler,
   PostFinancialCorrectionHandler,
+  PostSaleRefundHandler,
 ];
 
 

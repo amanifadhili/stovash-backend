@@ -53,10 +53,11 @@ const TREASURY_ENGINE = [
   'ApproveReconciliationAdjustment',
 ] as const;
 
-const COMMERCIAL = [
+  const COMMERCIAL = [
   'CreateSale',
   'ConfirmSale',
   'RecordSalePayment',
+  'IssueRefund',
   'ConfirmPurchase',
   'ConfirmPurchaseUnit',
   'RecordPurchasePayment',
@@ -132,7 +133,7 @@ describe('CBE Phase 1 — command map (amani working branch)', () => {
     }
   });
 
-  it('routes CreateSale / ConfirmSale / RecordSalePayment to sales', async () => {
+  it('routes CreateSale / ConfirmSale / RecordSalePayment / IssueRefund to sales', async () => {
     const sales = mockClient();
     const controller = new AppController(
       mockClient() as any,
@@ -144,7 +145,7 @@ describe('CBE Phase 1 — command map (amani working branch)', () => {
       mockClient() as any,
       mockClient() as any,
     );
-    for (const command of ['CreateSale', 'ConfirmSale', 'RecordSalePayment'] as const) {
+    for (const command of ['CreateSale', 'ConfirmSale', 'RecordSalePayment', 'IssueRefund'] as const) {
       await controller.handleCommand(adminReq(), { command, payload: {} });
       expect(sales.send).toHaveBeenCalledWith({ cmd: command }, expect.any(Object));
     }

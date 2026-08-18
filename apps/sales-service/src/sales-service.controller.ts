@@ -7,6 +7,7 @@ import { CancelSaleCommand } from './commands/impl/cancel-sale.command.js';
 import { FulfillSaleCommand } from './commands/impl/fulfill-sale.command.js';
 import { RecordSalePaymentCommand } from './commands/impl/record-sale-payment.command.js';
 import { CreateSaleReturnCommand } from './commands/impl/create-sale-return.command.js';
+import { IssueRefundCommand } from './commands/impl/issue-refund.command.js';
 import { AssessReturnedItemCommand } from './commands/impl/assess-returned-item.command.js';
 import { CreateWarrantyCommand } from './commands/impl/create-warranty.command.js';
 import { ProcessSaleCommand } from './commands/impl/process-sale.command.js';
@@ -54,6 +55,11 @@ export class SalesServiceController {
   @MessagePattern({ cmd: 'CreateSaleReturn' })
   async handleCreateSaleReturn(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new CreateSaleReturnCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'IssueRefund' })
+  async handleIssueRefund(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new IssueRefundCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'AssessReturnedItem' })

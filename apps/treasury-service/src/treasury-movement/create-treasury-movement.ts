@@ -361,6 +361,13 @@ function validateType(
       }
       if (!payload.obligationSourceId) return 'Sale payment requires the sale id';
       return null;
+    case 'SALE_REFUND':
+      if (!from || to || fromFund !== 'OPERATIONAL') {
+        return 'Sale refunds leave an Operational physical account';
+      }
+      if (!payload.obligationSourceId) return 'Sale refund requires the sale id';
+      if (!requireNonEmptyString(payload.reason, 500)) return 'Sale refund requires a reason';
+      return null;
     case 'PURCHASE_PAYMENT':
       if (!from || to || fromFund !== 'OPERATIONAL') {
         return 'Purchase payments leave an Operational physical account';
@@ -412,6 +419,7 @@ function descriptionFor(
   toName?: string,
   counterparty?: string,
 ): string {
+  if (type === 'SALE_REFUND') return `Sale refund from ${fromName || 'Operational'}`;
   if (type === 'OWNER_CAPITAL_IN') return `Owner capital in → ${toName || 'Capital Bank'}`;
   if (type === 'GENERAL_EXPENSE_FUNDING') return `General expense funding: ${fromName} → ${toName}`;
   if (type === 'GENERAL_EXPENSE_PAYOUT') return `General expense payout from ${fromName || 'Operational'}`;

@@ -3,12 +3,14 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CreateSaleHandler } from '../../commands/handlers/create-sale.handler.js';
 import { ConfirmSaleHandler } from '../../commands/handlers/confirm-sale.handler.js';
 import { RecordSalePaymentHandler } from '../../commands/handlers/record-sale-payment.handler.js';
+import { IssueRefundHandler } from '../../commands/handlers/issue-refund.handler.js';
 import { FulfillSaleHandler } from '../../commands/handlers/fulfill-sale.handler.js';
 import { CancelSaleHandler } from '../../commands/handlers/cancel-sale.handler.js';
 import { CreateWarrantyHandler } from '../../commands/handlers/create-warranty.handler.js';
 import { CreateSaleCommand, CreateSaleItemInput } from '../../commands/impl/create-sale.command.js';
 import { ConfirmSaleCommand } from '../../commands/impl/confirm-sale.command.js';
 import { RecordSalePaymentCommand } from '../../commands/impl/record-sale-payment.command.js';
+import { IssueRefundCommand } from '../../commands/impl/issue-refund.command.js';
 import { FulfillSaleCommand } from '../../commands/impl/fulfill-sale.command.js';
 import { CancelSaleCommand } from '../../commands/impl/cancel-sale.command.js';
 import { CreateWarrantyCommand } from '../../commands/impl/create-warranty.command.js';
@@ -439,6 +441,205 @@ describe('Sale lifecycle integration', () => {
 
     const history = await prisma.saleHistory.findMany({ where: { saleId: created.data.id } });
     expect(history.map((h) => h.eventType)).toContain('WARRANTY_CREATED');
+  });
+
+  it('scenario 30: retries ConfirmSale after books fail without a second commercial confirmation', async () => {
+    let booksFail = true;
+    const inventorySend = jest.fn(() => of({ status: 'success', data: { applied: 1, skippedIdempotent: 0 } }));
+    const accountingSend = ({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleConfirmation') {
+        if (booksFail) {
+          return of({ status: 'error', message: 'PostSaleConfirmation failed (test)', errorCode: 'INTERNAL_ERROR' });
+        }
+        return of({
+          status: 'success',
+          data: { profitEarnedMinor: '12000000', financialTransaction: { id: 'ft-rev-1' } },
+        });
+      }
+      return of({ status: 'success', data: { ok: true } });
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: { send: inventorySend } },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    const saleId = created.data.id;
+
+    const first = await localConfirm.execute(new ConfirmSaleCommand({ saleId }, ctx));
+    expect(first.status).toBe('error');
+    expect((await prisma.sale.findUnique({ where: { id: saleId } }))?.commercialStatus).toBe('DRAFT');
+
+    booksFail = false;
+    const second = await localConfirm.execute(new ConfirmSaleCommand({ saleId }, ctx));
+    expect(second.status).toBe('success');
+    expect((await prisma.sale.findUnique({ where: { id: saleId } }))?.commercialStatus).toBe('CONFIRMED');
+    expect(inventorySend).toHaveBeenCalledTimes(2);
+  });
+
+  it('scenario 22: IssueRefund PHYSICAL restocks then posts refund books', async () => {
+    const inventorySend = jest.fn(() => of({ status: 'success', data: { applied: 1, skippedIdempotent: 0 } }));
+    const accountingSend = jest.fn(({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleRefund') {
+        return of({
+          status: 'success',
+          data: {
+            remainingRevenueMinor: '0',
+            receivable: { outstandingMinor: '0' },
+            profitReversedMinor: '12000000',
+            financialTransaction: { id: 'ft-ref-22' },
+          },
+        });
+      }
+      return of({ status: 'success', data: { profitEarnedMinor: '12000000', financialTransaction: { id: 'ft-rev' } } });
+    });
+    const treasurySend = jest.fn(() => treasuryMovementOk('mv-ref-22'));
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        IssueRefundHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: { send: inventorySend } },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: treasurySend } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const localRefund = module.get(IssueRefundHandler);
+    const created = await localCreate.execute(
+      new CreateSaleCommand(
+        {
+          customerName: 'Jean',
+          items: [{ productId: 'prod-phone', inventoryItemId: 'inv-22', serialNumber: 'SN-22', quantity: 1, unitPrice: 500000, unitCost: 380000 }],
+        },
+        ctx,
+      ),
+    );
+    await localConfirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const saleItem = await prisma.saleItem.findFirst({ where: { saleId: created.data.id } });
+
+    const refund = await localRefund.execute(
+      new IssueRefundCommand(
+        {
+          saleId: created.data.id,
+          kind: 'PHYSICAL',
+          amountMinor: '50000000',
+          reason: 'Customer returned the device',
+          idempotencyKey: 'ref-22',
+          items: [{ saleItemId: saleItem!.id, inventoryItemId: 'inv-22', quantity: 1, unitCost: 380000 }],
+        },
+        ctx,
+      ),
+    );
+    expect(refund.status).toBe('success');
+    expect(inventorySend).toHaveBeenCalledWith({ cmd: 'ApplySaleReturn' }, expect.any(Object));
+    expect(accountingSend).toHaveBeenCalledWith({ cmd: 'PostSaleRefund' }, expect.any(Object));
+    expect(treasurySend).not.toHaveBeenCalled();
+    const ret = await prisma.saleReturn.findFirst({ where: { saleId: created.data.id } });
+    expect(ret?.status).toBe('COMPLETED');
+    expect(ret?.refundMethod).toBe('PHYSICAL');
+  });
+
+  it('scenario 23: IssueRefund GOODWILL skips inventory and still posts books', async () => {
+    const inventorySend = jest.fn(() => of({ status: 'success', data: { applied: 1 } }));
+    const accountingSend = jest.fn(({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleRefund') {
+        return of({
+          status: 'success',
+          data: {
+            remainingRevenueMinor: '0',
+            receivable: { outstandingMinor: '0' },
+            profitReversedMinor: '50000000',
+            financialTransaction: { id: 'ft-ref-23' },
+          },
+        });
+      }
+      return of({ status: 'success', data: { profitEarnedMinor: '12000000' } });
+    });
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        IssueRefundHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: { send: inventorySend } },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => treasuryMovementOk() } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const localRefund = module.get(IssueRefundHandler);
+    const created = await localCreate.execute(
+      new CreateSaleCommand(
+        {
+          customerName: 'Marie',
+          items: [{ productId: 'prod-phone', inventoryItemId: 'inv-23', serialNumber: 'SN-23', quantity: 1, unitPrice: 500000, unitCost: 380000 }],
+        },
+        ctx,
+      ),
+    );
+    await localConfirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+
+    const refund = await localRefund.execute(
+      new IssueRefundCommand(
+        {
+          saleId: created.data.id,
+          kind: 'GOODWILL',
+          amountMinor: '50000000',
+          reason: 'Delayed delivery goodwill',
+          idempotencyKey: 'ref-23',
+        },
+        ctx,
+      ),
+    );
+    expect(refund.status).toBe('success');
+    expect(inventorySend.mock.calls.some((c) => c[0]?.cmd === 'ApplySaleReturn')).toBe(false);
+    expect(accountingSend).toHaveBeenCalledWith({ cmd: 'PostSaleRefund' }, expect.any(Object));
+  });
+
+  it('rejects IssueRefund without a reason', async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        IssueRefundHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: () => of({ status: 'success', data: { ok: true } }) } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => treasuryMovementOk() } },
+      ],
+    }).compile();
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const localRefund = module.get(IssueRefundHandler);
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    await localConfirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    const refund = await localRefund.execute(
+      new IssueRefundCommand(
+        { saleId: created.data.id, kind: 'GOODWILL', amountMinor: '100', reason: '   ', idempotencyKey: 'no-reason' },
+        ctx,
+      ),
+    );
+    expect(refund.status).toBe('error');
   });
 });
 

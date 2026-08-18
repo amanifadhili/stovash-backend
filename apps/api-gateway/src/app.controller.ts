@@ -52,6 +52,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'PostSaleConfirmation': [],
   'PostPurchasePayable': [],
   'PostFinancialCorrection': [],
+  'PostSaleRefund': [],
   'GetEngineReport': [],
   
   // Inventory commands
@@ -79,6 +80,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetAvailableInventoryItems': ['inventory:item:read'],
   'ProcessPosSale': ['inventory:sale:create'],
   'ApplySaleFulfillment': ['inventory:sale:create'],
+  'ApplySaleReturn': ['inventory:return:process'],
   'ReceiveGoods': ['inventory:goods:receive'],
   'ProcessSalesReturn': ['inventory:return:process'],
   'CreateWarrantyClaim': ['inventory:warranty:create'],
@@ -98,6 +100,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'FulfillSale': ['sales:sale:fulfill'],
   'RecordSalePayment': ['sales:payment:create'],
   'CreateSaleReturn': ['sales:return:create'],
+  'IssueRefund': [],
   'AssessReturnedItem': ['sales:return:assess'],
   'CreateWarranty': ['sales:warranty:create'],
   'ConvertQuotationToSale': ['sales:sale:create'],
@@ -207,6 +210,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'PostSaleConfirmation': ['ADMIN', 'MANAGER', 'STAFF'],
   'PostPurchasePayable': ['ADMIN', 'MANAGER', 'STAFF'],
   'PostFinancialCorrection': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'PostSaleRefund': ['ADMIN', 'MANAGER'],
   'GetEngineReport': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   
   // Inventory commands
@@ -234,6 +238,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetAvailableInventoryItems': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessPosSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'ApplySaleFulfillment': ['ADMIN', 'MANAGER', 'STAFF'],
+  'ApplySaleReturn': ['ADMIN', 'MANAGER'],
   'ReceiveGoods': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessSalesReturn': ['ADMIN', 'MANAGER', 'STAFF'],
   'CreateWarrantyClaim': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -255,6 +260,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'FulfillSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'RecordSalePayment': ['ADMIN', 'MANAGER', 'STAFF'],
   'CreateSaleReturn': ['ADMIN', 'MANAGER', 'STAFF'],
+  'IssueRefund': ['ADMIN', 'MANAGER'],
   'AssessReturnedItem': ['ADMIN', 'MANAGER'],
   'CreateWarranty': ['ADMIN', 'MANAGER', 'STAFF'],
   'ConvertQuotationToSale': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -366,7 +372,7 @@ export const RETIRED_FINANCIAL_COMMANDS = new Set([
 export const QUARANTINED_FINANCIAL_COMMANDS = RETIRED_FINANCIAL_COMMANDS;
 
 /** STAFF may count cash and post sales; cannot approve recon, profit transfer, or capital/internal loans. */
-export const STAFF_CANNOT_APPROVE = ['ApproveReconciliationAdjustment', 'CreateTreasuryMovement'] as const;
+export const STAFF_CANNOT_APPROVE = ['ApproveReconciliationAdjustment', 'CreateTreasuryMovement', 'IssueRefund'] as const;
 
 const FINANCIAL_WRITE_COMMANDS = new Set([
   'PostFinancialTransaction',
@@ -379,6 +385,8 @@ const FINANCIAL_WRITE_COMMANDS = new Set([
   'PostSaleConfirmation',
   'PostPurchasePayable',
   'PostFinancialCorrection',
+  'PostSaleRefund',
+  'IssueRefund',
   'CreatePhysicalAccount',
   'CreateTreasuryMovement',
   'RecordReconciliation',
@@ -491,19 +499,19 @@ export class AppController {
         return result;
       }
 
-      if (['PostFinancialTransaction', 'GetFinancialTransaction', 'RecordGeneralExpense', 'RecordWorkerAdvance', 'RecordPettyCashAdvance', 'RepayPettyCashAdvance', 'RecordPettyCashExpense', 'GetAccountingAccounts', 'GetJournals', 'GetReceivables', 'PostTreasuryBooks', 'GetProfitAllocation', 'PostSaleConfirmation', 'PostPurchasePayable', 'PostFinancialCorrection', 'GetEngineReport'].includes(cmd)) {
+      if (['PostFinancialTransaction', 'GetFinancialTransaction', 'RecordGeneralExpense', 'RecordWorkerAdvance', 'RecordPettyCashAdvance', 'RepayPettyCashAdvance', 'RecordPettyCashExpense', 'GetAccountingAccounts', 'GetJournals', 'GetReceivables', 'PostTreasuryBooks', 'GetProfitAllocation', 'PostSaleConfirmation', 'PostPurchasePayable', 'PostFinancialCorrection', 'PostSaleRefund', 'GetEngineReport'].includes(cmd)) {
         const result = await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
       }
 
-      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'ProcessPosSale', 'ApplySaleFulfillment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
         const result = await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
       }
 
-      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales'].includes(cmd)) {
+      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'IssueRefund', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales'].includes(cmd)) {
         const result = await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;

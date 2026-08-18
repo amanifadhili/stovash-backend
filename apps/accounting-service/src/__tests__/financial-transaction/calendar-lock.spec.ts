@@ -79,7 +79,40 @@ describe('Phase 7 calendar-day lock', () => {
     expect(replay.data?.amountMinor).toBe('100000');
   });
 
-  it('posts a +20k correction without mutating the original 100k row', async () => {
+  it('posts a same-day +20k correction without mutating the original 100k row (scenario 24)', async () => {
+    const original = await postFinancialTransaction(payload({ idempotencyKey: 'p8-100k-sameday' }), context);
+    expect(original.status).toBe('success');
+
+    const updateSpy = jest.spyOn(prisma.financialTransaction, 'update');
+    const correction = await postFinancialCorrection(
+      {
+        originalTransactionId: original.data!.id,
+        kind: 'CORRECTION',
+        amountMinor: 20000,
+        reason: 'Missed owner deposit same day',
+        occurredOn: '2026-08-17',
+        idempotencyKey: 'p8-plus-20k-sameday',
+      },
+      context,
+    );
+    expect(correction.status).toBe('success');
+    expect(updateSpy).not.toHaveBeenCalled();
+    updateSpy.mockRestore();
+
+    const originalRow = await prisma.financialTransaction.findUnique({ where: { id: original.data!.id } });
+    expect(originalRow?.amountMinor).toBe(100000n);
+
+    const related = await prisma.financialTransaction.findMany({
+      where: {
+        tenantId,
+        OR: [{ id: original.data!.id }, { originalTransactionId: original.data!.id }],
+      },
+    });
+    const effective = related.reduce((sum, row) => sum + row.amountMinor, 0n);
+    expect(effective).toBe(120000n);
+  });
+
+  it('posts a previous-day +20k correction without mutating the original 100k row (scenario 25)', async () => {
     const original = await postFinancialTransaction(payload({ idempotencyKey: 'p7-100k' }), context);
     expect(original.status).toBe('success');
     setShopTodayForTests('2026-08-18');

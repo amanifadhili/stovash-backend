@@ -28,6 +28,7 @@ import { GetEngineReportQuery } from './queries/impl/get-engine-report.query.js'
 import { PostSaleConfirmationCommand } from './commands/impl/post-sale-confirmation.command.js';
 import { PostPurchasePayableCommand } from './commands/impl/post-purchase-payable.command.js';
 import { PostFinancialCorrectionCommand } from './commands/impl/post-financial-correction.command.js';
+import { PostSaleRefundCommand } from './commands/impl/post-sale-refund.command.js';
 
 @Controller()
 export class AccountingServiceController {
@@ -174,6 +175,11 @@ export class AccountingServiceController {
   @MessagePattern({ cmd: 'PostFinancialCorrection' })
   async handlePostFinancialCorrection(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new PostFinancialCorrectionCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'PostSaleRefund' })
+  async handlePostSaleRefund(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new PostSaleRefundCommand(data.payload, data.context));
   }
 }
 

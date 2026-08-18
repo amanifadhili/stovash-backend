@@ -67,7 +67,7 @@ const LIVE_ENGINE_COMMANDS = [
 ];
 
 const PHASE7_COMMANDS = ['PostFinancialCorrection', 'GetDailyPosition'];
-const PHASE8_COMMANDS = ['GetEngineReport', 'GetFinancialOverview'];
+const PHASE8_COMMANDS = ['GetEngineReport', 'GetFinancialOverview', 'IssueRefund', 'PostSaleRefund'];
 
 const STOCK_COMMANDS = ['CreateSale', 'ConfirmSale', 'RecordSalePayment', 'ApplySaleFulfillment'];
 
@@ -632,7 +632,10 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       const req = { context: { traceId: 'trace-p8' }, user: { role: 'ADMIN', permissions: ['*'] } };
       await controller.handleCommand(req, { command: 'GetEngineReport', payload: {} });
       await controller.handleCommand(req, { command: 'GetFinancialOverview', payload: { occurredOn: '2026-08-17' } });
+      await controller.handleCommand(req, { command: 'IssueRefund', payload: {} });
+      await controller.handleCommand(req, { command: 'PostSaleRefund', payload: {} });
       expect(accounting.send).toHaveBeenCalledWith({ cmd: 'GetEngineReport' }, expect.any(Object));
+      expect(accounting.send).toHaveBeenCalledWith({ cmd: 'PostSaleRefund' }, expect.any(Object));
       expect(treasury.send).toHaveBeenCalledWith({ cmd: 'GetFinancialOverview' }, expect.any(Object));
       for (const cmd of PHASE8_COMMANDS) {
         expect(QUARANTINED_FINANCIAL_COMMANDS.has(cmd)).toBe(false);
