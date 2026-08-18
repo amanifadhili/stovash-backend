@@ -15,12 +15,13 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 /**
  * Model LedgerAccount
- * 
+ * LEGACY (Phase 10): unread by the engine. Kept read-only so a backup can still dump history.
+ * DROP SQL is in electronic-shop/docs/FINANCIAL_BACKUP_RESTORE.md — do not run until a verified backup and operator sign-off.
  */
 export type LedgerAccount = $Result.DefaultSelection<Prisma.$LedgerAccountPayload>
 /**
  * Model JournalEntry
- * 
+ * LEGACY (Phase 10): unread. Engine posts to PostedJournal instead.
  */
 export type JournalEntry = $Result.DefaultSelection<Prisma.$JournalEntryPayload>
 /**
@@ -35,7 +36,7 @@ export type PostingBatch = $Result.DefaultSelection<Prisma.$PostingBatchPayload>
 export type LedgerEntry = $Result.DefaultSelection<Prisma.$LedgerEntryPayload>
 /**
  * Model WorkPeriod
- * 
+ * LEGACY (Phase 10): unread. Shop calendar is FinancialPeriod + shopTodayIso, not WorkPeriod.
  */
 export type WorkPeriod = $Result.DefaultSelection<Prisma.$WorkPeriodPayload>
 /**

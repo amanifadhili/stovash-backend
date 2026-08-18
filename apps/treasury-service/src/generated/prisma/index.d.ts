@@ -15,7 +15,8 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 /**
  * Model PaymentMethod
- * 
+ * LEGACY (Phase 10): unread. Engine money lives on PhysicalAccount + TreasuryMovement (derived Σ).
+ * DROP SQL is in electronic-shop/docs/FINANCIAL_BACKUP_RESTORE.md — do not run until a verified backup and operator sign-off.
  */
 export type PaymentMethod = $Result.DefaultSelection<Prisma.$PaymentMethodPayload>
 /**

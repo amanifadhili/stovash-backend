@@ -470,11 +470,14 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       expect(read('scripts/seed/steps/08-sales.ts')).toContain('no engine posts');
     });
 
-    it('leftover POS uses the ConfirmSale adapter and RabbitMQ ledger stays off', () => {
+    it('leftover POS redirects to stock; product cart uses ConfirmSale; RabbitMQ ledger stays off', () => {
       const pos = fs.readFileSync(path.join(WORKSPACE, 'stovash/src/app/sales/pos/page.tsx'), 'utf8');
-      expect(pos).toContain('ConfirmSale');
-      expect(pos).toContain('RecordSalePayment');
-      expect(pos).not.toMatch(/GetPaymentMethods|GetIncomeStatement/);
+      expect(pos).toContain('redirect("/inventory/devices")');
+      expect(pos).not.toContain('ConfirmSale');
+      const cart = fs.readFileSync(path.join(WORKSPACE, 'stovash/src/components/inventory/StockCart.tsx'), 'utf8');
+      expect(cart).toContain('ConfirmSale');
+      expect(cart).toContain('RecordSalePayment');
+      expect(cart).not.toMatch(/GetPaymentMethods|GetIncomeStatement|PostSaleConfirmation|ApplySaleFulfillment/);
       const consumer = read('apps/accounting-service/src/events/event-consumer.service.ts');
       expect(consumer).toMatch(/quarantine|FINANCIAL_REBUILD_IN_PROGRESS/i);
     });

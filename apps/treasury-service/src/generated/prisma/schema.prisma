@@ -11,6 +11,8 @@ datasource db {
   url      = env("TREASURY_DATABASE_URL")
 }
 
+/// LEGACY (Phase 10): unread. Engine money lives on PhysicalAccount + TreasuryMovement (derived Σ).
+/// DROP SQL is in electronic-shop/docs/FINANCIAL_BACKUP_RESTORE.md — do not run until a verified backup and operator sign-off.
 model PaymentMethod {
   id            String   @id @default(uuid())
   tenantId      String
@@ -253,6 +255,8 @@ model TreasuryMovement {
 
   @@unique([tenantId, idempotencyKey])
   @@index([tenantId, shopId, occurredOn])
+  @@index([tenantId, shopId, fromPhysicalId])
+  @@index([tenantId, shopId, toPhysicalId])
   @@index([financialTransactionId])
   @@index([originalMovementId])
   @@map("treasury_movements")

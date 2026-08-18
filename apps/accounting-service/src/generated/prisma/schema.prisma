@@ -8,6 +8,8 @@ datasource db {
   url      = env("ACCOUNTING_DATABASE_URL")
 }
 
+/// LEGACY (Phase 10): unread by the engine. Kept read-only so a backup can still dump history.
+/// DROP SQL is in electronic-shop/docs/FINANCIAL_BACKUP_RESTORE.md — do not run until a verified backup and operator sign-off.
 model LedgerAccount {
   id        String          @id @default(uuid())
   tenantId  String
@@ -36,6 +38,7 @@ model LedgerAccount {
   @@map("ledger_accounts")
 }
 
+/// LEGACY (Phase 10): unread. Engine posts to PostedJournal instead.
 model JournalEntry {
   id           String        @id @default(uuid())
   tenantId     String
@@ -105,6 +108,7 @@ model LedgerEntry {
   @@map("ledger_entries")
 }
 
+/// LEGACY (Phase 10): unread. Shop calendar is FinancialPeriod + shopTodayIso, not WorkPeriod.
 model WorkPeriod {
   id           String    @id @default(uuid())
   tenantId     String?
