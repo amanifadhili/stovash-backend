@@ -142,6 +142,7 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
               amountDue: grandTotal,
               totalAmount: grandTotal,
               totalCost,
+              // Display cache only until ConfirmSale refreshes from engine profitEarnedMinor.
               profit: grandTotal - totalCost,
               paymentMethod: 'CASH',
               notes: payload.notes || null,

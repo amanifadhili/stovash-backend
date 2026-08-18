@@ -67,6 +67,7 @@ export class GetDeviceSalesHandler implements IQueryHandler<GetDeviceSalesQuery>
             customerName: row.sale.customerName,
             paymentStatus: row.sale.paymentStatus,
             commercialStatus: row.sale.commercialStatus,
+            amountDue: Number(row.sale.amountDue) || 0,
             notes: row.sale.notes,
             unitPrice: Number(row.unitPrice) || 0,
             unitCost: Number(row.unitCost) || 0,
