@@ -162,8 +162,8 @@ describe('CBE Phase 1 — command map (amani working branch)', () => {
     expect(inventory.send).toHaveBeenCalledWith({ cmd: 'ApplySaleFulfillment' }, expect.any(Object));
   });
 
-  it('documents RecordPartialPayment as still routed until Phase 5 quarantine', () => {
+  it('quarantines RecordPartialPayment in Phase 5', () => {
     expect(COMMAND_PERMISSIONS.RecordPartialPayment).toBeDefined();
-    expect(RETIRED_FINANCIAL_COMMANDS.has('RecordPartialPayment')).toBe(false);
+    expect(RETIRED_FINANCIAL_COMMANDS.has('RecordPartialPayment')).toBe(true);
   });
 });

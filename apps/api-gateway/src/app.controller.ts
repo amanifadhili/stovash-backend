@@ -350,6 +350,10 @@ export const RETIRED_FINANCIAL_COMMANDS = new Set([
   'GetTreasuryActivity',
   'RecordTreasuryLoan',
   'RecordLoanRepayment',
+  // Phase 5 quarantine: remove legacy parallel sale writers.
+  'RecordPartialPayment',
+  'ProcessPosSale',
+  'ProcessSale',
 ]);
 
 /** @deprecated Phase 10 alias — same set as RETIRED_FINANCIAL_COMMANDS. */

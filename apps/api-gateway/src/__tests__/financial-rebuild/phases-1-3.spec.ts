@@ -34,6 +34,9 @@ const PLANNED_QUARANTINE = [
   'GetTreasuryActivity',
   'RecordTreasuryLoan',
   'RecordLoanRepayment',
+  'RecordPartialPayment',
+  'ProcessPosSale',
+  'ProcessSale',
 ];
 
 const LIVE_ENGINE_COMMANDS = [
@@ -121,8 +124,11 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
     it('disables accounting and treasury RabbitMQ consumers', () => {
       const accountingConsumer = read('apps/accounting-service/src/events/event-consumer.service.ts');
       const treasuryConsumer = read('apps/treasury-service/src/events/event-consumer.service.ts');
+      const saleCreated = read('apps/accounting-service/src/events/consumers/sale-created.consumer.ts');
       expect(accountingConsumer).toMatch(/quarantined/i);
       expect(treasuryConsumer).toMatch(/quarantined/i);
+      expect(saleCreated).toMatch(/consumer is quarantined/i);
+      expect(saleCreated).not.toMatch(/journalEntry\.create|ledgerAccount\.update/);
       expect(accountingConsumer).not.toMatch(/this\.eventBus\.subscribe/);
       expect(treasuryConsumer).not.toMatch(/this\.eventBus\.subscribe/);
     });
@@ -386,6 +392,65 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       const consumer = read('apps/accounting-service/src/events/event-consumer.service.ts');
       expect(consumer).toMatch(/quarantine|FINANCIAL_REBUILD_IN_PROGRESS/i);
     });
+
+    it('has no live CREDIT -> CustomerReceivable write path in sale handlers', () => {
+      const createSale = read('apps/sales-service/src/commands/handlers/create-sale.handler.ts');
+      const confirmSale = read('apps/sales-service/src/commands/handlers/confirm-sale.handler.ts');
+      const recordPay = read('apps/sales-service/src/commands/handlers/record-sale-payment.handler.ts');
+      const partialPay = read('apps/sales-service/src/commands/handlers/record-partial-payment.handler.ts');
+      const loanSale = read('apps/sales-service/src/commands/handlers/process-loan-sale.handler.ts');
+
+      const live = `${createSale}\n${confirmSale}\n${recordPay}`;
+      expect(live).not.toMatch(/customerReceivable\.(create|update|upsert)/);
+      expect(recordPay).toContain('CREDIT is not a till method');
+
+      // Legacy side-brain handlers may still contain their own logic, but are
+      // quarantined at the gateway in Phase 5.
+      expect(RETIRED_FINANCIAL_COMMANDS.has('RecordPartialPayment')).toBe(true);
+      expect(RETIRED_FINANCIAL_COMMANDS.has('ProcessSale')).toBe(true);
+      expect(partialPay).toContain('RecordPartialPayment');
+      expect(loanSale).toContain('ProcessLoanSale');
+    });
+
+    it('new confirmed sale does not post through legacy SaleCreated consumer', () => {
+      const saleCreated = read('apps/accounting-service/src/events/consumers/sale-created.consumer.ts');
+      expect(saleCreated).toMatch(/quarantined/i);
+      expect(saleCreated).toContain('skipping legacy posting');
+      expect(saleCreated).not.toMatch(/journalEntry\.create|ledgerAccount\.update|prisma\./);
+    });
+
+    it('payment event consumers are disconnected from posting path', () => {
+      const accountingConsumer = read('apps/accounting-service/src/events/event-consumer.service.ts');
+      const treasuryConsumer = read('apps/treasury-service/src/events/event-consumer.service.ts');
+      const salePayConsumer = read('apps/accounting-service/src/events/consumers/sale-payment-recorded.consumer.ts');
+      const purchasePayConsumer = read('apps/accounting-service/src/events/consumers/purchase-payment-recorded.consumer.ts');
+      const recordSalePay = read('apps/sales-service/src/commands/handlers/record-sale-payment.handler.ts');
+      const recordPurchasePay = read('apps/purchase-service/src/commands/handlers/record-purchase-payment.handler.ts');
+
+      expect(accountingConsumer).toMatch(/quarantined|FINANCIAL_REBUILD_IN_PROGRESS/i);
+      expect(treasuryConsumer).toMatch(/quarantined|FINANCIAL_REBUILD_IN_PROGRESS/i);
+      expect(accountingConsumer).not.toMatch(/this\.eventBus\.subscribe/);
+      expect(treasuryConsumer).not.toMatch(/this\.eventBus\.subscribe/);
+
+      // Legacy consumer files can remain in repo, but must not be wired as active posters.
+      expect(salePayConsumer).toMatch(/journalEntry\.create|ledgerAccount\.update/);
+      expect(purchasePayConsumer).toMatch(/journalEntry\.create|ledgerAccount\.update/);
+
+      // Live payment path is synchronous engine calls.
+      expect(recordSalePay).toContain('CreateTreasuryMovement');
+      expect(recordPurchasePay).toContain('CreateTreasuryMovement');
+      expect(recordPurchasePay).toContain('postPurchasePayableBooks');
+    });
+
+    it('dual-poster detector: cannot have active legacy sale poster and engine posting together', () => {
+      const saleCreated = read('apps/accounting-service/src/events/consumers/sale-created.consumer.ts');
+      const confirmSale = read('apps/sales-service/src/commands/handlers/confirm-sale.handler.ts');
+
+      const legacyPosts = /journalEntry\.create|ledgerAccount\.update|prisma\./.test(saleCreated);
+      const enginePosts = /PostSaleConfirmation|postSaleBooks/.test(confirmSale);
+      expect(enginePosts).toBe(true);
+      expect(legacyPosts && enginePosts).toBe(false);
+    });
   });
 
   describe('Phase 7 — calendar lock routing', () => {
@@ -606,6 +671,20 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       expect(runbook).toContain('do not run yet');
       expect(read('apps/sales-service/src/common/commercial-finance.ts')).toContain('recordFinancialFailClosed');
       expect(read('apps/treasury-service/src/treasury-movement/reconciliation.ts')).toContain('recordFinancialReconDiff');
+    });
+
+    it('product command handlers do not mutate legacy PaymentMethod/LedgerAccount balances', () => {
+      const salesHandlers = read('apps/sales-service/src/commands/handlers/record-sale-payment.handler.ts');
+      const purchaseHandlers = read('apps/purchase-service/src/commands/handlers/record-purchase-payment.handler.ts');
+      const confirmSale = read('apps/sales-service/src/commands/handlers/confirm-sale.handler.ts');
+      const confirmPurchase = read('apps/purchase-service/src/commands/handlers/confirm-purchase.handler.ts');
+      const inventoryPos = read('apps/inventory-service/src/commands/handlers/process-pos-sale.handler.ts');
+
+      const liveProductFlow = `${salesHandlers}\n${purchaseHandlers}\n${confirmSale}\n${confirmPurchase}\n${inventoryPos}`;
+      expect(liveProductFlow).not.toMatch(/paymentMethod\.update|ledgerAccount\.update/);
+      expect(liveProductFlow).toContain('postSaleBooks');
+      expect(liveProductFlow).toContain('postPurchasePayableBooks');
+      expect(liveProductFlow).toContain('CreateTreasuryMovement');
     });
   });
 });
