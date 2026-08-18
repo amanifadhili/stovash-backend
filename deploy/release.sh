@@ -37,6 +37,12 @@ cd "$RELEASE_DIR"
 docker rm -f stovash-backend >/dev/null 2>&1 || true
 docker-compose --env-file "$ROOT/shared/.env" -p stovash-backend up -d --build --remove-orphans --force-recreate
 
+# Image build does not apply schema. Sync each service DB (additive; fails on data-loss).
+echo "Syncing Prisma schemas..."
+for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
+  docker exec stovash-backend bash -lc "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma"
+done
+
 ln -sfn "$RELEASE_DIR" "$ROOT/current"
 chown -h deploy:deploy "$ROOT/current" 2>/dev/null || true
 
