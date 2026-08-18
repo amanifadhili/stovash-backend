@@ -3,6 +3,7 @@
  * Opening money is OWNER_CAPITAL_IN. Sales/purchases post through engine books.
  * Does not write PaymentMethod.balance.
  */
+import type { IRequestContext } from '@electronic-shop/types';
 import { DEMO } from '../demo-ids.js';
 import type { SeedClients } from '../prisma-clients.js';
 import {
@@ -69,6 +70,14 @@ async function accountsByKind(shopId: string): Promise<Record<string, Physical>>
 
 async function move(shopId: string, payload: Parameters<typeof createTreasuryMovement>[0]) {
   return requireOk(await createTreasuryMovement(payload, ctx(shopId), engineBooks), payload.movementType);
+}
+
+async function seedMoveCash(payload: Record<string, unknown>, context?: IRequestContext) {
+  return createTreasuryMovement(
+    payload as Parameters<typeof createTreasuryMovement>[0],
+    context,
+    engineBooks,
+  );
 }
 
 function minorOf(accounts: Record<string, Physical>, kind: string): bigint {
@@ -315,6 +324,7 @@ export async function seedEngineHistory(clients: SeedClients): Promise<void> {
               idempotencyKey: `demo-exp-${expense.category}-${day}`,
             },
             ctx(mainId),
+            seedMoveCash,
           ),
           `expense ${expense.category}`,
         );
@@ -333,6 +343,7 @@ export async function seedEngineHistory(clients: SeedClients): Promise<void> {
             idempotencyKey: `demo-advance-${day}`,
           },
           ctx(mainId),
+          seedMoveCash,
         ),
         'worker advance',
       );
