@@ -4,12 +4,13 @@ import { derivedBalances, balanceOf } from './balances.js';
 import { serializeMovement } from './create-treasury-movement.js';
 import { serializeRecon } from './reconciliation.js';
 import { getFinancialStructure } from '../financial-structure/get-financial-structure.js';
-import { TreasuryBooksClient } from './types.js';
+import { TREASURY_MOVEMENT_TYPE_SET, TreasuryBooksClient } from './types.js';
 
 type Db = typeof defaultPrisma;
 
 export async function getTreasuryMovements(
   context?: IRequestContext,
+  payload?: { movementTypes?: string[]; limit?: number },
   db: Db = defaultPrisma,
 ): Promise<ICommandResponse<any>> {
   const traceId = context?.traceId || 'unknown';
@@ -18,10 +19,16 @@ export async function getTreasuryMovements(
   if (!tenantId || !shopId) {
     return { status: 'error', traceId, message: 'tenantId and shopId are required', errorCode: ErrorCode.VALIDATION_ERROR };
   }
+  const types = (payload?.movementTypes ?? []).filter((type) => TREASURY_MOVEMENT_TYPE_SET.has(type));
+  const take = payload?.limit && payload.limit > 0 ? Math.min(payload.limit, 500) : 100;
   const rows = await db.treasuryMovement.findMany({
-    where: { tenantId, shopId },
+    where: {
+      tenantId,
+      shopId,
+      ...(types.length > 0 ? { movementType: { in: types } } : {}),
+    },
     orderBy: { createdAt: 'desc' },
-    take: 100,
+    take,
   });
   return {
     status: 'success',

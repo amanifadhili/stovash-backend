@@ -2,7 +2,7 @@ import { ErrorCode } from '@electronic-shop/types';
 import { prisma } from '../../database/client.js';
 import { getFinancialStructure } from '../../financial-structure/get-financial-structure.js';
 import { createTreasuryMovement } from '../../treasury-movement/create-treasury-movement.js';
-import { getTreasuryLoans, getProfitTransferPosition } from '../../treasury-movement/queries.js';
+import { getTreasuryLoans, getTreasuryMovements, getProfitTransferPosition } from '../../treasury-movement/queries.js';
 import { recordReconciliation, approveReconciliationAdjustment } from '../../treasury-movement/reconciliation.js';
 import { TreasuryBooksClient } from '../../treasury-movement/types.js';
 import { balanceOf, derivedBalances } from '../../treasury-movement/balances.js';
@@ -165,6 +165,15 @@ describe('Treasury movements (Phase 5)', () => {
       books,
     );
     expect(growth.status).toBe('success');
+
+    const profitHistory = await getTreasuryMovements(context, {
+      movementTypes: ['PROFIT_TRANSFER', 'CAPITAL_GROWTH'],
+    });
+    expect(profitHistory.status).toBe('success');
+    expect(profitHistory.data.movements.map((m: { movementType: string }) => m.movementType)).toEqual([
+      'CAPITAL_GROWTH',
+      'PROFIT_TRANSFER',
+    ]);
 
     const loans = await getTreasuryLoans(context);
     expect(loans.data.loans.filter((l: any) => l.kind === 'INTERNAL_LOAN')).toHaveLength(1);

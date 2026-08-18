@@ -7,6 +7,7 @@ import { GetTreasuryLoansHandler } from './get-treasury-loans.handler.js';
 import { GetProfitTransferPositionHandler } from './get-profit-transfer-position.handler.js';
 import { GetReconciliationsHandler } from './get-reconciliations.handler.js';
 import { GetDailyPositionHandler } from './get-daily-position.handler.js';
+import { GetMonthlyPositionHandler } from './get-monthly-position.handler.js';
 import { GetFinancialOverviewHandler } from './get-financial-overview.handler.js';
 
 export const QueryHandlers = [
@@ -19,5 +20,6 @@ export const QueryHandlers = [
   GetProfitTransferPositionHandler,
   GetReconciliationsHandler,
   GetDailyPositionHandler,
+  GetMonthlyPositionHandler,
   GetFinancialOverviewHandler,
 ];

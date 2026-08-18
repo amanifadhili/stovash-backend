@@ -21,6 +21,7 @@ import { GetTreasuryLoansQuery } from './queries/impl/get-treasury-loans.query.j
 import { GetProfitTransferPositionQuery } from './queries/impl/get-profit-transfer-position.query.js';
 import { GetReconciliationsQuery } from './queries/impl/get-reconciliations.query.js';
 import { GetDailyPositionQuery } from './queries/impl/get-daily-position.query.js';
+import { GetMonthlyPositionQuery } from './queries/impl/get-monthly-position.query.js';
 import { GetFinancialOverviewQuery } from './queries/impl/get-financial-overview.query.js';
 
 @Controller()
@@ -128,6 +129,11 @@ export class TreasuryServiceController {
   @MessagePattern({ cmd: 'GetDailyPosition' })
   async handleGetDailyPosition(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetDailyPositionQuery(data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetMonthlyPosition' })
+  async handleGetMonthlyPosition(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetMonthlyPositionQuery(data.payload || {}, data.context));
   }
 
   @MessagePattern({ cmd: 'GetFinancialOverview' })

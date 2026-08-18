@@ -1,8 +1,8 @@
 import { IRequestContext } from '@electronic-shop/types';
 
-export class GetTreasuryMovementsQuery {
+export class GetMonthlyPositionQuery {
   constructor(
-    public readonly payload: { movementTypes?: string[]; limit?: number },
+    public readonly payload: { yearMonth?: string },
     public readonly context?: IRequestContext,
   ) {}
 }

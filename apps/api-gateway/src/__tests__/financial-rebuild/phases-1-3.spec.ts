@@ -59,6 +59,7 @@ const LIVE_ENGINE_COMMANDS = [
   'GetReconciliations',
   'PostFinancialCorrection',
   'GetDailyPosition',
+  'GetMonthlyPosition',
   'GetEngineReport',
   'GetFinancialOverview',
   'RecordPettyCashAdvance',
@@ -66,7 +67,7 @@ const LIVE_ENGINE_COMMANDS = [
   'RecordPettyCashExpense',
 ];
 
-const PHASE7_COMMANDS = ['PostFinancialCorrection', 'GetDailyPosition'];
+const PHASE7_COMMANDS = ['PostFinancialCorrection', 'GetDailyPosition', 'GetMonthlyPosition'];
 const PHASE8_COMMANDS = ['GetEngineReport', 'GetFinancialOverview', 'IssueRefund', 'PostSaleRefund'];
 
 const STOCK_COMMANDS = ['CreateSale', 'ConfirmSale', 'RecordSalePayment', 'ApplySaleFulfillment'];
@@ -594,8 +595,10 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       const req = { context: { traceId: 'trace-p7' }, user: { role: 'ADMIN', permissions: ['*'] } };
       await controller.handleCommand(req, { command: 'PostFinancialCorrection', payload: {} });
       await controller.handleCommand(req, { command: 'GetDailyPosition', payload: { occurredOn: '2026-08-17' } });
+      await controller.handleCommand(req, { command: 'GetMonthlyPosition', payload: { yearMonth: '2026-08' } });
       expect(accounting.send).toHaveBeenCalledWith({ cmd: 'PostFinancialCorrection' }, expect.any(Object));
       expect(treasury.send).toHaveBeenCalledWith({ cmd: 'GetDailyPosition' }, expect.any(Object));
+      expect(treasury.send).toHaveBeenCalledWith({ cmd: 'GetMonthlyPosition' }, expect.any(Object));
       for (const cmd of PHASE7_COMMANDS) {
         expect(QUARANTINED_FINANCIAL_COMMANDS.has(cmd)).toBe(false);
       }

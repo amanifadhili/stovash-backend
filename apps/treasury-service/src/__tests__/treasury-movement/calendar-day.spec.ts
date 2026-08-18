@@ -2,7 +2,7 @@ import { ErrorCode } from '@electronic-shop/types';
 import { prisma } from '../../database/client.js';
 import { getFinancialStructure } from '../../financial-structure/get-financial-structure.js';
 import { createTreasuryMovement } from '../../treasury-movement/create-treasury-movement.js';
-import { getDailyPosition } from '../../treasury-movement/period-snapshots.js';
+import { getDailyPosition, getMonthlyPosition } from '../../treasury-movement/period-snapshots.js';
 import { getFinancialOverview } from '../../treasury-movement/financial-overview.js';
 import { setShopTodayForTests } from '../../treasury-movement/calendar.js';
 import { TreasuryBooksClient } from '../../treasury-movement/types.js';
@@ -213,5 +213,76 @@ describe('Phase 7 treasury calendar day', () => {
     expect(overview.data.cashMovement.outflows.find((r: any) => r.type === 'INTERNAL_TRANSFER').amountMinor).toBe(
       '30000',
     );
+  });
+
+  it('monthly cashbook: day-2 opening equals day-1 closing and month totals are API fields', async () => {
+    const byKind = await accountsByKind();
+    setShopTodayForTests('2026-08-16');
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 100000,
+        occurredOn: '2026-08-16',
+        idempotencyKey: 'p7-month-cap',
+      },
+      context,
+      books,
+    );
+    setShopTodayForTests('2026-08-17');
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_TRANSFER',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.PETTY_CASH.id,
+        amountMinor: 30000,
+        occurredOn: '2026-08-17',
+        idempotencyKey: 'p7-month-xfer',
+      },
+      context,
+      books,
+    );
+
+    const month = await getMonthlyPosition({ yearMonth: '2026-08' }, context);
+    expect(month.status).toBe('success');
+    expect(month.data?.yearMonth).toBe('2026-08');
+    expect(month.data?.locked).toBe(false);
+    expect(month.data?.days).toHaveLength(31);
+
+    const capitalId = byKind.CAPITAL_BANK.id;
+    const pettyId = byKind.PETTY_CASH.id;
+    const day16 = month.data!.days.find((d: any) => d.date === '2026-08-16');
+    const day17 = month.data!.days.find((d: any) => d.date === '2026-08-17');
+    const day18 = month.data!.days.find((d: any) => d.date === '2026-08-18');
+
+    expect(day16.physical[capitalId].openingMinor).toBe('0');
+    expect(day16.physical[capitalId].inflowsMinor).toBe('100000');
+    expect(day16.physical[capitalId].closingMinor).toBe('100000');
+    expect(day17.physical[capitalId].openingMinor).toBe(day16.physical[capitalId].closingMinor);
+    expect(day17.physical[capitalId].outflowsMinor).toBe('30000');
+    expect(day17.physical[capitalId].closingMinor).toBe('70000');
+    expect(day17.physical[pettyId].inflowsMinor).toBe('30000');
+    expect(day17.physical[pettyId].closingMinor).toBe('30000');
+    expect(day18.physical[capitalId]).toBeNull();
+
+    const totals = month.data!.monthTotals[capitalId];
+    expect(totals.openingMinor).toBe('0');
+    expect(totals.inflowsMinor).toBe('100000');
+    expect(totals.outflowsMinor).toBe('30000');
+    expect(totals.closingMinor).toBe('70000');
+    expect(
+      BigInt(totals.openingMinor) + BigInt(totals.inflowsMinor) - BigInt(totals.outflowsMinor) + BigInt(totals.adjustmentsMinor),
+    ).toBe(BigInt(totals.closingMinor));
+  });
+
+  it('rejects a future calendar month', async () => {
+    const future = await getMonthlyPosition({ yearMonth: '2026-09' }, context);
+    expect(future.status).toBe('error');
+    expect(future.errorCode).toBe(ErrorCode.VALIDATION_ERROR);
+    expect(future.message).toMatch(/future/i);
+
+    const bad = await getMonthlyPosition({ yearMonth: '2026-13' }, context);
+    expect(bad.status).toBe('error');
+    expect(bad.errorCode).toBe(ErrorCode.VALIDATION_ERROR);
   });
 });

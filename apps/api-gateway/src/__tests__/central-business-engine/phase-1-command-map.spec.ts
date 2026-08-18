@@ -25,6 +25,7 @@ const ENGINE_COMMANDS_FE_NEEDS = [
   'GetProfitTransferPosition',
   'GetSoldUnitProfit',
   'GetDailyPosition',
+  'GetMonthlyPosition',
   'GetEngineReport',
   'PostFinancialCorrection',
   'RecordReconciliation',
@@ -50,6 +51,7 @@ const TREASURY_ENGINE = [
   'CreateTreasuryMovement',
   'GetProfitTransferPosition',
   'GetDailyPosition',
+  'GetMonthlyPosition',
   'RecordReconciliation',
   'ApproveReconciliationAdjustment',
 ] as const;

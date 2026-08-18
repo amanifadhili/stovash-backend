@@ -6,6 +6,6 @@ import { getTreasuryMovements } from '../../treasury-movement/queries.js';
 @QueryHandler(GetTreasuryMovementsQuery)
 export class GetTreasuryMovementsHandler implements IQueryHandler<GetTreasuryMovementsQuery> {
   async execute(query: GetTreasuryMovementsQuery): Promise<ICommandResponse<any>> {
-    return getTreasuryMovements(query.context);
+    return getTreasuryMovements(query.context, query.payload);
   }
 }

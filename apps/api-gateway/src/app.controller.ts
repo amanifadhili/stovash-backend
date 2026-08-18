@@ -167,6 +167,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'ApproveReconciliationAdjustment': [],
   'GetReconciliations': [],
   'GetDailyPosition': [],
+  'GetMonthlyPosition': [],
   'GetFinancialOverview': [],
 };
 
@@ -328,6 +329,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'ApproveReconciliationAdjustment': ['ADMIN', 'MANAGER'],
   'GetReconciliations': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetDailyPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetMonthlyPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetFinancialOverview': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
 };
 
@@ -531,7 +533,7 @@ export class AppController {
         return result;
       }
 
-      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetFinancialOverview'].includes(cmd)) {
+      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetMonthlyPosition', 'GetFinancialOverview'].includes(cmd)) {
         const result = await firstValueFrom(this.treasuryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
