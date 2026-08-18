@@ -322,9 +322,9 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetTreasuryMovements': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetTreasuryLoans': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'GetProfitTransferPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
-  'RecordReconciliation': ['ADMIN', 'MANAGER', 'STAFF'],
+  'RecordReconciliation': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'ApproveReconciliationAdjustment': ['ADMIN', 'MANAGER'],
-  'GetReconciliations': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'GetReconciliations': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetDailyPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetFinancialOverview': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
 };

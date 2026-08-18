@@ -531,4 +531,101 @@ describe('Treasury movements (Phase 5)', () => {
       untransferredMinor: earned.toString(),
     });
   });
+
+  it('scenario 26: recon shortage does not change books until approved, then posts SHORTAGE', async () => {
+    const byKind = await accountsByKind();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 5000000,
+        occurredOn: DAY,
+        idempotencyKey: 's26-in',
+      },
+      context,
+      books,
+    );
+    const counted = await recordReconciliation(
+      { physicalAccountId: byKind.CAPITAL_BANK.id, countedMinor: 4000000, notes: 'till short' },
+      context,
+    );
+    expect(counted.status).toBe('success');
+    expect(counted.data.status).toBe('COUNTED');
+    expect(counted.data.differenceMinor).toBe('-1000000');
+
+    let structure = await getFinancialStructure(context);
+    expect(
+      structure.data!.funds.find((f) => f.code === 'CAPITAL')?.accounts.find((a) => a.kind === 'CAPITAL_BANK')
+        ?.balanceMinor,
+    ).toBe('5000000');
+
+    const approved = await approveReconciliationAdjustment(
+      { reconciliationId: counted.data.id, reason: 'Confirmed till shortage' },
+      context,
+      books,
+    );
+    expect(approved.status).toBe('success');
+    expect(approved.data.status).toBe('ADJUSTED');
+    expect(approved.data.adjustmentMovementId).toBeTruthy();
+
+    const adj = bookCalls.find((c) => c.type === 'RECONCILIATION_ADJUSTMENT' && c.reconDirection === 'SHORTAGE');
+    expect(adj).toBeTruthy();
+    expect(adj.fromKind).toBe('CAPITAL_BANK');
+    expect(adj.toKind).toBeNull();
+    expect(adj.amountMinor).toBe('1000000');
+    expect(adj.reason).toBe('Confirmed till shortage');
+
+    structure = await getFinancialStructure(context);
+    expect(
+      structure.data!.funds.find((f) => f.code === 'CAPITAL')?.accounts.find((a) => a.kind === 'CAPITAL_BANK')
+        ?.balanceMinor,
+    ).toBe('4000000');
+  });
+
+  it('scenario 27: recon surplus does not change books until approved, then posts EXCESS', async () => {
+    const byKind = await accountsByKind();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 5000000,
+        occurredOn: DAY,
+        idempotencyKey: 's27-in',
+      },
+      context,
+      books,
+    );
+    const counted = await recordReconciliation(
+      { physicalAccountId: byKind.CAPITAL_BANK.id, countedMinor: 6500000, notes: 'till over' },
+      context,
+    );
+    expect(counted.status).toBe('success');
+    expect(counted.data.differenceMinor).toBe('1500000');
+
+    let structure = await getFinancialStructure(context);
+    expect(
+      structure.data!.funds.find((f) => f.code === 'CAPITAL')?.accounts.find((a) => a.kind === 'CAPITAL_BANK')
+        ?.balanceMinor,
+    ).toBe('5000000');
+
+    const approved = await approveReconciliationAdjustment(
+      { reconciliationId: counted.data.id, reason: 'Confirmed till surplus' },
+      context,
+      books,
+    );
+    expect(approved.status).toBe('success');
+
+    const adj = bookCalls.find((c) => c.type === 'RECONCILIATION_ADJUSTMENT' && c.reconDirection === 'EXCESS');
+    expect(adj).toBeTruthy();
+    expect(adj.toKind).toBe('CAPITAL_BANK');
+    expect(adj.fromKind).toBeNull();
+    expect(adj.amountMinor).toBe('1500000');
+    expect(adj.reason).toBe('Confirmed till surplus');
+
+    structure = await getFinancialStructure(context);
+    expect(
+      structure.data!.funds.find((f) => f.code === 'CAPITAL')?.accounts.find((a) => a.kind === 'CAPITAL_BANK')
+        ?.balanceMinor,
+    ).toBe('6500000');
+  });
 });

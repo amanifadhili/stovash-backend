@@ -673,6 +673,25 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       const consumer = read('apps/accounting-service/src/events/event-consumer.service.ts');
       expect(consumer).toMatch(/quarantine|FINANCIAL_REBUILD_IN_PROGRESS/i);
     });
+
+    it('upgrades only capitalize unit cost; lend consumers do not post books', () => {
+      const upgrade = read('apps/inventory-service/src/commands/handlers/record-inventory-upgrade.handler.ts');
+      expect(upgrade).toContain('capitalizedCost');
+      expect(upgrade).not.toMatch(/accountingClient|PostSaleConfirmation|postJournalLines|CreateTreasuryMovement/);
+      const lendOut = read('apps/accounting-service/src/events/consumers/lend-out-settled.consumer.ts');
+      const lendIn = read('apps/accounting-service/src/events/consumers/lend-in-sold.consumer.ts');
+      expect(lendOut).toMatch(/quarantined/i);
+      expect(lendIn).toMatch(/quarantined/i);
+      expect(lendOut).not.toContain('postJournalLines');
+      expect(lendIn).not.toContain('postJournalLines');
+    });
+
+    it('STAFF may count recon; STAFF cannot approve adjustments', () => {
+      expect(COMMAND_ROLES.RecordReconciliation).toContain('STAFF');
+      expect(COMMAND_ROLES.GetReconciliations).toContain('STAFF');
+      expect(COMMAND_ROLES.ApproveReconciliationAdjustment).not.toContain('STAFF');
+      expect(COMMAND_ROLES.ApproveReconciliationAdjustment).toEqual(['ADMIN', 'MANAGER']);
+    });
   });
 
   describe('PROJECT_CONTEXT', () => {
