@@ -1,19 +1,20 @@
 import { randomUUID } from 'node:crypto';
 import { ErrorCode, ICommandResponse, IRequestContext } from '@electronic-shop/types';
 import { parseAmountMinor, parseOccurredOn, requireNonEmptyString } from '../financial-transaction/serialize.js';
+import { PETTY_EXPENSE_CATEGORY_BY_CODE, PettyExpenseCategoryCode } from './chart.js';
 import { TreasuryMoveFn } from '../common/treasury-move.js';
 
-export interface RecordWorkerAdvancePayload {
-  workerName: string;
+export interface RecordPettyCashExpensePayload {
+  category: PettyExpenseCategoryCode;
   amountMinor: number | string;
   occurredOn: string;
   notes?: string;
   idempotencyKey?: string;
 }
 
-/** Petty Cash −, worker AR +. Not an expense. */
-export async function recordWorkerAdvance(
-  payload: RecordWorkerAdvancePayload,
+/** Petty Cash → expense. Never Operational. */
+export async function recordPettyCashExpense(
+  payload: RecordPettyCashExpensePayload,
   context?: IRequestContext,
   moveCash?: TreasuryMoveFn,
 ): Promise<ICommandResponse<any>> {
@@ -33,14 +34,18 @@ export async function recordWorkerAdvance(
     };
   }
 
-  const workerName = requireNonEmptyString(payload?.workerName, 120);
+  const category = PETTY_EXPENSE_CATEGORY_BY_CODE[payload?.category as PettyExpenseCategoryCode];
+  if (!category) {
+    return { status: 'error', traceId, message: 'Unknown petty expense category', errorCode: ErrorCode.VALIDATION_ERROR };
+  }
+
   const amountMinor = parseAmountMinor(payload?.amountMinor);
   const occurredOn = parseOccurredOn(payload?.occurredOn);
-  if (!workerName || amountMinor === null || !occurredOn) {
+  if (amountMinor === null || !occurredOn) {
     return {
       status: 'error',
       traceId,
-      message: 'workerName, positive amountMinor (RWF cents), and occurredOn are required',
+      message: 'amountMinor must be a positive integer (RWF cents) and occurredOn must be YYYY-MM-DD',
       errorCode: ErrorCode.VALIDATION_ERROR,
     };
   }
@@ -50,13 +55,12 @@ export async function recordWorkerAdvance(
 
   const movement = await moveCash(
     {
-      movementType: 'WORKER_ADVANCE',
+      movementType: 'PETTY_CASH_EXPENSE',
       amountMinor: amountMinor.toString(),
       occurredOn: payload.occurredOn,
       fromKind: 'PETTY_CASH',
-      partyName: workerName,
+      expenseAccountCode: category.accountCode,
       notes: notes || undefined,
-      obligationSourceId: sourceId,
       idempotencyKey: sourceId,
     },
     context,
@@ -67,13 +71,12 @@ export async function recordWorkerAdvance(
     status: 'success',
     traceId,
     data: {
-      id: movement.data?.obligationId || movement.data?.obligation?.id || null,
-      kind: 'WORKER_ADVANCE',
-      partyName: workerName,
-      outstandingMinor: amountMinor.toString(),
-      isExpense: false,
-      cashMovement: 'PETTY_CASH_OUT',
-      financialTransaction: movement.data,
+      category: category.code,
+      categoryLabel: category.label,
+      isExpense: true,
+      fromPettyCash: true,
+      cashMovement: 'PETTY_CASH_TO_EXPENSE',
+      amountMinor: amountMinor.toString(),
       treasuryMovement: movement.data,
     },
   };

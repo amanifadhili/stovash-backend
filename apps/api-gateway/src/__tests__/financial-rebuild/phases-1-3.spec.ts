@@ -61,6 +61,9 @@ const LIVE_ENGINE_COMMANDS = [
   'GetDailyPosition',
   'GetEngineReport',
   'GetFinancialOverview',
+  'RecordPettyCashAdvance',
+  'RepayPettyCashAdvance',
+  'RecordPettyCashExpense',
 ];
 
 const PHASE7_COMMANDS = ['PostFinancialCorrection', 'GetDailyPosition'];
@@ -450,6 +453,127 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       const enginePosts = /PostSaleConfirmation|postSaleBooks/.test(confirmSale);
       expect(enginePosts).toBe(true);
       expect(legacyPosts && enginePosts).toBe(false);
+    });
+
+    it('GetReceivables authority is engine obligations (not legacy customer receivable table)', () => {
+      const recv = read('apps/accounting-service/src/engine-ledger/queries.ts');
+      expect(recv).toContain('prisma.obligation.findMany');
+      expect(recv).toContain("authority: 'engine_obligations'");
+      expect(recv).not.toMatch(/customerReceivable\./);
+    });
+
+    it('purchase AP projection reads engine GetReceivables, not local till/ledger balances', () => {
+      const finance = read('apps/purchase-service/src/common/post-purchase-finance.ts');
+      const pay = read('apps/purchase-service/src/commands/handlers/record-purchase-payment.handler.ts');
+      const confirm = read('apps/purchase-service/src/commands/handlers/confirm-purchase.handler.ts');
+      expect(finance).toContain('readPayableProjection');
+      expect(finance).toContain("kind: 'SUPPLIER_PAYABLE'");
+      expect(finance).toContain('GetReceivables');
+      expect(pay).toContain('readPayableProjection');
+      expect(confirm).toContain('readPayableProjection');
+      expect(pay).toContain("projectionSource: postProjection ? 'engine_obligation'");
+    });
+
+    it('treasury balances are Σ movements (approved recon is a movement), not PaymentMethod.balance', () => {
+      const balances = read('apps/treasury-service/src/treasury-movement/balances.ts');
+      const structure = read('apps/treasury-service/src/financial-structure/get-financial-structure.ts');
+      expect(balances).toContain('treasuryMovement.findMany');
+      expect(balances).toContain('Approved reconciliation is included');
+      expect(balances).not.toMatch(/paymentMethod|ledgerAccount/);
+      expect(structure).toContain("authority: 'treasury_movements'");
+      expect(structure).toContain('derivedBalances');
+    });
+
+    it('accounting balances are Σ posted journal lines, not LedgerAccount.balance', () => {
+      const accounts = read('apps/accounting-service/src/engine-ledger/queries.ts');
+      expect(accounts).toContain('include: { lines: true }');
+      expect(accounts).toContain("authority: 'posted_journal_lines'");
+      expect(accounts).not.toMatch(/ledgerAccount\.update|account\.balance/);
+    });
+
+    it('Sale.profit is a display cache refreshed from engine profitEarnedMinor', () => {
+      const confirm = read('apps/sales-service/src/commands/handlers/confirm-sale.handler.ts');
+      expect(confirm).toContain('profitCacheFromBooks');
+      expect(confirm).toContain('profitEarnedMinor');
+      expect(confirm).toContain('display cache');
+    });
+
+    it('accountingStatus becomes POSTED only after ConfirmSale books succeed', () => {
+      const confirm = read('apps/sales-service/src/commands/handlers/confirm-sale.handler.ts');
+      expect(confirm).toContain("if (books.status === 'error') return books;");
+      expect(confirm).toContain("accountingStatus: 'POSTED'");
+      const booksBeforePosted = confirm.indexOf("if (books.status === 'error') return books;");
+      const postedAfter = confirm.indexOf("accountingStatus: 'POSTED'", booksBeforePosted);
+      expect(booksBeforePosted).toBeGreaterThan(-1);
+      expect(postedAfter).toBeGreaterThan(booksBeforePosted);
+    });
+
+    it('SalePayment.accountingRef stores treasury movement, FT, and journal ids', () => {
+      const pay = read('apps/sales-service/src/commands/handlers/record-sale-payment.handler.ts');
+      expect(pay).toContain('treasuryMovementId');
+      expect(pay).toContain('treasuryFinancialTransactionId');
+      expect(pay).toContain('treasuryJournalId');
+      expect(pay).toContain('accountingRef: accountingRefValue');
+      expect(pay).toContain('financeRefs');
+    });
+
+    it('integrity/backfill reporter is read-only and never updates posted amounts', () => {
+      const findings = read('scripts/cbe-integrity/findings.ts');
+      const report = read('scripts/cbe-integrity/report.ts');
+      expect(findings).toContain('Never UPDATE posted journal amounts');
+      expect(findings).toContain('CONFIRMED_SALE_NOT_POSTED');
+      expect(findings).toContain('PAYMENT_WITHOUT_MOVEMENT_REF');
+      expect(findings).toContain('MOVEMENT_WITHOUT_PAYMENT_REF');
+      expect(findings).toContain('CONFIRMED_SALE_WITHOUT_REVENUE_FT');
+      expect(report).toContain("mode: 'report-only'");
+      expect(report).toContain('mutatesPostedAmounts: false');
+      expect(report).toContain('backfillApply: false');
+      expect(findings).not.toMatch(/prisma\.\w+\.(update|deleteMany)|postedJournalLine\.update/);
+      expect(report).not.toMatch(/prisma\.\w+\.(update|deleteMany)|postedJournalLine\.update/);
+    });
+
+    it('sale card AR, engine report AR, and GetReceivables share Obligation authority', () => {
+      const recv = read('apps/accounting-service/src/engine-ledger/queries.ts');
+      const report = read('apps/accounting-service/src/engine-ledger/engine-report.ts');
+      const pay = read('apps/sales-service/src/commands/handlers/record-sale-payment.handler.ts');
+      expect(recv).toContain("authority: 'engine_obligations'");
+      expect(report).toContain('getReceivables');
+      expect(pay).toContain('readReceivableProjection');
+      expect(pay).toContain('GetReceivables');
+      expect(pay).toContain('sourceId: sale.id');
+    });
+
+    it('replay rebuilds sale due/paid from engine Obligation without rewriting posted books', () => {
+      const pay = read('apps/sales-service/src/commands/handlers/record-sale-payment.handler.ts');
+      const confirm = read('apps/sales-service/src/commands/handlers/confirm-sale.handler.ts');
+      expect(pay).toContain("projectionSource: postProjection ? 'engine_obligation'");
+      expect(pay).not.toMatch(/postedJournalLine\.(create|update)|journalEntry\.create/);
+      expect(confirm).toContain('setting POSTED again is safe');
+    });
+  });
+
+  describe('Phase 7 — expenses / petty / loans', () => {
+    it('RecordGeneralExpense orchestrates PR Bank → Operational → payee and is not a loan', () => {
+      const expense = read('apps/accounting-service/src/engine-ledger/record-general-expense.ts');
+      const types = read('apps/treasury-service/src/treasury-movement/types.ts');
+      const validate = read('apps/treasury-service/src/treasury-movement/create-treasury-movement.ts');
+      expect(expense).toContain('GENERAL_EXPENSE_FUNDING');
+      expect(expense).toContain('GENERAL_EXPENSE_PAYOUT');
+      expect(expense).toContain('PR_BANK_TO_OPERATIONAL_TO_PAYEE');
+      expect(expense).toContain('isLoan: false');
+      expect(expense).not.toMatch(/INTERNAL_LOAN/);
+      expect(types).toContain('GENERAL_EXPENSE_FUNDING');
+      expect(validate).toContain('not a loan');
+      expect(validate).toContain('Petty expenses leave Petty Cash only');
+    });
+
+    it('worker advance is not expense; petty expense does not use Operational', () => {
+      const advance = read('apps/accounting-service/src/engine-ledger/record-worker-advance.ts');
+      const petty = read('apps/accounting-service/src/engine-ledger/record-petty-cash-expense.ts');
+      expect(advance).toContain('isExpense: false');
+      expect(advance).toContain("fromKind: 'PETTY_CASH'");
+      expect(petty).toContain("fromKind: 'PETTY_CASH'");
+      expect(petty).toContain('Never Operational');
     });
   });
 

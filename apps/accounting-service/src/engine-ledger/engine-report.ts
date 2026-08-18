@@ -29,7 +29,7 @@ export async function getEngineReport(
 ): Promise<ICommandResponse<any>> {
   const accountsRes = await getAccountingAccounts(context);
   if (accountsRes.status !== 'success') return accountsRes;
-  const recvRes = await getReceivables(context);
+  const recvRes = await getReceivables(undefined, context);
   if (recvRes.status !== 'success') return recvRes;
 
   const accounts: Array<{ code: string; name: string; type: string; balanceMinor: string }> =
@@ -48,7 +48,12 @@ export async function getEngineReport(
   }));
   const interestMinor = asBigInt(byCode.get('6270')?.balanceMinor);
   const generalExpenseMinor = expensesByCategory.reduce((sum, row) => sum + asBigInt(row.amountMinor), 0n);
-  const expensesMinor = generalExpenseMinor + interestMinor;
+  const pettyExpenseMinor =
+    asBigInt(byCode.get('6280')?.balanceMinor) +
+    asBigInt(byCode.get('6281')?.balanceMinor) +
+    asBigInt(byCode.get('6282')?.balanceMinor);
+  const expensesMinor = generalExpenseMinor + interestMinor + pettyExpenseMinor;
+  const netBusinessProfitMinor = grossProfitMinor - generalExpenseMinor - pettyExpenseMinor;
 
   const customerOutstandingMinor = sumOpen(recvRes.data.receivables.filter((r: any) => r.kind === 'CUSTOMER_RECEIVABLE'));
   const workerOutstandingMinor = sumOpen(recvRes.data.receivables.filter((r: any) => r.kind === 'WORKER_ADVANCE'));
@@ -68,6 +73,8 @@ export async function getEngineReport(
       expensesMinor: expensesMinor.toString(),
       interestMinor: interestMinor.toString(),
       generalExpenseMinor: generalExpenseMinor.toString(),
+      pettyExpenseMinor: pettyExpenseMinor.toString(),
+      netBusinessProfitMinor: netBusinessProfitMinor.toString(),
       chartArMinor: asBigInt(byCode.get(ACCOUNT_CUSTOMER_RECEIVABLE)?.balanceMinor).toString(),
       chartApMinor: asBigInt(byCode.get(ACCOUNT_SUPPLIER_PAYABLE)?.balanceMinor).toString(),
       chartWorkerAdvanceMinor: asBigInt(byCode.get(ACCOUNT_WORKER_ADVANCE)?.balanceMinor).toString(),

@@ -20,6 +20,7 @@ import {
 export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePaymentCommand> {
   constructor(
     @Inject('EVENT_BUS') private readonly eventBus: EventBus,
+    @Inject('ACCOUNTING_SERVICE') private readonly accountingClient: ClientProxy,
     @Inject('TREASURY_SERVICE') private readonly treasuryClient: ClientProxy,
   ) {
     super();
@@ -111,12 +112,14 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
       }
 
       if (!payment) {
+        const preProjection = await this.readReceivableProjection(sale, { tenantId, shopId: sale.shopId, userId: createdById, traceId });
         const existingPayments = await prisma.salePayment.findMany({
           where: { saleId: sale.id },
           select: { amount: true },
         });
         const amountPaid = existingPayments.reduce((s, p) => s + p.amount, 0);
-        const amountDue = Math.max(0, sale.grandTotal - amountPaid);
+        const localAmountDue = Math.max(0, sale.grandTotal - amountPaid);
+        const amountDue = preProjection?.amountDue ?? localAmountDue;
 
         if (amount > amountDue + 0.0001) {
           return {
@@ -208,12 +211,12 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
 
       // Recompute the sale's paid state from ALL recorded payments (never mutate history).
       const payments = await prisma.salePayment.findMany({ where: { saleId: sale.id } });
-      const amountPaid = payments.reduce((s, p) => s + p.amount, 0);
-      const amountDue = Math.max(0, sale.grandTotal - amountPaid);
-      let paymentStatus: 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' = 'UNPAID';
-      if (amountPaid <= 0) paymentStatus = 'UNPAID';
-      else if (amountPaid >= sale.grandTotal) paymentStatus = 'PAID';
-      else paymentStatus = 'PARTIALLY_PAID';
+      const localAmountPaid = payments.reduce((s, p) => s + p.amount, 0);
+      const localAmountDue = Math.max(0, sale.grandTotal - localAmountPaid);
+      let amountPaid = localAmountPaid;
+      let amountDue = localAmountDue;
+      let paymentStatus: 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' =
+        localAmountPaid <= 0 ? 'UNPAID' : localAmountPaid >= sale.grandTotal ? 'PAID' : 'PARTIALLY_PAID';
 
       const updated = await prisma.sale.update({
         where: { id: sale.id },
@@ -255,6 +258,34 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
         return movement;
       }
 
+      const financeRefs = {
+        treasuryMovementId: movement.data?.id || null,
+        treasuryFinancialTransactionId: movement.data?.financialTransactionId || null,
+        treasuryJournalId: movement.data?.journalId || null,
+      };
+      const accountingRefValue = JSON.stringify(financeRefs);
+      await prisma.salePayment.update({
+        where: { id: payment.id },
+        data: { accountingRef: accountingRefValue },
+      });
+
+      // Phase 6 authority: project Sale due/paid from engine Obligation when available.
+      const postProjection = await this.readReceivableProjection(sale, {
+        tenantId,
+        shopId: sale.shopId,
+        userId: createdById,
+        traceId,
+      });
+      if (postProjection) {
+        amountDue = postProjection.amountDue;
+        amountPaid = postProjection.amountPaid;
+        paymentStatus = postProjection.paymentStatus;
+        await prisma.sale.update({
+          where: { id: sale.id },
+          data: { amountPaid, amountDue, paymentStatus },
+        });
+      }
+
       if (didCreatePayment) {
         await prisma.saleHistory.create({
           data: {
@@ -268,6 +299,7 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
               amountPaid,
               amountDue,
               recordedBy: userName,
+              financeRefs,
             }),
             userId: createdById,
             userName,
@@ -321,7 +353,18 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
       return {
         status: 'success',
         traceId,
-        data: { payment, sale: updated, treasuryMovement: movement.data },
+        data: {
+          payment: { ...payment, accountingRef: accountingRefValue },
+          sale: {
+            ...updated,
+            amountPaid,
+            amountDue,
+            paymentStatus,
+          },
+          treasuryMovement: movement.data,
+          financeRefs,
+          projectionSource: postProjection ? 'engine_obligation' : 'sale_payments_fallback',
+        },
       };
     } catch (error: any) {
       return {
@@ -345,5 +388,29 @@ export class RecordSalePaymentHandler extends BaseCommandHandler<RecordSalePayme
     else if (amountPaid >= sale.grandTotal) paymentStatus = 'PAID';
     else paymentStatus = 'PARTIALLY_PAID';
     await prisma.sale.update({ where: { id: saleId }, data: { amountPaid, amountDue, paymentStatus } });
+  }
+
+  private async readReceivableProjection(
+    sale: { id: string; grandTotal: number; shopId: string },
+    financeContext: { tenantId: string; shopId: string; userId: string; traceId: string },
+  ): Promise<{ amountDue: number; amountPaid: number; paymentStatus: 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' } | null> {
+    const receivables = await sendFinanceCommand(
+      this.accountingClient,
+      'GetReceivables',
+      { sourceId: sale.id, kind: 'CUSTOMER_RECEIVABLE' },
+      financeContext,
+    );
+    if (receivables.status === 'error') return null;
+    const row = (receivables.data?.receivables || []).find((r: any) => r.sourceId === sale.id);
+    const outstandingMinor = row?.outstandingMinor;
+    if (typeof outstandingMinor !== 'string' && typeof outstandingMinor !== 'number') return null;
+    const outstandingCents = Number(outstandingMinor);
+    if (!Number.isFinite(outstandingCents) || outstandingCents < 0) return null;
+
+    const amountDue = Math.max(0, outstandingCents / 100);
+    const amountPaid = Math.max(0, sale.grandTotal - amountDue);
+    const paymentStatus: 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' =
+      amountPaid <= 0 ? 'UNPAID' : amountDue <= 0 ? 'PAID' : 'PARTIALLY_PAID';
+    return { amountDue, amountPaid, paymentStatus };
   }
 }

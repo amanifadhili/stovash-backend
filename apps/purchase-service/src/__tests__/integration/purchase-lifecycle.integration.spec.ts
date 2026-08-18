@@ -72,6 +72,7 @@ describe('Purchase lifecycle integration (Phase 4)', () => {
   let addReceivedItemCostHandler: AddReceivedItemCostHandler;
   let eventBus: CapturingEventBus;
   const payableOutstandingMinorByPurchase = new Map<string, number>();
+  const seenTreasuryIdempotencyKeys = new Set<string>();
 
   const inventoryClientMock = {
     send: jest.fn(() =>
@@ -99,6 +100,25 @@ describe('Purchase lifecycle integration (Phase 4)', () => {
           },
         });
       }
+      if (pattern?.cmd === 'GetReceivables') {
+        const sourceId = String(data?.payload?.sourceId || '');
+        const outstandingMinor = payableOutstandingMinorByPurchase.get(sourceId) ?? 0;
+        return of({
+          status: 'success',
+          data: {
+            authority: 'engine_obligations',
+            receivables: [],
+            payables: [
+              {
+                kind: 'SUPPLIER_PAYABLE',
+                sourceId,
+                outstandingMinor: String(outstandingMinor),
+                status: outstandingMinor === 0 ? 'SETTLED' : 'OPEN',
+              },
+            ],
+          },
+        });
+      }
       return of({
         status: 'success',
         data: { ok: true },
@@ -112,8 +132,13 @@ describe('Purchase lifecycle integration (Phase 4)', () => {
       if (payload.movementType === 'PURCHASE_PAYMENT') {
         const purchaseId = String(payload.obligationSourceId || '');
         const amountMinor = Number(payload.amountMinor || 0);
-        const current = payableOutstandingMinorByPurchase.get(purchaseId) || 0;
-        payableOutstandingMinorByPurchase.set(purchaseId, Math.max(0, current - amountMinor));
+        const key = String(payload.idempotencyKey || '');
+        const replay = key && seenTreasuryIdempotencyKeys.has(key);
+        if (key) seenTreasuryIdempotencyKeys.add(key);
+        if (!replay) {
+          const current = payableOutstandingMinorByPurchase.get(purchaseId) || 0;
+          payableOutstandingMinorByPurchase.set(purchaseId, Math.max(0, current - amountMinor));
+        }
       }
       return of({
         status: 'success',
@@ -165,6 +190,7 @@ describe('Purchase lifecycle integration (Phase 4)', () => {
     await prisma.purchase.deleteMany();
     eventBus.events = [];
     payableOutstandingMinorByPurchase.clear();
+    seenTreasuryIdempotencyKeys.clear();
     jest.clearAllMocks();
   });
 
@@ -515,6 +541,113 @@ describe('Purchase lifecycle integration (Phase 4)', () => {
 
     const paymentsCount = await prisma.purchasePayment.count({ where: { purchaseId } });
     expect(paymentsCount).toBe(0);
+  });
+
+  it('projects amountOutstanding from engine supplier payable obligation when available', async () => {
+    let obligationSourceId = '';
+    const accountingSend = (pattern: any) => {
+      if (pattern?.cmd === 'PostPurchasePayable') {
+        return of({
+          status: 'success',
+          data: {
+            purchaseId: obligationSourceId,
+            financialTransaction: { id: 'ft-ap-proj' },
+            payable: { outstandingMinor: '20000000' },
+          },
+        });
+      }
+      if (pattern?.cmd === 'GetReceivables') {
+        return of({
+          status: 'success',
+          data: {
+            authority: 'engine_obligations',
+            receivables: [],
+            payables: [
+              {
+                kind: 'SUPPLIER_PAYABLE',
+                sourceId: obligationSourceId,
+                outstandingMinor: '15000000',
+                status: 'OPEN',
+              },
+            ],
+          },
+        });
+      }
+      return of({ status: 'success', data: { ok: true } });
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreatePurchaseHandler,
+        ConfirmPurchaseHandler,
+        RecordPurchasePaymentHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'SUPPLIER_SERVICE', useValue: { send: () => of({ status: 'error', message: 'not used' }) } },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => of({ status: 'success', data: { id: 'mv-proj' } }) } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreatePurchaseHandler);
+    const localConfirm = module.get(ConfirmPurchaseHandler);
+    const localPay = module.get(RecordPurchasePaymentHandler);
+
+    const created = await localCreate.execute(
+      new CreatePurchaseCommand(
+        {
+          supplierName: 'Supplier Obligation',
+          currency: 'RWF',
+          createdById: ctx.userId,
+          createdByName: ctx.userName,
+          traceId: ctx.traceId,
+          tenantId: ctx.tenantId,
+          shopId: ctx.shopId,
+          items: [
+            {
+              productId: 'prod-device-ob',
+              productName: 'Device OB',
+              productSku: 'DEV-OB',
+              productTracking: 'SERIALIZED',
+              orderedQty: 1,
+              unitPrice: 200000,
+              discountAmount: 0,
+              discountType: 'FIXED',
+              otherCosts: 0,
+            },
+          ],
+        } as any,
+        ctx,
+      ),
+    );
+    const purchaseId = created.data.id as string;
+    obligationSourceId = purchaseId;
+
+    await localConfirm.execute(new ConfirmPurchaseCommand({ purchaseId }, ctx));
+    const pay = await localPay.execute(
+      new RecordPurchasePaymentCommand(
+        {
+          purchaseId,
+          idempotencyKey: `CBE-PAY:${purchaseId}:phase6-ap`,
+          amount: 80000,
+          currency: 'RWF',
+          exchangeRate: 1.0,
+          paymentMethod: 'CASH',
+          accountId: 'cash-1',
+        } as any,
+        ctx,
+      ),
+    );
+
+    expect(pay.status).toBe('success');
+    expect(pay.data.projectionSource).toBe('engine_obligation');
+    expect(pay.data.amountOutstanding).toBe(150000);
+    expect(pay.data.amountPaid).toBe(50000);
+    const updated = await prisma.purchase.findUnique({ where: { id: purchaseId } });
+    expect(updated?.amountOutstanding).toBe(150000);
+    expect(updated?.amountPaid).toBe(50000);
+    expect(updated?.paymentStatus).toBe('PARTIALLY_PAID');
   });
 });
 

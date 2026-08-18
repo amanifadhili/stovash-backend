@@ -192,6 +192,9 @@ export async function createTreasuryMovement(
         originalType: originalFinancialType,
         originalTransactionId: originalMovement?.financialTransactionId,
         reason: payload.reason,
+        expenseAccountCode: payload.expenseAccountCode,
+        partyName: payload.partyName,
+        obligationId: payload.obligationId,
       },
       context,
     );
@@ -280,7 +283,7 @@ export async function createTreasuryMovement(
 
     await refreshPeriodSnapshots(tenantId, shopId, occurredOn, db);
 
-    return { status: 'success', traceId, data: serializeMovement(created, false) };
+    return { status: 'success', traceId, data: serializeMovement(created, false, booksResult.obligation?.id) };
   } catch (error: any) {
     if (error?.code === 'P2002') {
       const replay = await db.treasuryMovement.findUnique({
@@ -332,8 +335,8 @@ function validateType(
     case 'INTERNAL_LOAN':
       if (!from || !to) return 'Internal loan needs a source and an Operational destination';
       if (toFund !== 'OPERATIONAL') return 'Internal loan destination must be Operational';
-      if (fromFund !== 'CAPITAL' && fromFund !== 'PROFIT_RESERVE') {
-        return 'Internal loan source must be Capital or Profit Reserve';
+      if (from.kind !== 'CAPITAL_BANK' && from.kind !== 'PROFIT_BANK') {
+        return 'Internal loan source must be Capital Bank or Profit Reserve Bank (not Petty Cash)';
       }
       return null;
     case 'INTERNAL_LOAN_REPAY':
@@ -364,6 +367,37 @@ function validateType(
       }
       if (!payload.obligationSourceId) return 'Purchase payment requires the purchase id';
       return null;
+    case 'GENERAL_EXPENSE_FUNDING':
+      if (!from || !to || from.kind !== 'PROFIT_BANK' || toFund !== 'OPERATIONAL') {
+        return 'General expense funding is Profit Reserve Bank → Operational (not a loan)';
+      }
+      return null;
+    case 'GENERAL_EXPENSE_PAYOUT':
+      if (!from || to || fromFund !== 'OPERATIONAL') {
+        return 'General expense payout leaves Operational to the payee';
+      }
+      if (!payload.expenseAccountCode) return 'General expense payout requires an expense account';
+      return null;
+    case 'WORKER_ADVANCE':
+      if (!from || to || from.kind !== 'PETTY_CASH') {
+        return 'Worker advance leaves Petty Cash only (not Operational)';
+      }
+      if (!requireNonEmptyString(payload.partyName, 120)) return 'Worker name is required';
+      return null;
+    case 'WORKER_ADVANCE_REPAY':
+      if (from || !to || to.kind !== 'PETTY_CASH') {
+        return 'Worker repayment returns cash to Petty Cash';
+      }
+      if (!payload.obligationId && !payload.obligationSourceId) {
+        return 'Worker repayment requires the advance id';
+      }
+      return null;
+    case 'PETTY_CASH_EXPENSE':
+      if (!from || to || from.kind !== 'PETTY_CASH') {
+        return 'Petty expenses leave Petty Cash only (not Operational)';
+      }
+      if (!payload.expenseAccountCode) return 'Petty expense requires an expense account';
+      return null;
     case 'CORRECTION':
     case 'REVERSAL':
       return null;
@@ -379,12 +413,17 @@ function descriptionFor(
   counterparty?: string,
 ): string {
   if (type === 'OWNER_CAPITAL_IN') return `Owner capital in → ${toName || 'Capital Bank'}`;
+  if (type === 'GENERAL_EXPENSE_FUNDING') return `General expense funding: ${fromName} → ${toName}`;
+  if (type === 'GENERAL_EXPENSE_PAYOUT') return `General expense payout from ${fromName || 'Operational'}`;
+  if (type === 'WORKER_ADVANCE') return `Worker advance from Petty Cash`;
+  if (type === 'WORKER_ADVANCE_REPAY') return `Worker repayment to Petty Cash`;
+  if (type === 'PETTY_CASH_EXPENSE') return `Petty cash expense from ${fromName || 'Petty Cash'}`;
   if (counterparty) return `${type} · ${counterparty}`;
   if (fromName && toName) return `${type}: ${fromName} → ${toName}`;
   return type;
 }
 
-export function serializeMovement(row: any, replay: boolean) {
+export function serializeMovement(row: any, replay: boolean, obligationId?: string | null) {
   return {
     id: row.id,
     movementType: row.movementType,
@@ -397,5 +436,6 @@ export function serializeMovement(row: any, replay: boolean) {
     originalMovementId: row.originalMovementId ?? null,
     reason: row.reason ?? null,
     existingIfReplay: replay,
+    obligationId: obligationId ?? null,
   };
 }

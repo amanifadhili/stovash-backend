@@ -6,6 +6,6 @@ import { getReceivables } from '../../engine-ledger/queries.js';
 @QueryHandler(GetReceivablesQuery)
 export class GetReceivablesHandler implements IQueryHandler<GetReceivablesQuery> {
   async execute(query: GetReceivablesQuery): Promise<ICommandResponse<any>> {
-    return getReceivables(query.context);
+    return getReceivables(query.payload, query.context);
   }
 }

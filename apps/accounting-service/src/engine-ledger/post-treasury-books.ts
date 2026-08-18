@@ -10,8 +10,10 @@ import {
   ACCOUNT_EXTERNAL_LOAN_PAYABLE,
   ACCOUNT_INTEREST_EXPENSE,
   ACCOUNT_OWNER_EQUITY,
+  ACCOUNT_PETTY_CASH,
   ACCOUNT_RECON_ADJUSTMENT,
   ACCOUNT_SUPPLIER_PAYABLE,
+  ACCOUNT_WORKER_ADVANCE,
   PHYSICAL_KIND_TO_CHART,
 } from './chart.js';
 import { ensureEngineChart } from './ensure-chart.js';
@@ -31,6 +33,9 @@ export interface PostTreasuryBooksPayload {
   originalType?: string;
   originalTransactionId?: string;
   reason?: string;
+  expenseAccountCode?: string;
+  partyName?: string;
+  obligationId?: string;
 }
 
 function chartOf(kind?: string | null): string | null {
@@ -44,6 +49,7 @@ function journalLines(
   fromKind?: string | null,
   toKind?: string | null,
   reconDirection?: 'EXCESS' | 'SHORTAGE',
+  expenseAccountCode?: string | null,
 ): Array<{ accountCode: string; side: 'DEBIT' | 'CREDIT'; amountMinor: bigint }> | { error: string } {
   const fromChart = chartOf(fromKind);
   const toChart = chartOf(toKind);
@@ -61,7 +67,8 @@ function journalLines(
     type === 'INTERNAL_LOAN' ||
     type === 'INTERNAL_LOAN_REPAY' ||
     type === 'CAPITAL_GROWTH' ||
-    type === 'PROFIT_TRANSFER'
+    type === 'PROFIT_TRANSFER' ||
+    type === 'GENERAL_EXPENSE_FUNDING'
   ) {
     if (!fromChart || !toChart) return { error: `${type} requires source and destination accounts` };
     return [
@@ -125,6 +132,38 @@ function journalLines(
     ];
   }
 
+  if (type === 'GENERAL_EXPENSE') {
+    if (!fromChart) return { error: 'General expense payout requires an Operational source account' };
+    if (!expenseAccountCode) return { error: 'General expense payout requires an expense account' };
+    return [
+      { accountCode: expenseAccountCode, side: 'DEBIT', amountMinor: amount },
+      { accountCode: fromChart, side: 'CREDIT', amountMinor: amount },
+    ];
+  }
+
+  if (type === 'WORKER_ADVANCE') {
+    if (fromKind && fromKind !== 'PETTY_CASH') return { error: 'Worker advance must credit Petty Cash' };
+    return [
+      { accountCode: ACCOUNT_WORKER_ADVANCE, side: 'DEBIT', amountMinor: amount },
+      { accountCode: ACCOUNT_PETTY_CASH, side: 'CREDIT', amountMinor: amount },
+    ];
+  }
+
+  if (type === 'WORKER_ADVANCE_REPAY') {
+    return [
+      { accountCode: ACCOUNT_PETTY_CASH, side: 'DEBIT', amountMinor: amount },
+      { accountCode: ACCOUNT_WORKER_ADVANCE, side: 'CREDIT', amountMinor: amount },
+    ];
+  }
+
+  if (type === 'PETTY_CASH_EXPENSE') {
+    if (!expenseAccountCode) return { error: 'Petty expense requires an expense account' };
+    return [
+      { accountCode: expenseAccountCode, side: 'DEBIT', amountMinor: amount },
+      { accountCode: ACCOUNT_PETTY_CASH, side: 'CREDIT', amountMinor: amount },
+    ];
+  }
+
   return { error: `No journal template for ${type}` };
 }
 
@@ -135,10 +174,11 @@ function booksJournalLines(
   toKind?: string | null,
   reconDirection?: 'EXCESS' | 'SHORTAGE',
   originalType?: string | null,
+  expenseAccountCode?: string | null,
 ): Array<{ accountCode: string; side: 'DEBIT' | 'CREDIT'; amountMinor: bigint }> | { error: string } {
   if (type === 'CORRECTION' || type === 'REVERSAL') {
     const templateType = originalType || type;
-    const inner = journalLines(templateType, amount, fromKind, toKind, reconDirection);
+    const inner = journalLines(templateType, amount, fromKind, toKind, reconDirection, expenseAccountCode);
     if ('error' in inner) return inner;
     if (type === 'REVERSAL') {
       return inner.map((line) => ({
@@ -148,7 +188,7 @@ function booksJournalLines(
     }
     return inner;
   }
-  return journalLines(type, amount, fromKind, toKind, reconDirection);
+  return journalLines(type, amount, fromKind, toKind, reconDirection, expenseAccountCode);
 }
 
 export async function postTreasuryBooks(
@@ -192,6 +232,7 @@ export async function postTreasuryBooks(
     payload.toKind,
     payload.reconDirection,
     payload.originalType,
+    payload.expenseAccountCode,
   );
   if ('error' in linesOrError) {
     return { status: 'error', traceId, message: linesOrError.error, errorCode: ErrorCode.VALIDATION_ERROR };
@@ -237,6 +278,8 @@ export async function postTreasuryBooks(
             toKind: payload.toKind ?? null,
             obligationSourceId: payload.obligationSourceId ?? null,
             originalType: payload.originalType ?? null,
+            expenseAccountCode: payload.expenseAccountCode ?? null,
+            partyName: payload.partyName ?? null,
           },
         },
         context,
@@ -275,6 +318,39 @@ export async function postTreasuryBooks(
         });
       }
 
+      let obligation: { id: string; outstandingMinor: bigint; partyName: string; status: string } | null = null;
+      if (type === 'WORKER_ADVANCE') {
+        const partyName = requireNonEmptyString(payload.partyName, 120) || 'Worker';
+        if (!written.replay) {
+          obligation = await tx.obligation.create({
+            data: {
+              tenantId,
+              shopId,
+              kind: 'WORKER_ADVANCE',
+              partyName,
+              outstandingMinor: amountMinor,
+              financialTransactionId: written.row.id,
+              status: 'OPEN',
+            },
+          });
+        } else {
+          obligation = await tx.obligation.findFirst({
+            where: { financialTransactionId: written.row.id, kind: 'WORKER_ADVANCE' },
+          });
+        }
+      }
+
+      if (type === 'WORKER_ADVANCE_REPAY') {
+        obligation = await reduceWorkerAdvance(tx, {
+          tenantId,
+          shopId,
+          obligationId: payload.obligationId,
+          sourceId: payload.obligationSourceId,
+          amountMinor,
+          replay: written.replay,
+        });
+      }
+
       const journal = await postEngineJournal(tx, {
         tenantId,
         shopId,
@@ -285,7 +361,7 @@ export async function postTreasuryBooks(
         lines: linesOrError,
       });
 
-      return { written, journal };
+      return { written, journal, obligation };
     });
 
     return {
@@ -297,6 +373,15 @@ export async function postTreasuryBooks(
           existingIfReplay: result.written.replay,
         },
         journal: serializeJournal(result.journal),
+        obligation: result.obligation
+          ? {
+              id: result.obligation.id,
+              partyName: result.obligation.partyName,
+              outstandingMinor: result.obligation.outstandingMinor.toString(),
+              status: result.obligation.status,
+              kind: 'WORKER_ADVANCE',
+            }
+          : null,
       },
     };
   } catch (error: any) {
@@ -311,6 +396,50 @@ export async function postTreasuryBooks(
       errorCode: error?.errorCode || error?.code || ErrorCode.INTERNAL_ERROR,
     };
   }
+}
+
+async function reduceWorkerAdvance(
+  tx: any,
+  args: {
+    tenantId: string;
+    shopId: string;
+    obligationId?: string;
+    sourceId?: string;
+    amountMinor: bigint;
+    replay: boolean;
+  },
+) {
+  let obligation = args.obligationId
+    ? await tx.obligation.findFirst({
+        where: { id: args.obligationId, tenantId: args.tenantId, shopId: args.shopId, kind: 'WORKER_ADVANCE' },
+      })
+    : null;
+  if (!obligation && args.sourceId) {
+    const origin = await tx.financialTransaction.findFirst({
+      where: { tenantId: args.tenantId, shopId: args.shopId, type: 'WORKER_ADVANCE', sourceId: args.sourceId },
+    });
+    if (origin) {
+      obligation = await tx.obligation.findFirst({
+        where: { financialTransactionId: origin.id, kind: 'WORKER_ADVANCE' },
+      });
+    }
+  }
+  if (!obligation) {
+    throw Object.assign(new Error('Worker advance obligation not found'), {
+      errorCode: ErrorCode.NOT_FOUND,
+    });
+  }
+  if (args.replay) return obligation;
+  if (args.amountMinor > obligation.outstandingMinor) {
+    throw Object.assign(new Error('Repayment exceeds outstanding worker advance'), {
+      errorCode: ErrorCode.BUSINESS_RULE_VIOLATION,
+    });
+  }
+  const next = obligation.outstandingMinor - args.amountMinor;
+  return tx.obligation.update({
+    where: { id: obligation.id },
+    data: { outstandingMinor: next, status: next === 0n ? 'SETTLED' : 'OPEN' },
+  });
 }
 
 async function reduceObligation(

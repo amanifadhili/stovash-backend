@@ -3,17 +3,18 @@ import { ErrorCode, ICommandResponse, IRequestContext } from '@electronic-shop/t
 import { parseAmountMinor, parseOccurredOn, requireNonEmptyString } from '../financial-transaction/serialize.js';
 import { TreasuryMoveFn } from '../common/treasury-move.js';
 
-export interface RecordWorkerAdvancePayload {
-  workerName: string;
+export interface RepayPettyCashAdvancePayload {
+  obligationId?: string;
+  obligationSourceId?: string;
   amountMinor: number | string;
   occurredOn: string;
   notes?: string;
   idempotencyKey?: string;
 }
 
-/** Petty Cash −, worker AR +. Not an expense. */
-export async function recordWorkerAdvance(
-  payload: RecordWorkerAdvancePayload,
+/** Worker → Petty Cash. Reduces worker AR. Not income. */
+export async function repayPettyCashAdvance(
+  payload: RepayPettyCashAdvancePayload,
   context?: IRequestContext,
   moveCash?: TreasuryMoveFn,
 ): Promise<ICommandResponse<any>> {
@@ -33,14 +34,21 @@ export async function recordWorkerAdvance(
     };
   }
 
-  const workerName = requireNonEmptyString(payload?.workerName, 120);
   const amountMinor = parseAmountMinor(payload?.amountMinor);
   const occurredOn = parseOccurredOn(payload?.occurredOn);
-  if (!workerName || amountMinor === null || !occurredOn) {
+  if (amountMinor === null || !occurredOn) {
     return {
       status: 'error',
       traceId,
-      message: 'workerName, positive amountMinor (RWF cents), and occurredOn are required',
+      message: 'amountMinor must be a positive integer (RWF cents) and occurredOn must be YYYY-MM-DD',
+      errorCode: ErrorCode.VALIDATION_ERROR,
+    };
+  }
+  if (!payload?.obligationId && !payload?.obligationSourceId) {
+    return {
+      status: 'error',
+      traceId,
+      message: 'obligationId is required to repay a worker advance',
       errorCode: ErrorCode.VALIDATION_ERROR,
     };
   }
@@ -50,13 +58,13 @@ export async function recordWorkerAdvance(
 
   const movement = await moveCash(
     {
-      movementType: 'WORKER_ADVANCE',
+      movementType: 'WORKER_ADVANCE_REPAY',
       amountMinor: amountMinor.toString(),
       occurredOn: payload.occurredOn,
-      fromKind: 'PETTY_CASH',
-      partyName: workerName,
+      toKind: 'PETTY_CASH',
+      obligationId: payload.obligationId,
+      obligationSourceId: payload.obligationSourceId,
       notes: notes || undefined,
-      obligationSourceId: sourceId,
       idempotencyKey: sourceId,
     },
     context,
@@ -67,13 +75,10 @@ export async function recordWorkerAdvance(
     status: 'success',
     traceId,
     data: {
-      id: movement.data?.obligationId || movement.data?.obligation?.id || null,
+      id: movement.data?.obligationId || payload.obligationId || null,
       kind: 'WORKER_ADVANCE',
-      partyName: workerName,
-      outstandingMinor: amountMinor.toString(),
       isExpense: false,
-      cashMovement: 'PETTY_CASH_OUT',
-      financialTransaction: movement.data,
+      cashMovement: 'WORKER_TO_PETTY',
       treasuryMovement: movement.data,
     },
   };

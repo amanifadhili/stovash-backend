@@ -64,6 +64,8 @@ describe('Sale and purchase books (Phase 6)', () => {
     expect(result.data.profitEarnedMinor).toBe(String(PROFIT_120K));
     expect(result.data.profitAllocation.earnedMinor).toBe(String(PROFIT_120K));
     expect(result.data.receivable.outstandingMinor).toBe(String(SALE_500K));
+    const accounts = await getAccountingAccounts(context);
+    expect(accounts.data.authority).toBe('posted_journal_lines');
 
     const revenueLines = result.data.revenueJournal.lines.map((l: any) => `${l.side}:${l.accountCode}`);
     expect(revenueLines).toEqual([
@@ -100,9 +102,17 @@ describe('Sale and purchase books (Phase 6)', () => {
     expect(pay.status).toBe('success');
     expect(pay.data.financialTransaction.type).toBe('SALE_PAYMENT');
 
-    const receivables = await getReceivables(context);
+    const receivables = await getReceivables(undefined, context);
     const ar = receivables.data.receivables.find((r: any) => r.kind === 'CUSTOMER_RECEIVABLE');
     expect(ar.outstandingMinor).toBe(String(AR_300K));
+    expect(ar.sourceId).toBe('sale-gold-2');
+    expect(ar.sourceCommand).toBe('ConfirmSale');
+    expect(receivables.data.authority).toBe('engine_obligations');
+
+    const bySource = await getReceivables({ sourceId: 'sale-gold-2', kind: 'CUSTOMER_RECEIVABLE' }, context);
+    expect(bySource.status).toBe('success');
+    expect(bySource.data.receivables).toHaveLength(1);
+    expect(bySource.data.receivables[0].sourceId).toBe('sale-gold-2');
 
     const accountsAfterPay = await getAccountingAccounts(context);
     expect(accountsAfterPay.data.profitAllocation.earnedMinor).toBe(String(PROFIT_120K));
@@ -126,7 +136,7 @@ describe('Sale and purchase books (Phase 6)', () => {
     const revenueAfter = afterRepay.data.accounts.find((a: any) => a.code === ACCOUNT_SALES_REVENUE);
     expect(revenueAfter.balanceMinor).toBe(String(SALE_500K));
     expect(afterRepay.data.profitAllocation.earnedMinor).toBe(String(PROFIT_120K));
-    const arAfter = (await getReceivables(context)).data.receivables.find((r: any) => r.kind === 'CUSTOMER_RECEIVABLE');
+    const arAfter = (await getReceivables(undefined, context)).data.receivables.find((r: any) => r.kind === 'CUSTOMER_RECEIVABLE');
     expect(arAfter.outstandingMinor).toBe('0');
     expect(arAfter.status).toBe('SETTLED');
   });
@@ -192,7 +202,7 @@ describe('Sale and purchase books (Phase 6)', () => {
       context,
     );
     expect(pay.status).toBe('success');
-    const listed = await getReceivables(context);
+    const listed = await getReceivables(undefined, context);
     expect(listed.data.payables[0].outstandingMinor).toBe(String(AR_300K));
     const inventory = (await getAccountingAccounts(context)).data.accounts.find((a: any) => a.code === ACCOUNT_INVENTORY);
     const ap = (await getAccountingAccounts(context)).data.accounts.find((a: any) => a.code === ACCOUNT_SUPPLIER_PAYABLE);
@@ -236,7 +246,7 @@ describe('Sale and purchase books (Phase 6)', () => {
     expect(second.status).toBe('success');
     expect(second.data.financialTransaction.existingIfReplay).toBe(true);
     expect(second.data.financialTransaction.id).toBe(first.data.financialTransaction.id);
-    const ar = (await getReceivables(context)).data.receivables.find((r: any) => r.kind === 'CUSTOMER_RECEIVABLE');
+    const ar = (await getReceivables(undefined, context)).data.receivables.find((r: any) => r.kind === 'CUSTOMER_RECEIVABLE');
     expect(ar.outstandingMinor).toBe(String(AR_300K));
   });
 

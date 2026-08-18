@@ -73,4 +73,36 @@ describe('Treasury books journals (Phase 5)', () => {
     expect(debit.accountCode).toBe(ACCOUNT_INTEREST_EXPENSE);
     expect(debit.accountType).toBe('EXPENSE');
   });
+
+  it('general expense funding is asset reclass; payout is the P&L hit', async () => {
+    const funding = await postTreasuryBooks(
+      {
+        type: 'GENERAL_EXPENSE_FUNDING',
+        amountMinor: 1000,
+        occurredOn: '2026-08-17',
+        fromKind: 'PROFIT_BANK',
+        toKind: 'OPS_MAIN_BANK',
+        idempotencyKey: 'exp-fund',
+      },
+      context,
+    );
+    expect(funding.status).toBe('success');
+    expect(funding.data.journal.lines.every((l: any) => l.accountType === 'ASSET')).toBe(true);
+
+    const payout = await postTreasuryBooks(
+      {
+        type: 'GENERAL_EXPENSE',
+        amountMinor: 1000,
+        occurredOn: '2026-08-17',
+        fromKind: 'OPS_MAIN_BANK',
+        expenseAccountCode: '6200',
+        idempotencyKey: 'exp-pay',
+      },
+      context,
+    );
+    expect(payout.status).toBe('success');
+    const debit = payout.data.journal.lines.find((l: any) => l.side === 'DEBIT');
+    expect(debit.accountCode).toBe('6200');
+    expect(debit.accountType).toBe('EXPENSE');
+  });
 });

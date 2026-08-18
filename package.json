@@ -15,6 +15,7 @@
     "dev": "tsx server.ts",
     "seed:demo": "tsx scripts/seed-demo.ts",
     "seed:phase9": "node scripts/seed-phase9-visual.mjs",
+    "cbe:integrity": "tsx scripts/cbe-integrity/report.ts",
     "test": "tsx ./run-tests.ts",
     "lint": "echo Linting disabled"
   },

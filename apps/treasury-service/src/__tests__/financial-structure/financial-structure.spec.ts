@@ -59,6 +59,7 @@ describe('Financial structure (Phase 3)', () => {
 
   it('fund total equals the sum of children (all zero)', async () => {
     const result = await getFinancialStructure(context);
+    expect(result.data!.authority).toBe('treasury_movements');
     for (const fund of result.data!.funds) {
       const sum = fund.accounts.reduce((acc, a) => acc + BigInt(a.balanceMinor), 0n);
       expect(fund.balanceMinor).toBe(sum.toString());

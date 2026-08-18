@@ -67,6 +67,7 @@ export async function getAccountingAccounts(
         transferredMinor: (allocation?.transferredMinor ?? 0n).toString(),
       },
       note: 'Balances are derived from posted engine journals.',
+      authority: 'posted_journal_lines',
     },
   };
 }
@@ -136,6 +137,7 @@ export async function getJournals(
 }
 
 export async function getReceivables(
+  payload?: { kind?: string; status?: string; sourceId?: string },
   context?: IRequestContext,
 ): Promise<ICommandResponse<any>> {
   const traceId = context?.traceId || 'unknown';
@@ -145,10 +147,28 @@ export async function getReceivables(
     return { status: 'error', traceId, message: 'tenantId and shopId are required', errorCode: ErrorCode.VALIDATION_ERROR };
   }
 
+  const allowedKinds = ['WORKER_ADVANCE', 'CUSTOMER_RECEIVABLE', 'SUPPLIER_PAYABLE'] as const;
+  const kind = payload?.kind && (allowedKinds as readonly string[]).includes(payload.kind) ? payload.kind : undefined;
+  const status = payload?.status && ['OPEN', 'SETTLED'].includes(payload.status) ? payload.status : undefined;
+
   const rows = await prisma.obligation.findMany({
-    where: { tenantId, shopId, kind: { in: ['WORKER_ADVANCE', 'CUSTOMER_RECEIVABLE', 'SUPPLIER_PAYABLE'] } },
+    where: {
+      tenantId,
+      shopId,
+      kind: kind ? kind : { in: [...allowedKinds] },
+      ...(status ? { status } : {}),
+    },
     orderBy: { createdAt: 'desc' },
   });
+
+  const ftIds = [...new Set(rows.map((r) => r.financialTransactionId))];
+  const ftRows = ftIds.length
+    ? await prisma.financialTransaction.findMany({
+        where: { tenantId, shopId, id: { in: ftIds } },
+        select: { id: true, sourceId: true, sourceCommand: true, sourceDomain: true, type: true },
+      })
+    : [];
+  const ftById = new Map(ftRows.map((row) => [row.id, row]));
 
   const mapped = rows.map((r) => ({
     id: r.id,
@@ -157,15 +177,21 @@ export async function getReceivables(
     outstandingMinor: r.outstandingMinor.toString(),
     status: r.status,
     financialTransactionId: r.financialTransactionId,
+    sourceId: ftById.get(r.financialTransactionId)?.sourceId ?? null,
+    sourceCommand: ftById.get(r.financialTransactionId)?.sourceCommand ?? null,
+    sourceDomain: ftById.get(r.financialTransactionId)?.sourceDomain ?? null,
+    originType: ftById.get(r.financialTransactionId)?.type ?? null,
   }));
+  const scoped = payload?.sourceId ? mapped.filter((r) => r.sourceId === payload.sourceId) : mapped;
 
   return {
     status: 'success',
     traceId,
     data: {
-      receivables: mapped.filter((r) => r.kind !== 'SUPPLIER_PAYABLE'),
-      payables: mapped.filter((r) => r.kind === 'SUPPLIER_PAYABLE'),
-      count: mapped.length,
+      receivables: scoped.filter((r) => r.kind !== 'SUPPLIER_PAYABLE'),
+      payables: scoped.filter((r) => r.kind === 'SUPPLIER_PAYABLE'),
+      count: scoped.length,
+      authority: 'engine_obligations',
     },
   };
 }

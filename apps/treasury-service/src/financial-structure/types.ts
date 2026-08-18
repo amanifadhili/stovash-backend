@@ -85,6 +85,8 @@ export interface FinancialStructureDto {
   funds: LogicalFundDto[];
   currency: string;
   note: string;
+  /** Phase 6: treasury SoT is Σ posted movements (approved recon is a movement). */
+  authority?: 'treasury_movements';
 }
 
 export interface CreatePhysicalAccountPayload {

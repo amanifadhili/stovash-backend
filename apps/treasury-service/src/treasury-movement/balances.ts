@@ -2,6 +2,11 @@ import { prisma as defaultPrisma } from '../database/client.js';
 
 type Db = typeof defaultPrisma;
 
+/**
+ * Phase 6 treasury SoT: physical balances = Σ posted TreasuryMovement rows.
+ * Approved reconciliation is included because it posts a RECONCILIATION_ADJUSTMENT movement.
+ * Unapproved counts are not movements and must not appear here.
+ */
 export async function derivedBalances(
   tenantId: string,
   shopId: string,

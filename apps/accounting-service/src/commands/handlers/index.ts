@@ -8,6 +8,8 @@ import { RecordExpenseHandler } from './record-expense.handler.js';
 import { PostFinancialTransactionHandler } from './post-financial-transaction.handler.js';
 import { RecordGeneralExpenseHandler } from './record-general-expense.handler.js';
 import { RecordWorkerAdvanceHandler } from './record-worker-advance.handler.js';
+import { RepayPettyCashAdvanceHandler } from './repay-petty-cash-advance.handler.js';
+import { RecordPettyCashExpenseHandler } from './record-petty-cash-expense.handler.js';
 import { PostTreasuryBooksHandler } from './post-treasury-books.handler.js';
 import { PostSaleConfirmationHandler } from './post-sale-confirmation.handler.js';
 import { PostPurchasePayableHandler } from './post-purchase-payable.handler.js';
@@ -24,6 +26,8 @@ export const CommandHandlers = [
   PostFinancialTransactionHandler,
   RecordGeneralExpenseHandler,
   RecordWorkerAdvanceHandler,
+  RepayPettyCashAdvanceHandler,
+  RecordPettyCashExpenseHandler,
   PostTreasuryBooksHandler,
   PostSaleConfirmationHandler,
   PostPurchasePayableHandler,

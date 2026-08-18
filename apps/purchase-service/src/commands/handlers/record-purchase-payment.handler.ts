@@ -6,7 +6,7 @@ import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { actorOf } from '../../common/actor.js';
 import { Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { postPurchasePayableBooks } from '../../common/post-purchase-finance.js';
+import { postPurchasePayableBooks, readPayableProjection } from '../../common/post-purchase-finance.js';
 import { createHash } from 'node:crypto';
 import {
   francsToMinor,
@@ -207,6 +207,19 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
         return movement;
       }
 
+      // Phase 6 authority: project AP outstanding from engine Obligation after cash moved.
+      const postProjection = await readPayableProjection(this.accountingClient, purchase, financeContext);
+      if (postProjection) {
+        await prisma.purchase.update({
+          where: { id: purchaseId },
+          data: {
+            amountPaid: postProjection.amountPaid,
+            amountOutstanding: postProjection.amountOutstanding,
+            paymentStatus: postProjection.paymentStatus,
+          },
+        });
+      }
+
       const financeRefs = {
         treasuryMovementId: movement.data?.id || null,
         treasuryFinancialTransactionId: movement.data?.financialTransactionId || null,
@@ -259,6 +272,10 @@ export class RecordPurchasePaymentHandler extends BaseCommandHandler<RecordPurch
           financeRefs,
           treasuryMovement: movement.data,
           idempotencyKey: stableIdempotencyKey,
+          projectionSource: postProjection ? 'engine_obligation' : 'purchase_payments_fallback',
+          amountPaid: postProjection?.amountPaid ?? amountPaid,
+          amountOutstanding: postProjection?.amountOutstanding ?? amountOutstanding,
+          paymentStatus: postProjection?.paymentStatus ?? paymentStatus,
         },
       };
     } catch (error: any) {

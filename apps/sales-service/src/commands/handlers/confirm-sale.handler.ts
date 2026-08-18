@@ -86,7 +86,10 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
         // engine books exist. This must be idempotent: setting POSTED again is safe.
         const updatedOnReplay = await prisma.sale.update({
           where: { id: sale.id },
-          data: { accountingStatus: 'POSTED' },
+          data: {
+            accountingStatus: 'POSTED',
+            ...this.profitCacheFromBooks(replay),
+          },
         });
         return { status: 'success', traceId, data: updatedOnReplay };
       }
@@ -138,6 +141,7 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
           confirmedAt: new Date(),
           fulfilledById: createdById,
           fulfilledAt: new Date(),
+          ...this.profitCacheFromBooks(books),
         },
       });
 
@@ -145,7 +149,13 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
         data: {
           saleId: sale.id,
           eventType: 'CONFIRMED',
-          eventData: JSON.stringify({ orderNumber: sale.orderNumber, confirmedBy: userName }),
+          eventData: JSON.stringify({
+            orderNumber: sale.orderNumber,
+            confirmedBy: userName,
+            financialTransactionId: books.data?.financialTransaction?.id || null,
+            cogsFinancialTransactionId: books.data?.cogsFinancialTransaction?.id || null,
+            profitEarnedMinor: books.data?.profitEarnedMinor || null,
+          }),
           userId: createdById,
           userName,
           traceId,
@@ -259,5 +269,12 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
       },
       financeContext,
     );
+  }
+
+  /** Sale.profit is a display cache of engine profit earned; never a second SoT. */
+  private profitCacheFromBooks(books: ICommandResponse<any>): { profit?: number } {
+    const minor = Number(books?.data?.profitEarnedMinor);
+    if (!Number.isFinite(minor) || minor < 0) return {};
+    return { profit: minor / 100 };
   }
 }

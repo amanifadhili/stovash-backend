@@ -17,6 +17,8 @@ import { PostFinancialTransactionCommand } from './commands/impl/post-financial-
 import { GetFinancialTransactionQuery } from './queries/impl/get-financial-transaction.query.js';
 import { RecordGeneralExpenseCommand } from './commands/impl/record-general-expense.command.js';
 import { RecordWorkerAdvanceCommand } from './commands/impl/record-worker-advance.command.js';
+import { RepayPettyCashAdvanceCommand } from './commands/impl/repay-petty-cash-advance.command.js';
+import { RecordPettyCashExpenseCommand } from './commands/impl/record-petty-cash-expense.command.js';
 import { GetAccountingAccountsQuery } from './queries/impl/get-accounting-accounts.query.js';
 import { GetJournalsQuery } from './queries/impl/get-journals.query.js';
 import { GetReceivablesQuery } from './queries/impl/get-receivables.query.js';
@@ -112,6 +114,21 @@ export class AccountingServiceController {
   @MessagePattern({ cmd: 'RecordWorkerAdvance' })
   async handleRecordWorkerAdvance(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new RecordWorkerAdvanceCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'RecordPettyCashAdvance' })
+  async handleRecordPettyCashAdvance(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new RecordWorkerAdvanceCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'RepayPettyCashAdvance' })
+  async handleRepayPettyCashAdvance(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new RepayPettyCashAdvanceCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'RecordPettyCashExpense' })
+  async handleRecordPettyCashExpense(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new RecordPettyCashExpenseCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'GetAccountingAccounts' })

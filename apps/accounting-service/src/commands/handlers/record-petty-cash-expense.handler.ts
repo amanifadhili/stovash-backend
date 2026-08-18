@@ -3,18 +3,18 @@ import { Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { ICommandResponse } from '@electronic-shop/types';
-import { RecordWorkerAdvanceCommand } from '../impl/record-worker-advance.command.js';
-import { recordWorkerAdvance } from '../../engine-ledger/record-worker-advance.js';
+import { RecordPettyCashExpenseCommand } from '../impl/record-petty-cash-expense.command.js';
+import { recordPettyCashExpense } from '../../engine-ledger/record-petty-cash-expense.js';
 import { sendTreasuryMovement } from '../../common/treasury-move.js';
 
-@CommandHandler(RecordWorkerAdvanceCommand)
-export class RecordWorkerAdvanceHandler extends BaseCommandHandler<RecordWorkerAdvanceCommand> {
+@CommandHandler(RecordPettyCashExpenseCommand)
+export class RecordPettyCashExpenseHandler extends BaseCommandHandler<RecordPettyCashExpenseCommand> {
   constructor(@Inject('TREASURY_SERVICE') private readonly treasury: ClientProxy) {
     super();
   }
 
-  async execute(command: RecordWorkerAdvanceCommand): Promise<ICommandResponse<any>> {
-    return recordWorkerAdvance(command.payload, command.context, (payload, context) =>
+  async execute(command: RecordPettyCashExpenseCommand): Promise<ICommandResponse<any>> {
+    return recordPettyCashExpense(command.payload, command.context, (payload, context) =>
       sendTreasuryMovement(this.treasury, payload, context),
     );
   }

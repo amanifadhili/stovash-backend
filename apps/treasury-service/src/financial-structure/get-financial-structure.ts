@@ -83,8 +83,9 @@ export async function getFinancialStructure(
       data: {
         funds: ordered,
         currency: 'RWF',
+        authority: 'treasury_movements',
         note: hasMoney
-          ? 'Balances are the sum of posted treasury movements. You cannot type a till number.'
+          ? 'Balances are the sum of posted treasury movements (including approved recon). You cannot type a till number.'
           : 'Balances are derived from posted treasury movements. None have been posted yet. Opening money is OWNER_CAPITAL_IN — not a typed till number.',
       },
     };

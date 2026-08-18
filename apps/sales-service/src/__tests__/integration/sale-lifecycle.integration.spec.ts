@@ -45,6 +45,17 @@ const inventoryClientMock = {
     }),
 };
 
+function treasuryMovementOk(id = 'mv-1') {
+  return of({
+    status: 'success',
+    data: {
+      id,
+      financialTransactionId: `ft-${id}`,
+      journalId: `je-${id}`,
+    },
+  });
+}
+
 describe('Sale lifecycle integration', () => {
   let createHandler: CreateSaleHandler;
   let confirmHandler: ConfirmSaleHandler;
@@ -75,7 +86,7 @@ describe('Sale lifecycle integration', () => {
         { provide: 'EVENT_BUS', useClass: CapturingEventBus },
         { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
         { provide: 'ACCOUNTING_SERVICE', useValue: { send: () => of({ status: 'success', data: { ok: true } }) } },
-        { provide: 'TREASURY_SERVICE', useValue: { send: () => of({ status: 'success', data: { id: 'mv-1' } }) } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => treasuryMovementOk() } },
       ],
     }).compile();
 
@@ -176,6 +187,15 @@ describe('Sale lifecycle integration', () => {
     expect(pay1.data.sale.paymentStatus).toBe('PARTIALLY_PAID');
     expect(pay1.data.payment.paymentNumber).toMatch(/^PAY-\d{4}-\d{6}$/);
     expect(pay1.data.sale.amountDue).toBeCloseTo(remaining);
+    expect(pay1.data.financeRefs.treasuryMovementId).toBe('mv-1');
+    expect(pay1.data.financeRefs.treasuryFinancialTransactionId).toBe('ft-mv-1');
+    expect(pay1.data.financeRefs.treasuryJournalId).toBe('je-mv-1');
+    const savedPay = await prisma.salePayment.findFirst({ where: { saleId } });
+    expect(savedPay?.accountingRef).toBeTruthy();
+    const refs = JSON.parse(String(savedPay?.accountingRef || '{}'));
+    expect(refs.treasuryMovementId).toBe('mv-1');
+    expect(refs.treasuryFinancialTransactionId).toBe('ft-mv-1');
+    expect(refs.treasuryJournalId).toBe('je-mv-1');
 
     const credit = await payHandler.execute(new RecordSalePaymentCommand({ saleId, amount: remaining, method: 'CREDIT' }, ctx));
     expect(credit.status).toBe('error');
@@ -212,6 +232,8 @@ describe('Sale lifecycle integration', () => {
     const updated = await prisma.sale.findUnique({ where: { id: saleId } });
     expect(updated?.amountPaid).toBeCloseTo(100000);
     expect(updated?.amountDue).toBeCloseTo(due - 100000);
+    const replayed = await prisma.salePayment.findFirst({ where: { saleId } });
+    expect(JSON.parse(String(replayed?.accountingRef || '{}')).treasuryMovementId).toBe('mv-1');
   });
 
   it('rejects payment amount greater than remaining due', async () => {
@@ -228,6 +250,61 @@ describe('Sale lifecycle integration', () => {
 
     const count = await prisma.salePayment.count({ where: { saleId } });
     expect(count).toBe(0);
+  });
+
+  it('projects amountDue/amountPaid from engine receivable obligation when available', async () => {
+    let obligationSourceId = '';
+    const accountingSend = ({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleConfirmation') {
+        return of({ status: 'success', data: { ok: true } });
+      }
+      if (cmd === 'GetReceivables') {
+        return of({
+          status: 'success',
+          data: {
+            receivables: [
+              {
+                kind: 'CUSTOMER_RECEIVABLE',
+                sourceId: obligationSourceId,
+                outstandingMinor: '85000000',
+                status: 'OPEN',
+              },
+            ],
+          },
+        });
+      }
+      return of({ status: 'success', data: { ok: true } });
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        RecordSalePaymentHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+        { provide: 'TREASURY_SERVICE', useValue: { send: () => treasuryMovementOk('mv-proj') } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const localPay = module.get(RecordSalePaymentHandler);
+
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    const saleId = created.data.id;
+    obligationSourceId = saleId;
+
+    await localConfirm.execute(new ConfirmSaleCommand({ saleId }, ctx));
+    const pay = await localPay.execute(
+      new RecordSalePaymentCommand({ saleId, amount: 300000, method: 'CASH', idempotencyKey: 'phase6-proj-1' }, ctx),
+    );
+    expect(pay.status).toBe('success');
+    expect(pay.data.projectionSource).toBe('engine_obligation');
+    expect(pay.data.sale.amountDue).toBe(850000);
+    expect(pay.data.sale.amountPaid).toBeCloseTo(created.data.grandTotal - 850000);
   });
 
   it('does not confirm (stays DRAFT) when PostSaleConfirmation books fail', async () => {
@@ -260,8 +337,43 @@ describe('Sale lifecycle integration', () => {
 
     const fromDb = await prisma.sale.findUnique({ where: { id: saleId } });
     expect(fromDb?.commercialStatus).toBe('DRAFT');
+    expect(fromDb?.accountingStatus).toBe('UNPOSTED');
 
     await prisma.$disconnect();
+  });
+
+  it('caches Sale.profit from engine profitEarnedMinor (display cache only)', async () => {
+    const accountingSend = ({ cmd }: { cmd: string }) => {
+      if (cmd === 'PostSaleConfirmation') {
+        return of({
+          status: 'success',
+          data: { ok: true, profitEarnedMinor: '12000000' },
+        });
+      }
+      return of({ status: 'success', data: { ok: true } });
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
+      providers: [
+        CreateSaleHandler,
+        ConfirmSaleHandler,
+        { provide: 'EVENT_BUS', useClass: CapturingEventBus },
+        { provide: 'INVENTORY_SERVICE', useValue: inventoryClientMock },
+        { provide: 'ACCOUNTING_SERVICE', useValue: { send: accountingSend } },
+      ],
+    }).compile();
+
+    const localCreate = module.get(CreateSaleHandler);
+    const localConfirm = module.get(ConfirmSaleHandler);
+    const created = await localCreate.execute(new CreateSaleCommand({ customerName: 'Jean', items: baseItems }, ctx));
+    expect(created.data.profit).toBeCloseTo(created.data.grandTotal);
+
+    const confirmed = await localConfirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
+    expect(confirmed.status).toBe('success');
+    expect(confirmed.data.profit).toBe(120000);
+    const fromDb = await prisma.sale.findUnique({ where: { id: created.data.id } });
+    expect(fromDb?.profit).toBe(120000);
   });
 
   it('fulfills only confirmed sales and emits exact inventory item ids', async () => {
@@ -393,7 +505,7 @@ describe('Phase 9 sale payment fail-closed', () => {
   });
 
   it('keeps two concurrent payments consistent with recorded rows', async () => {
-    const { create, confirm, pay } = await makeHandlers(() => of({ status: 'success', data: { id: 'mv-1' } }));
+    const { create, confirm, pay } = await makeHandlers(() => treasuryMovementOk());
     const created = await create.execute(new CreateSaleCommand({ customerName: 'Marie', items }, ctx));
     await confirm.execute(new ConfirmSaleCommand({ saleId: created.data.id }, ctx));
     const [a, b] = await Promise.all([

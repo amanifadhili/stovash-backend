@@ -12,6 +12,11 @@ export const TREASURY_MOVEMENT_TYPES = [
   'RECONCILIATION_ADJUSTMENT',
   'SALE_PAYMENT',
   'PURCHASE_PAYMENT',
+  'GENERAL_EXPENSE_FUNDING',
+  'GENERAL_EXPENSE_PAYOUT',
+  'WORKER_ADVANCE',
+  'WORKER_ADVANCE_REPAY',
+  'PETTY_CASH_EXPENSE',
   'CORRECTION',
   'REVERSAL',
 ] as const;
@@ -34,6 +39,11 @@ export const FINANCIAL_TYPE_FOR_MOVEMENT: Record<TreasuryMovementType, string> =
   RECONCILIATION_ADJUSTMENT: 'RECONCILIATION_ADJUSTMENT',
   SALE_PAYMENT: 'SALE_PAYMENT',
   PURCHASE_PAYMENT: 'PURCHASE_PAYMENT',
+  GENERAL_EXPENSE_FUNDING: 'GENERAL_EXPENSE_FUNDING',
+  GENERAL_EXPENSE_PAYOUT: 'GENERAL_EXPENSE',
+  WORKER_ADVANCE: 'WORKER_ADVANCE',
+  WORKER_ADVANCE_REPAY: 'WORKER_ADVANCE_REPAY',
+  PETTY_CASH_EXPENSE: 'PETTY_CASH_EXPENSE',
   CORRECTION: 'CORRECTION',
   REVERSAL: 'REVERSAL',
 };
@@ -54,6 +64,9 @@ export interface CreateTreasuryMovementPayload {
   toKind?: string | null;
   fromKind?: string | null;
   originalMovementId?: string;
+  expenseAccountCode?: string;
+  partyName?: string;
+  obligationId?: string;
 }
 
 export interface TreasuryBooksClient {
@@ -71,9 +84,12 @@ export interface TreasuryBooksClient {
       originalTransactionId?: string;
       reason?: string;
       obligationSourceId?: string;
+      expenseAccountCode?: string;
+      partyName?: string;
+      obligationId?: string;
     },
     context: any,
-  ) => Promise<{ financialTransaction: { id: string }; journal: { id: string } }>;
+  ) => Promise<{ financialTransaction: { id: string }; journal: { id: string }; obligation?: { id: string } }>;
   getAllocation: (context: any) => Promise<{
     earnedMinor: string;
     transferredMinor: string;

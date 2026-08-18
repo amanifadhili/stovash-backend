@@ -28,6 +28,9 @@ export const ENGINE_CHART_ACCOUNTS: Array<{
   { code: '6250', name: 'Taxes', type: 'EXPENSE' },
   { code: '6260', name: 'Field expenses', type: 'EXPENSE' },
   { code: '6270', name: 'Loan interest', type: 'EXPENSE' },
+  { code: '6280', name: 'Petty refreshments', type: 'EXPENSE' },
+  { code: '6281', name: 'Petty minor expense', type: 'EXPENSE' },
+  { code: '6282', name: 'Petty unexpected', type: 'EXPENSE' },
 ];
 
 export const GENERAL_EXPENSE_CATEGORIES = [
@@ -45,6 +48,18 @@ export type GeneralExpenseCategoryCode = (typeof GENERAL_EXPENSE_CATEGORIES)[num
 export const GENERAL_EXPENSE_CATEGORY_BY_CODE = Object.fromEntries(
   GENERAL_EXPENSE_CATEGORIES.map((c) => [c.code, c]),
 ) as Record<GeneralExpenseCategoryCode, (typeof GENERAL_EXPENSE_CATEGORIES)[number]>;
+
+export const PETTY_EXPENSE_CATEGORIES = [
+  { code: 'REFRESHMENTS', label: 'Refreshments', accountCode: '6280' },
+  { code: 'MINOR', label: 'Minor expense', accountCode: '6281' },
+  { code: 'UNEXPECTED', label: 'Unexpected', accountCode: '6282' },
+] as const;
+
+export type PettyExpenseCategoryCode = (typeof PETTY_EXPENSE_CATEGORIES)[number]['code'];
+
+export const PETTY_EXPENSE_CATEGORY_BY_CODE = Object.fromEntries(
+  PETTY_EXPENSE_CATEGORIES.map((c) => [c.code, c]),
+) as Record<PettyExpenseCategoryCode, (typeof PETTY_EXPENSE_CATEGORIES)[number]>;
 
 export const ACCOUNT_PROFIT_RESERVE_BANK = '1100';
 export const ACCOUNT_PETTY_CASH = '1150';

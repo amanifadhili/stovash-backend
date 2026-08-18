@@ -2,9 +2,10 @@ import { ErrorCode } from '@electronic-shop/types';
 import { prisma } from '../../database/client.js';
 import { getFinancialStructure } from '../../financial-structure/get-financial-structure.js';
 import { createTreasuryMovement } from '../../treasury-movement/create-treasury-movement.js';
-import { getTreasuryLoans } from '../../treasury-movement/queries.js';
+import { getTreasuryLoans, getProfitTransferPosition } from '../../treasury-movement/queries.js';
 import { recordReconciliation, approveReconciliationAdjustment } from '../../treasury-movement/reconciliation.js';
 import { TreasuryBooksClient } from '../../treasury-movement/types.js';
+import { balanceOf, derivedBalances } from '../../treasury-movement/balances.js';
 
 const DAY = '2026-08-17';
 
@@ -280,6 +281,7 @@ describe('Treasury movements (Phase 5)', () => {
     expect(counted.data.differenceMinor).toBe('-1000000');
 
     let structure = await getFinancialStructure(context);
+    expect(structure.data!.authority).toBe('treasury_movements');
     expect(structure.data!.funds.find((f) => f.code === 'CAPITAL')?.accounts.find((a) => a.kind === 'CAPITAL_BANK')?.balanceMinor).toBe(
       '5000000',
     );
@@ -410,5 +412,123 @@ describe('Treasury movements (Phase 5)', () => {
       structure.data!.funds.find((f) => f.code === 'OPERATIONAL')?.accounts.find((a) => a.kind === 'OPS_CASH')?.balanceMinor,
     ).toBe('12000000');
     expect(bookCalls[bookCalls.length - 1].type).toBe('PURCHASE_PAYMENT');
+  });
+
+  it('scenario 10 — general expense is PR → Operational → payee and is not a loan', async () => {
+    const byKind = await accountsByKind();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 5_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'p7-cap',
+      },
+      context,
+      books,
+    );
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_MAIN_BANK.id,
+        amountMinor: 2_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'p7-setup-loan',
+      },
+      context,
+      books,
+    );
+    earned = 2_000_000n;
+    await createTreasuryMovement(
+      {
+        movementType: 'PROFIT_TRANSFER',
+        fromPhysicalId: byKind.OPS_MAIN_BANK.id,
+        toPhysicalId: byKind.PROFIT_BANK.id,
+        amountMinor: 2_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'p7-to-pr',
+      },
+      context,
+      books,
+    );
+    const loansBefore = await getTreasuryLoans(context);
+    const funding = await createTreasuryMovement(
+      {
+        movementType: 'GENERAL_EXPENSE_FUNDING',
+        fromKind: 'PROFIT_BANK',
+        toKind: 'OPS_MAIN_BANK',
+        amountMinor: 1_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'p7-exp-fund',
+      },
+      context,
+      books,
+    );
+    expect(funding.status).toBe('success');
+    const payout = await createTreasuryMovement(
+      {
+        movementType: 'GENERAL_EXPENSE_PAYOUT',
+        fromKind: 'OPS_MAIN_BANK',
+        amountMinor: 1_000_000,
+        occurredOn: DAY,
+        expenseAccountCode: '6200',
+        idempotencyKey: 'p7-exp-pay',
+      },
+      context,
+      books,
+    );
+    expect(payout.status).toBe('success');
+    const balances = await derivedBalances(tenantId, shopId);
+    expect(balanceOf(balances, byKind.PROFIT_BANK.id)).toBe(1_000_000n);
+    expect(balanceOf(balances, byKind.OPS_MAIN_BANK.id)).toBe(0n);
+    const loansAfter = await getTreasuryLoans(context);
+    expect(loansAfter.data.loans.filter((l: any) => l.kind === 'INTERNAL_LOAN')).toHaveLength(
+      loansBefore.data.loans.filter((l: any) => l.kind === 'INTERNAL_LOAN').length,
+    );
+    expect(bookCalls.map((c) => c.type)).toEqual(expect.arrayContaining(['GENERAL_EXPENSE_FUNDING', 'GENERAL_EXPENSE']));
+    expect(bookCalls.filter((c) => c.type === 'INTERNAL_LOAN')).toHaveLength(1);
+  });
+
+  it('scenario 15 — available profit transfer is min(earned−transferred, ops cash), not the 800k typo', async () => {
+    const byKind = await accountsByKind();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 200_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'p7-typo-cap',
+      },
+      context,
+      books,
+    );
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_MAIN_BANK.id,
+        amountMinor: 100_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'p7-typo-loan',
+      },
+      context,
+      books,
+    );
+    books.getAllocation = async () => ({
+      earnedMinor: '120000000',
+      transferredMinor: '80000000',
+      untransferredMinor: '40000000',
+    });
+    const pos = await getProfitTransferPosition(context, books);
+    expect(pos.status).toBe('success');
+    expect(pos.data.availableMinor).toBe('40000000');
+    expect(pos.data.availableMinor).not.toBe('80000000');
+    expect(pos.data.untransferredMinor).toBe('40000000');
+    books.getAllocation = async () => ({
+      earnedMinor: earned.toString(),
+      transferredMinor: '0',
+      untransferredMinor: earned.toString(),
+    });
   });
 });

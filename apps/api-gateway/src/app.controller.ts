@@ -41,6 +41,9 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetFinancialTransaction': [],
   'RecordGeneralExpense': [],
   'RecordWorkerAdvance': [],
+  'RecordPettyCashAdvance': [],
+  'RepayPettyCashAdvance': [],
+  'RecordPettyCashExpense': [],
   'GetAccountingAccounts': [],
   'GetJournals': [],
   'GetReceivables': [],
@@ -193,6 +196,9 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetFinancialTransaction': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'RecordGeneralExpense': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'RecordWorkerAdvance': ['ADMIN', 'MANAGER'],
+  'RecordPettyCashAdvance': ['ADMIN', 'MANAGER'],
+  'RepayPettyCashAdvance': ['ADMIN', 'MANAGER'],
+  'RecordPettyCashExpense': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'GetAccountingAccounts': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetJournals': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'GetReceivables': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
@@ -366,6 +372,9 @@ const FINANCIAL_WRITE_COMMANDS = new Set([
   'PostFinancialTransaction',
   'RecordGeneralExpense',
   'RecordWorkerAdvance',
+  'RecordPettyCashAdvance',
+  'RepayPettyCashAdvance',
+  'RecordPettyCashExpense',
   'PostTreasuryBooks',
   'PostSaleConfirmation',
   'PostPurchasePayable',
@@ -482,7 +491,7 @@ export class AppController {
         return result;
       }
 
-      if (['PostFinancialTransaction', 'GetFinancialTransaction', 'RecordGeneralExpense', 'RecordWorkerAdvance', 'GetAccountingAccounts', 'GetJournals', 'GetReceivables', 'PostTreasuryBooks', 'GetProfitAllocation', 'PostSaleConfirmation', 'PostPurchasePayable', 'PostFinancialCorrection', 'GetEngineReport'].includes(cmd)) {
+      if (['PostFinancialTransaction', 'GetFinancialTransaction', 'RecordGeneralExpense', 'RecordWorkerAdvance', 'RecordPettyCashAdvance', 'RepayPettyCashAdvance', 'RecordPettyCashExpense', 'GetAccountingAccounts', 'GetJournals', 'GetReceivables', 'PostTreasuryBooks', 'GetProfitAllocation', 'PostSaleConfirmation', 'PostPurchasePayable', 'PostFinancialCorrection', 'GetEngineReport'].includes(cmd)) {
         const result = await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
