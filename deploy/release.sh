@@ -32,6 +32,9 @@ export NODE_VERSION="${NODE_VERSION:-22-bookworm-slim}"
 export PORT="${PORT:-5051}"
 
 cd "$RELEASE_DIR"
+# A previous up without `-p stovash-backend` (or from a different cwd) leaves a
+# container named stovash-backend that this project cannot recreate.
+docker rm -f stovash-backend >/dev/null 2>&1 || true
 docker-compose --env-file "$ROOT/shared/.env" -p stovash-backend up -d --build --remove-orphans --force-recreate
 
 ln -sfn "$RELEASE_DIR" "$ROOT/current"
