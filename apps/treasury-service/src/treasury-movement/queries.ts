@@ -20,7 +20,7 @@ export async function getTreasuryMovements(
     return { status: 'error', traceId, message: 'tenantId and shopId are required', errorCode: ErrorCode.VALIDATION_ERROR };
   }
   const types = (payload?.movementTypes ?? []).filter((type) => TREASURY_MOVEMENT_TYPE_SET.has(type));
-  const take = payload?.limit && payload.limit > 0 ? Math.min(payload.limit, 500) : 100;
+  const take = payload?.limit && payload.limit > 0 ? Math.min(payload.limit, 500) : 200;
   const rows = await db.treasuryMovement.findMany({
     where: {
       tenantId,
