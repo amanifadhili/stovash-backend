@@ -11,7 +11,9 @@
   ],
   "scripts": {
     "start": "node dist/server.js",
-    "build": "npm run build --workspace=packages/types --workspace=packages/database --workspace=frameworks/core --workspace=frameworks/command && npm run build --workspaces --if-present && tsc -p tsconfig.server.json",
+    "build:libs": "npm run build --workspace=@electronic-shop/types && npm run build --workspace=@electronic-shop/database --workspace=@electronic-shop/logging --workspace=@electronic-shop/metrics --workspace=@electronic-shop/tracing && npm run build --workspace=@electronic-shop/framework-core --workspace=@electronic-shop/framework-command --workspace=@electronic-shop/framework-validation --workspace=@electronic-shop/framework-event --workspace=@electronic-shop/framework-cache --workspace=@electronic-shop/framework-permission --workspace=@electronic-shop/framework-audit",
+    "prisma:generate": "find apps -path '*/prisma/schema.prisma' -print -exec npx --yes prisma@5.22.0 generate --schema={} \\;",
+    "build": "npm run build:libs && npm run build --workspaces --if-present && tsc -p tsconfig.server.json",
     "dev": "tsx server.ts",
     "seed:demo": "tsx scripts/seed-demo.ts",
     "seed:phase9": "node scripts/seed-phase9-visual.mjs",
