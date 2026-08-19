@@ -210,6 +210,8 @@ exports.Prisma.InventoryUpgradeScalarFieldEnum = {
   inventoryItemId: 'inventoryItemId',
   upgradeType: 'upgradeType',
   description: 'description',
+  details: 'details',
+  idempotencyKey: 'idempotencyKey',
   cost: 'cost',
   createdAt: 'createdAt'
 };

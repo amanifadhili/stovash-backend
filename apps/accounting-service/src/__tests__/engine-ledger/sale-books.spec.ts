@@ -255,6 +255,25 @@ describe('Sale and purchase books (Phase 6)', () => {
     expect(ap.balanceMinor).toBe(String(AR_300K));
   });
 
+  it('INVENTORY_CAPITALIZE debits Inventory and credits Operational Cash', async () => {
+    const posted = await postTreasuryBooks(
+      {
+        type: 'INVENTORY_CAPITALIZE',
+        amountMinor: CASH_100K,
+        occurredOn: DAY,
+        fromKind: 'OPS_CASH',
+        obligationSourceId: 'item-cap-1',
+        idempotencyKey: 'unit-exp-100k',
+      },
+      context,
+    );
+    expect(posted.status).toBe('success');
+    const lines = posted.data.journal.lines.map((l: any) => `${l.side}:${l.accountCode}`);
+    expect(lines).toEqual([`DEBIT:${ACCOUNT_INVENTORY}`, 'CREDIT:1110']);
+    const inventory = (await getAccountingAccounts(context)).data.accounts.find((a: any) => a.code === ACCOUNT_INVENTORY);
+    expect(inventory.balanceMinor).toBe(String(CASH_100K));
+  });
+
   it('scenario 28: duplicate sale payment request is one journal', async () => {
     await postSaleConfirmation(
       {

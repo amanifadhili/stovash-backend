@@ -6705,6 +6705,7 @@ export namespace Prisma {
     inventoryItemId: string | null
     upgradeType: string | null
     description: string | null
+    idempotencyKey: string | null
     cost: number | null
     createdAt: Date | null
   }
@@ -6716,6 +6717,7 @@ export namespace Prisma {
     inventoryItemId: string | null
     upgradeType: string | null
     description: string | null
+    idempotencyKey: string | null
     cost: number | null
     createdAt: Date | null
   }
@@ -6727,6 +6729,8 @@ export namespace Prisma {
     inventoryItemId: number
     upgradeType: number
     description: number
+    details: number
+    idempotencyKey: number
     cost: number
     createdAt: number
     _all: number
@@ -6748,6 +6752,7 @@ export namespace Prisma {
     inventoryItemId?: true
     upgradeType?: true
     description?: true
+    idempotencyKey?: true
     cost?: true
     createdAt?: true
   }
@@ -6759,6 +6764,7 @@ export namespace Prisma {
     inventoryItemId?: true
     upgradeType?: true
     description?: true
+    idempotencyKey?: true
     cost?: true
     createdAt?: true
   }
@@ -6770,6 +6776,8 @@ export namespace Prisma {
     inventoryItemId?: true
     upgradeType?: true
     description?: true
+    details?: true
+    idempotencyKey?: true
     cost?: true
     createdAt?: true
     _all?: true
@@ -6868,6 +6876,8 @@ export namespace Prisma {
     inventoryItemId: string
     upgradeType: string
     description: string | null
+    details: JsonValue | null
+    idempotencyKey: string | null
     cost: number
     createdAt: Date
     _count: InventoryUpgradeCountAggregateOutputType | null
@@ -6898,6 +6908,8 @@ export namespace Prisma {
     inventoryItemId?: boolean
     upgradeType?: boolean
     description?: boolean
+    details?: boolean
+    idempotencyKey?: boolean
     cost?: boolean
     createdAt?: boolean
     inventoryItem?: boolean | InventoryItemDefaultArgs<ExtArgs>
@@ -6910,6 +6922,8 @@ export namespace Prisma {
     inventoryItemId?: boolean
     upgradeType?: boolean
     description?: boolean
+    details?: boolean
+    idempotencyKey?: boolean
     cost?: boolean
     createdAt?: boolean
     inventoryItem?: boolean | InventoryItemDefaultArgs<ExtArgs>
@@ -6922,6 +6936,8 @@ export namespace Prisma {
     inventoryItemId?: boolean
     upgradeType?: boolean
     description?: boolean
+    details?: boolean
+    idempotencyKey?: boolean
     cost?: boolean
     createdAt?: boolean
   }
@@ -6945,6 +6961,8 @@ export namespace Prisma {
       inventoryItemId: string
       upgradeType: string
       description: string | null
+      details: Prisma.JsonValue | null
+      idempotencyKey: string | null
       cost: number
       createdAt: Date
     }, ExtArgs["result"]["inventoryUpgrade"]>
@@ -7347,6 +7365,8 @@ export namespace Prisma {
     readonly inventoryItemId: FieldRef<"InventoryUpgrade", 'String'>
     readonly upgradeType: FieldRef<"InventoryUpgrade", 'String'>
     readonly description: FieldRef<"InventoryUpgrade", 'String'>
+    readonly details: FieldRef<"InventoryUpgrade", 'Json'>
+    readonly idempotencyKey: FieldRef<"InventoryUpgrade", 'String'>
     readonly cost: FieldRef<"InventoryUpgrade", 'Float'>
     readonly createdAt: FieldRef<"InventoryUpgrade", 'DateTime'>
   }
@@ -16822,6 +16842,8 @@ export namespace Prisma {
     inventoryItemId: 'inventoryItemId',
     upgradeType: 'upgradeType',
     description: 'description',
+    details: 'details',
+    idempotencyKey: 'idempotencyKey',
     cost: 'cost',
     createdAt: 'createdAt'
   };
@@ -17599,6 +17621,8 @@ export namespace Prisma {
     inventoryItemId?: StringFilter<"InventoryUpgrade"> | string
     upgradeType?: StringFilter<"InventoryUpgrade"> | string
     description?: StringNullableFilter<"InventoryUpgrade"> | string | null
+    details?: JsonNullableFilter<"InventoryUpgrade">
+    idempotencyKey?: StringNullableFilter<"InventoryUpgrade"> | string | null
     cost?: FloatFilter<"InventoryUpgrade"> | number
     createdAt?: DateTimeFilter<"InventoryUpgrade"> | Date | string
     inventoryItem?: XOR<InventoryItemRelationFilter, InventoryItemWhereInput>
@@ -17611,6 +17635,8 @@ export namespace Prisma {
     inventoryItemId?: SortOrder
     upgradeType?: SortOrder
     description?: SortOrderInput | SortOrder
+    details?: SortOrderInput | SortOrder
+    idempotencyKey?: SortOrderInput | SortOrder
     cost?: SortOrder
     createdAt?: SortOrder
     inventoryItem?: InventoryItemOrderByWithRelationInput
@@ -17618,6 +17644,7 @@ export namespace Prisma {
 
   export type InventoryUpgradeWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    idempotencyKey?: string
     AND?: InventoryUpgradeWhereInput | InventoryUpgradeWhereInput[]
     OR?: InventoryUpgradeWhereInput[]
     NOT?: InventoryUpgradeWhereInput | InventoryUpgradeWhereInput[]
@@ -17626,10 +17653,11 @@ export namespace Prisma {
     inventoryItemId?: StringFilter<"InventoryUpgrade"> | string
     upgradeType?: StringFilter<"InventoryUpgrade"> | string
     description?: StringNullableFilter<"InventoryUpgrade"> | string | null
+    details?: JsonNullableFilter<"InventoryUpgrade">
     cost?: FloatFilter<"InventoryUpgrade"> | number
     createdAt?: DateTimeFilter<"InventoryUpgrade"> | Date | string
     inventoryItem?: XOR<InventoryItemRelationFilter, InventoryItemWhereInput>
-  }, "id">
+  }, "id" | "idempotencyKey">
 
   export type InventoryUpgradeOrderByWithAggregationInput = {
     id?: SortOrder
@@ -17638,6 +17666,8 @@ export namespace Prisma {
     inventoryItemId?: SortOrder
     upgradeType?: SortOrder
     description?: SortOrderInput | SortOrder
+    details?: SortOrderInput | SortOrder
+    idempotencyKey?: SortOrderInput | SortOrder
     cost?: SortOrder
     createdAt?: SortOrder
     _count?: InventoryUpgradeCountOrderByAggregateInput
@@ -17657,6 +17687,8 @@ export namespace Prisma {
     inventoryItemId?: StringWithAggregatesFilter<"InventoryUpgrade"> | string
     upgradeType?: StringWithAggregatesFilter<"InventoryUpgrade"> | string
     description?: StringNullableWithAggregatesFilter<"InventoryUpgrade"> | string | null
+    details?: JsonNullableWithAggregatesFilter<"InventoryUpgrade">
+    idempotencyKey?: StringNullableWithAggregatesFilter<"InventoryUpgrade"> | string | null
     cost?: FloatWithAggregatesFilter<"InventoryUpgrade"> | number
     createdAt?: DateTimeWithAggregatesFilter<"InventoryUpgrade"> | Date | string
   }
@@ -19027,6 +19059,8 @@ export namespace Prisma {
     shopId: string
     upgradeType: string
     description?: string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: string | null
     cost: number
     createdAt?: Date | string
     inventoryItem: InventoryItemCreateNestedOneWithoutUpgradesInput
@@ -19039,6 +19073,8 @@ export namespace Prisma {
     inventoryItemId: string
     upgradeType: string
     description?: string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: string | null
     cost: number
     createdAt?: Date | string
   }
@@ -19049,6 +19085,8 @@ export namespace Prisma {
     shopId?: StringFieldUpdateOperationsInput | string
     upgradeType?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
     cost?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inventoryItem?: InventoryItemUpdateOneRequiredWithoutUpgradesNestedInput
@@ -19061,6 +19099,8 @@ export namespace Prisma {
     inventoryItemId?: StringFieldUpdateOperationsInput | string
     upgradeType?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
     cost?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19072,6 +19112,8 @@ export namespace Prisma {
     inventoryItemId: string
     upgradeType: string
     description?: string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: string | null
     cost: number
     createdAt?: Date | string
   }
@@ -19082,6 +19124,8 @@ export namespace Prisma {
     shopId?: StringFieldUpdateOperationsInput | string
     upgradeType?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
     cost?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19093,6 +19137,8 @@ export namespace Prisma {
     inventoryItemId?: StringFieldUpdateOperationsInput | string
     upgradeType?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
     cost?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20625,6 +20671,8 @@ export namespace Prisma {
     inventoryItemId?: SortOrder
     upgradeType?: SortOrder
     description?: SortOrder
+    details?: SortOrder
+    idempotencyKey?: SortOrder
     cost?: SortOrder
     createdAt?: SortOrder
   }
@@ -20640,6 +20688,7 @@ export namespace Prisma {
     inventoryItemId?: SortOrder
     upgradeType?: SortOrder
     description?: SortOrder
+    idempotencyKey?: SortOrder
     cost?: SortOrder
     createdAt?: SortOrder
   }
@@ -20651,6 +20700,7 @@ export namespace Prisma {
     inventoryItemId?: SortOrder
     upgradeType?: SortOrder
     description?: SortOrder
+    idempotencyKey?: SortOrder
     cost?: SortOrder
     createdAt?: SortOrder
   }
@@ -22563,6 +22613,8 @@ export namespace Prisma {
     shopId: string
     upgradeType: string
     description?: string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: string | null
     cost: number
     createdAt?: Date | string
   }
@@ -22573,6 +22625,8 @@ export namespace Prisma {
     shopId: string
     upgradeType: string
     description?: string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: string | null
     cost: number
     createdAt?: Date | string
   }
@@ -22754,6 +22808,8 @@ export namespace Prisma {
     inventoryItemId?: StringFilter<"InventoryUpgrade"> | string
     upgradeType?: StringFilter<"InventoryUpgrade"> | string
     description?: StringNullableFilter<"InventoryUpgrade"> | string | null
+    details?: JsonNullableFilter<"InventoryUpgrade">
+    idempotencyKey?: StringNullableFilter<"InventoryUpgrade"> | string | null
     cost?: FloatFilter<"InventoryUpgrade"> | number
     createdAt?: DateTimeFilter<"InventoryUpgrade"> | Date | string
   }
@@ -23722,6 +23778,8 @@ export namespace Prisma {
     shopId: string
     upgradeType: string
     description?: string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: string | null
     cost: number
     createdAt?: Date | string
   }
@@ -23732,6 +23790,8 @@ export namespace Prisma {
     shopId?: StringFieldUpdateOperationsInput | string
     upgradeType?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
     cost?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23742,6 +23802,8 @@ export namespace Prisma {
     shopId?: StringFieldUpdateOperationsInput | string
     upgradeType?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
     cost?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23752,6 +23814,8 @@ export namespace Prisma {
     shopId?: StringFieldUpdateOperationsInput | string
     upgradeType?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
     cost?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

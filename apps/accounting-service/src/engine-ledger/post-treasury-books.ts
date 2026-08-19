@@ -13,6 +13,7 @@ import {
   ACCOUNT_PETTY_CASH,
   ACCOUNT_RECON_ADJUSTMENT,
   ACCOUNT_SUPPLIER_PAYABLE,
+  ACCOUNT_INVENTORY,
   ACCOUNT_WORKER_ADVANCE,
   PHYSICAL_KIND_TO_CHART,
 } from './chart.js';
@@ -136,6 +137,14 @@ function journalLines(
     if (!fromChart) return { error: 'PURCHASE_PAYMENT requires an Operational source account' };
     return [
       { accountCode: ACCOUNT_SUPPLIER_PAYABLE, side: 'DEBIT', amountMinor: amount },
+      { accountCode: fromChart, side: 'CREDIT', amountMinor: amount },
+    ];
+  }
+
+  if (type === 'INVENTORY_CAPITALIZE') {
+    if (!fromChart) return { error: 'INVENTORY_CAPITALIZE requires an Operational source account' };
+    return [
+      { accountCode: ACCOUNT_INVENTORY, side: 'DEBIT', amountMinor: amount },
       { accountCode: fromChart, side: 'CREDIT', amountMinor: amount },
     ];
   }
