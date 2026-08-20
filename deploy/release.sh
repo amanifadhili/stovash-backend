@@ -38,7 +38,11 @@ docker-compose --env-file "$ROOT/shared/.env" -p stovash-backend build
 docker rm -f stovash-backend >/dev/null 2>&1 || true
 docker-compose --env-file "$ROOT/shared/.env" -p stovash-backend up -d --no-build --remove-orphans --force-recreate
 
-# Image build does not apply schema. Sync each service DB (additive; fails on data-loss).
+# Image build does not apply schema. Sync each service DB without --accept-data-loss.
+# Unique-constraint adds are applied only after a duplicate preflight (see inventory script).
+echo "Preflight: inventory_upgrades.idempotencyKey unique..."
+docker exec stovash-backend node /app/apps/inventory-service/scripts/ensure-upgrade-idempotency-unique.cjs
+
 echo "Syncing Prisma schemas..."
 for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
   docker exec stovash-backend bash -lc "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma"
