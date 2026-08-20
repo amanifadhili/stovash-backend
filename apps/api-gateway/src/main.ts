@@ -8,6 +8,13 @@ import rateLimit from 'express-rate-limit';
 import { initializeTracing } from '@electronic-shop/tracing';
 import { logger } from '@electronic-shop/logging';
 import { isGatewayOwnedPath } from './common/gateway-owned-path.js';
+import {
+  DEFAULT_JSON_LIMIT,
+  UPLOAD_JSON_LIMIT,
+  allowOversizedJsonBody,
+  parseByteLimit,
+  peekJsonCommand,
+} from './common/json-body-limit.js';
 
 async function bootstrap() {
   // Initialize OpenTelemetry tracing
@@ -19,10 +26,37 @@ async function bootstrap() {
   process.setMaxListeners(50);
   const app = await NestFactory.create(AppModule, { bodyParser: false });
 
-  // Purchase photos travel as data URLs. Default Express JSON limit is 100kb.
-  const bodyLimit = process.env.GATEWAY_BODY_LIMIT || '25mb';
-  app.use(json({ limit: bodyLimit }));
-  app.use(urlencoded({ extended: true, limit: bodyLimit }));
+  // Default 1mb for normal commands. Purchase photo data URLs may use up to 25mb,
+  // and only for LARGE_BODY_COMMANDS (see json-body-limit.ts).
+  const defaultLimit = DEFAULT_JSON_LIMIT;
+  const uploadLimit = UPLOAD_JSON_LIMIT;
+  const defaultLimitBytes = parseByteLimit(defaultLimit);
+  logger.info(`JSON body limits: default=${defaultLimit} upload=${uploadLimit}`);
+
+  app.use(
+    json({
+      limit: uploadLimit,
+      verify: (req: any, _res, buf) => {
+        const command =
+          peekJsonCommand(buf) ||
+          String(req.headers['x-command'] || req.headers['X-Command'] || '');
+        if (
+          !allowOversizedJsonBody({
+            bodyBytes: buf.length,
+            defaultLimitBytes,
+            command,
+          })
+        ) {
+          const err: any = new Error('request entity too large');
+          err.status = 413;
+          err.statusCode = 413;
+          err.type = 'entity.too.large';
+          throw err;
+        }
+      },
+    }),
+  );
+  app.use(urlencoded({ extended: true, limit: defaultLimit }));
   
   const httpServer = app.getHttpServer();
   if (httpServer) {
