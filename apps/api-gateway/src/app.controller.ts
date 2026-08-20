@@ -1,6 +1,18 @@
-import { Controller, Get, Post, Req, Inject, Body, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Inject,
+  Body,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { JwtAuthGuard } from './common/auth/jwt-auth.guard.js';
 import { MetricsAuthGuard } from './common/auth/metrics-auth.guard.js';
+import { ReadinessService } from './common/readiness.service.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { getMetrics, recordCommandExecution, recordFinancialPostLatency } from '@electronic-shop/metrics';
@@ -416,12 +428,27 @@ export class AppController {
     @Inject('TREASURY_SERVICE') private readonly treasuryClient: ClientProxy,
     @Inject('SALES_SERVICE') private readonly salesClient: ClientProxy,
     @Inject('PURCHASE_SERVICE') private readonly purchaseClient: ClientProxy,
-    @Inject('SUPPLIER_SERVICE') private readonly supplierClient: ClientProxy
+    @Inject('SUPPLIER_SERVICE') private readonly supplierClient: ClientProxy,
+    private readonly readinessService: ReadinessService
   ) {}
 
   @Get('health')
   getHealth(): { status: string; timestamp: string } {
     return { status: 'ok', timestamp: new Date().toISOString() };
+  }
+
+  @Get('ready')
+  async getReady() {
+    const result = await this.readinessService.check();
+    if (result.status !== 'ok') {
+      throw new ServiceUnavailableException({
+        status: 'error',
+        errorCode: 'DEPENDENCY_UNAVAILABLE',
+        message: 'One or more required services are unavailable',
+        ...result,
+      });
+    }
+    return result;
   }
 
   @Post('api')

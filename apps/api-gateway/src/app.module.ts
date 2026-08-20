@@ -7,6 +7,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js
 import { ContextMiddleware } from './common/middleware/context.middleware.js';
 import { RateLimitMiddleware } from './middleware/rate-limit.middleware.js';
 import { CircuitBreakerInterceptor } from './interceptors/circuit-breaker.interceptor.js';
+import { ReadinessService } from './common/readiness.service.js';
 
 @Module({
   imports: [
@@ -58,7 +59,8 @@ import { CircuitBreakerInterceptor } from './interceptors/circuit-breaker.interc
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
     { provide: APP_INTERCEPTOR, useClass: CircuitBreakerInterceptor },
-    RateLimitMiddleware
+    RateLimitMiddleware,
+    ReadinessService
   ],
 })
 export class AppModule {
