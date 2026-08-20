@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Req, Inject, Body, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtAuthGuard } from './common/auth/jwt-auth.guard.js';
+import { MetricsAuthGuard } from './common/auth/metrics-auth.guard.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { getMetrics, recordCommandExecution, recordFinancialPostLatency } from '@electronic-shop/metrics';
@@ -570,6 +571,7 @@ export class AppController {
   }
 
   @Get('metrics')
+  @UseGuards(MetricsAuthGuard)
   async getMetrics() {
     const metrics = await getMetrics();
     return metrics;
