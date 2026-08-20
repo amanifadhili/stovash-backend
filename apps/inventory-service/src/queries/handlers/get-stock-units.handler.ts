@@ -129,10 +129,30 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
         groups.get(key)!.units.push(unit);
       }
 
+      const deviceCountRows = await prisma.inventoryItem.groupBy({
+        by: ['status'],
+        where: {
+          tenantId,
+          deletedAt: null,
+          ...(shopId ? { shopId } : {}),
+          status: { notIn: ['DISPOSED'] },
+          NOT: { product: { type: 'ACCESSORY' } },
+        },
+        _count: { id: true },
+      });
+      const deviceStatusCounts = Object.fromEntries(
+        deviceCountRows.map((row) => [row.status, row._count.id]),
+      );
+
       return {
         status: 'success',
         traceId,
-        data: { groups: Array.from(groups.values()), units: data, count: data.length },
+        data: {
+          groups: Array.from(groups.values()),
+          units: data,
+          count: data.length,
+          deviceStatusCounts,
+        },
       };
     } catch (error: any) {
       return { status: 'error', traceId, message: error.message || 'Failed to fetch stock units', errorCode: error.code || ErrorCode.INTERNAL_ERROR };

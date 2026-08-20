@@ -426,6 +426,51 @@ describe('Treasury movements (Phase 5)', () => {
     expect(bookCalls[bookCalls.length - 1].type).toBe('PURCHASE_PAYMENT');
   });
 
+  it('unit expense leaves Operational cash and posts INVENTORY_CAPITALIZE', async () => {
+    const byKind = await accountsByKind();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 10000000,
+        occurredOn: DAY,
+        idempotencyKey: 'cap-for-unit-exp',
+      },
+      context,
+      books,
+    );
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_CASH.id,
+        amountMinor: 10000000,
+        occurredOn: DAY,
+        idempotencyKey: 'loan-for-unit-exp',
+      },
+      context,
+      books,
+    );
+    const exp = await createTreasuryMovement(
+      {
+        movementType: 'INVENTORY_CAPITALIZE',
+        fromPhysicalId: byKind.OPS_CASH.id,
+        amountMinor: 3000000,
+        occurredOn: DAY,
+        obligationSourceId: 'item-1',
+        idempotencyKey: 'unit-exp-1',
+      },
+      context,
+      books,
+    );
+    expect(exp.status).toBe('success');
+    const structure = await getFinancialStructure(context);
+    expect(
+      structure.data!.funds.find((f) => f.code === 'OPERATIONAL')?.accounts.find((a) => a.kind === 'OPS_CASH')?.balanceMinor,
+    ).toBe('7000000');
+    expect(bookCalls[bookCalls.length - 1].type).toBe('INVENTORY_CAPITALIZE');
+  });
+
   it('scenario 10 — general expense is PR → Operational → payee and is not a loan', async () => {
     const byKind = await accountsByKind();
     await createTreasuryMovement(

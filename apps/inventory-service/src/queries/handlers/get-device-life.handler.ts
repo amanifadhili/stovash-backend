@@ -113,6 +113,7 @@ export class GetDeviceLifeHandler implements IQueryHandler<GetDeviceLifeQuery> {
               id: u.id,
               upgradeType: u.upgradeType,
               description: u.description,
+              details: (u as { details?: unknown }).details ?? null,
               cost: Number(u.cost) || 0,
               createdAt: u.createdAt,
             })),

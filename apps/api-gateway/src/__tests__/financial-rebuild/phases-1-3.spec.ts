@@ -680,10 +680,14 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
       expect(consumer).toMatch(/quarantine|FINANCIAL_REBUILD_IN_PROGRESS/i);
     });
 
-    it('upgrades only capitalize unit cost; lend consumers do not post books', () => {
+    it('unit expense posts INVENTORY_CAPITALIZE then capitalizes; lend consumers do not post books', () => {
       const upgrade = read('apps/inventory-service/src/commands/handlers/record-inventory-upgrade.handler.ts');
+      const inventoryTcp = read('apps/inventory-service/src/inventory-service.controller.ts');
       expect(upgrade).toContain('capitalizedCost');
-      expect(upgrade).not.toMatch(/accountingClient|PostSaleConfirmation|postJournalLines|CreateTreasuryMovement/);
+      expect(upgrade).toContain('INVENTORY_CAPITALIZE');
+      expect(upgrade).toContain('CreateTreasuryMovement');
+      expect(upgrade).not.toMatch(/RecordGeneralExpense|postJournalLines|PostSaleConfirmation/);
+      expect(inventoryTcp).toContain("cmd: 'RecordInventoryUpgrade'");
       const lendOut = read('apps/accounting-service/src/events/consumers/lend-out-settled.consumer.ts');
       const lendIn = read('apps/accounting-service/src/events/consumers/lend-in-sold.consumer.ts');
       expect(lendOut).toMatch(/quarantined/i);

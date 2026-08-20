@@ -141,8 +141,10 @@ model InventoryUpgrade {
   tenantId        String
   shopId          String
   inventoryItemId String
-  upgradeType     String   // SSD, RAM, etc.
+  upgradeType     String   // SSD, RAM, MAINTENANCE, etc.
   description     String?
+  details         Json?
+  idempotencyKey  String?  @unique
   cost            Float
   createdAt       DateTime @default(now())
 

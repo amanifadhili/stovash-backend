@@ -374,6 +374,12 @@ function validateType(
       }
       if (!payload.obligationSourceId) return 'Purchase payment requires the purchase id';
       return null;
+    case 'INVENTORY_CAPITALIZE':
+      if (!from || to || fromFund !== 'OPERATIONAL') {
+        return 'Unit expense payments leave an Operational physical account';
+      }
+      if (!payload.obligationSourceId) return 'Unit expense requires the inventory item id';
+      return null;
     case 'GENERAL_EXPENSE_FUNDING':
       if (!from || !to || from.kind !== 'PROFIT_BANK' || toFund !== 'OPERATIONAL') {
         return 'General expense funding is Profit Reserve Bank → Operational (not a loan)';
@@ -426,6 +432,7 @@ function descriptionFor(
   if (type === 'WORKER_ADVANCE') return `Worker advance from Petty Cash`;
   if (type === 'WORKER_ADVANCE_REPAY') return `Worker repayment to Petty Cash`;
   if (type === 'PETTY_CASH_EXPENSE') return `Petty cash expense from ${fromName || 'Petty Cash'}`;
+  if (type === 'INVENTORY_CAPITALIZE') return `Unit expense from ${fromName || 'Operational'}`;
   if (counterparty) return `${type} · ${counterparty}`;
   if (fromName && toName) return `${type}: ${fromName} → ${toName}`;
   return type;
