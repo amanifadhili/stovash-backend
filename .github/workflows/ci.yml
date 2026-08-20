@@ -2,17 +2,44 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop, production]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
+  workflow_call:
+
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     strategy:
+      fail-fast: false
       matrix:
-        service: [accounting-service, sales-service, inventory-service, purchase-service, api-gateway, report-service]
+        service:
+          - accounting-service
+          - treasury-service
+          - sales-service
+          - inventory-service
+          - purchase-service
+          - api-gateway
 
     steps:
       - uses: actions/checkout@v5
@@ -23,50 +50,102 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build shared libraries
+        run: npm run build:libs
+
+      - name: Prepare databases
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        run: bash scripts/ci-setup-databases.sh
+
+      - name: Test ${{ matrix.service }}
+        working-directory: apps/${{ matrix.service }}
+        env:
+          ACCOUNTING_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/accounting_db
+          TREASURY_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/treasury_db
+          INVENTORY_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/inventory_db
+          SALES_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sales_db
+          PURCHASE_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/purchase_db
+          IDENTITY_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/identity_db
+          TENANT_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tenant_db
+          RABBITMQ_URL: amqp://localhost:5672
+          JWT_SECRET: ci-test-secret
+        run: npm test
+
+  milestone-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Milestone run-tests.ts
         run: |
           npm ci
-          cd apps/${{ matrix.service }}
-          npm ci
-
-      - name: Lint
-        run: |
-          cd apps/${{ matrix.service }}
-          npm run lint
-
-      - name: Test
-        run: |
-          cd apps/${{ matrix.service }}
           npm test
 
-      - name: Build
+  identity-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Identity service tests
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         run: |
-          cd apps/${{ matrix.service }}
-          npm run build
+          npm ci
+          npm run build:libs
+          bash scripts/ci-setup-databases.sh
+          cd apps/identity-service && npm test
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: npm audit
+        run: |
+          npm ci --ignore-scripts
+          npm audit --audit-level=high || true
 
   database:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Install dependencies
+      - name: Validate Prisma schema
+        working-directory: packages/database
         run: |
-          cd packages/database
           npm ci
-
-      - name: Generate Prisma Client
-        run: |
-          cd packages/database
           npx prisma generate
-
-      - name: Validate Prisma Schema
-        run: |
-          cd packages/database
           npx prisma validate

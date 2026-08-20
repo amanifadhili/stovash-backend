@@ -10,8 +10,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  test-gate:
+    name: Production deploy test gate
+    uses: ./.github/workflows/ci.yml
+
   deploy:
     name: Release to /home/deploy/stovash/backend
+    needs: test-gate
     if: github.ref == 'refs/heads/production'
     runs-on: ubuntu-latest
     environment: production

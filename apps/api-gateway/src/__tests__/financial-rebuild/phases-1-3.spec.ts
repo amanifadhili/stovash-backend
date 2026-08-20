@@ -9,6 +9,7 @@ import { SUBSCRIPTION_EXEMPT } from '../../common/auth/jwt-auth.guard';
 
 const ELECTRONIC_SHOP = path.resolve(__dirname, '../../../../../');
 const WORKSPACE = path.resolve(__dirname, '../../../../../../');
+const FRONTEND_ROOT = path.join(WORKSPACE, 'electronic-shop-frontend');
 
 const PLANNED_QUARANTINE = [
   'PostJournalEntry',
@@ -669,10 +670,10 @@ describe('Financial rebuild Phases 1–10 (gateway + source contracts)', () => {
     });
 
     it('leftover POS redirects to stock; product cart uses ConfirmSale; RabbitMQ ledger stays off', () => {
-      const pos = fs.readFileSync(path.join(WORKSPACE, 'stovash/src/app/sales/pos/page.tsx'), 'utf8');
+      const pos = fs.readFileSync(path.join(FRONTEND_ROOT, 'src/app/sales/pos/page.tsx'), 'utf8');
       expect(pos).toContain('redirect("/inventory/devices")');
       expect(pos).not.toContain('ConfirmSale');
-      const cart = fs.readFileSync(path.join(WORKSPACE, 'stovash/src/components/inventory/StockCart.tsx'), 'utf8');
+      const cart = fs.readFileSync(path.join(FRONTEND_ROOT, 'src/components/inventory/StockCart.tsx'), 'utf8');
       expect(cart).toContain('ConfirmSale');
       expect(cart).toContain('RecordSalePayment');
       expect(cart).not.toMatch(/GetPaymentMethods|GetIncomeStatement|PostSaleConfirmation|ApplySaleFulfillment/);
