@@ -5,6 +5,7 @@ describe('isGatewayOwnedPath', () => {
     expect(isGatewayOwnedPath('/api')).toBe(true);
     expect(isGatewayOwnedPath('/api/foo')).toBe(true);
     expect(isGatewayOwnedPath('/health')).toBe(true);
+    expect(isGatewayOwnedPath('/ready')).toBe(true);
     expect(isGatewayOwnedPath('/metrics')).toBe(true);
     expect(isGatewayOwnedPath('/docs')).toBe(true);
     expect(isGatewayOwnedPath('/docs/swagger-ui')).toBe(true);
