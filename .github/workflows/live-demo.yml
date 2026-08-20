@@ -1,0 +1,89 @@
+name: Live demo tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_base:
+        description: API base URL
+        required: false
+        default: https://api.stovash.com
+      run_k6_smoke:
+        description: Run k6 smoke load (2 min, 5 VUs)
+        type: boolean
+        default: true
+
+concurrency:
+  group: live-demo-backend
+  cancel-in-progress: false
+
+jobs:
+  security-smoke:
+    name: Security curl checklist
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Run live demo security checks
+        env:
+          API_BASE: ${{ inputs.api_base }}
+          E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+        run: bash scripts/live-demo-security-check.sh
+
+  k6-smoke:
+    name: k6 smoke load
+    if: inputs.run_k6_smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: security-smoke
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install k6
+        run: |
+          sudo gpg --no-default-keypad --keyserver keyserver.ubuntu.com --recv-keys C5AD17C747E3415A3642D57D77C782C7C2E45C4
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install -y k6
+
+      - name: Run demo smoke load
+        env:
+          API_BASE: ${{ inputs.api_base }}
+          K6_EMAIL: ${{ secrets.E2E_EMAIL }}
+          K6_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+        run: bash load-tests/run-demo-smoke.sh
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-demo-smoke
+          path: load-tests/results/
+          if-no-files-found: ignore
+
+  zap-baseline:
+    name: OWASP ZAP baseline (optional)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: security-smoke
+    if: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: ZAP scan API docs
+        run: |
+          mkdir -p live-test-reports
+          docker run --rm -v "$PWD/live-test-reports:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t "${{ inputs.api_base }}/docs" \
+            -r zap-api-report.html
+
+      - name: Upload ZAP reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-live-demo
+          path: live-test-reports/
