@@ -11,6 +11,8 @@ import { GetJournalsHandler } from './get-journals.handler.js';
 import { GetReceivablesHandler } from './get-receivables.handler.js';
 import { GetProfitAllocationHandler } from './get-profit-allocation.handler.js';
 import { GetEngineReportHandler } from './get-engine-report.handler.js';
+import { GetDashboardProfitAnalyticsHandler } from './get-dashboard-profit-analytics.handler.js';
+import { GetDashboardArApAnalyticsHandler } from './get-dashboard-ar-ap-analytics.handler.js';
 
 export const QueryHandlers = [
   GetTrialBalanceHandler,
@@ -26,4 +28,6 @@ export const QueryHandlers = [
   GetReceivablesHandler,
   GetProfitAllocationHandler,
   GetEngineReportHandler,
+  GetDashboardProfitAnalyticsHandler,
+  GetDashboardArApAnalyticsHandler,
 ];

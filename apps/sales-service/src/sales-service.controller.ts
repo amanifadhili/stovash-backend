@@ -22,6 +22,9 @@ import { GetSaleHistoryQuery } from './queries/impl/get-sale-history.query.js';
 import { GetDeviceSalesQuery } from './queries/impl/get-device-sales.query.js';
 import { GetSoldUnitProfitQuery } from './queries/impl/get-sold-unit-profit.query.js';
 import { GetSaleReturnsByIdsQuery } from './queries/handlers/get-sale-returns-by-ids.handler.js';
+import { GetDashboardSalesAnalyticsQuery } from './queries/impl/get-dashboard-sales-analytics.query.js';
+import { GetDashboardPaymentMethodMixQuery } from './queries/handlers/get-dashboard-payment-method-mix.handler.js';
+import { GetDashboardProductPerformanceQuery } from './queries/impl/get-dashboard-product-performance.query.js';
 
 @Controller()
 export class SalesServiceController {
@@ -134,5 +137,26 @@ export class SalesServiceController {
   @MessagePattern({ cmd: 'GetSaleReturnsByIds' })
   async handleGetSaleReturnsByIds(@Payload() data: { payload: any; context: any }) {
     return this.queryBus.execute(new GetSaleReturnsByIdsQuery(data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetDashboardSalesAnalytics' })
+  async handleGetDashboardSalesAnalytics(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(
+      new GetDashboardSalesAnalyticsQuery(data.payload || {}, data.context),
+    );
+  }
+
+  @MessagePattern({ cmd: 'GetDashboardPaymentMethodMix' })
+  async handleGetDashboardPaymentMethodMix(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(
+      new GetDashboardPaymentMethodMixQuery(data.payload || {}, data.context),
+    );
+  }
+
+  @MessagePattern({ cmd: 'GetDashboardProductPerformance' })
+  async handleGetDashboardProductPerformance(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(
+      new GetDashboardProductPerformanceQuery(data.payload || {}, data.context),
+    );
   }
 }

@@ -29,6 +29,8 @@ import { PostSaleConfirmationCommand } from './commands/impl/post-sale-confirmat
 import { PostPurchasePayableCommand } from './commands/impl/post-purchase-payable.command.js';
 import { PostFinancialCorrectionCommand } from './commands/impl/post-financial-correction.command.js';
 import { PostSaleRefundCommand } from './commands/impl/post-sale-refund.command.js';
+import { GetDashboardProfitAnalyticsQuery } from './queries/impl/get-dashboard-profit-analytics.query.js';
+import { GetDashboardArApAnalyticsQuery } from './queries/impl/get-dashboard-ar-ap-analytics.query.js';
 
 @Controller()
 export class AccountingServiceController {
@@ -160,6 +162,20 @@ export class AccountingServiceController {
   @MessagePattern({ cmd: 'GetEngineReport' })
   async handleGetEngineReport(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetEngineReportQuery(data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetDashboardProfitAnalytics' })
+  async handleGetDashboardProfitAnalytics(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(
+      new GetDashboardProfitAnalyticsQuery(data.payload || {}, data.context),
+    );
+  }
+
+  @MessagePattern({ cmd: 'GetDashboardArApAnalytics' })
+  async handleGetDashboardArApAnalytics(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(
+      new GetDashboardArApAnalyticsQuery(data.payload || {}, data.context),
+    );
   }
 
   @MessagePattern({ cmd: 'PostSaleConfirmation' })

@@ -29,7 +29,16 @@ export interface GetSaleHistoryPayload {
   saleId: string;
 }
 
+export interface GetDashboardSalesAnalyticsPayload {
+  shopId?: string;
+  /** Inclusive shop-calendar YYYY-MM-DD */
+  from: string;
+  /** Inclusive shop-calendar YYYY-MM-DD */
+  to: string;
+}
+
 export * from './get-sales.query.js';
 export * from './get-sale-by-id.query.js';
 export * from './get-sale-history.query.js';
 export * from './get-sold-unit-profit.query.js';
+export * from './get-dashboard-sales-analytics.query.js';

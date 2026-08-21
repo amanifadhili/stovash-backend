@@ -23,6 +23,8 @@ import { GetReconciliationsQuery } from './queries/impl/get-reconciliations.quer
 import { GetDailyPositionQuery } from './queries/impl/get-daily-position.query.js';
 import { GetMonthlyPositionQuery } from './queries/impl/get-monthly-position.query.js';
 import { GetFinancialOverviewQuery } from './queries/impl/get-financial-overview.query.js';
+import { GetDashboardCashFlowAnalyticsQuery } from './queries/impl/get-dashboard-cash-flow-analytics.query.js';
+import { GetDashboardLoanAnalyticsQuery } from './queries/impl/get-dashboard-loan-analytics.query.js';
 
 @Controller()
 export class TreasuryServiceController {
@@ -139,5 +141,19 @@ export class TreasuryServiceController {
   @MessagePattern({ cmd: 'GetFinancialOverview' })
   async handleGetFinancialOverview(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetFinancialOverviewQuery(data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetDashboardCashFlowAnalytics' })
+  async handleGetDashboardCashFlowAnalytics(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(
+      new GetDashboardCashFlowAnalyticsQuery(data.payload || {}, data.context),
+    );
+  }
+
+  @MessagePattern({ cmd: 'GetDashboardLoanAnalytics' })
+  async handleGetDashboardLoanAnalytics(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(
+      new GetDashboardLoanAnalyticsQuery(data.payload || {}, data.context),
+    );
   }
 }
