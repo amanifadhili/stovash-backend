@@ -284,6 +284,8 @@ exports.Prisma.InventoryMovementScalarFieldEnum = {
   inventoryItemId: 'inventoryItemId',
   productId: 'productId',
   customerId: 'customerId',
+  counterpartyName: 'counterpartyName',
+  counterpartyPhone: 'counterpartyPhone',
   movementType: 'movementType',
   quantity: 'quantity',
   referenceId: 'referenceId',

@@ -47,6 +47,8 @@ export class ApplySaleFulfillmentHandler extends BaseCommandHandler<ApplySaleFul
         items: payload.items,
         fulfilledBy: userId,
         customerId: payload.customerId || null,
+        counterpartyName: payload.counterpartyName || null,
+        counterpartyPhone: payload.counterpartyPhone || null,
       });
 
       return {

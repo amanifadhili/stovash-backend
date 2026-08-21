@@ -242,6 +242,7 @@ export class ProcessSaleReplacementHandler extends BaseCommandHandler<ProcessSal
                 refundId: saleReturn.id,
                 shopId: sale.shopId,
                 customerId: sale.customerId || null,
+                counterpartyName: sale.customerName || 'Walk-in',
                 returnedBy: createdById,
                 items: [
                   {
@@ -275,6 +276,7 @@ export class ProcessSaleReplacementHandler extends BaseCommandHandler<ProcessSal
                 saleId: sale.id,
                 shopId: sale.shopId,
                 customerId: sale.customerId || null,
+                counterpartyName: sale.customerName || 'Walk-in',
                 fulfilledBy: createdById,
                 items: [
                   {

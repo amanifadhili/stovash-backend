@@ -16,6 +16,9 @@ export type ApplySaleFulfillmentArgs = {
   items: SaleFulfillmentItem[];
   fulfilledBy?: string;
   customerId?: string | null;
+  /** Snapshot for Activity "With" (walk-in name or registered customer). */
+  counterpartyName?: string | null;
+  counterpartyPhone?: string | null;
 };
 
 type Tx = any;
@@ -28,8 +31,11 @@ export async function applySaleFulfillmentInTx(
   tx: Tx,
   args: ApplySaleFulfillmentArgs,
 ): Promise<{ applied: number; skippedIdempotent: number }> {
-  const { tenantId, shopId, saleId, items, fulfilledBy, customerId } = args;
+  const { tenantId, shopId, saleId, items, fulfilledBy, customerId, counterpartyName, counterpartyPhone } =
+    args;
   const actor = fulfilledBy || 'system';
+  const partyName = (counterpartyName || '').trim() || null;
+  const partyPhone = (counterpartyPhone || '').trim() || null;
   let applied = 0;
   let skippedIdempotent = 0;
 
@@ -110,6 +116,8 @@ export async function applySaleFulfillmentInTx(
           inventoryItemId: invItem.id,
           productId: invItem.productId || item.productId || null,
           customerId: customerId || null,
+          counterpartyName: partyName,
+          counterpartyPhone: partyPhone,
           movementType: 'OUT',
           quantity: qty,
           referenceId: saleId,
@@ -144,6 +152,8 @@ export async function applySaleFulfillmentInTx(
             inventoryItemId: null,
             productId: item.productId,
             customerId: customerId || null,
+            counterpartyName: partyName,
+            counterpartyPhone: partyPhone,
             movementType: 'OUT',
             quantity: qty,
             referenceId: saleId,
@@ -197,6 +207,8 @@ export async function applySaleFulfillmentInTx(
         inventoryItemId: null,
         productId,
         customerId: customerId || null,
+        counterpartyName: partyName,
+        counterpartyPhone: partyPhone,
         movementType: 'OUT',
         quantity: qty,
         referenceId: saleId,

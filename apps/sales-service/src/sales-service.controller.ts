@@ -21,6 +21,7 @@ import { GetSaleByIdQuery } from './queries/impl/get-sale-by-id.query.js';
 import { GetSaleHistoryQuery } from './queries/impl/get-sale-history.query.js';
 import { GetDeviceSalesQuery } from './queries/impl/get-device-sales.query.js';
 import { GetSoldUnitProfitQuery } from './queries/impl/get-sold-unit-profit.query.js';
+import { GetSaleReturnsByIdsQuery } from './queries/handlers/get-sale-returns-by-ids.handler.js';
 
 @Controller()
 export class SalesServiceController {
@@ -128,5 +129,10 @@ export class SalesServiceController {
   @MessagePattern({ cmd: 'GetSoldUnitProfit' })
   async handleGetSoldUnitProfit(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetSoldUnitProfitQuery(data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetSaleReturnsByIds' })
+  async handleGetSaleReturnsByIds(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(new GetSaleReturnsByIdsQuery(data.payload || {}, data.context));
   }
 }
