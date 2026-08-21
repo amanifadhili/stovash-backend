@@ -5,6 +5,7 @@ import { FulfillSaleHandler } from './fulfill-sale.handler.js';
 import { RecordSalePaymentHandler } from './record-sale-payment.handler.js';
 import { CreateSaleReturnHandler } from './create-sale-return.handler.js';
 import { IssueRefundHandler } from './issue-refund.handler.js';
+import { ProcessSaleReplacementHandler } from './process-sale-replacement.handler.js';
 import { AssessReturnedItemHandler } from './assess-returned-item.handler.js';
 import { CreateWarrantyHandler } from './create-warranty.handler.js';
 import { CreateQuotationHandler } from './create-quotation.handler.js';
@@ -22,6 +23,7 @@ export const CommandHandlers = [
   RecordSalePaymentHandler,
   CreateSaleReturnHandler,
   IssueRefundHandler,
+  ProcessSaleReplacementHandler,
   AssessReturnedItemHandler,
   CreateWarrantyHandler,
   CreateQuotationHandler,

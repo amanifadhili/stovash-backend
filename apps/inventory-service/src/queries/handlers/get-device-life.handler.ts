@@ -102,6 +102,7 @@ export class GetDeviceLifeHandler implements IQueryHandler<GetDeviceLifeQuery> {
             category,
             sellingPrice: item.sellingPrice ?? item.product?.prices?.[0]?.sellingPrice ?? 0,
             specifications: item.specifications ?? item.product?.specifications ?? null,
+            awaitingAssess: item.status === 'RETURNED',
             createdAt: item.createdAt,
           },
           costs: {

@@ -39,6 +39,7 @@ import { CreateContactCommand } from './commands/impl/create-contact.command.js'
 import { GetContactsQuery } from './queries/impl/get-contacts.query.js';
 import { ApplySaleFulfillmentCommand } from './commands/impl/apply-sale-fulfillment.command.js';
 import { ApplySaleReturnCommand } from './commands/impl/apply-sale-return.command.js';
+import { ApplyReturnedItemAssessmentCommand } from './commands/impl/apply-returned-item-assessment.command.js';
 
 @Controller()
 export class InventoryServiceController {
@@ -52,6 +53,11 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'ApplySaleReturn' })
   async handleApplySaleReturn(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new ApplySaleReturnCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'ApplyReturnedItemAssessment' })
+  async handleApplyReturnedItemAssessment(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ApplyReturnedItemAssessmentCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'AddProduct' })

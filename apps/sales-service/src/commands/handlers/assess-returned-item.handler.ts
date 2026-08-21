@@ -4,12 +4,26 @@ import { AssessReturnedItemCommand } from '../impl/assess-returned-item.command.
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { EventBus } from '@electronic-shop/framework-event';
 import { actorOf } from '../../common/actor.js';
+import { firstValueFrom, timeout } from 'rxjs';
+
+const ALLOWED_CONDITIONS = new Set([
+  'SELLABLE',
+  'DAMAGED',
+  'REQUIRES_REPAIR',
+  'DEFECTIVE',
+  'QUARANTINED',
+  'RETURN_TO_SUPPLIER',
+]);
 
 @CommandHandler(AssessReturnedItemCommand)
 export class AssessReturnedItemHandler extends BaseCommandHandler<AssessReturnedItemCommand> {
-  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+  constructor(
+    @Inject('EVENT_BUS') private readonly eventBus: EventBus,
+    @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
+  ) {
     super();
   }
 
@@ -28,6 +42,16 @@ export class AssessReturnedItemHandler extends BaseCommandHandler<AssessReturned
         };
       }
 
+      const conditionState = String(payload.conditionState).trim().toUpperCase();
+      if (!ALLOWED_CONDITIONS.has(conditionState)) {
+        return {
+          status: 'error',
+          traceId,
+          message: `conditionState must be one of: ${[...ALLOWED_CONDITIONS].join(', ')}`,
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
       const item = await prisma.saleReturnItem.findUnique({
         where: { id: payload.saleReturnItemId },
         include: { saleReturn: true },
@@ -41,15 +65,47 @@ export class AssessReturnedItemHandler extends BaseCommandHandler<AssessReturned
         };
       }
 
+      // Inventory first so a stock failure does not leave a half-assessed return row.
+      if (item.inventoryItemId) {
+        const stock = await firstValueFrom(
+          this.inventoryClient
+            .send(
+              { cmd: 'ApplyReturnedItemAssessment' },
+              {
+                payload: {
+                  inventoryItemId: item.inventoryItemId,
+                  saleReturnItemId: item.id,
+                  conditionState,
+                  assessedBy: createdById,
+                },
+                context: {
+                  tenantId,
+                  shopId: item.saleReturn.shopId,
+                  userId: createdById,
+                  traceId,
+                },
+              },
+            )
+            .pipe(timeout(15000)),
+        );
+        if (!stock || stock.status === 'error') {
+          return {
+            status: 'error',
+            traceId,
+            message: stock?.message || 'Inventory could not apply this assessment',
+            errorCode: stock?.errorCode || ErrorCode.BUSINESS_RULE_VIOLATION,
+          };
+        }
+      }
+
       const updated = await prisma.saleReturnItem.update({
         where: { id: item.id },
         data: {
-          conditionState: payload.conditionState,
+          conditionState,
           notes: payload.notes ?? item.notes,
         },
       });
 
-      // Record the assessment on the original sale history when linked.
       if (item.saleReturn.saleId) {
         await prisma.saleHistory.create({
           data: {
@@ -58,7 +114,7 @@ export class AssessReturnedItemHandler extends BaseCommandHandler<AssessReturned
             eventData: JSON.stringify({
               saleReturnItemId: item.id,
               serialNumber: item.serialNumber,
-              conditionState: payload.conditionState,
+              conditionState,
               assessedBy: userName,
             }),
             userId: createdById,
@@ -77,7 +133,10 @@ export class AssessReturnedItemHandler extends BaseCommandHandler<AssessReturned
           resource: 'SaleReturnItem',
           resourceId: item.id,
           traceId,
-          details: JSON.stringify({ serialNumber: item.serialNumber, conditionState: payload.conditionState }),
+          details: JSON.stringify({
+            serialNumber: item.serialNumber,
+            conditionState,
+          }),
         },
       });
 
@@ -89,11 +148,15 @@ export class AssessReturnedItemHandler extends BaseCommandHandler<AssessReturned
           tenantId,
           shopId: item.saleReturn.shopId,
           payload: {
+            tenantId,
+            shopId: item.saleReturn.shopId,
             saleReturnItemId: item.id,
             saleReturnId: item.saleReturnId,
             inventoryItemId: item.inventoryItemId,
             serialNumber: item.serialNumber,
-            conditionState: payload.conditionState,
+            conditionState,
+            assessedBy: createdById,
+            traceId,
           },
           timestamp: new Date().toISOString(),
           correlationId: traceId,

@@ -18,11 +18,14 @@ export class GetSalesHandler implements IQueryHandler<GetSalesQuery> {
         commercialStatus,
         fulfillmentStatus,
         paymentStatus,
+        paymentStatuses,
         accountingStatus,
         dateFrom,
         dateTo,
         page = 1,
         pageSize = 20,
+        sortBy = 'saleDate',
+        sortDir = 'desc',
       } = payload;
 
       const tenantId = context?.tenantId || payloadTenantId;
@@ -33,7 +36,14 @@ export class GetSalesHandler implements IQueryHandler<GetSalesQuery> {
       if (sellerId) where.sellerId = sellerId;
       if (commercialStatus) where.commercialStatus = commercialStatus;
       if (fulfillmentStatus) where.fulfillmentStatus = fulfillmentStatus;
-      if (paymentStatus) where.paymentStatus = paymentStatus;
+      const statusList = Array.isArray(paymentStatuses)
+        ? paymentStatuses.filter((s: unknown) => typeof s === 'string' && s.trim())
+        : [];
+      if (statusList.length > 0) {
+        where.paymentStatus = { in: statusList };
+      } else if (paymentStatus) {
+        where.paymentStatus = paymentStatus;
+      }
       if (accountingStatus) where.accountingStatus = accountingStatus;
       if (dateFrom || dateTo) {
         where.saleDate = {};
@@ -41,10 +51,13 @@ export class GetSalesHandler implements IQueryHandler<GetSalesQuery> {
         if (dateTo) where.saleDate.lte = new Date(dateTo);
       }
 
+      const orderField = sortBy === 'amountDue' ? 'amountDue' : 'saleDate';
+      const orderDirection = sortDir === 'asc' ? 'asc' : 'desc';
+
       const [sales, total] = await Promise.all([
         prisma.sale.findMany({
           where,
-          orderBy: { saleDate: 'desc' },
+          orderBy: { [orderField]: orderDirection },
           skip: (page - 1) * pageSize,
           take: pageSize,
           include: {
