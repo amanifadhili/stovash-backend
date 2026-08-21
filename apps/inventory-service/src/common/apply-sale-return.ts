@@ -15,6 +15,8 @@ export type ApplySaleReturnArgs = {
   items: SaleReturnItemInput[];
   returnedBy?: string;
   customerId?: string | null;
+  counterpartyName?: string | null;
+  counterpartyPhone?: string | null;
 };
 
 type Tx = any;
@@ -29,8 +31,11 @@ export async function applySaleReturnInTx(
   tx: Tx,
   args: ApplySaleReturnArgs,
 ): Promise<{ applied: number; skippedIdempotent: number }> {
-  const { tenantId, shopId, refundId, items, returnedBy, customerId } = args;
+  const { tenantId, shopId, refundId, items, returnedBy, customerId, counterpartyName, counterpartyPhone } =
+    args;
   const actor = returnedBy || 'system';
+  const partyName = (counterpartyName || '').trim() || null;
+  const partyPhone = (counterpartyPhone || '').trim() || null;
   let applied = 0;
   let skippedIdempotent = 0;
 
@@ -87,6 +92,8 @@ export async function applySaleReturnInTx(
           inventoryItemId: invItem.id,
           productId: invItem.productId,
           customerId: customerId || null,
+          counterpartyName: partyName,
+          counterpartyPhone: partyPhone,
           movementType: 'IN',
           quantity: qty,
           referenceId: refundId,
@@ -143,6 +150,8 @@ export async function applySaleReturnInTx(
         inventoryItemId: null,
         productId,
         customerId: customerId || null,
+        counterpartyName: partyName,
+        counterpartyPhone: partyPhone,
         movementType: 'IN',
         quantity: qty,
         referenceId: refundId,

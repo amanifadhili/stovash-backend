@@ -3,6 +3,7 @@ import { GetSaleByIdHandler } from './get-sale-by-id.handler.js';
 import { GetSaleHistoryHandler } from './get-sale-history.handler.js';
 import { GetDeviceSalesHandler } from './get-device-sales.handler.js';
 import { GetSoldUnitProfitHandler } from './get-sold-unit-profit.handler.js';
+import { GetSaleReturnsByIdsHandler } from './get-sale-returns-by-ids.handler.js';
 
 export const QueryHandlers = [
   GetSalesHandler,
@@ -10,6 +11,7 @@ export const QueryHandlers = [
   GetSaleHistoryHandler,
   GetDeviceSalesHandler,
   GetSoldUnitProfitHandler,
+  GetSaleReturnsByIdsHandler,
 ];
 
 export * from './get-sales.handler.js';
@@ -17,3 +19,4 @@ export * from './get-sale-by-id.handler.js';
 export * from './get-sale-history.handler.js';
 export * from './get-device-sales.handler.js';
 export * from './get-sold-unit-profit.handler.js';
+export * from './get-sale-returns-by-ids.handler.js';

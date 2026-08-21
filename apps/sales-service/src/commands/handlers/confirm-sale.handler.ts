@@ -103,6 +103,7 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
                 saleId: sale.id,
                 shopId: sale.shopId,
                 customerId: sale.customerId || null,
+                counterpartyName: sale.customerName || 'Walk-in',
                 fulfilledBy: createdById,
                 items: (sale.items ?? []).map((i: any) => ({
                   saleItemId: i.id,

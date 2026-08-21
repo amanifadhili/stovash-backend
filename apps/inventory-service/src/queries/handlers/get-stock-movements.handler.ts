@@ -1,4 +1,7 @@
+import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, timeout } from 'rxjs';
 import { GetStockMovementsQuery } from '../impl/get-stock-movements.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
@@ -13,8 +16,12 @@ const RENTAL_REFERENCE_TYPES = new Set([
   'LEND_OUT_SETTLE',
 ]);
 
+const SALE_REFERENCE_TYPES = new Set(['SALE', 'INWARD_RENTAL_SALE']);
+
 @QueryHandler(GetStockMovementsQuery)
 export class GetStockMovementsHandler implements IQueryHandler<GetStockMovementsQuery> {
+  constructor(@Inject('SALES_SERVICE') private readonly salesClient: ClientProxy) {}
+
   async execute(query: GetStockMovementsQuery): Promise<ICommandResponse<any>> {
     const { payload = {}, context } = query;
     const traceId = context?.traceId || 'unknown';
@@ -65,8 +72,9 @@ export class GetStockMovementsHandler implements IQueryHandler<GetStockMovements
             .map((r) => r.referenceId as string)
         ),
       ];
+      const customerIds = [...new Set(rows.map((r) => r.customerId).filter(Boolean))] as string[];
 
-      const [products, items, rentals] = await Promise.all([
+      const [products, items, rentals, contacts] = await Promise.all([
         productIds.length
           ? prisma.product.findMany({
               where: { tenantId, id: { in: productIds } },
@@ -91,11 +99,18 @@ export class GetStockMovementsHandler implements IQueryHandler<GetStockMovements
               select: { id: true, personName: true, personPhone: true },
             })
           : Promise.resolve([]),
+        customerIds.length
+          ? prisma.contact.findMany({
+              where: { tenantId, id: { in: customerIds } },
+              select: { id: true, name: true, phone: true },
+            })
+          : Promise.resolve([]),
       ]);
 
       const productById = new Map(products.map((p) => [p.id, p]));
       const itemById = new Map(items.map((i) => [i.id, i]));
       const rentalById = new Map(rentals.map((r) => [r.id, r]));
+      const contactById = new Map(contacts.map((c) => [c.id, c]));
 
       // Fallback: some create paths omit referenceId — map by inventory item.
       const itemIdsNeedingRental = [
@@ -126,6 +141,80 @@ export class GetStockMovementsHandler implements IQueryHandler<GetStockMovements
         }
       }
 
+      const saleIdsNeedingParty = [
+        ...new Set(
+          rows
+            .filter(
+              (r) =>
+                r.referenceId &&
+                r.referenceType &&
+                SALE_REFERENCE_TYPES.has(r.referenceType) &&
+                !(r as { counterpartyName?: string | null }).counterpartyName
+            )
+            .map((r) => r.referenceId as string)
+        ),
+      ];
+      const returnIdsNeedingParty = [
+        ...new Set(
+          rows
+            .filter(
+              (r) =>
+                r.referenceId &&
+                r.referenceType === 'SALE_RETURN' &&
+                !(r as { counterpartyName?: string | null }).counterpartyName
+            )
+            .map((r) => r.referenceId as string)
+        ),
+      ];
+
+      const saleNameById = new Map<string, string>();
+      const returnNameById = new Map<string, string>();
+      try {
+        const enrichJobs: Promise<void>[] = [];
+        if (saleIdsNeedingParty.length > 0) {
+          enrichJobs.push(
+            firstValueFrom(
+              this.salesClient
+                .send(
+                  { cmd: 'GetSales' },
+                  {
+                    payload: {
+                      ids: saleIdsNeedingParty,
+                      page: 1,
+                      pageSize: Math.min(saleIdsNeedingParty.length, 500),
+                    },
+                    context,
+                  },
+                )
+                .pipe(timeout(8000)),
+            ).then((res: any) => {
+              for (const s of res?.data?.sales || []) {
+                if (s?.id && s.customerName) saleNameById.set(s.id, String(s.customerName));
+              }
+            }),
+          );
+        }
+        if (returnIdsNeedingParty.length > 0) {
+          enrichJobs.push(
+            firstValueFrom(
+              this.salesClient
+                .send(
+                  { cmd: 'GetSaleReturnsByIds' },
+                  { payload: { ids: returnIdsNeedingParty }, context },
+                )
+                .pipe(timeout(8000)),
+            ).then((res: any) => {
+              for (const r of res?.data?.returns || []) {
+                if (r?.id && r.customerName) returnNameById.set(r.id, String(r.customerName));
+              }
+            }),
+          );
+        }
+        await Promise.all(enrichJobs);
+      } catch {
+        // Party enrichment is best-effort; Activity still loads without names.
+      }
+
       let movements = rows.map((row) => {
         const item = row.inventoryItemId ? itemById.get(row.inventoryItemId) : null;
         const product =
@@ -133,26 +222,49 @@ export class GetStockMovementsHandler implements IQueryHandler<GetStockMovements
           item?.product ||
           null;
 
-        let counterpartyName: string | null = null;
-        let counterpartyPhone: string | null = null;
+        const storedName = (row as { counterpartyName?: string | null }).counterpartyName || null;
+        const storedPhone = (row as { counterpartyPhone?: string | null }).counterpartyPhone || null;
 
-        if (row.referenceType && RENTAL_REFERENCE_TYPES.has(row.referenceType)) {
+        let counterpartyName: string | null = storedName;
+        let counterpartyPhone: string | null = storedPhone;
+
+        if (!counterpartyName && row.referenceType && RENTAL_REFERENCE_TYPES.has(row.referenceType)) {
           const rental =
             (row.referenceId ? rentalById.get(row.referenceId) : null) ||
             (row.inventoryItemId ? rentalByItemId.get(row.inventoryItemId) : null) ||
             null;
           if (rental) {
             counterpartyName = rental.personName || null;
-            counterpartyPhone = rental.personPhone || null;
+            counterpartyPhone = counterpartyPhone || rental.personPhone || null;
           }
-        } else if (row.referenceType === 'SALE' || row.referenceType === 'SALE_RETURN') {
-          counterpartyName = row.customerId ? 'Customer' : null;
-        } else if (row.referenceType === 'PURCHASE' || row.referenceType === 'GOODS_RECEIPT') {
+        }
+
+        if (!counterpartyName && row.customerId) {
+          const contact = contactById.get(row.customerId);
+          if (contact) {
+            counterpartyName = contact.name || null;
+            counterpartyPhone = counterpartyPhone || contact.phone || null;
+          }
+        }
+
+        if (!counterpartyName && row.referenceId && row.referenceType && SALE_REFERENCE_TYPES.has(row.referenceType)) {
+          counterpartyName = saleNameById.get(row.referenceId) || null;
+        }
+        if (!counterpartyName && row.referenceId && row.referenceType === 'SALE_RETURN') {
+          counterpartyName = returnNameById.get(row.referenceId) || null;
+        }
+
+        if (
+          !counterpartyName &&
+          (row.referenceType === 'SALE' ||
+            row.referenceType === 'SALE_RETURN' ||
+            row.referenceType === 'INWARD_RENTAL_SALE')
+        ) {
+          counterpartyName = 'Walk-in';
+        } else if (!counterpartyName && (row.referenceType === 'PURCHASE' || row.referenceType === 'GOODS_RECEIPT')) {
           counterpartyName = 'Purchase';
-        } else if (row.referenceType === 'INVENTORY_TRANSFER') {
+        } else if (!counterpartyName && row.referenceType === 'INVENTORY_TRANSFER') {
           counterpartyName = 'Shop transfer';
-        } else if (row.referenceType === 'INVENTORY_INCIDENT') {
-          counterpartyName = null;
         }
 
         return {

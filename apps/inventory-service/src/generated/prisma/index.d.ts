@@ -12689,6 +12689,8 @@ export namespace Prisma {
     inventoryItemId: string | null
     productId: string | null
     customerId: string | null
+    counterpartyName: string | null
+    counterpartyPhone: string | null
     movementType: string | null
     quantity: number | null
     referenceId: string | null
@@ -12704,6 +12706,8 @@ export namespace Prisma {
     inventoryItemId: string | null
     productId: string | null
     customerId: string | null
+    counterpartyName: string | null
+    counterpartyPhone: string | null
     movementType: string | null
     quantity: number | null
     referenceId: string | null
@@ -12719,6 +12723,8 @@ export namespace Prisma {
     inventoryItemId: number
     productId: number
     customerId: number
+    counterpartyName: number
+    counterpartyPhone: number
     movementType: number
     quantity: number
     referenceId: number
@@ -12744,6 +12750,8 @@ export namespace Prisma {
     inventoryItemId?: true
     productId?: true
     customerId?: true
+    counterpartyName?: true
+    counterpartyPhone?: true
     movementType?: true
     quantity?: true
     referenceId?: true
@@ -12759,6 +12767,8 @@ export namespace Prisma {
     inventoryItemId?: true
     productId?: true
     customerId?: true
+    counterpartyName?: true
+    counterpartyPhone?: true
     movementType?: true
     quantity?: true
     referenceId?: true
@@ -12774,6 +12784,8 @@ export namespace Prisma {
     inventoryItemId?: true
     productId?: true
     customerId?: true
+    counterpartyName?: true
+    counterpartyPhone?: true
     movementType?: true
     quantity?: true
     referenceId?: true
@@ -12876,6 +12888,8 @@ export namespace Prisma {
     inventoryItemId: string | null
     productId: string | null
     customerId: string | null
+    counterpartyName: string | null
+    counterpartyPhone: string | null
     movementType: string
     quantity: number
     referenceId: string | null
@@ -12910,6 +12924,8 @@ export namespace Prisma {
     inventoryItemId?: boolean
     productId?: boolean
     customerId?: boolean
+    counterpartyName?: boolean
+    counterpartyPhone?: boolean
     movementType?: boolean
     quantity?: boolean
     referenceId?: boolean
@@ -12925,6 +12941,8 @@ export namespace Prisma {
     inventoryItemId?: boolean
     productId?: boolean
     customerId?: boolean
+    counterpartyName?: boolean
+    counterpartyPhone?: boolean
     movementType?: boolean
     quantity?: boolean
     referenceId?: boolean
@@ -12940,6 +12958,8 @@ export namespace Prisma {
     inventoryItemId?: boolean
     productId?: boolean
     customerId?: boolean
+    counterpartyName?: boolean
+    counterpartyPhone?: boolean
     movementType?: boolean
     quantity?: boolean
     referenceId?: boolean
@@ -12959,6 +12979,8 @@ export namespace Prisma {
       inventoryItemId: string | null
       productId: string | null
       customerId: string | null
+      counterpartyName: string | null
+      counterpartyPhone: string | null
       movementType: string
       quantity: number
       referenceId: string | null
@@ -13364,6 +13386,8 @@ export namespace Prisma {
     readonly inventoryItemId: FieldRef<"InventoryMovement", 'String'>
     readonly productId: FieldRef<"InventoryMovement", 'String'>
     readonly customerId: FieldRef<"InventoryMovement", 'String'>
+    readonly counterpartyName: FieldRef<"InventoryMovement", 'String'>
+    readonly counterpartyPhone: FieldRef<"InventoryMovement", 'String'>
     readonly movementType: FieldRef<"InventoryMovement", 'String'>
     readonly quantity: FieldRef<"InventoryMovement", 'Float'>
     readonly referenceId: FieldRef<"InventoryMovement", 'String'>
@@ -16934,6 +16958,8 @@ export namespace Prisma {
     inventoryItemId: 'inventoryItemId',
     productId: 'productId',
     customerId: 'customerId',
+    counterpartyName: 'counterpartyName',
+    counterpartyPhone: 'counterpartyPhone',
     movementType: 'movementType',
     quantity: 'quantity',
     referenceId: 'referenceId',
@@ -18092,6 +18118,8 @@ export namespace Prisma {
     inventoryItemId?: StringNullableFilter<"InventoryMovement"> | string | null
     productId?: StringNullableFilter<"InventoryMovement"> | string | null
     customerId?: StringNullableFilter<"InventoryMovement"> | string | null
+    counterpartyName?: StringNullableFilter<"InventoryMovement"> | string | null
+    counterpartyPhone?: StringNullableFilter<"InventoryMovement"> | string | null
     movementType?: StringFilter<"InventoryMovement"> | string
     quantity?: FloatFilter<"InventoryMovement"> | number
     referenceId?: StringNullableFilter<"InventoryMovement"> | string | null
@@ -18107,6 +18135,8 @@ export namespace Prisma {
     inventoryItemId?: SortOrderInput | SortOrder
     productId?: SortOrderInput | SortOrder
     customerId?: SortOrderInput | SortOrder
+    counterpartyName?: SortOrderInput | SortOrder
+    counterpartyPhone?: SortOrderInput | SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrderInput | SortOrder
@@ -18125,6 +18155,8 @@ export namespace Prisma {
     inventoryItemId?: StringNullableFilter<"InventoryMovement"> | string | null
     productId?: StringNullableFilter<"InventoryMovement"> | string | null
     customerId?: StringNullableFilter<"InventoryMovement"> | string | null
+    counterpartyName?: StringNullableFilter<"InventoryMovement"> | string | null
+    counterpartyPhone?: StringNullableFilter<"InventoryMovement"> | string | null
     movementType?: StringFilter<"InventoryMovement"> | string
     quantity?: FloatFilter<"InventoryMovement"> | number
     referenceId?: StringNullableFilter<"InventoryMovement"> | string | null
@@ -18140,6 +18172,8 @@ export namespace Prisma {
     inventoryItemId?: SortOrderInput | SortOrder
     productId?: SortOrderInput | SortOrder
     customerId?: SortOrderInput | SortOrder
+    counterpartyName?: SortOrderInput | SortOrder
+    counterpartyPhone?: SortOrderInput | SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrderInput | SortOrder
@@ -18163,6 +18197,8 @@ export namespace Prisma {
     inventoryItemId?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
     productId?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
     customerId?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
+    counterpartyName?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
+    counterpartyPhone?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
     movementType?: StringWithAggregatesFilter<"InventoryMovement"> | string
     quantity?: FloatWithAggregatesFilter<"InventoryMovement"> | number
     referenceId?: StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
@@ -19595,6 +19631,8 @@ export namespace Prisma {
     inventoryItemId?: string | null
     productId?: string | null
     customerId?: string | null
+    counterpartyName?: string | null
+    counterpartyPhone?: string | null
     movementType: string
     quantity?: number
     referenceId?: string | null
@@ -19610,6 +19648,8 @@ export namespace Prisma {
     inventoryItemId?: string | null
     productId?: string | null
     customerId?: string | null
+    counterpartyName?: string | null
+    counterpartyPhone?: string | null
     movementType: string
     quantity?: number
     referenceId?: string | null
@@ -19625,6 +19665,8 @@ export namespace Prisma {
     inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    counterpartyName?: NullableStringFieldUpdateOperationsInput | string | null
+    counterpartyPhone?: NullableStringFieldUpdateOperationsInput | string | null
     movementType?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     referenceId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19640,6 +19682,8 @@ export namespace Prisma {
     inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    counterpartyName?: NullableStringFieldUpdateOperationsInput | string | null
+    counterpartyPhone?: NullableStringFieldUpdateOperationsInput | string | null
     movementType?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     referenceId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19655,6 +19699,8 @@ export namespace Prisma {
     inventoryItemId?: string | null
     productId?: string | null
     customerId?: string | null
+    counterpartyName?: string | null
+    counterpartyPhone?: string | null
     movementType: string
     quantity?: number
     referenceId?: string | null
@@ -19670,6 +19716,8 @@ export namespace Prisma {
     inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    counterpartyName?: NullableStringFieldUpdateOperationsInput | string | null
+    counterpartyPhone?: NullableStringFieldUpdateOperationsInput | string | null
     movementType?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     referenceId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19685,6 +19733,8 @@ export namespace Prisma {
     inventoryItemId?: NullableStringFieldUpdateOperationsInput | string | null
     productId?: NullableStringFieldUpdateOperationsInput | string | null
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    counterpartyName?: NullableStringFieldUpdateOperationsInput | string | null
+    counterpartyPhone?: NullableStringFieldUpdateOperationsInput | string | null
     movementType?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     referenceId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20928,6 +20978,8 @@ export namespace Prisma {
     inventoryItemId?: SortOrder
     productId?: SortOrder
     customerId?: SortOrder
+    counterpartyName?: SortOrder
+    counterpartyPhone?: SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrder
@@ -20947,6 +20999,8 @@ export namespace Prisma {
     inventoryItemId?: SortOrder
     productId?: SortOrder
     customerId?: SortOrder
+    counterpartyName?: SortOrder
+    counterpartyPhone?: SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrder
@@ -20962,6 +21016,8 @@ export namespace Prisma {
     inventoryItemId?: SortOrder
     productId?: SortOrder
     customerId?: SortOrder
+    counterpartyName?: SortOrder
+    counterpartyPhone?: SortOrder
     movementType?: SortOrder
     quantity?: SortOrder
     referenceId?: SortOrder

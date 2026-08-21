@@ -1,6 +1,8 @@
 export interface GetSalesPayload {
   tenantId: string;
   shopId?: string;
+  /** Batch lookup by sale id (Activity party enrichment). */
+  ids?: string[];
   customerId?: string;
   sellerId?: string;
   commercialStatus?: string;
