@@ -38,6 +38,7 @@ import { GetStockMovementsQuery } from './queries/impl/get-stock-movements.query
 import { CreateContactCommand } from './commands/impl/create-contact.command.js';
 import { GetContactsQuery } from './queries/impl/get-contacts.query.js';
 import { ApplySaleFulfillmentCommand } from './commands/impl/apply-sale-fulfillment.command.js';
+import { GetDashboardInventoryAnalyticsQuery } from './queries/impl/get-dashboard-inventory-analytics.query.js';
 import { ApplySaleReturnCommand } from './commands/impl/apply-sale-return.command.js';
 import { ApplyReturnedItemAssessmentCommand } from './commands/impl/apply-returned-item-assessment.command.js';
 
@@ -228,6 +229,13 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'GetStockMovements' })
   async handleGetStockMovements(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetStockMovementsQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetDashboardInventoryAnalytics' })
+  async handleGetDashboardInventoryAnalytics(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(
+      new GetDashboardInventoryAnalyticsQuery(data.payload || {}, data.context),
+    );
   }
 
   @MessagePattern({ cmd: 'CreateContact' })

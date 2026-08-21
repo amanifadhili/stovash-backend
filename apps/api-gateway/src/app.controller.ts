@@ -67,6 +67,8 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'PostFinancialCorrection': [],
   'PostSaleRefund': [],
   'GetEngineReport': [],
+  'GetDashboardProfitAnalytics': [],
+  'GetDashboardArApAnalytics': [],
   
   // Inventory commands
   'AddProduct': ['inventory:product:create'],
@@ -89,6 +91,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetCategoryById': ['inventory:category:read'],
   'AddInventoryItem': ['inventory:item:create'],
   'GetStockUnits': ['inventory:item:read'],
+  'GetDashboardInventoryAnalytics': [],
   'GetDeviceLife': ['inventory:item:read'],
   'GetAvailableInventoryItems': ['inventory:item:read'],
   'ProcessPosSale': ['inventory:sale:create'],
@@ -127,6 +130,9 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetSaleHistory': ['sales:sale:read'],
   'GetDeviceSales': ['sales:sale:read'],
   'GetSoldUnitProfit': [],
+  'GetDashboardSalesAnalytics': ['sales:sale:read'],
+  'GetDashboardPaymentMethodMix': ['sales:sale:read'],
+  'GetDashboardProductPerformance': ['sales:sale:read'],
   
   // Purchase commands
   'CreatePurchase': ['purchase:purchase:create'],
@@ -184,6 +190,8 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetDailyPosition': [],
   'GetMonthlyPosition': [],
   'GetFinancialOverview': [],
+  'GetDashboardCashFlowAnalytics': [],
+  'GetDashboardLoanAnalytics': [],
 };
 
 // Command to role mapping (role-based access control)
@@ -229,6 +237,8 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'PostFinancialCorrection': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'PostSaleRefund': ['ADMIN', 'MANAGER'],
   'GetEngineReport': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetDashboardProfitAnalytics': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetDashboardArApAnalytics': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   
   // Inventory commands
   'AddProduct': ['ADMIN', 'MANAGER'],
@@ -251,6 +261,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetCategoryById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'AddInventoryItem': ['ADMIN', 'MANAGER', 'STAFF'],
   'GetStockUnits': ['ADMIN', 'MANAGER', 'STAFF'],
+  'GetDashboardInventoryAnalytics': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetDeviceLife': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetAvailableInventoryItems': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessPosSale': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -291,6 +302,9 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetSaleHistory': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetDeviceSales': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetSoldUnitProfit': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'GetDashboardSalesAnalytics': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetDashboardPaymentMethodMix': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetDashboardProductPerformance': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   
   // Purchase commands
   'CreatePurchase': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -348,6 +362,8 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetDailyPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetMonthlyPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetFinancialOverview': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetDashboardCashFlowAnalytics': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetDashboardLoanAnalytics': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
 };
 
 // Commands that are public (no authenticated user required). Their role/permission
@@ -536,19 +552,19 @@ export class AppController {
         return result;
       }
 
-      if (['PostFinancialTransaction', 'GetFinancialTransaction', 'RecordGeneralExpense', 'RecordWorkerAdvance', 'RecordPettyCashAdvance', 'RepayPettyCashAdvance', 'RecordPettyCashExpense', 'GetAccountingAccounts', 'GetJournals', 'GetReceivables', 'PostTreasuryBooks', 'GetProfitAllocation', 'PostSaleConfirmation', 'PostPurchasePayable', 'PostFinancialCorrection', 'PostSaleRefund', 'GetEngineReport'].includes(cmd)) {
+      if (['PostFinancialTransaction', 'GetFinancialTransaction', 'RecordGeneralExpense', 'RecordWorkerAdvance', 'RecordPettyCashAdvance', 'RepayPettyCashAdvance', 'RecordPettyCashExpense', 'GetAccountingAccounts', 'GetJournals', 'GetReceivables', 'PostTreasuryBooks', 'GetProfitAllocation', 'PostSaleConfirmation', 'PostPurchasePayable', 'PostFinancialCorrection', 'PostSaleRefund', 'GetEngineReport', 'GetDashboardProfitAnalytics', 'GetDashboardArApAnalytics'].includes(cmd)) {
         const result = await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
       }
 
-      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ApplyReturnedItemAssessment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'GetDashboardInventoryAnalytics', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ApplyReturnedItemAssessment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
         const result = await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
       }
 
-      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'IssueRefund', 'ProcessSaleReplacement', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales', 'GetSoldUnitProfit'].includes(cmd)) {
+      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'IssueRefund', 'ProcessSaleReplacement', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales', 'GetSoldUnitProfit', 'GetDashboardSalesAnalytics', 'GetDashboardPaymentMethodMix', 'GetDashboardProductPerformance'].includes(cmd)) {
         const result = await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
@@ -566,7 +582,7 @@ export class AppController {
         return result;
       }
 
-      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetMonthlyPosition', 'GetFinancialOverview'].includes(cmd)) {
+      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetMonthlyPosition', 'GetFinancialOverview', 'GetDashboardCashFlowAnalytics', 'GetDashboardLoanAnalytics'].includes(cmd)) {
         const result = await firstValueFrom(this.treasuryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
