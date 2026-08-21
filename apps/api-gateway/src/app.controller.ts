@@ -94,6 +94,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'ProcessPosSale': ['inventory:sale:create'],
   'ApplySaleFulfillment': ['inventory:sale:create'],
   'ApplySaleReturn': ['inventory:return:process'],
+  'ApplyReturnedItemAssessment': ['inventory:return:process'],
   'ReceiveGoods': ['inventory:goods:receive'],
   'ProcessSalesReturn': ['inventory:return:process'],
   'CreateWarrantyClaim': ['inventory:warranty:create'],
@@ -114,6 +115,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'RecordSalePayment': ['sales:payment:create'],
   'CreateSaleReturn': ['sales:return:create'],
   'IssueRefund': [],
+  'ProcessSaleReplacement': [],
   'AssessReturnedItem': ['sales:return:assess'],
   'CreateWarranty': ['sales:warranty:create'],
   'ConvertQuotationToSale': ['sales:sale:create'],
@@ -254,6 +256,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'ProcessPosSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'ApplySaleFulfillment': ['ADMIN', 'MANAGER', 'STAFF'],
   'ApplySaleReturn': ['ADMIN', 'MANAGER'],
+  'ApplyReturnedItemAssessment': ['ADMIN', 'MANAGER'],
   'ReceiveGoods': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessSalesReturn': ['ADMIN', 'MANAGER', 'STAFF'],
   'CreateWarrantyClaim': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -276,6 +279,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'RecordSalePayment': ['ADMIN', 'MANAGER', 'STAFF'],
   'CreateSaleReturn': ['ADMIN', 'MANAGER', 'STAFF'],
   'IssueRefund': ['ADMIN', 'MANAGER'],
+  'ProcessSaleReplacement': ['ADMIN', 'MANAGER'],
   'AssessReturnedItem': ['ADMIN', 'MANAGER'],
   'CreateWarranty': ['ADMIN', 'MANAGER', 'STAFF'],
   'ConvertQuotationToSale': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -388,8 +392,8 @@ export const RETIRED_FINANCIAL_COMMANDS = new Set([
 /** @deprecated Phase 10 alias — same set as RETIRED_FINANCIAL_COMMANDS. */
 export const QUARANTINED_FINANCIAL_COMMANDS = RETIRED_FINANCIAL_COMMANDS;
 
-/** STAFF may count cash and post sales; cannot approve recon, profit transfer, or capital/internal loans. */
-export const STAFF_CANNOT_APPROVE = ['ApproveReconciliationAdjustment', 'CreateTreasuryMovement', 'IssueRefund'] as const;
+/** STAFF may count cash and post sales; cannot approve recon, profit transfer, refunds, replacements, or return assessments. */
+export const STAFF_CANNOT_APPROVE = ['ApproveReconciliationAdjustment', 'CreateTreasuryMovement', 'IssueRefund', 'ProcessSaleReplacement', 'AssessReturnedItem'] as const;
 
 const FINANCIAL_WRITE_COMMANDS = new Set([
   'PostFinancialTransaction',
@@ -404,6 +408,7 @@ const FINANCIAL_WRITE_COMMANDS = new Set([
   'PostFinancialCorrection',
   'PostSaleRefund',
   'IssueRefund',
+  'ProcessSaleReplacement',
   'CreatePhysicalAccount',
   'CreateTreasuryMovement',
   'RecordReconciliation',
@@ -537,13 +542,13 @@ export class AppController {
         return result;
       }
 
-      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ApplyReturnedItemAssessment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
         const result = await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
       }
 
-      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'IssueRefund', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales', 'GetSoldUnitProfit'].includes(cmd)) {
+      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'IssueRefund', 'ProcessSaleReplacement', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales', 'GetSoldUnitProfit'].includes(cmd)) {
         const result = await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;

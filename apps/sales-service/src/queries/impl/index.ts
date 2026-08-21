@@ -5,12 +5,18 @@ export interface GetSalesPayload {
   sellerId?: string;
   commercialStatus?: string;
   fulfillmentStatus?: string;
+  /** Single payment status (legacy). Prefer paymentStatuses when filtering several. */
   paymentStatus?: string;
+  /** e.g. UNPAID + PARTIALLY_PAID for Balances. */
+  paymentStatuses?: string[];
   accountingStatus?: string;
   dateFrom?: string;
   dateTo?: string;
   page?: number;
   pageSize?: number;
+  /** Default saleDate. Use amountDue for receivables boards. */
+  sortBy?: "saleDate" | "amountDue";
+  sortDir?: "asc" | "desc";
 }
 
 export interface GetSaleByIdPayload {

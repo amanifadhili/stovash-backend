@@ -1,3 +1,5 @@
+import { adjustShopBalance } from './shop-product-balance.js';
+
 export type SaleReturnItemInput = {
   inventoryItemId?: string | null;
   productId?: string | null;
@@ -18,9 +20,10 @@ export type ApplySaleReturnArgs = {
 type Tx = any;
 
 /**
- * Physical refund restock: SOLD → RETURNED (never AVAILABLE).
+ * Physical refund restock:
+ * - Serialized: SOLD → RETURNED (never AVAILABLE; Assess owns AVAILABLE)
+ * - Accessories: IN movement + shop qty restored via adjustShopBalance(+qty)
  * Idempotent per refundId + inventoryItemId / product line.
- * AVAILABLE is owned by AssessReturnedItem.
  */
 export async function applySaleReturnInTx(
   tx: Tx,
@@ -124,6 +127,14 @@ export async function applySaleReturnInTx(
     if (!product) {
       throw Object.assign(new Error(`Product ${productId} not found`), { code: 'NOT_FOUND' });
     }
+
+    await adjustShopBalance(tx, {
+      tenantId,
+      shopId,
+      productId,
+      delta: qty,
+      updatedBy: actor,
+    });
 
     await tx.inventoryMovement.create({
       data: {
