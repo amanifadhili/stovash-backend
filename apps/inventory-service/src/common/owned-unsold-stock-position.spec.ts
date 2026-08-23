@@ -1,8 +1,10 @@
 import {
   blendLastUnitCost,
+  coalesceLastUnitCost,
   lastUnitCostFromSpecs,
   ownedUnsoldAccessoryPositionFromRows,
   ownedUnsoldStockPositionFromItems,
+  specsSeededWithLastUnitCost,
 } from './owned-unsold-stock-position';
 
 describe('ownedUnsoldStockPositionFromItems', () => {
@@ -83,5 +85,16 @@ describe('ownedUnsoldAccessoryPositionFromRows', () => {
     expect(lastUnitCostFromSpecs({ lastUnitCost: 1500 })).toBe(1500);
     expect(lastUnitCostFromSpecs([{ key: 'lastUnitCost', value: 1500 }])).toBe(0);
     expect(lastUnitCostFromSpecs(null)).toBe(0);
+  });
+
+  it('uses purchase history only when specs have no unit cost', () => {
+    expect(coalesceLastUnitCost(1500, 900)).toBe(1500);
+    expect(coalesceLastUnitCost(0, 900)).toBe(900);
+    expect(coalesceLastUnitCost(0, 0)).toBe(0);
+    expect(specsSeededWithLastUnitCost({ color: 'black' }, 800)).toEqual({
+      color: 'black',
+      lastUnitCost: 800,
+    });
+    expect(specsSeededWithLastUnitCost({ lastUnitCost: 500 }, 900)).toEqual({ lastUnitCost: 500 });
   });
 });

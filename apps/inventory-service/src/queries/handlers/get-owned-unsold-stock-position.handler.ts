@@ -1,16 +1,23 @@
+import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, timeout } from 'rxjs';
 import { GetOwnedUnsoldStockPositionQuery } from '../impl/get-owned-unsold-stock-position.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import {
   OWNED_UNSOLD_ITEM_STATUSES,
+  coalesceLastUnitCost,
   lastUnitCostFromSpecs,
   ownedUnsoldAccessoryPositionFromRows,
   ownedUnsoldStockPositionFromItems,
+  specsSeededWithLastUnitCost,
 } from '../../common/owned-unsold-stock-position.js';
 
 @QueryHandler(GetOwnedUnsoldStockPositionQuery)
 export class GetOwnedUnsoldStockPositionHandler implements IQueryHandler<GetOwnedUnsoldStockPositionQuery> {
+  constructor(@Inject('PURCHASE_SERVICE') private readonly purchaseClient: ClientProxy) {}
+
   async execute(query: GetOwnedUnsoldStockPositionQuery): Promise<ICommandResponse<any>> {
     const { payload, context } = query;
     const traceId = context?.traceId || 'unknown';
@@ -90,19 +97,68 @@ export class GetOwnedUnsoldStockPositionHandler implements IQueryHandler<GetOwne
           .map((row) => [row.productId as string, Number(row._sum.quantity || 0)]),
       );
 
+      const prepared = products.map((product) => {
+        const onHand = shopId
+          ? Number(product.shopBalances[0]?.quantityOnHand || 0)
+          : product.shopBalances.reduce((sum, row) => sum + Number(row.quantityOnHand || 0), 0);
+        const lendOutQty = lendOutByProduct.get(product.id) || 0;
+        return {
+          id: product.id,
+          specifications: product.specifications,
+          onHand,
+          lendOutQty,
+          ownedQty: Math.max(0, onHand) + Math.max(0, lendOutQty),
+          lastUnitCost: lastUnitCostFromSpecs(product.specifications),
+          sellingPrice: Number(product.prices[0]?.sellingPrice || 0),
+        };
+      });
+
+      const missingCostIds = prepared
+        .filter((row) => row.ownedQty > 0 && row.lastUnitCost <= 0)
+        .map((row) => row.id);
+
+      const purchaseCosts = await this.lastPurchaseUnitCosts(missingCostIds, shopId, context);
+
+      const toPersist: Array<{ id: string; specifications: unknown; lastUnitCost: number }> = [];
       const accessories = ownedUnsoldAccessoryPositionFromRows(
-        products.map((product) => {
-          const onHand = shopId
-            ? Number(product.shopBalances[0]?.quantityOnHand || 0)
-            : product.shopBalances.reduce((sum, row) => sum + Number(row.quantityOnHand || 0), 0);
+        prepared.map((row) => {
+          const lastUnitCost = coalesceLastUnitCost(row.lastUnitCost, purchaseCosts[row.id] || 0);
+          if (
+            row.ownedQty > 0 &&
+            row.lastUnitCost <= 0 &&
+            lastUnitCost > 0 &&
+            !Array.isArray(row.specifications)
+          ) {
+            toPersist.push({
+              id: row.id,
+              specifications: row.specifications,
+              lastUnitCost,
+            });
+          }
           return {
-            onHand,
-            lendOutQty: lendOutByProduct.get(product.id) || 0,
-            lastUnitCost: lastUnitCostFromSpecs(product.specifications),
-            sellingPrice: Number(product.prices[0]?.sellingPrice || 0),
+            onHand: row.onHand,
+            lendOutQty: row.lendOutQty,
+            lastUnitCost,
+            sellingPrice: row.sellingPrice,
           };
         }),
       );
+
+      if (toPersist.length > 0) {
+        await Promise.all(
+          toPersist.map((row) =>
+            prisma.product.update({
+              where: { id: row.id },
+              data: {
+                specifications: specsSeededWithLastUnitCost(
+                  row.specifications,
+                  row.lastUnitCost,
+                ) as never,
+              },
+            }),
+          ),
+        ).catch(() => undefined);
+      }
 
       return {
         status: 'success',
@@ -119,6 +175,28 @@ export class GetOwnedUnsoldStockPositionHandler implements IQueryHandler<GetOwne
         message: error.message || 'Failed to fetch owned unsold stock position',
         errorCode: ErrorCode.INTERNAL_ERROR,
       };
+    }
+  }
+
+  private async lastPurchaseUnitCosts(
+    productIds: string[],
+    shopId: string | undefined,
+    context: unknown,
+  ): Promise<Record<string, number>> {
+    if (productIds.length === 0) return {};
+    try {
+      const res: any = await firstValueFrom(
+        this.purchaseClient
+          .send(
+            { cmd: 'GetLastPurchaseUnitCosts' },
+            { payload: { productIds, shopId }, context },
+          )
+          .pipe(timeout(8000)),
+      );
+      const costs = res?.data?.costs;
+      return costs && typeof costs === 'object' ? costs : {};
+    } catch {
+      return {};
     }
   }
 }

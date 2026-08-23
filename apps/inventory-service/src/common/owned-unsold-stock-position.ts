@@ -38,6 +38,19 @@ export function lastUnitCostFromSpecs(specs: unknown): number {
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
+export function coalesceLastUnitCost(stored: number, fallback: number): number {
+  const fromSpecs = Number(stored) || 0;
+  if (fromSpecs > 0) return fromSpecs;
+  const fromPurchase = Number(fallback) || 0;
+  return fromPurchase > 0 ? fromPurchase : 0;
+}
+
+export function specsSeededWithLastUnitCost(specs: unknown, lastUnitCost: number): Record<string, unknown> {
+  const next = specsRecord(specs);
+  if (lastUnitCostFromSpecs(next) <= 0 && lastUnitCost > 0) next.lastUnitCost = lastUnitCost;
+  return next;
+}
+
 export function specsWithBlendedLastUnitCost(
   specs: unknown,
   oldQty: number,

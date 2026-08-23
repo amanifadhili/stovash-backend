@@ -29,6 +29,7 @@ import {
   GetPurchaseReturnsQuery,
   GetPurchaseDocumentsQuery,
   GetPurchaseHistoryQuery,
+  GetLastPurchaseUnitCostsQuery,
 } from './queries/impl/index.js';
 
 @Controller()
@@ -163,5 +164,10 @@ export class PurchaseServiceController {
   @MessagePattern({ cmd: 'GetPurchaseHistory' })
   async handleGetPurchaseHistory(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetPurchaseHistoryQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetLastPurchaseUnitCosts' })
+  async handleGetLastPurchaseUnitCosts(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetLastPurchaseUnitCostsQuery(data.payload || {}, data.context));
   }
 }
