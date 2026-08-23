@@ -3,6 +3,7 @@ import { GetProductsQuery } from '../impl/get-products.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { visibleToShopFilter } from '../../common/visibility.js';
+import { lastUnitCostFromSpecs } from '../../common/owned-unsold-stock-position.js';
 
 const DISPOSED_STATUSES = ['SOLD', 'RETURNED', 'DAMAGED', 'LOST', 'STOLEN', 'DISPOSED'];
 
@@ -137,6 +138,7 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
               sellingPrice: p.prices[0].sellingPrice,
               validFrom: p.prices[0].validFrom
             } : null,
+            lastUnitCost: lastUnitCostFromSpecs(p.specifications),
             stock,
             quantityOnHand: shopQty,
             stockStatus,
@@ -179,6 +181,7 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
             sellingPrice: p.prices[0].sellingPrice,
             validFrom: p.prices[0].validFrom
           } : null,
+          lastUnitCost: lastUnitCostFromSpecs(p.specifications),
           stock,
           quantityOnHand: Number(p.quantityOnHand || 0),
           stockStatus: stock === 0 ? 'Out of Stock' : stock < 10 ? 'Low Stock' : 'In Stock',

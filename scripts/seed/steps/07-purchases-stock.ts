@@ -278,6 +278,22 @@ export async function seedPurchasesAndStock(
         quantityOnHand: qty,
       },
     });
+    if (product.cost > 0) {
+      const existing = await clients.inventory.product.findUnique({
+        where: { id: product.id },
+        select: { specifications: true },
+      });
+      const specs =
+        existing?.specifications && typeof existing.specifications === 'object' && !Array.isArray(existing.specifications)
+          ? { ...(existing.specifications as Record<string, unknown>) }
+          : {};
+      if (!(Number(specs.lastUnitCost) > 0)) {
+        await clients.inventory.product.update({
+          where: { id: product.id },
+          data: { specifications: { ...specs, deviceType: product.type, lastUnitCost: product.cost } },
+        });
+      }
+    }
   }
 
   // Deduplicate available ids

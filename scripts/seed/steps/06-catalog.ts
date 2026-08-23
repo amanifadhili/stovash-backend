@@ -419,6 +419,10 @@ export async function seedCatalog(clients: SeedClients): Promise<CatalogProduct[
         shopId: null,
         imageUrl: p.imageUrl,
         images: p.imageUrl ? [p.imageUrl] : [],
+        specifications: {
+          deviceType: p.type,
+          ...(p.cost > 0 ? { lastUnitCost: p.cost } : {}),
+        },
       },
       create: {
         id: p.id,
@@ -434,6 +438,10 @@ export async function seedCatalog(clients: SeedClients): Promise<CatalogProduct[
         quantityOnHand: p.qtyOnHand ?? 0,
         imageUrl: p.imageUrl,
         images: p.imageUrl ? [p.imageUrl] : [],
+        specifications: {
+          deviceType: p.type,
+          ...(p.cost > 0 ? { lastUnitCost: p.cost } : {}),
+        },
         createdBy: DEMO.users.admin.id,
       },
     });

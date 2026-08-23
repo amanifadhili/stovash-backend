@@ -33,8 +33,23 @@ export function specsRecord(specs: unknown): Record<string, unknown> {
   return { ...(specs as Record<string, unknown>) };
 }
 
+function lastUnitCostFromArray(specs: unknown[]): number {
+  for (const row of specs) {
+    if (!row || typeof row !== 'object') continue;
+    const rec = row as Record<string, unknown>;
+    const key = String(rec.key ?? rec.name ?? '');
+    if (key === 'lastUnitCost' || key === 'lastUnitCost') {
+      const n = Number(rec.value);
+      if (Number.isFinite(n) && n > 0) return n;
+    }
+  }
+  return 0;
+}
+
 export function lastUnitCostFromSpecs(specs: unknown): number {
-  const n = Number(specsRecord(specs).lastUnitCost);
+  if (Array.isArray(specs)) return lastUnitCostFromArray(specs);
+  const rec = specsRecord(specs);
+  const n = Number(rec.lastUnitCost ?? rec.lastUnitCost);
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
@@ -45,9 +60,14 @@ export function coalesceLastUnitCost(stored: number, fallback: number): number {
   return fromPurchase > 0 ? fromPurchase : 0;
 }
 
-export function specsSeededWithLastUnitCost(specs: unknown, lastUnitCost: number): Record<string, unknown> {
+export function specsSeededWithLastUnitCost(specs: unknown, lastUnitCost: number): unknown {
+  if (!(lastUnitCost > 0)) return specs ?? {};
+  if (lastUnitCostFromSpecs(specs) > 0) return specs;
+  if (Array.isArray(specs)) {
+    return [...specs, { key: 'lastUnitCost', value: lastUnitCost }];
+  }
   const next = specsRecord(specs);
-  if (lastUnitCostFromSpecs(next) <= 0 && lastUnitCost > 0) next.lastUnitCost = lastUnitCost;
+  next.lastUnitCost = lastUnitCost;
   return next;
 }
 

@@ -126,8 +126,7 @@ export class GetOwnedUnsoldStockPositionHandler implements IQueryHandler<GetOwne
           if (
             row.ownedQty > 0 &&
             row.lastUnitCost <= 0 &&
-            lastUnitCost > 0 &&
-            !Array.isArray(row.specifications)
+            lastUnitCost > 0
           ) {
             toPersist.push({
               id: row.id,
