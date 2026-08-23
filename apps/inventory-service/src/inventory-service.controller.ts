@@ -30,6 +30,7 @@ import { GetCategoriesQuery } from './queries/impl/get-categories.query.js';
 import { GetCategoryByIdQuery } from './queries/impl/get-category-by-id.query.js';
 import { GetAvailableInventoryItemsQuery } from './queries/impl/get-available-inventory-items.query.js';
 import { GetStockUnitsQuery } from './queries/impl/get-stock-units.query.js';
+import { GetOwnedUnsoldStockPositionQuery } from './queries/impl/get-owned-unsold-stock-position.query.js';
 import { GetDeviceLifeQuery } from './queries/impl/get-device-life.query.js';
 import { GetInventoryBookCostsQuery } from './queries/impl/get-inventory-book-costs.query.js';
 import { CreateRentalCommand } from './commands/impl/create-rental.command.js';
@@ -205,6 +206,11 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'GetStockUnits' })
   async handleGetStockUnits(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetStockUnitsQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetOwnedUnsoldStockPosition' })
+  async handleGetOwnedUnsoldStockPosition(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetOwnedUnsoldStockPositionQuery(data.payload || {}, data.context));
   }
 
   @MessagePattern({ cmd: 'GetDeviceLife' })

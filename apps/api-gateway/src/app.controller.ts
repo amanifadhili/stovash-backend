@@ -91,6 +91,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetCategoryById': ['inventory:category:read'],
   'AddInventoryItem': ['inventory:item:create'],
   'GetStockUnits': ['inventory:item:read'],
+  'GetOwnedUnsoldStockPosition': ['inventory:item:read'],
   'GetDashboardInventoryAnalytics': [],
   'GetDeviceLife': ['inventory:item:read'],
   'GetAvailableInventoryItems': ['inventory:item:read'],
@@ -261,6 +262,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetCategoryById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'AddInventoryItem': ['ADMIN', 'MANAGER', 'STAFF'],
   'GetStockUnits': ['ADMIN', 'MANAGER', 'STAFF'],
+  'GetOwnedUnsoldStockPosition': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetDashboardInventoryAnalytics': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetDeviceLife': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetAvailableInventoryItems': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -558,7 +560,7 @@ export class AppController {
         return result;
       }
 
-      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'GetDashboardInventoryAnalytics', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ApplyReturnedItemAssessment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetOwnedUnsoldStockPosition', 'GetDeviceLife', 'GetStockMovements', 'GetDashboardInventoryAnalytics', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ApplyReturnedItemAssessment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
         const result = await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
