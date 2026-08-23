@@ -4,12 +4,17 @@ import { CreateSaleCommand } from '../impl/create-sale.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { EventBus } from '@electronic-shop/framework-event';
 import { actorOf } from '../../common/actor.js';
+import { loadInventoryBookCosts, unitCostWithExtras } from '../../common/sale-line-cost.js';
 
 @CommandHandler(CreateSaleCommand)
 export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
-  constructor(@Inject('EVENT_BUS') private readonly eventBus: EventBus) {
+  constructor(
+    @Inject('EVENT_BUS') private readonly eventBus: EventBus,
+    @Inject('INVENTORY_SERVICE') private readonly inventoryClient: ClientProxy,
+  ) {
     super();
   }
 
@@ -52,6 +57,11 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
       let otherChargesTotal = 0;
       let additionalCostTotal = 0;
       let grandTotal = 0;
+      const bookById = await loadInventoryBookCosts(
+        this.inventoryClient,
+        payload.items.map((it) => it.inventoryItemId),
+        { tenantId, shopId, userId, traceId },
+      );
       const lines = payload.items.map((it) => {
         const qty = Number(it.quantity) || 1;
         const unitPrice = Number(it.unitPrice) || 0;
@@ -65,8 +75,10 @@ export class CreateSaleHandler extends BaseCommandHandler<CreateSaleCommand> {
           : 0;
         const otherCharges = Number(it.otherCharges) || 0;
         const additionalCost = Number(it.additionalCost) || 0;
-        const baseCost = Number(it.unitCost) || 0;
-        const unitCost = baseCost + additionalCost / qty;
+        const clientBase = Number(it.unitCost) || 0;
+        const book = it.inventoryItemId ? bookById.get(it.inventoryItemId) : undefined;
+        const baseCost = book != null ? book : clientBase;
+        const unitCost = unitCostWithExtras(baseCost, additionalCost, qty);
         const lineTotal = net + tax + otherCharges;
         subtotal += gross;
         discountTotal += discount;

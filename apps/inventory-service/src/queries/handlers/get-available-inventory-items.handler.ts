@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetAvailableInventoryItemsQuery } from '../impl/get-available-inventory-items.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { inventoryBookCost, inventoryExtrasCost } from '../../common/inventory-book-cost.js';
 
 @QueryHandler(GetAvailableInventoryItemsQuery)
 export class GetAvailableInventoryItemsHandler implements IQueryHandler<GetAvailableInventoryItemsQuery> {
@@ -53,7 +54,6 @@ export class GetAvailableInventoryItemsHandler implements IQueryHandler<GetAvail
       });
 
       const data = items.map((item) => {
-        const capitalizedCost = (item.upgrades ?? []).reduce((s, u) => s + (Number(u.cost) || 0), 0);
         return {
           id: item.id,
           productId: item.productId,
@@ -61,8 +61,8 @@ export class GetAvailableInventoryItemsHandler implements IQueryHandler<GetAvail
           productSku: item.product?.sku || null,
           serialNumber: item.serialNumber,
           purchaseCost: item.purchaseCost,
-          capitalizedCost: item.capitalizedCost + capitalizedCost,
-          totalCost: item.purchaseCost + item.capitalizedCost + capitalizedCost,
+          capitalizedCost: inventoryExtrasCost(item),
+          totalCost: inventoryBookCost(item),
           status: item.status,
         };
       });

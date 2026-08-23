@@ -53,6 +53,21 @@ describe('GetSoldUnitProfit mapping', () => {
     expect(isReturnedLine([{ saleReturn: { status: 'PENDING' } }])).toBe(false);
   });
 
+  it('does not subtract additionalCost twice when it is already in unitCost', () => {
+    const row = mapSaleItemToRow({
+      id: 'with-extra',
+      saleId: 'sale-x',
+      quantity: 1,
+      unitCost: 120000,
+      lineTotal: 150000,
+      additionalCost: 20000,
+      sale: { saleDate: '2026-08-18' },
+    });
+    expect(row.costMinor).toBe('12000000');
+    expect(row.extraCostMinor).toBe('2000000');
+    expect(row.profitMinor).toBe('3000000');
+  });
+
   it('allows zero cost and negative line profit', () => {
     expect(francsToMinorInt(0)).toBe(0n);
     const row = mapSaleItemToRow({
