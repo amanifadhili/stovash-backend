@@ -80,7 +80,7 @@ export function mapSaleItemToRow(
   const extra = francsToMinorInt(item.additionalCost);
   const sold = francsToMinorInt(soldFrancs(item));
   const returned = isReturnedLine(item.returnItems);
-  const profit = returned ? 0n : sold - cost - extra;
+  const profit = returned ? 0n : sold - cost;
   return {
     id: item.id,
     saleId: item.saleId ?? item.sale?.id ?? '',

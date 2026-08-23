@@ -5,7 +5,12 @@ import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { Inject } from '@nestjs/common';
 import { EventBus } from '@electronic-shop/framework-event';
-import { adjustShopBalance } from '../../common/shop-product-balance.js';
+import { adjustShopBalance, getShopBalanceQty } from '../../common/shop-product-balance.js';
+import {
+  blendLastUnitCost,
+  lastUnitCostFromSpecs,
+  specsRecord,
+} from '../../common/owned-unsold-stock-position.js';
 
 @CommandHandler(ReceiveGoodsCommand)
 export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand> {
@@ -126,6 +131,15 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
           if (isAccessory) {
             const qtyToAdd = item.quantity && item.quantity > 0 ? item.quantity : 1;
             const imageList = Array.isArray(item.images) ? item.images.slice(0, 5) : [];
+            const productRow = await tx.product.findUnique({ where: { id: productId } });
+            const oldQty = await getShopBalanceQty(tx, { tenantId, shopId, productId });
+            const inboundCost = Number(item.purchaseCost) || 0;
+            const lastUnitCost = blendLastUnitCost(
+              oldQty,
+              lastUnitCostFromSpecs(productRow?.specifications),
+              qtyToAdd,
+              inboundCost,
+            );
             await adjustShopBalance(tx, {
               tenantId,
               shopId,
@@ -138,6 +152,14 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
               data: {
                 ...(imageList.length > 0
                   ? { images: imageList, imageUrl: imageList[0] }
+                  : {}),
+                ...(lastUnitCost > 0
+                  ? {
+                      specifications: {
+                        ...specsRecord(productRow?.specifications),
+                        lastUnitCost,
+                      },
+                    }
                   : {}),
               }
             });

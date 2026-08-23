@@ -185,7 +185,7 @@ export class ProcessSaleReplacementHandler extends BaseCommandHandler<ProcessSal
       const newProductName = replacement.productName ?? saleItem.productName;
       const newProductSku = replacement.productSku ?? saleItem.productSku;
       const newUnitCost =
-        Number(life.data.costs?.purchaseCost ?? life.data.costs?.totalCost ?? saleItem.unitCost) || 0;
+        Number(life.data.costs?.totalCost ?? life.data.costs?.purchaseCost ?? saleItem.unitCost) || 0;
       const newImei1 = replacement.imei1 ?? saleItem.imei1;
       const newImei2 = replacement.imei2 ?? saleItem.imei2;
 

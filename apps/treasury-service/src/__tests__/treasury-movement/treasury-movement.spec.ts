@@ -62,6 +62,68 @@ describe('Treasury movements (Phase 5)', () => {
     await prisma.$disconnect();
   });
 
+  it('does not debit this shop cash when fromPhysicalId belongs to another shop', async () => {
+    const byKind = await accountsByKind();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 200000000,
+        occurredOn: DAY,
+        idempotencyKey: 'cap-wrong-id',
+      },
+      context,
+      books,
+    );
+    const result = await createTreasuryMovement(
+      {
+        movementType: 'PURCHASE_PAYMENT',
+        fromPhysicalId: '00000000-0000-4000-8000-000000000099',
+        fromKind: 'OPS_CASH',
+        amountMinor: 50000000,
+        occurredOn: DAY,
+        obligationSourceId: 'purchase-ghost',
+        idempotencyKey: 'pay-wrong-shop',
+      },
+      context,
+      books,
+    );
+    expect(result.status).toBe('error');
+    expect(result.message).toMatch(/Unknown source account/);
+    const balances = await derivedBalances(tenantId, shopId);
+    expect(balanceOf(balances, byKind.OPS_CASH.id)).toBe(0n);
+  });
+
+  it('tells the operator that empty operational cash is not owner capital', async () => {
+    const byKind = await accountsByKind();
+    await createTreasuryMovement(
+      {
+        movementType: 'OWNER_CAPITAL_IN',
+        toPhysicalId: byKind.CAPITAL_BANK.id,
+        amountMinor: 200000000,
+        occurredOn: DAY,
+        idempotencyKey: 'cap-not-ops',
+      },
+      context,
+      books,
+    );
+    const result = await createTreasuryMovement(
+      {
+        movementType: 'PURCHASE_PAYMENT',
+        fromPhysicalId: byKind.OPS_CASH.id,
+        amountMinor: 50000000,
+        occurredOn: DAY,
+        obligationSourceId: 'purchase-ops',
+        idempotencyKey: 'pay-empty-ops',
+      },
+      context,
+      books,
+    );
+    expect(result.status).toBe('error');
+    expect(result.message).toMatch(/have 0 RWF, need 500000 RWF/);
+    expect(result.message).toMatch(/Capital Bank/);
+  });
+
   it('scenario 17 and scenario 18: Capital→Operational creates an obligation; repayment reduces it', async () => {
     const byKind = await accountsByKind();
     await createTreasuryMovement(

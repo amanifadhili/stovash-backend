@@ -9,6 +9,7 @@ import { EventBus } from '@electronic-shop/framework-event';
 import { actorOf } from '../../common/actor.js';
 import { firstValueFrom, timeout } from 'rxjs';
 import { francsToMinor, isoDay, sendFinanceCommand } from '../../common/commercial-finance.js';
+import { loadInventoryBookCosts, unitCostWithExtras } from '../../common/sale-line-cost.js';
 
 @CommandHandler(ConfirmSaleCommand)
 export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
@@ -127,6 +128,8 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
           errorCode: stockResult?.errorCode || ErrorCode.BUSINESS_RULE_VIOLATION,
         };
       }
+
+      await this.applyInventoryBookCosts(sale, financeContext);
 
       const books = await this.postSaleBooks(sale, financeContext, traceId);
       if (books.status === 'error') return books;
@@ -270,6 +273,29 @@ export class ConfirmSaleHandler extends BaseCommandHandler<ConfirmSaleCommand> {
       },
       financeContext,
     );
+  }
+
+  private async applyInventoryBookCosts(sale: any, financeContext: Record<string, unknown>) {
+    const bookById = await loadInventoryBookCosts(
+      this.inventoryClient,
+      (sale.items ?? []).map((item: any) => item.inventoryItemId),
+      financeContext,
+    );
+    if (bookById.size === 0) return;
+    let totalCost = 0;
+    for (const item of sale.items ?? []) {
+      const book = item.inventoryItemId ? bookById.get(item.inventoryItemId) : undefined;
+      if (book != null) {
+        item.unitCost = unitCostWithExtras(book, item.additionalCost, item.quantity);
+      }
+      totalCost += (Number(item.unitCost) || 0) * (Number(item.quantity) || 0);
+    }
+    await prisma.$transaction([
+      ...(sale.items ?? []).map((item: any) =>
+        prisma.saleItem.update({ where: { id: item.id }, data: { unitCost: item.unitCost } }),
+      ),
+      prisma.sale.update({ where: { id: sale.id }, data: { totalCost } }),
+    ]);
   }
 
   /** Sale.profit is a display cache of engine profit earned; never a second SoT. */

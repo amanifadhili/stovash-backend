@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetStockUnitsQuery } from '../impl/get-stock-units.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { inventoryBookCost } from '../../common/inventory-book-cost.js';
 
 @QueryHandler(GetStockUnitsQuery)
 export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
@@ -68,8 +69,7 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
       });
 
       const data = items.map((item) => {
-        const capitalized = (item.upgrades ?? []).reduce((s, u) => s + (Number(u.cost) || 0), 0);
-        const totalCost = Number(item.purchaseCost || 0) + Number(item.capitalizedCost || 0) + capitalized;
+        const totalCost = inventoryBookCost(item);
         const brand = item.brand
           ? { id: item.brand.id, name: item.brand.name }
           : item.product?.brand

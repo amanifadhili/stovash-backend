@@ -30,7 +30,9 @@ import { GetCategoriesQuery } from './queries/impl/get-categories.query.js';
 import { GetCategoryByIdQuery } from './queries/impl/get-category-by-id.query.js';
 import { GetAvailableInventoryItemsQuery } from './queries/impl/get-available-inventory-items.query.js';
 import { GetStockUnitsQuery } from './queries/impl/get-stock-units.query.js';
+import { GetOwnedUnsoldStockPositionQuery } from './queries/impl/get-owned-unsold-stock-position.query.js';
 import { GetDeviceLifeQuery } from './queries/impl/get-device-life.query.js';
+import { GetInventoryBookCostsQuery } from './queries/impl/get-inventory-book-costs.query.js';
 import { CreateRentalCommand } from './commands/impl/create-rental.command.js';
 import { UpdateRentalStatusCommand } from './commands/impl/update-rental-status.command.js';
 import { GetRentalsQuery } from './queries/impl/get-rentals.query.js';
@@ -206,9 +208,19 @@ export class InventoryServiceController {
     return this.queryBus.execute(new GetStockUnitsQuery(data.payload, data.context));
   }
 
+  @MessagePattern({ cmd: 'GetOwnedUnsoldStockPosition' })
+  async handleGetOwnedUnsoldStockPosition(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetOwnedUnsoldStockPositionQuery(data.payload || {}, data.context));
+  }
+
   @MessagePattern({ cmd: 'GetDeviceLife' })
   async handleGetDeviceLife(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetDeviceLifeQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetInventoryBookCosts' })
+  async handleGetInventoryBookCosts(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetInventoryBookCostsQuery(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'CreateRental' })

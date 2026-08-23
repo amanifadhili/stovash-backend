@@ -153,9 +153,7 @@ export class GetDashboardProductPerformanceHandler
         const meta = productMeta.get(productId);
         const qty = Number(item.quantity) || 0;
         const revenue = francsToMinorInt(soldFrancs(item));
-        const cost =
-          francsToMinorInt((Number(item.unitCost) || 0) * qty) +
-          francsToMinorInt(item.additionalCost);
+        const cost = francsToMinorInt((Number(item.unitCost) || 0) * qty);
         const gp = revenue - cost;
 
         const cur = byProduct.get(productId) || {
