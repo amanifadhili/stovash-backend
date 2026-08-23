@@ -3,7 +3,12 @@ import { BaseCommandHandler } from '@electronic-shop/framework-command';
 import { SyncPurchaseStockCommand } from '../impl/sync-purchase-stock.command.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
-import { adjustShopBalance } from '../../common/shop-product-balance.js';
+import { adjustShopBalance, getShopBalanceQty } from '../../common/shop-product-balance.js';
+import {
+  blendLastUnitCost,
+  lastUnitCostFromSpecs,
+  specsRecord,
+} from '../../common/owned-unsold-stock-position.js';
 
 /**
  * Synchronously stocks inventory for a confirmed purchase unit.
@@ -50,19 +55,29 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
           }
         }
 
-        const productSpecs =
-          product.specifications && typeof product.specifications === 'object'
-            ? (product.specifications as Record<string, unknown>)
-            : {};
         const payloadSpecs =
-          payload.specifications && typeof payload.specifications === 'object'
+          payload.specifications && typeof payload.specifications === 'object' && !Array.isArray(payload.specifications)
             ? payload.specifications
             : {};
+        const inboundCost =
+          (Number(payload.unitAcquisitionCost) || 0) + (Number(payload.additionalCost) || 0);
+        const oldQty = await getShopBalanceQty(prisma, { tenantId, shopId, productId: product.id });
+        const lastUnitCost = blendLastUnitCost(
+          oldQty,
+          lastUnitCostFromSpecs(product.specifications),
+          qty,
+          inboundCost,
+        );
         const updateData: any = {
           updatedBy: userId,
           type: 'ACCESSORY',
           trackingMethod: 'NON_SERIALIZED',
-          specifications: { ...productSpecs, ...payloadSpecs, deviceType: 'ACCESSORY' },
+          specifications: {
+            ...specsRecord(product.specifications),
+            ...payloadSpecs,
+            deviceType: 'ACCESSORY',
+            ...(lastUnitCost > 0 ? { lastUnitCost } : {}),
+          },
         };
         if (imageList.length > 0) {
           updateData.images = imageList;

@@ -1,5 +1,10 @@
 import { prisma } from '../../database/client.js';
-import { adjustShopBalance } from '../../common/shop-product-balance.js';
+import { adjustShopBalance, getShopBalanceQty } from '../../common/shop-product-balance.js';
+import {
+  blendLastUnitCost,
+  lastUnitCostFromSpecs,
+  specsRecord,
+} from '../../common/owned-unsold-stock-position.js';
 
 /**
  * Consumes PurchaseUnitConfirmed events from the purchase service. Creates the
@@ -45,14 +50,37 @@ export const purchaseUnitConfirmedConsumer = async (event: any): Promise<void> =
         }
       }
 
+      const qty = Math.max(1, Number(payload.quantity) || 1);
+      const inboundCost =
+        (Number(payload.unitAcquisitionCost) || 0) + (Number(payload.additionalCost) || 0);
+      const oldQty = await getShopBalanceQty(prisma, { tenantId, shopId, productId: product.id });
+      const lastUnitCost = blendLastUnitCost(
+        oldQty,
+        lastUnitCostFromSpecs(product.specifications),
+        qty,
+        inboundCost,
+      );
+
       await prisma.$transaction(async (tx) => {
         await adjustShopBalance(tx, {
           tenantId,
           shopId,
           productId: product.id,
-          delta: 1,
+          delta: qty,
           updatedBy: payload.createdBy || 'system',
         });
+        if (lastUnitCost > 0) {
+          await tx.product.update({
+            where: { id: product.id },
+            data: {
+              specifications: {
+                ...specsRecord(product.specifications),
+                lastUnitCost,
+              },
+              updatedBy: payload.createdBy || 'system',
+            },
+          });
+        }
         await tx.inventoryMovement.create({
           data: {
             tenantId,
@@ -60,7 +88,7 @@ export const purchaseUnitConfirmedConsumer = async (event: any): Promise<void> =
             inventoryItemId: null,
             productId: product.id,
             movementType: 'IN',
-            quantity: 1,
+            quantity: qty,
             referenceId,
             referenceType: 'PURCHASE',
             createdBy: payload.createdBy || 'system',

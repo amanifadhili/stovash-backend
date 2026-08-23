@@ -28,10 +28,31 @@ export type AccessoryPositionRow = {
   sellingPrice: number;
 };
 
+export function specsRecord(specs: unknown): Record<string, unknown> {
+  if (!specs || typeof specs !== 'object' || Array.isArray(specs)) return {};
+  return { ...(specs as Record<string, unknown>) };
+}
+
 export function lastUnitCostFromSpecs(specs: unknown): number {
-  if (!specs || typeof specs !== 'object') return 0;
-  const n = Number((specs as Record<string, unknown>).lastUnitCost);
+  const n = Number(specsRecord(specs).lastUnitCost);
   return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+export function specsWithBlendedLastUnitCost(
+  specs: unknown,
+  oldQty: number,
+  inboundQty: number,
+  inboundCost: number,
+): Record<string, unknown> {
+  const next = specsRecord(specs);
+  const lastUnitCost = blendLastUnitCost(
+    oldQty,
+    lastUnitCostFromSpecs(next),
+    inboundQty,
+    inboundCost,
+  );
+  if (lastUnitCost > 0) next.lastUnitCost = lastUnitCost;
+  return next;
 }
 
 export function blendLastUnitCost(
