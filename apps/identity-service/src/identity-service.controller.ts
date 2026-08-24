@@ -7,6 +7,8 @@ import { CreateUserCommand } from './commands/impl/create-user.command.js';
 import { VerifyUserCommand } from './commands/impl/verify-user.command.js';
 import { GetUsersCommand } from './commands/impl/get-users.command.js';
 
+import { ManagePermissionsCommand } from './commands/handlers/permission-management.handler.js';
+
 @Controller()
 export class IdentityServiceController {
   constructor(private readonly commandBus: CommandBus) {}
@@ -34,5 +36,35 @@ export class IdentityServiceController {
   @MessagePattern({ cmd: 'GetUsers' })
   async handleGetUsers(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new GetUsersCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetPermissionTemplates' })
+  async handleGetPermissionTemplates(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ManagePermissionsCommand('GetPermissionTemplates', data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'AssignTemplateToUser' })
+  async handleAssignTemplateToUser(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ManagePermissionsCommand('AssignTemplateToUser', data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'SetUserPermissionOverride' })
+  async handleSetUserPermissionOverride(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ManagePermissionsCommand('SetUserPermissionOverride', data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'RemoveUserPermissionOverride' })
+  async handleRemoveUserPermissionOverride(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ManagePermissionsCommand('RemoveUserPermissionOverride', data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetUserEffectivePermissions' })
+  async handleGetUserEffectivePermissions(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ManagePermissionsCommand('GetUserEffectivePermissions', data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetPermissionAuditLogs' })
+  async handleGetPermissionAuditLogs(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ManagePermissionsCommand('GetPermissionAuditLogs', data.payload || {}, data.context));
   }
 }

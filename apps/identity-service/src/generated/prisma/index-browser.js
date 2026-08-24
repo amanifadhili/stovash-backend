@@ -135,6 +135,62 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.UserPermissionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  permissionKey: 'permissionKey',
+  isGranted: 'isGranted',
+  scope: 'scope',
+  allowedShopIds: 'allowedShopIds',
+  grantedAt: 'grantedAt',
+  expiresAt: 'expiresAt',
+  grantedBy: 'grantedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PermissionTemplateScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  isSystem: 'isSystem',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TemplatePermissionScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  permissionKey: 'permissionKey',
+  scope: 'scope',
+  allowedShopIds: 'allowedShopIds',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.UserTemplateAssignmentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  templateId: 'templateId',
+  assignedAt: 'assignedAt',
+  assignedBy: 'assignedBy'
+};
+
+exports.Prisma.PermissionAuditLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  actorId: 'actorId',
+  targetUserId: 'targetUserId',
+  action: 'action',
+  permissionKey: 'permissionKey',
+  oldValue: 'oldValue',
+  newValue: 'newValue',
+  reason: 'reason',
+  traceId: 'traceId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.CredentialScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -173,19 +229,6 @@ exports.Prisma.MfaSecretScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.AuditLogScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  shopId: 'shopId',
-  userId: 'userId',
-  action: 'action',
-  resource: 'resource',
-  resourceId: 'resourceId',
-  traceId: 'traceId',
-  details: 'details',
-  createdAt: 'createdAt'
-};
-
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -204,11 +247,15 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  UserPermission: 'UserPermission',
+  PermissionTemplate: 'PermissionTemplate',
+  TemplatePermission: 'TemplatePermission',
+  UserTemplateAssignment: 'UserTemplateAssignment',
+  PermissionAuditLog: 'PermissionAuditLog',
   Credential: 'Credential',
   Session: 'Session',
   Token: 'Token',
-  MfaSecret: 'MfaSecret',
-  AuditLog: 'AuditLog'
+  MfaSecret: 'MfaSecret'
 };
 
 /**

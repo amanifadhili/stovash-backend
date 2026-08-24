@@ -57,16 +57,14 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
 
       // Log audit action
       try {
-        await prisma.auditLog.create({
+        await prisma.permissionAuditLog.create({
           data: {
             tenantId,
-            shopId: null,
-            userId: context?.userId || null,
+            actorId: context?.userId || user.id,
+            targetUserId: user.id,
             action: 'CreateUser',
-            resource: 'User',
-            resourceId: user.id,
             traceId: context?.traceId || null,
-            details: JSON.stringify({ email: payload.email, role: payload.role || 'STAFF' })
+            reason: JSON.stringify({ email: payload.email, role: payload.role || 'STAFF' })
           }
         });
       } catch (auditError) {
