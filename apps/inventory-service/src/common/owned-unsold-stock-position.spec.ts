@@ -81,9 +81,9 @@ describe('ownedUnsoldAccessoryPositionFromRows', () => {
     expect(blendLastUnitCost(10, 1000, 5, 0)).toBe(1000);
   });
 
-  it('reads lastUnitCost from object specifications only', () => {
+  it('reads lastUnitCost from object or keyed-array specifications', () => {
     expect(lastUnitCostFromSpecs({ lastUnitCost: 1500 })).toBe(1500);
-    expect(lastUnitCostFromSpecs([{ key: 'lastUnitCost', value: 1500 }])).toBe(0);
+    expect(lastUnitCostFromSpecs([{ key: 'lastUnitCost', value: 1500 }])).toBe(1500);
     expect(lastUnitCostFromSpecs(null)).toBe(0);
   });
 

@@ -4,6 +4,7 @@ export class GetRentalsPayload {
   agreementType?: 'OUTWARD_RENTAL' | 'INWARD_CONSIGNMENT';
   status?: string;
   search?: string;
+  productId?: string;
 }
 
 export class GetRentalsQuery {

@@ -2,6 +2,7 @@ import { IRequestContext } from '@electronic-shop/types';
 
 export class GetStockMovementsPayload {
   shopId?: string;
+  productId?: string;
   from?: string;
   to?: string;
   movementType?: string;

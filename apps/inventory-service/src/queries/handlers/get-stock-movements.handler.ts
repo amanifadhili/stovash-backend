@@ -35,6 +35,7 @@ export class GetStockMovementsHandler implements IQueryHandler<GetStockMovements
 
       const where: any = { tenantId };
       if (shopId) where.shopId = shopId;
+      if (payload.productId) where.productId = payload.productId;
       if (payload.movementType) where.movementType = payload.movementType;
       if (payload.referenceType) where.referenceType = payload.referenceType;
 
