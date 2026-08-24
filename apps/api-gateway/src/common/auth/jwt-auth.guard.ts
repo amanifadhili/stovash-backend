@@ -58,6 +58,7 @@ export class JwtAuthGuard implements CanActivate {
         tenantId: user.tenantId,
         firstName: user.firstName,
         lastName: user.lastName,
+        // Role-only RBAC: non-ADMIN JWTs carry no permission strings (Phase 5).
         permissions: user.role === 'ADMIN' ? ['*'] : []
       };
 
