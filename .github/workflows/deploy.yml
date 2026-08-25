@@ -52,9 +52,12 @@ jobs:
           envs: GITHUB_SHA
           script: |
             set -euo pipefail
-            REL="/home/deploy/stovash/backend/releases/$(date -u +%Y%m%d%H%M%S)_${GITHUB_SHA:0:7}"
+            ROOT="/home/deploy/stovash/backend"
+            mkdir -p "$ROOT/releases" "$ROOT/shared"
+            REL="$ROOT/releases/$(date -u +%Y%m%d%H%M%S)_${GITHUB_SHA:0:7}"
             mkdir -p "$REL"
             tar xzf /tmp/stovash-backend.tgz -C "$REL"
             chmod +x "$REL/deploy/release.sh" "$REL/deploy/ensure-docker.sh"
             "$REL/deploy/release.sh" "$REL"
+            chown -R deploy:deploy "$ROOT" 2>/dev/null || true
             docker-compose -p stovash-backend ps

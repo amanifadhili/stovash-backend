@@ -15,7 +15,7 @@ if [[ -f "$SCRIPT_DIR/ensure-docker.sh" ]]; then
   bash "$SCRIPT_DIR/ensure-docker.sh"
 fi
 
-mkdir -p "$ROOT/shared"
+mkdir -p "$ROOT/shared" "$ROOT/releases"
 if [[ ! -f "$ROOT/shared/.env" ]]; then
   echo "Missing $ROOT/shared/.env — copy production env before deploy."
   exit 1
