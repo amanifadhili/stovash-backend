@@ -116,20 +116,31 @@ export async function seedPermissionsAndMigrateUsers(prismaClient: any): Promise
   const templateMap = new Map<string, string>(); // name -> templateId
 
   for (const tplDef of SYSTEM_TEMPLATES) {
-    const template = await prismaClient.permissionTemplate.upsert({
-      where: { name: tplDef.name },
-      create: {
+    let template = await prismaClient.permissionTemplate.findFirst({
+      where: {
+        tenantId: 'system',
         name: tplDef.name,
-        role: tplDef.role,
-        description: tplDef.description,
-        isSystem: true,
-      },
-      update: {
-        role: tplDef.role,
-        description: tplDef.description,
-        isSystem: true,
       },
     });
+
+    if (template) {
+      template = await prismaClient.permissionTemplate.update({
+        where: { id: template.id },
+        data: {
+          description: tplDef.description,
+          isSystem: true,
+        },
+      });
+    } else {
+      template = await prismaClient.permissionTemplate.create({
+        data: {
+          tenantId: 'system',
+          name: tplDef.name,
+          description: tplDef.description,
+          isSystem: true,
+        },
+      });
+    }
 
     templateMap.set(tplDef.name, template.id);
     seededTemplatesCount++;
@@ -139,23 +150,28 @@ export async function seedPermissionsAndMigrateUsers(prismaClient: any): Promise
       const catalogItem = SYSTEM_PERMISSION_CATALOG.find((p) => p.key === key);
       if (!catalogItem) continue;
 
-      await prismaClient.templatePermission.upsert({
+      const existingTP = await prismaClient.templatePermission.findFirst({
         where: {
-          templateId_permissionKey: {
-            templateId: template.id,
-            permissionKey: key,
-          },
-        },
-        create: {
           templateId: template.id,
           permissionKey: key,
-          scope: 'ALL',
-          allowedShopIds: [],
-        },
-        update: {
-          scope: 'ALL',
         },
       });
+
+      if (existingTP) {
+        await prismaClient.templatePermission.update({
+          where: { id: existingTP.id },
+          data: { scope: 'ALL' },
+        });
+      } else {
+        await prismaClient.templatePermission.create({
+          data: {
+            templateId: template.id,
+            permissionKey: key,
+            scope: 'ALL',
+            allowedShopIds: [],
+          },
+        });
+      }
     }
   }
 
@@ -181,22 +197,22 @@ export async function seedPermissionsAndMigrateUsers(prismaClient: any): Promise
 
     // Assign template to user if template found
     if (targetTemplateId) {
-      await prismaClient.userTemplateAssignment.upsert({
+      const existingUTA = await prismaClient.userTemplateAssignment.findFirst({
         where: {
-          userId_templateId: {
-            userId: user.id,
-            templateId: targetTemplateId,
-          },
-        },
-        create: {
           userId: user.id,
           templateId: targetTemplateId,
-          assignedBy: 'system-migration',
-        },
-        update: {
-          assignedBy: 'system-migration',
         },
       });
+
+      if (!existingUTA) {
+        await prismaClient.userTemplateAssignment.create({
+          data: {
+            userId: user.id,
+            templateId: targetTemplateId,
+            assignedBy: 'system-migration',
+          },
+        });
+      }
     }
 
     migratedUsersCount++;

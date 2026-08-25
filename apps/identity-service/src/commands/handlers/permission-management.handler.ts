@@ -1,5 +1,5 @@
 import { ICommandHandler, CommandHandler } from '@nestjs/cqrs';
-import { SYSTEM_PERMISSION_CATALOG, authorizeUserAction } from '@electronic-shop/database';
+import { SYSTEM_PERMISSION_CATALOG, authorizeUserAction, seedPermissionsAndMigrateUsers } from '@electronic-shop/database';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 
@@ -17,12 +17,27 @@ export class ManagePermissionsHandler implements ICommandHandler<ManagePermissio
 
     try {
       if (action === 'GetPermissionTemplates') {
-        const templates = await prisma.permissionTemplate.findMany({
+        let templates = await prisma.permissionTemplate.findMany({
           include: {
             templatePermissions: true,
             _count: { select: { userTemplateAssignments: true } },
           },
         });
+
+        if (templates.length === 0) {
+          try {
+            await seedPermissionsAndMigrateUsers(prisma);
+            templates = await prisma.permissionTemplate.findMany({
+              include: {
+                templatePermissions: true,
+                _count: { select: { userTemplateAssignments: true } },
+              },
+            });
+          } catch (seedErr) {
+            console.error('[GetPermissionTemplates] Auto-seed failed:', seedErr);
+          }
+        }
+
         return {
           status: 'success',
           traceId,
