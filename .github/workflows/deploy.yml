@@ -14,7 +14,7 @@ jobs:
     name: Release to /home/deploy/stovash/backend
     if: github.ref == 'refs/heads/production'
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 50
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -49,6 +49,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT != '' && secrets.VPS_PORT || 22 }}
+          command_timeout: 40m
           envs: GITHUB_SHA
           script: |
             set -euo pipefail
