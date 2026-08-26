@@ -277,10 +277,32 @@ export class ManagePermissionsHandler implements ICommandHandler<ManagePermissio
           take: Number(limit),
         });
 
+        // Collect unique user IDs to resolve names
+        const userIds = new Set<string>();
+        logs.forEach((log: any) => {
+          if (log.targetUserId) userIds.add(log.targetUserId);
+          if (log.actorId) userIds.add(log.actorId);
+        });
+
+        const users = await prisma.user.findMany({
+          where: { id: { in: Array.from(userIds) } },
+          select: { id: true, firstName: true, lastName: true, email: true },
+        });
+        const userMap = new Map(users.map((u: any) => [
+          u.id,
+          `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email || u.id,
+        ]));
+
+        const enrichedLogs = logs.map((log: any) => ({
+          ...log,
+          targetUserName: log.targetUserId ? (userMap.get(log.targetUserId) ?? '—') : '—',
+          actorName: log.actorId ? (userMap.get(log.actorId) ?? 'Administrator') : 'Administrator',
+        }));
+
         return {
           status: 'success',
           traceId,
-          data: { auditLogs: logs },
+          data: { auditLogs: enrichedLogs },
         };
       }
 
