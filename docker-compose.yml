@@ -5,14 +5,14 @@ services:
       dockerfile: Dockerfile
       args:
         NODE_VERSION: ${NODE_VERSION:-22-bookworm-slim}
-    image: stovash-backend:${RELEASE_ID:-latest}
-    container_name: stovash-backend
+    image: ${COMPOSE_IMAGE:-stovash-backend}:${RELEASE_ID:-latest}
+    container_name: ${COMPOSE_CONTAINER:-stovash-backend}
     restart: unless-stopped
     network_mode: host
     env_file:
       - .env
     environment:
       NODE_ENV: production
-      PORT: "5051"
+      PORT: "${STOVASH_PORT:-5051}"
     volumes:
-      - /home/deploy/stovash/backend/shared/.env:/app/.env:ro
+      - ${ENV_FILE:-/home/deploy/stovash/backend/shared/.env}:/app/.env:ro

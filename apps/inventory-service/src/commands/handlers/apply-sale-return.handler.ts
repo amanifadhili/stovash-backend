@@ -48,6 +48,8 @@ export class ApplySaleReturnHandler extends BaseCommandHandler<ApplySaleReturnCo
         items: payload.items,
         returnedBy: userId,
         customerId: payload.customerId || null,
+        counterpartyName: payload.counterpartyName || null,
+        counterpartyPhone: payload.counterpartyPhone || null,
       });
 
       return {

@@ -3,6 +3,7 @@ import { GetProductByIdQuery } from '../impl/get-product-by-id.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
 import { visibleToShopFilter } from '../../common/visibility.js';
+import { lastUnitCostFromSpecs } from '../../common/owned-unsold-stock-position.js';
 
 const DISPOSED_STATUSES = ['SOLD', 'RETURNED', 'DAMAGED', 'LOST', 'STOLEN', 'DISPOSED'];
 
@@ -45,6 +46,9 @@ export class GetProductByIdHandler implements IQueryHandler<GetProductByIdQuery>
             where: { validTo: null },
             take: 1
           },
+          shopBalances: context?.shopId
+            ? { where: { shopId: context.shopId }, take: 1 }
+            : true,
           _count: {
             select: {
               items: {
@@ -67,6 +71,11 @@ export class GetProductByIdHandler implements IQueryHandler<GetProductByIdQuery>
         };
       }
 
+      const shopQty = Array.isArray(product.shopBalances)
+        ? product.shopBalances.reduce((sum, row) => sum + Number(row.quantityOnHand || 0), 0)
+        : Number(product.quantityOnHand || 0);
+      const lastUnitCost = lastUnitCostFromSpecs(product.specifications);
+
       return {
         status: 'success',
         traceId,
@@ -79,6 +88,8 @@ export class GetProductByIdHandler implements IQueryHandler<GetProductByIdQuery>
           trackingMethod: product.trackingMethod,
           status: product.status,
           specifications: product.specifications,
+          imageUrl: product.imageUrl || (Array.isArray(product.images) && product.images[0]) || null,
+          lastUnitCost,
           brand: product.brand ? {
             id: product.brand.id,
             name: product.brand.name
@@ -92,6 +103,8 @@ export class GetProductByIdHandler implements IQueryHandler<GetProductByIdQuery>
             sellingPrice: product.prices[0].sellingPrice,
             validFrom: product.prices[0].validFrom
           } : null,
+          stock: shopQty,
+          quantityOnHand: shopQty,
           stockCount: product._count.items,
           createdAt: product.createdAt,
           createdBy: product.createdBy,

@@ -79,6 +79,12 @@ export async function createTreasuryMovement(
     const byId = new Map(accounts.map((a) => [a.id, a]));
     let from = payload.fromPhysicalId ? byId.get(payload.fromPhysicalId) : null;
     let to = payload.toPhysicalId ? byId.get(payload.toPhysicalId) : null;
+    if (payload.fromPhysicalId && !isLockExemptType(movementType) && !from) {
+      return err(traceId, 'Unknown source account', ErrorCode.VALIDATION_ERROR);
+    }
+    if (payload.toPhysicalId && !isLockExemptType(movementType) && !to) {
+      return err(traceId, 'Unknown destination account', ErrorCode.VALIDATION_ERROR);
+    }
     if (!from && payload.fromKind) {
       from = accounts.find((a) => a.kind === payload.fromKind) ?? null;
     }
@@ -140,7 +146,18 @@ export async function createTreasuryMovement(
     if (from) {
       const available = balanceOf(balances, from.id);
       if (available < amountMinor) {
-        return err(traceId, 'Insufficient funds on the source account', ErrorCode.BUSINESS_RULE_VIOLATION);
+        const have = Number(available) / 100;
+        const need = Number(amountMinor) / 100;
+        const accountName = from.name || from.kind;
+        const capitalHint =
+          from.fund?.code === 'OPERATIONAL' && available === 0n
+            ? ' Owner capital sits in Capital Bank — transfer it to Cash, MoMo, or Bank before buying.'
+            : '';
+        return err(
+          traceId,
+          `Insufficient funds on ${accountName}: have ${have} RWF, need ${need} RWF.${capitalHint}`,
+          ErrorCode.BUSINESS_RULE_VIOLATION,
+        );
       }
     }
 

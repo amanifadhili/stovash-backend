@@ -25,6 +25,7 @@ export class GetRentalsHandler implements IQueryHandler<GetRentalsQuery> {
       if (shopId) where.shopId = shopId;
       if (payload.agreementType) where.agreementType = payload.agreementType;
       if (payload.status) where.status = payload.status;
+      if (payload.productId) where.productId = payload.productId;
       if (payload.search) {
         where.OR = [
           { personName: { contains: payload.search, mode: 'insensitive' } },

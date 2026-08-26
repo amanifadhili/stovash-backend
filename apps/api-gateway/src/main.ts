@@ -7,6 +7,14 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { initializeTracing } from '@electronic-shop/tracing';
 import { logger } from '@electronic-shop/logging';
+import { isGatewayOwnedPath } from './common/gateway-owned-path.js';
+import {
+  DEFAULT_JSON_LIMIT,
+  UPLOAD_JSON_LIMIT,
+  allowOversizedJsonBody,
+  parseByteLimit,
+  peekJsonCommand,
+} from './common/json-body-limit.js';
 
 async function bootstrap() {
   // Initialize OpenTelemetry tracing
@@ -18,10 +26,37 @@ async function bootstrap() {
   process.setMaxListeners(50);
   const app = await NestFactory.create(AppModule, { bodyParser: false });
 
-  // Purchase photos travel as data URLs. Default Express JSON limit is 100kb.
-  const bodyLimit = process.env.GATEWAY_BODY_LIMIT || '25mb';
-  app.use(json({ limit: bodyLimit }));
-  app.use(urlencoded({ extended: true, limit: bodyLimit }));
+  // Default 1mb for normal commands. Purchase photo data URLs may use up to 25mb,
+  // and only for LARGE_BODY_COMMANDS (see json-body-limit.ts).
+  const defaultLimit = DEFAULT_JSON_LIMIT;
+  const uploadLimit = UPLOAD_JSON_LIMIT;
+  const defaultLimitBytes = parseByteLimit(defaultLimit);
+  logger.info(`JSON body limits: default=${defaultLimit} upload=${uploadLimit}`);
+
+  app.use(
+    json({
+      limit: uploadLimit,
+      verify: (req: any, _res, buf) => {
+        const command =
+          peekJsonCommand(buf) ||
+          String(req.headers['x-command'] || req.headers['X-Command'] || '');
+        if (
+          !allowOversizedJsonBody({
+            bodyBytes: buf.length,
+            defaultLimitBytes,
+            command,
+          })
+        ) {
+          const err: any = new Error('request entity too large');
+          err.status = 413;
+          err.statusCode = 413;
+          err.type = 'entity.too.large';
+          throw err;
+        }
+      },
+    }),
+  );
+  app.use(urlencoded({ extended: true, limit: defaultLimit }));
   
   const httpServer = app.getHttpServer();
   if (httpServer) {
@@ -30,7 +65,7 @@ async function bootstrap() {
 
   // Security and Gateway configurations
   app.use(helmet({
-    contentSecurityPolicy: false, // disable CSP for Vite dev server proxy
+    contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false
   }));
   
@@ -77,22 +112,32 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  
-  // Proxy non-API requests to the Vite dev server (port 3001)
-  app.use(
-    '/',
-    (req: any, res: any, next: any) => {
-      // Skip proxying if the request is for the API
-      if (req.url.startsWith('/api') || req.url.startsWith('/health') || req.url.startsWith('/docs')) {
-        return next();
-      }
-      return createProxyMiddleware({
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-        ws: false, // disable websocket proxying to prevent HMR reload loops
-      })(req, res, next);
-    }
-  );
+
+  // Dev-only: proxy leftover UI paths to a local Vite server.
+  // Production must NOT do this — localhost:3001 is absent and nginx sees 504s on /, /metrics, etc.
+  const enableDevProxy =
+    process.env.GATEWAY_DEV_PROXY === '1' ||
+    (process.env.NODE_ENV !== 'production' && process.env.GATEWAY_DEV_PROXY !== '0');
+
+  if (enableDevProxy) {
+    const viteTarget = process.env.GATEWAY_DEV_PROXY_TARGET || 'http://localhost:3001';
+    logger.info(`Gateway UI proxy enabled -> ${viteTarget}`);
+    app.use(
+      '/',
+      (req: any, res: any, next: any) => {
+        if (isGatewayOwnedPath(req.url || '')) {
+          return next();
+        }
+        return createProxyMiddleware({
+          target: viteTarget,
+          changeOrigin: true,
+          ws: false,
+        })(req, res, next);
+      },
+    );
+  } else {
+    logger.info('Gateway UI proxy disabled (production). Unknown paths return Nest 404.');
+  }
 
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   await app.listen(port, '0.0.0.0');

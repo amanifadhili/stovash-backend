@@ -14,6 +14,8 @@ export class ApplySaleFulfillmentPayload {
   items!: ApplySaleFulfillmentItemInput[];
   fulfilledBy?: string;
   customerId?: string | null;
+  counterpartyName?: string | null;
+  counterpartyPhone?: string | null;
 }
 
 export class ApplySaleFulfillmentCommand extends BaseCommand<ApplySaleFulfillmentPayload> {

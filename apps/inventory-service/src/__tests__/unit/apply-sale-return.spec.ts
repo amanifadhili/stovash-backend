@@ -96,4 +96,59 @@ describe('applySaleReturn helper', () => {
     });
     expect(movements).toHaveLength(1);
   });
+
+  it('restocks accessory shop qty on PHYSICAL return', async () => {
+    const product = await prisma.product.create({
+      data: {
+        tenantId,
+        sku: 'ACC-R1',
+        name: 'Cable',
+        trackingMethod: 'NON_SERIALIZED',
+        quantityOnHand: 10,
+      },
+    });
+    await prisma.shopProductBalance.create({
+      data: {
+        tenantId,
+        shopId,
+        productId: product.id,
+        quantityOnHand: 10,
+      },
+    });
+
+    await applySaleFulfillment(prisma, {
+      tenantId,
+      shopId,
+      saleId: 'sale-acc-1',
+      items: [{ productId: product.id, quantity: 3 }],
+      fulfilledBy: 'tester',
+    });
+
+    const afterSale = await prisma.shopProductBalance.findUnique({
+      where: {
+        tenantId_shopId_productId: { tenantId, shopId, productId: product.id },
+      },
+    });
+    expect(Number(afterSale?.quantityOnHand)).toBe(7);
+
+    const result = await applySaleReturn(prisma, {
+      tenantId,
+      shopId,
+      saleId: 'sale-acc-1',
+      refundId: 'refund-acc-1',
+      items: [{ productId: product.id, quantity: 2 }],
+      returnedBy: 'tester',
+    });
+    expect(result.applied).toBe(1);
+
+    const afterReturn = await prisma.shopProductBalance.findUnique({
+      where: {
+        tenantId_shopId_productId: { tenantId, shopId, productId: product.id },
+      },
+    });
+    expect(Number(afterReturn?.quantityOnHand)).toBe(9);
+
+    const productRow = await prisma.product.findUnique({ where: { id: product.id } });
+    expect(Number(productRow?.quantityOnHand)).toBe(9);
+  });
 });

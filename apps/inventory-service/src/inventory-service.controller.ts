@@ -30,7 +30,9 @@ import { GetCategoriesQuery } from './queries/impl/get-categories.query.js';
 import { GetCategoryByIdQuery } from './queries/impl/get-category-by-id.query.js';
 import { GetAvailableInventoryItemsQuery } from './queries/impl/get-available-inventory-items.query.js';
 import { GetStockUnitsQuery } from './queries/impl/get-stock-units.query.js';
+import { GetOwnedUnsoldStockPositionQuery } from './queries/impl/get-owned-unsold-stock-position.query.js';
 import { GetDeviceLifeQuery } from './queries/impl/get-device-life.query.js';
+import { GetInventoryBookCostsQuery } from './queries/impl/get-inventory-book-costs.query.js';
 import { CreateRentalCommand } from './commands/impl/create-rental.command.js';
 import { UpdateRentalStatusCommand } from './commands/impl/update-rental-status.command.js';
 import { GetRentalsQuery } from './queries/impl/get-rentals.query.js';
@@ -38,7 +40,9 @@ import { GetStockMovementsQuery } from './queries/impl/get-stock-movements.query
 import { CreateContactCommand } from './commands/impl/create-contact.command.js';
 import { GetContactsQuery } from './queries/impl/get-contacts.query.js';
 import { ApplySaleFulfillmentCommand } from './commands/impl/apply-sale-fulfillment.command.js';
+import { GetDashboardInventoryAnalyticsQuery } from './queries/impl/get-dashboard-inventory-analytics.query.js';
 import { ApplySaleReturnCommand } from './commands/impl/apply-sale-return.command.js';
+import { ApplyReturnedItemAssessmentCommand } from './commands/impl/apply-returned-item-assessment.command.js';
 
 @Controller()
 export class InventoryServiceController {
@@ -52,6 +56,11 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'ApplySaleReturn' })
   async handleApplySaleReturn(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new ApplySaleReturnCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'ApplyReturnedItemAssessment' })
+  async handleApplyReturnedItemAssessment(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ApplyReturnedItemAssessmentCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'AddProduct' })
@@ -199,9 +208,19 @@ export class InventoryServiceController {
     return this.queryBus.execute(new GetStockUnitsQuery(data.payload, data.context));
   }
 
+  @MessagePattern({ cmd: 'GetOwnedUnsoldStockPosition' })
+  async handleGetOwnedUnsoldStockPosition(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetOwnedUnsoldStockPositionQuery(data.payload || {}, data.context));
+  }
+
   @MessagePattern({ cmd: 'GetDeviceLife' })
   async handleGetDeviceLife(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetDeviceLifeQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetInventoryBookCosts' })
+  async handleGetInventoryBookCosts(@Payload() data: { payload: any, context: any }) {
+    return this.queryBus.execute(new GetInventoryBookCostsQuery(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'CreateRental' })
@@ -222,6 +241,13 @@ export class InventoryServiceController {
   @MessagePattern({ cmd: 'GetStockMovements' })
   async handleGetStockMovements(@Payload() data: { payload: any, context: any }) {
     return this.queryBus.execute(new GetStockMovementsQuery(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetDashboardInventoryAnalytics' })
+  async handleGetDashboardInventoryAnalytics(@Payload() data: { payload: any; context: any }) {
+    return this.queryBus.execute(
+      new GetDashboardInventoryAnalyticsQuery(data.payload || {}, data.context),
+    );
   }
 
   @MessagePattern({ cmd: 'CreateContact' })

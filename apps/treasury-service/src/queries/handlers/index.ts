@@ -9,6 +9,8 @@ import { GetReconciliationsHandler } from './get-reconciliations.handler.js';
 import { GetDailyPositionHandler } from './get-daily-position.handler.js';
 import { GetMonthlyPositionHandler } from './get-monthly-position.handler.js';
 import { GetFinancialOverviewHandler } from './get-financial-overview.handler.js';
+import { GetDashboardCashFlowAnalyticsHandler } from './get-dashboard-cash-flow-analytics.handler.js';
+import { GetDashboardLoanAnalyticsHandler } from './get-dashboard-loan-analytics.handler.js';
 
 export const QueryHandlers = [
   GetPaymentMethodsHandler,
@@ -22,4 +24,6 @@ export const QueryHandlers = [
   GetDailyPositionHandler,
   GetMonthlyPositionHandler,
   GetFinancialOverviewHandler,
+  GetDashboardCashFlowAnalyticsHandler,
+  GetDashboardLoanAnalyticsHandler,
 ];

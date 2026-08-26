@@ -23,6 +23,7 @@ import { UpdateRentalStatusHandler } from './update-rental-status.handler.js';
 import { CreateContactHandler } from './create-contact.handler.js';
 import { ApplySaleFulfillmentHandler } from './apply-sale-fulfillment.handler.js';
 import { ApplySaleReturnHandler } from './apply-sale-return.handler.js';
+import { ApplyReturnedItemAssessmentHandler } from './apply-returned-item-assessment.handler.js';
 
 export const CommandHandlers = [
   AddProductHandler,
@@ -35,6 +36,7 @@ export const CommandHandlers = [
   ProcessPosSaleHandler,
   ApplySaleFulfillmentHandler,
   ApplySaleReturnHandler,
+  ApplyReturnedItemAssessmentHandler,
   ReceiveGoodsHandler,
   ProcessSalesReturnHandler,
   CreateWarrantyClaimHandler,

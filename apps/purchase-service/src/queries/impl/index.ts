@@ -49,6 +49,11 @@ export interface GetPurchaseHistoryPayload {
   purchaseId: string;
 }
 
+export interface GetLastPurchaseUnitCostsPayload {
+  productIds: string[];
+  shopId?: string;
+}
+
 export * from './get-purchases.query.js';
 export * from './get-purchase-by-id.query.js';
 export * from './get-purchase-by-number.query.js';
@@ -58,3 +63,4 @@ export * from './get-purchase-payments.query.js';
 export * from './get-purchase-returns.query.js';
 export * from './get-purchase-documents.query.js';
 export * from './get-purchase-history.query.js';
+export * from './get-last-purchase-unit-costs.query.js';

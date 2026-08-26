@@ -7,6 +7,7 @@ import { GetPurchasePaymentsHandler } from './get-purchase-payments.handler.js';
 import { GetPurchaseReturnsHandler } from './get-purchase-returns.handler.js';
 import { GetPurchaseDocumentsHandler } from './get-purchase-documents.handler.js';
 import { GetPurchaseHistoryHandler } from './get-purchase-history.handler.js';
+import { GetLastPurchaseUnitCostsHandler } from './get-last-purchase-unit-costs.handler.js';
 
 export const QueryHandlers = [
   GetPurchasesHandler,
@@ -18,6 +19,7 @@ export const QueryHandlers = [
   GetPurchaseReturnsHandler,
   GetPurchaseDocumentsHandler,
   GetPurchaseHistoryHandler,
+  GetLastPurchaseUnitCostsHandler,
 ];
 
 export * from './get-purchases.handler.js';
@@ -29,3 +31,4 @@ export * from './get-purchase-payments.handler.js';
 export * from './get-purchase-returns.handler.js';
 export * from './get-purchase-documents.handler.js';
 export * from './get-purchase-history.handler.js';
+export * from './get-last-purchase-unit-costs.handler.js';

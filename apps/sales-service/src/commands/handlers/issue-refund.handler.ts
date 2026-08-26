@@ -209,6 +209,7 @@ export class IssueRefundHandler extends BaseCommandHandler<IssueRefundCommand> {
                   refundId: saleReturn.id,
                   shopId: sale.shopId,
                   customerId: sale.customerId || null,
+                  counterpartyName: sale.customerName || 'Walk-in',
                   returnedBy: createdById,
                   items: physicalItems.map((it) => ({
                     inventoryItemId: it.inventoryItemId,

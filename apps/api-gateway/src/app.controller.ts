@@ -1,17 +1,30 @@
-import { Controller, Get, Post, Req, Inject, Body, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Inject,
+  Body,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { JwtAuthGuard } from './common/auth/jwt-auth.guard.js';
+import { MetricsAuthGuard } from './common/auth/metrics-auth.guard.js';
+import { ReadinessService } from './common/readiness.service.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { getMetrics, recordCommandExecution, recordFinancialPostLatency } from '@electronic-shop/metrics';
 import { ErrorCode } from '@electronic-shop/types';
 
-// Permission strings are unused for engine commands: JWT only issues `*` for ADMIN
-// and `[]` for everyone else. A non-empty list would 403 MANAGER/ACCOUNTANT/STAFF.
-// Role allow-lists in COMMAND_ROLES are the real financial RBAC gate.
+// JWT issues `*` for ADMIN and `[]` for every other role. Non-empty permission
+// lists 403 MANAGER/ACCOUNTANT/STAFF even when COMMAND_ROLES allows them.
+// Phase 5: every live command is role-only (empty list), same as money writes.
 export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   // Tenant commands
-  'CreateTenant': ['tenant:create'],
-  'CreateShop': ['shop:create'],
+  'CreateTenant': [],
+  'CreateShop': [],
   'UpdateShop': [],
   'GetTenant': [],
   'GetTenantShops': [],
@@ -20,13 +33,13 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'CreateStaff': [],
 
   // User commands
-  'CreateUser': ['user:create'],
+  'CreateUser': [],
   'GetUsers': [],
   'LoginUser': [], // Public endpoint
   
   // Accounting commands
-  'PostJournalEntry': ['accounting:journal:post'],
-  'CreateLedgerAccount': ['accounting:account:create'],
+  'PostJournalEntry': [],
+  'CreateLedgerAccount': [],
   'OpenWorkPeriod': [],
   'CloseWorkPeriod': [],
   'GetActiveWorkPeriod': [],
@@ -54,97 +67,106 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'PostFinancialCorrection': [],
   'PostSaleRefund': [],
   'GetEngineReport': [],
+  'GetDashboardProfitAnalytics': [],
+  'GetDashboardArApAnalytics': [],
   
   // Inventory commands
-  'AddProduct': ['inventory:product:create'],
-  'UpdateProduct': ['inventory:product:update'],
-  'DeleteProduct': ['inventory:product:delete'],
-  'UpdateProductStatus': ['inventory:product:status'],
-  'SetProductPrice': ['inventory:product:price'],
-  'GetProducts': ['inventory:product:read'],
-  'GetProductById': ['inventory:product:read'],
-  'GetProductBySku': ['inventory:product:read'],
-  'CreateBrand': ['inventory:brand:create'],
-  'UpdateBrand': ['inventory:brand:update'],
-  'DeleteBrand': ['inventory:brand:delete'],
-  'GetBrands': ['inventory:brand:read'],
-  'GetBrandById': ['inventory:brand:read'],
-  'CreateCategory': ['inventory:category:create'],
-  'UpdateCategory': ['inventory:category:update'],
-  'DeleteCategory': ['inventory:category:delete'],
-  'GetCategories': ['inventory:category:read'],
-  'GetCategoryById': ['inventory:category:read'],
-  'AddInventoryItem': ['inventory:item:create'],
-  'GetStockUnits': ['inventory:item:read'],
-  'GetDeviceLife': ['inventory:item:read'],
-  'GetAvailableInventoryItems': ['inventory:item:read'],
-  'ProcessPosSale': ['inventory:sale:create'],
-  'ApplySaleFulfillment': ['inventory:sale:create'],
-  'ApplySaleReturn': ['inventory:return:process'],
-  'ReceiveGoods': ['inventory:goods:receive'],
-  'ProcessSalesReturn': ['inventory:return:process'],
-  'CreateWarrantyClaim': ['inventory:warranty:create'],
-  'TransferInventory': ['inventory:inventory:transfer'],
-  'RecordInventoryUpgrade': ['inventory:upgrade:create'],
-  'RecordInventoryIncident': ['inventory:item:update', 'inventory:incident:create'],
-  'CreateRental': ['inventory:item:create'],
-  'UpdateRentalStatus': ['inventory:item:update'],
-  'GetRentals': ['inventory:item:read'],
-  'GetStockMovements': ['inventory:item:read'],
+  'AddProduct': [],
+  'UpdateProduct': [],
+  'DeleteProduct': [],
+  'UpdateProductStatus': [],
+  'SetProductPrice': [],
+  'GetProducts': [],
+  'GetProductById': [],
+  'GetProductBySku': [],
+  'CreateBrand': [],
+  'UpdateBrand': [],
+  'DeleteBrand': [],
+  'GetBrands': [],
+  'GetBrandById': [],
+  'CreateCategory': [],
+  'UpdateCategory': [],
+  'DeleteCategory': [],
+  'GetCategories': [],
+  'GetCategoryById': [],
+  'AddInventoryItem': [],
+  'GetStockUnits': [],
+  'GetOwnedUnsoldStockPosition': [],
+  'GetDashboardInventoryAnalytics': [],
+  'GetDeviceLife': [],
+  'GetAvailableInventoryItems': [],
+  'ProcessPosSale': [],
+  'ApplySaleFulfillment': [],
+  'ApplySaleReturn': [],
+  'ApplyReturnedItemAssessment': [],
+  'ReceiveGoods': [],
+  'ProcessSalesReturn': [],
+  'CreateWarrantyClaim': [],
+  'TransferInventory': [],
+  'RecordInventoryUpgrade': [],
+  'RecordInventoryIncident': [],
+  'CreateRental': [],
+  'UpdateRentalStatus': [],
+  'GetRentals': [],
+  'GetStockMovements': [],
   
   // Sales commands
-  'ProcessSale': ['sales:sale:create'],
-  'CreateSale': ['sales:sale:create'],
-  'ConfirmSale': ['sales:sale:confirm'],
-  'CancelSale': ['sales:sale:cancel'],
-  'FulfillSale': ['sales:sale:fulfill'],
-  'RecordSalePayment': ['sales:payment:create'],
-  'CreateSaleReturn': ['sales:return:create'],
+  'ProcessSale': [],
+  'CreateSale': [],
+  'ConfirmSale': [],
+  'CancelSale': [],
+  'FulfillSale': [],
+  'RecordSalePayment': [],
+  'CreateSaleReturn': [],
   'IssueRefund': [],
-  'AssessReturnedItem': ['sales:return:assess'],
-  'CreateWarranty': ['sales:warranty:create'],
-  'ConvertQuotationToSale': ['sales:sale:create'],
-  'RecordPartialPayment': ['sales:payment:create'],
-  'RecordBonus': ['sales:bonus:create'],
-  'ProcessLoanSale': ['sales:loan:create'],
-  'GetSales': ['sales:sale:read'],
-  'GetSaleById': ['sales:sale:read'],
-  'GetSaleHistory': ['sales:sale:read'],
-  'GetDeviceSales': ['sales:sale:read'],
+  'ProcessSaleReplacement': [],
+  'AssessReturnedItem': [],
+  'CreateWarranty': [],
+  'ConvertQuotationToSale': [],
+  'RecordPartialPayment': [],
+  'RecordBonus': [],
+  'ProcessLoanSale': [],
+  'GetSales': [],
+  'GetSaleById': [],
+  'GetSaleHistory': [],
+  'GetDeviceSales': [],
   'GetSoldUnitProfit': [],
+  'GetDashboardSalesAnalytics': [],
+  'GetDashboardPaymentMethodMix': [],
+  'GetDashboardProductPerformance': [],
   
   // Purchase commands
-  'CreatePurchase': ['purchase:purchase:create'],
-  'AddPurchaseItem': ['purchase:purchase:update'],
-  'UpdatePurchaseItem': ['purchase:purchase:update'],
-  'RemovePurchaseItem': ['purchase:purchase:update'],
-  'ConfirmPurchase': ['purchase:purchase:confirm'],
-  'CancelPurchase': ['purchase:purchase:cancel'],
-  'CreatePurchaseReceiving': ['purchase:receiving:create'],
-  'AddReceivedItems': ['purchase:receiving:record'],
-  'ReceivePurchaseUnit': ['purchase:receiving:record'],
-  'ConfirmPurchaseUnit': ['purchase:receiving:confirm'],
-  'CancelPurchaseUnit': ['purchase:receiving:confirm'],
-  'AddReceivedItemCost': ['purchase:receiving:record'],
-  'RecordPurchasePayment': ['purchase:payment:create'],
-  'CreatePurchaseReturn': ['purchase:return:create'],
-  'AddPurchaseReturnItems': ['purchase:return:add'],
-  'AddPurchaseDocument': ['purchase:document:add'],
-  'GetPurchases': ['purchase:purchase:read'],
-  'GetPurchaseById': ['purchase:purchase:read'],
-  'GetPurchaseByNumber': ['purchase:purchase:read'],
-  'GetPurchaseItems': ['purchase:purchase:read'],
-  'GetPurchaseReceivings': ['purchase:receiving:read'],
-  'GetPurchasePayments': ['purchase:payment:read'],
-  'GetPurchaseReturns': ['purchase:return:read'],
-  'GetPurchaseDocuments': ['purchase:document:read'],
-  'GetPurchaseHistory': ['purchase:purchase:read'],
+  'CreatePurchase': [],
+  'AddPurchaseItem': [],
+  'UpdatePurchaseItem': [],
+  'RemovePurchaseItem': [],
+  'ConfirmPurchase': [],
+  'CancelPurchase': [],
+  'CreatePurchaseReceiving': [],
+  'AddReceivedItems': [],
+  'ReceivePurchaseUnit': [],
+  'ConfirmPurchaseUnit': [],
+  'CancelPurchaseUnit': [],
+  'AddReceivedItemCost': [],
+  'RecordPurchasePayment': [],
+  'CreatePurchaseReturn': [],
+  'AddPurchaseReturnItems': [],
+  'AddPurchaseDocument': [],
+  'GetPurchases': [],
+  'GetPurchaseById': [],
+  'GetPurchaseByNumber': [],
+  'GetPurchaseItems': [],
+  'GetPurchaseReceivings': [],
+  'GetPurchasePayments': [],
+  'GetPurchaseReturns': [],
+  'GetPurchaseDocuments': [],
+  'GetPurchaseHistory': [],
 
   // Supplier commands
-  'CreateSupplier': ['supplier:create'],
-  'GetSuppliers': ['supplier:read'],
-  'UpdateSupplier': ['supplier:update'],
-  'DeleteSupplier': ['supplier:delete'],
+  'CreateSupplier': [],
+  'GetSuppliers': [],
+  'UpdateSupplier': [],
+  'DeleteSupplier': [],
   
   // Treasury commands
   'RecordOperationalDeposit': [],
@@ -169,6 +191,8 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetDailyPosition': [],
   'GetMonthlyPosition': [],
   'GetFinancialOverview': [],
+  'GetDashboardCashFlowAnalytics': [],
+  'GetDashboardLoanAnalytics': [],
 };
 
 // Command to role mapping (role-based access control)
@@ -214,6 +238,8 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'PostFinancialCorrection': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
   'PostSaleRefund': ['ADMIN', 'MANAGER'],
   'GetEngineReport': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetDashboardProfitAnalytics': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetDashboardArApAnalytics': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   
   // Inventory commands
   'AddProduct': ['ADMIN', 'MANAGER'],
@@ -236,11 +262,14 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetCategoryById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'AddInventoryItem': ['ADMIN', 'MANAGER', 'STAFF'],
   'GetStockUnits': ['ADMIN', 'MANAGER', 'STAFF'],
+  'GetOwnedUnsoldStockPosition': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetDashboardInventoryAnalytics': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetDeviceLife': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetAvailableInventoryItems': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessPosSale': ['ADMIN', 'MANAGER', 'STAFF'],
   'ApplySaleFulfillment': ['ADMIN', 'MANAGER', 'STAFF'],
   'ApplySaleReturn': ['ADMIN', 'MANAGER'],
+  'ApplyReturnedItemAssessment': ['ADMIN', 'MANAGER'],
   'ReceiveGoods': ['ADMIN', 'MANAGER', 'STAFF'],
   'ProcessSalesReturn': ['ADMIN', 'MANAGER', 'STAFF'],
   'CreateWarrantyClaim': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -263,6 +292,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'RecordSalePayment': ['ADMIN', 'MANAGER', 'STAFF'],
   'CreateSaleReturn': ['ADMIN', 'MANAGER', 'STAFF'],
   'IssueRefund': ['ADMIN', 'MANAGER'],
+  'ProcessSaleReplacement': ['ADMIN', 'MANAGER'],
   'AssessReturnedItem': ['ADMIN', 'MANAGER'],
   'CreateWarranty': ['ADMIN', 'MANAGER', 'STAFF'],
   'ConvertQuotationToSale': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -274,6 +304,9 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetSaleHistory': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetDeviceSales': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetSoldUnitProfit': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
+  'GetDashboardSalesAnalytics': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetDashboardPaymentMethodMix': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+  'GetDashboardProductPerformance': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   
   // Purchase commands
   'CreatePurchase': ['ADMIN', 'MANAGER', 'STAFF'],
@@ -331,6 +364,8 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetDailyPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetMonthlyPosition': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
   'GetFinancialOverview': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetDashboardCashFlowAnalytics': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
+  'GetDashboardLoanAnalytics': ['ADMIN', 'MANAGER', 'ACCOUNTANT', 'STAFF'],
 };
 
 // Commands that are public (no authenticated user required). Their role/permission
@@ -375,8 +410,8 @@ export const RETIRED_FINANCIAL_COMMANDS = new Set([
 /** @deprecated Phase 10 alias — same set as RETIRED_FINANCIAL_COMMANDS. */
 export const QUARANTINED_FINANCIAL_COMMANDS = RETIRED_FINANCIAL_COMMANDS;
 
-/** STAFF may count cash and post sales; cannot approve recon, profit transfer, or capital/internal loans. */
-export const STAFF_CANNOT_APPROVE = ['ApproveReconciliationAdjustment', 'CreateTreasuryMovement', 'IssueRefund'] as const;
+/** STAFF may count cash and post sales; cannot approve recon, profit transfer, refunds, replacements, or return assessments. */
+export const STAFF_CANNOT_APPROVE = ['ApproveReconciliationAdjustment', 'CreateTreasuryMovement', 'IssueRefund', 'ProcessSaleReplacement', 'AssessReturnedItem'] as const;
 
 const FINANCIAL_WRITE_COMMANDS = new Set([
   'PostFinancialTransaction',
@@ -391,6 +426,7 @@ const FINANCIAL_WRITE_COMMANDS = new Set([
   'PostFinancialCorrection',
   'PostSaleRefund',
   'IssueRefund',
+  'ProcessSaleReplacement',
   'CreatePhysicalAccount',
   'CreateTreasuryMovement',
   'RecordReconciliation',
@@ -415,12 +451,27 @@ export class AppController {
     @Inject('TREASURY_SERVICE') private readonly treasuryClient: ClientProxy,
     @Inject('SALES_SERVICE') private readonly salesClient: ClientProxy,
     @Inject('PURCHASE_SERVICE') private readonly purchaseClient: ClientProxy,
-    @Inject('SUPPLIER_SERVICE') private readonly supplierClient: ClientProxy
+    @Inject('SUPPLIER_SERVICE') private readonly supplierClient: ClientProxy,
+    private readonly readinessService: ReadinessService
   ) {}
 
   @Get('health')
   getHealth(): { status: string; timestamp: string } {
     return { status: 'ok', timestamp: new Date().toISOString() };
+  }
+
+  @Get('ready')
+  async getReady() {
+    const result = await this.readinessService.check();
+    if (result.status !== 'ok') {
+      throw new ServiceUnavailableException({
+        status: 'error',
+        errorCode: 'DEPENDENCY_UNAVAILABLE',
+        message: 'One or more required services are unavailable',
+        ...result,
+      });
+    }
+    return result;
   }
 
   @Post('api')
@@ -503,19 +554,19 @@ export class AppController {
         return result;
       }
 
-      if (['PostFinancialTransaction', 'GetFinancialTransaction', 'RecordGeneralExpense', 'RecordWorkerAdvance', 'RecordPettyCashAdvance', 'RepayPettyCashAdvance', 'RecordPettyCashExpense', 'GetAccountingAccounts', 'GetJournals', 'GetReceivables', 'PostTreasuryBooks', 'GetProfitAllocation', 'PostSaleConfirmation', 'PostPurchasePayable', 'PostFinancialCorrection', 'PostSaleRefund', 'GetEngineReport'].includes(cmd)) {
+      if (['PostFinancialTransaction', 'GetFinancialTransaction', 'RecordGeneralExpense', 'RecordWorkerAdvance', 'RecordPettyCashAdvance', 'RepayPettyCashAdvance', 'RecordPettyCashExpense', 'GetAccountingAccounts', 'GetJournals', 'GetReceivables', 'PostTreasuryBooks', 'GetProfitAllocation', 'PostSaleConfirmation', 'PostPurchasePayable', 'PostFinancialCorrection', 'PostSaleRefund', 'GetEngineReport', 'GetDashboardProfitAnalytics', 'GetDashboardArApAnalytics'].includes(cmd)) {
         const result = await firstValueFrom(this.accountingClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
       }
 
-      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetDeviceLife', 'GetStockMovements', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetOwnedUnsoldStockPosition', 'GetDeviceLife', 'GetStockMovements', 'GetDashboardInventoryAnalytics', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ApplyReturnedItemAssessment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
         const result = await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
       }
 
-      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'IssueRefund', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales', 'GetSoldUnitProfit'].includes(cmd)) {
+      if (['ProcessSale', 'CreateSale', 'ConfirmSale', 'CancelSale', 'FulfillSale', 'RecordSalePayment', 'CreateSaleReturn', 'IssueRefund', 'ProcessSaleReplacement', 'AssessReturnedItem', 'CreateWarranty', 'ConvertQuotationToSale', 'RecordPartialPayment', 'RecordBonus', 'ProcessLoanSale', 'GetSales', 'GetSaleById', 'GetSaleHistory', 'GetDeviceSales', 'GetSoldUnitProfit', 'GetDashboardSalesAnalytics', 'GetDashboardPaymentMethodMix', 'GetDashboardProductPerformance'].includes(cmd)) {
         const result = await firstValueFrom(this.salesClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
@@ -533,7 +584,7 @@ export class AppController {
         return result;
       }
 
-      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetMonthlyPosition', 'GetFinancialOverview'].includes(cmd)) {
+      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetMonthlyPosition', 'GetFinancialOverview', 'GetDashboardCashFlowAnalytics', 'GetDashboardLoanAnalytics'].includes(cmd)) {
         const result = await firstValueFrom(this.treasuryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
@@ -570,6 +621,7 @@ export class AppController {
   }
 
   @Get('metrics')
+  @UseGuards(MetricsAuthGuard)
   async getMetrics() {
     const metrics = await getMetrics();
     return metrics;

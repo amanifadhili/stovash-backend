@@ -1,3 +1,5 @@
+import { adjustShopBalance } from './shop-product-balance.js';
+
 export type SaleReturnItemInput = {
   inventoryItemId?: string | null;
   productId?: string | null;
@@ -13,21 +15,27 @@ export type ApplySaleReturnArgs = {
   items: SaleReturnItemInput[];
   returnedBy?: string;
   customerId?: string | null;
+  counterpartyName?: string | null;
+  counterpartyPhone?: string | null;
 };
 
 type Tx = any;
 
 /**
- * Physical refund restock: SOLD → RETURNED (never AVAILABLE).
+ * Physical refund restock:
+ * - Serialized: SOLD → RETURNED (never AVAILABLE; Assess owns AVAILABLE)
+ * - Accessories: IN movement + shop qty restored via adjustShopBalance(+qty)
  * Idempotent per refundId + inventoryItemId / product line.
- * AVAILABLE is owned by AssessReturnedItem.
  */
 export async function applySaleReturnInTx(
   tx: Tx,
   args: ApplySaleReturnArgs,
 ): Promise<{ applied: number; skippedIdempotent: number }> {
-  const { tenantId, shopId, refundId, items, returnedBy, customerId } = args;
+  const { tenantId, shopId, refundId, items, returnedBy, customerId, counterpartyName, counterpartyPhone } =
+    args;
   const actor = returnedBy || 'system';
+  const partyName = (counterpartyName || '').trim() || null;
+  const partyPhone = (counterpartyPhone || '').trim() || null;
   let applied = 0;
   let skippedIdempotent = 0;
 
@@ -84,6 +92,8 @@ export async function applySaleReturnInTx(
           inventoryItemId: invItem.id,
           productId: invItem.productId,
           customerId: customerId || null,
+          counterpartyName: partyName,
+          counterpartyPhone: partyPhone,
           movementType: 'IN',
           quantity: qty,
           referenceId: refundId,
@@ -125,6 +135,14 @@ export async function applySaleReturnInTx(
       throw Object.assign(new Error(`Product ${productId} not found`), { code: 'NOT_FOUND' });
     }
 
+    await adjustShopBalance(tx, {
+      tenantId,
+      shopId,
+      productId,
+      delta: qty,
+      updatedBy: actor,
+    });
+
     await tx.inventoryMovement.create({
       data: {
         tenantId,
@@ -132,6 +150,8 @@ export async function applySaleReturnInTx(
         inventoryItemId: null,
         productId,
         customerId: customerId || null,
+        counterpartyName: partyName,
+        counterpartyPhone: partyPhone,
         movementType: 'IN',
         quantity: qty,
         referenceId: refundId,

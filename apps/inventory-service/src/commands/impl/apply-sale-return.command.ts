@@ -15,6 +15,8 @@ export class ApplySaleReturnPayload {
   items!: ApplySaleReturnItemInput[];
   returnedBy?: string;
   customerId?: string | null;
+  counterpartyName?: string | null;
+  counterpartyPhone?: string | null;
 }
 
 export class ApplySaleReturnCommand extends BaseCommand<ApplySaleReturnPayload> {

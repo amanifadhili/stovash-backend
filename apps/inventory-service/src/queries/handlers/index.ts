@@ -7,10 +7,13 @@ import { GetCategoriesHandler } from './get-categories.handler.js';
 import { GetCategoryByIdHandler } from './get-category-by-id.handler.js';
 import { GetAvailableInventoryItemsHandler } from './get-available-inventory-items.handler.js';
 import { GetStockUnitsHandler } from './get-stock-units.handler.js';
+import { GetOwnedUnsoldStockPositionHandler } from './get-owned-unsold-stock-position.handler.js';
 import { GetDeviceLifeHandler } from './get-device-life.handler.js';
+import { GetInventoryBookCostsHandler } from './get-inventory-book-costs.handler.js';
 import { GetRentalsHandler } from './get-rentals.handler.js';
 import { GetContactsHandler } from './get-contacts.handler.js';
 import { GetStockMovementsHandler } from './get-stock-movements.handler.js';
+import { GetDashboardInventoryAnalyticsHandler } from './get-dashboard-inventory-analytics.handler.js';
 
 export const QueryHandlers = [
   GetProductsHandler,
@@ -22,8 +25,11 @@ export const QueryHandlers = [
   GetCategoryByIdHandler,
   GetAvailableInventoryItemsHandler,
   GetStockUnitsHandler,
+  GetOwnedUnsoldStockPositionHandler,
   GetDeviceLifeHandler,
+  GetInventoryBookCostsHandler,
   GetRentalsHandler,
   GetContactsHandler,
   GetStockMovementsHandler,
+  GetDashboardInventoryAnalyticsHandler,
 ];

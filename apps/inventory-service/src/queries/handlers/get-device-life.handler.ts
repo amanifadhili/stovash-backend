@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetDeviceLifeQuery } from '../impl/get-device-life.query.js';
 import { prisma } from '../../database/client.js';
 import { ICommandResponse, ErrorCode } from '@electronic-shop/types';
+import { inventoryBookCost, inventoryExtrasCost } from '../../common/inventory-book-cost.js';
 
 @QueryHandler(GetDeviceLifeQuery)
 export class GetDeviceLifeHandler implements IQueryHandler<GetDeviceLifeQuery> {
@@ -65,10 +66,9 @@ export class GetDeviceLifeHandler implements IQueryHandler<GetDeviceLifeQuery> {
         }),
       ]);
 
-      const upgradeCost = (item.upgrades ?? []).reduce((s, u) => s + (Number(u.cost) || 0), 0);
       const purchaseCost = Number(item.purchaseCost || 0);
-      const capitalizedCost = Number(item.capitalizedCost || 0);
-      const totalCost = purchaseCost + capitalizedCost + upgradeCost;
+      const extrasCost = inventoryExtrasCost(item);
+      const totalCost = inventoryBookCost(item);
       const brand = item.brand
         ? { id: item.brand.id, name: item.brand.name }
         : item.product?.brand
@@ -102,12 +102,13 @@ export class GetDeviceLifeHandler implements IQueryHandler<GetDeviceLifeQuery> {
             category,
             sellingPrice: item.sellingPrice ?? item.product?.prices?.[0]?.sellingPrice ?? 0,
             specifications: item.specifications ?? item.product?.specifications ?? null,
+            awaitingAssess: item.status === 'RETURNED',
             createdAt: item.createdAt,
           },
           costs: {
             purchaseCost,
-            capitalizedCost,
-            upgradeCost,
+            capitalizedCost: extrasCost,
+            upgradeCost: extrasCost,
             totalCost,
             upgrades: (item.upgrades ?? []).map((u) => ({
               id: u.id,
