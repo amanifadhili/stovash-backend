@@ -38,6 +38,9 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetUsers': [],
   'LoginUser': [], // Public endpoint
   'GetPermissionTemplates': [],
+  'CreatePermissionTemplate': [],
+  'UpdatePermissionTemplate': [],
+  'DeletePermissionTemplate': [],
   'AssignTemplateToUser': [],
   'SetUserPermissionOverride': [],
   'RemoveUserPermissionOverride': [],
@@ -580,7 +583,7 @@ export class AppController {
     }
 
     try {
-      if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers', 'GetPermissionTemplates', 'AssignTemplateToUser', 'SetUserPermissionOverride', 'RemoveUserPermissionOverride', 'GetUserEffectivePermissions', 'GetPermissionAuditLogs'].includes(cmd)) {
+      if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers', 'GetPermissionTemplates', 'CreatePermissionTemplate', 'UpdatePermissionTemplate', 'DeletePermissionTemplate', 'AssignTemplateToUser', 'SetUserPermissionOverride', 'RemoveUserPermissionOverride', 'GetUserEffectivePermissions', 'GetPermissionAuditLogs'].includes(cmd)) {
         const result = await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;

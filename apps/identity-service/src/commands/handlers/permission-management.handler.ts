@@ -45,6 +45,210 @@ export class ManagePermissionsHandler implements ICommandHandler<ManagePermissio
         };
       }
 
+      if (action === 'CreatePermissionTemplate') {
+        const { name, description, role = 'STAFF', permissionKeys = [] } = payload;
+        if (!name) {
+          return {
+            status: 'error',
+            traceId,
+            message: 'Template name is required',
+            errorCode: ErrorCode.VALIDATION_ERROR,
+          };
+        }
+
+        const existing = await prisma.permissionTemplate.findFirst({
+          where: { tenantId, name },
+        });
+
+        if (existing) {
+          return {
+            status: 'error',
+            traceId,
+            message: `Template with name '${name}' already exists for this tenant`,
+            errorCode: ErrorCode.VALIDATION_ERROR,
+          };
+        }
+
+        const template = await prisma.permissionTemplate.create({
+          data: {
+            tenantId,
+            name,
+            description: description || '',
+            isSystem: false,
+            templatePermissions: {
+              create: (permissionKeys as string[]).map((key) => ({
+                permissionKey: key,
+                scope: 'ALL',
+              })),
+            },
+          },
+          include: {
+            templatePermissions: true,
+            _count: { select: { userTemplateAssignments: true } },
+          },
+        });
+
+        await prisma.permissionAuditLog.create({
+          data: {
+            tenantId,
+            actorId,
+            targetUserId: actorId,
+            action: 'CREATE_TEMPLATE',
+            newValue: JSON.stringify({ id: template.id, name, count: permissionKeys.length }),
+            reason: `Created custom permission template: ${name}`,
+            traceId,
+          },
+        });
+
+        return {
+          status: 'success',
+          traceId,
+          data: { template },
+        };
+      }
+
+      if (action === 'UpdatePermissionTemplate') {
+        const { templateId, name, description, permissionKeys } = payload;
+        if (!templateId) {
+          return {
+            status: 'error',
+            traceId,
+            message: 'Template ID is required',
+            errorCode: ErrorCode.VALIDATION_ERROR,
+          };
+        }
+
+        const template = await prisma.permissionTemplate.findUnique({
+          where: { id: templateId },
+          include: { templatePermissions: true },
+        });
+
+        if (!template) {
+          return {
+            status: 'error',
+            traceId,
+            message: 'Permission template not found',
+            errorCode: ErrorCode.NOT_FOUND,
+          };
+        }
+
+        if (template.isSystem && name && name !== template.name) {
+          return {
+            status: 'error',
+            traceId,
+            message: 'Cannot rename built-in system template',
+            errorCode: ErrorCode.FORBIDDEN,
+          };
+        }
+
+        await prisma.permissionTemplate.update({
+          where: { id: templateId },
+          data: {
+            ...(name ? { name } : {}),
+            ...(description !== undefined ? { description } : {}),
+          },
+        });
+
+        if (Array.isArray(permissionKeys)) {
+          await prisma.templatePermission.deleteMany({
+            where: { templateId },
+          });
+
+          if (permissionKeys.length > 0) {
+            await prisma.templatePermission.createMany({
+              data: permissionKeys.map((key: string) => ({
+                templateId,
+                permissionKey: key,
+                scope: 'ALL',
+              })),
+            });
+          }
+        }
+
+        const updatedTemplate = await prisma.permissionTemplate.findUnique({
+          where: { id: templateId },
+          include: {
+            templatePermissions: true,
+            _count: { select: { userTemplateAssignments: true } },
+          },
+        });
+
+        await prisma.permissionAuditLog.create({
+          data: {
+            tenantId,
+            actorId,
+            targetUserId: actorId,
+            action: 'UPDATE_TEMPLATE',
+            oldValue: JSON.stringify({ id: templateId, name: template.name }),
+            newValue: JSON.stringify({ id: templateId, name: name || template.name, keysCount: permissionKeys?.length }),
+            reason: `Updated permission template: ${name || template.name}`,
+            traceId,
+          },
+        });
+
+        return {
+          status: 'success',
+          traceId,
+          data: { template: updatedTemplate },
+        };
+      }
+
+      if (action === 'DeletePermissionTemplate') {
+        const { templateId } = payload;
+        if (!templateId) {
+          return {
+            status: 'error',
+            traceId,
+            message: 'Template ID is required',
+            errorCode: ErrorCode.VALIDATION_ERROR,
+          };
+        }
+
+        const template = await prisma.permissionTemplate.findUnique({
+          where: { id: templateId },
+        });
+
+        if (!template) {
+          return {
+            status: 'error',
+            traceId,
+            message: 'Permission template not found',
+            errorCode: ErrorCode.NOT_FOUND,
+          };
+        }
+
+        if (template.isSystem) {
+          return {
+            status: 'error',
+            traceId,
+            message: 'Built-in system templates cannot be deleted',
+            errorCode: ErrorCode.FORBIDDEN,
+          };
+        }
+
+        await prisma.permissionTemplate.delete({
+          where: { id: templateId },
+        });
+
+        await prisma.permissionAuditLog.create({
+          data: {
+            tenantId,
+            actorId,
+            targetUserId: actorId,
+            action: 'DELETE_TEMPLATE',
+            oldValue: JSON.stringify({ id: templateId, name: template.name }),
+            reason: `Deleted custom permission template: ${template.name}`,
+            traceId,
+          },
+        });
+
+        return {
+          status: 'success',
+          traceId,
+          data: { message: 'Template deleted successfully' },
+        };
+      }
+
       if (action === 'AssignTemplateToUser') {
         const { targetUserId, templateId, assign } = payload; // assign: boolean
         if (!targetUserId || !templateId) {

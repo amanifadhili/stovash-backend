@@ -67,4 +67,19 @@ export class IdentityServiceController {
   async handleGetPermissionAuditLogs(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new ManagePermissionsCommand('GetPermissionAuditLogs', data.payload || {}, data.context));
   }
+
+  @MessagePattern({ cmd: 'CreatePermissionTemplate' })
+  async handleCreatePermissionTemplate(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ManagePermissionsCommand('CreatePermissionTemplate', data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'UpdatePermissionTemplate' })
+  async handleUpdatePermissionTemplate(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ManagePermissionsCommand('UpdatePermissionTemplate', data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'DeletePermissionTemplate' })
+  async handleDeletePermissionTemplate(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ManagePermissionsCommand('DeletePermissionTemplate', data.payload || {}, data.context));
+  }
 }
