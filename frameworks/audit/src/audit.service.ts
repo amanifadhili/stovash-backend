@@ -20,7 +20,7 @@ export class AuditService {
 
     if (context?.tenantId) {
       try {
-        await prisma.auditLog.create({
+        await (prisma as any).auditLog.create({
           data: {
             tenantId: context.tenantId,
             shopId: context.shopId || null,

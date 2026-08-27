@@ -57,76 +57,12 @@ model Staff {
 
   tenant      Tenant       @relation(fields: [tenantId], references: [id])
   shop        Shop?        @relation(fields: [shopId], references: [id])
-  staffRoles  StaffRole[]
 
   @@index([tenantId])
   @@index([shopId])
   @@index([userId])
   @@index([email])
   @@map("staff")
-}
-
-model Role {
-  id          String   @id @default(uuid())
-  tenantId    String
-  name        String
-  description String?
-  isSystem    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  tenant      Tenant       @relation(fields: [tenantId], references: [id])
-  permissions RolePermission[]
-  staffRoles  StaffRole[]
-
-  @@unique([tenantId, name])
-  @@index([tenantId])
-  @@map("roles")
-}
-
-model Permission {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String?
-  resource    String   // e.g. "sales", "inventory", "accounting"
-  action      String   // e.g. "create", "read", "update", "delete"
-  createdAt   DateTime @default(now())
-
-  rolePermissions RolePermission[]
-
-  @@index([resource])
-  @@index([action])
-  @@map("permissions")
-}
-
-model StaffRole {
-  id        String   @id @default(uuid())
-  staffId   String
-  roleId    String
-  createdAt DateTime @default(now())
-
-  staff     Staff    @relation(fields: [staffId], references: [id])
-  role      Role     @relation(fields: [roleId], references: [id])
-
-  @@unique([staffId, roleId])
-  @@index([staffId])
-  @@index([roleId])
-  @@map("staff_roles")
-}
-
-model RolePermission {
-  id           String   @id @default(uuid())
-  roleId       String
-  permissionId String
-  createdAt    DateTime @default(now())
-
-  role         Role       @relation(fields: [roleId], references: [id])
-  permission   Permission @relation(fields: [permissionId], references: [id])
-
-  @@unique([roleId, permissionId])
-  @@index([roleId])
-  @@index([permissionId])
-  @@map("role_permissions")
 }
 
 model WorkPeriod {

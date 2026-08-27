@@ -1,5 +1,5 @@
 // Identity Service Database Schema
-// Handles: Users, Credentials, Sessions, Tokens
+// Handles: Users, Credentials, Sessions, Tokens, Dynamic Permissions
 
 generator client {
   provider = "prisma-client-js"
@@ -23,9 +23,104 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  userPermissions         UserPermission[]
+  userTemplateAssignments UserTemplateAssignment[]
+
   @@index([tenantId])
   @@index([email])
   @@map("users")
+}
+
+model UserPermission {
+  id             String    @id @default(uuid())
+  tenantId       String
+  userId         String
+  permissionKey  String
+  isGranted      Boolean   @default(true)
+  scope          String    @default("ALL")
+  allowedShopIds String[]  @default([])
+  grantedAt      DateTime  @default(now())
+  expiresAt      DateTime?
+  grantedBy      String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionKey])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([permissionKey])
+  @@index([expiresAt])
+  @@map("user_permissions")
+}
+
+model PermissionTemplate {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  templatePermissions     TemplatePermission[]
+  userTemplateAssignments UserTemplateAssignment[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("permission_templates")
+}
+
+model TemplatePermission {
+  id             String   @id @default(uuid())
+  templateId     String
+  permissionKey  String
+  scope          String   @default("ALL")
+  allowedShopIds String[] @default([])
+  createdAt      DateTime @default(now())
+
+  template PermissionTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, permissionKey])
+  @@index([templateId])
+  @@map("template_permissions")
+}
+
+model UserTemplateAssignment {
+  id         String   @id @default(uuid())
+  userId     String
+  templateId String
+  assignedAt DateTime @default(now())
+  assignedBy String
+
+  user     User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template PermissionTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, templateId])
+  @@index([userId])
+  @@index([templateId])
+  @@map("user_template_assignments")
+}
+
+model PermissionAuditLog {
+  id            String   @id @default(uuid())
+  tenantId      String
+  actorId       String
+  targetUserId  String
+  action        String
+  permissionKey String?
+  oldValue      String?
+  newValue      String?
+  reason        String?
+  traceId       String?
+  createdAt     DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([targetUserId])
+  @@index([actorId])
+  @@index([createdAt])
+  @@map("permission_audit_logs")
 }
 
 model Credential {
@@ -78,23 +173,4 @@ model MfaSecret {
 
   @@index([userId])
   @@map("mfa_secrets")
-}
-
-model AuditLog {
-  id         String   @id @default(uuid())
-  tenantId   String
-  shopId     String?
-  userId     String?
-  action     String
-  resource   String
-  resourceId String?
-  traceId    String?
-  details    String? // JSON or text summary
-  createdAt  DateTime @default(now())
-
-  @@index([tenantId])
-  @@index([shopId])
-  @@index([action])
-  @@index([createdAt])
-  @@map("audit_logs")
 }

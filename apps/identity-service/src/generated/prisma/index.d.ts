@@ -19,6 +19,31 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model UserPermission
+ * 
+ */
+export type UserPermission = $Result.DefaultSelection<Prisma.$UserPermissionPayload>
+/**
+ * Model PermissionTemplate
+ * 
+ */
+export type PermissionTemplate = $Result.DefaultSelection<Prisma.$PermissionTemplatePayload>
+/**
+ * Model TemplatePermission
+ * 
+ */
+export type TemplatePermission = $Result.DefaultSelection<Prisma.$TemplatePermissionPayload>
+/**
+ * Model UserTemplateAssignment
+ * 
+ */
+export type UserTemplateAssignment = $Result.DefaultSelection<Prisma.$UserTemplateAssignmentPayload>
+/**
+ * Model PermissionAuditLog
+ * 
+ */
+export type PermissionAuditLog = $Result.DefaultSelection<Prisma.$PermissionAuditLogPayload>
+/**
  * Model Credential
  * 
  */
@@ -38,11 +63,6 @@ export type Token = $Result.DefaultSelection<Prisma.$TokenPayload>
  * 
  */
 export type MfaSecret = $Result.DefaultSelection<Prisma.$MfaSecretPayload>
-/**
- * Model AuditLog
- * 
- */
-export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -178,6 +198,56 @@ export class PrismaClient<
   get user(): Prisma.UserDelegate<ExtArgs>;
 
   /**
+   * `prisma.userPermission`: Exposes CRUD operations for the **UserPermission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserPermissions
+    * const userPermissions = await prisma.userPermission.findMany()
+    * ```
+    */
+  get userPermission(): Prisma.UserPermissionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.permissionTemplate`: Exposes CRUD operations for the **PermissionTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PermissionTemplates
+    * const permissionTemplates = await prisma.permissionTemplate.findMany()
+    * ```
+    */
+  get permissionTemplate(): Prisma.PermissionTemplateDelegate<ExtArgs>;
+
+  /**
+   * `prisma.templatePermission`: Exposes CRUD operations for the **TemplatePermission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TemplatePermissions
+    * const templatePermissions = await prisma.templatePermission.findMany()
+    * ```
+    */
+  get templatePermission(): Prisma.TemplatePermissionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.userTemplateAssignment`: Exposes CRUD operations for the **UserTemplateAssignment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserTemplateAssignments
+    * const userTemplateAssignments = await prisma.userTemplateAssignment.findMany()
+    * ```
+    */
+  get userTemplateAssignment(): Prisma.UserTemplateAssignmentDelegate<ExtArgs>;
+
+  /**
+   * `prisma.permissionAuditLog`: Exposes CRUD operations for the **PermissionAuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PermissionAuditLogs
+    * const permissionAuditLogs = await prisma.permissionAuditLog.findMany()
+    * ```
+    */
+  get permissionAuditLog(): Prisma.PermissionAuditLogDelegate<ExtArgs>;
+
+  /**
    * `prisma.credential`: Exposes CRUD operations for the **Credential** model.
     * Example usage:
     * ```ts
@@ -216,16 +286,6 @@ export class PrismaClient<
     * ```
     */
   get mfaSecret(): Prisma.MfaSecretDelegate<ExtArgs>;
-
-  /**
-   * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more AuditLogs
-    * const auditLogs = await prisma.auditLog.findMany()
-    * ```
-    */
-  get auditLog(): Prisma.AuditLogDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -668,11 +728,15 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
+    UserPermission: 'UserPermission',
+    PermissionTemplate: 'PermissionTemplate',
+    TemplatePermission: 'TemplatePermission',
+    UserTemplateAssignment: 'UserTemplateAssignment',
+    PermissionAuditLog: 'PermissionAuditLog',
     Credential: 'Credential',
     Session: 'Session',
     Token: 'Token',
-    MfaSecret: 'MfaSecret',
-    AuditLog: 'AuditLog'
+    MfaSecret: 'MfaSecret'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -688,7 +752,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "credential" | "session" | "token" | "mfaSecret" | "auditLog"
+      modelProps: "user" | "userPermission" | "permissionTemplate" | "templatePermission" | "userTemplateAssignment" | "permissionAuditLog" | "credential" | "session" | "token" | "mfaSecret"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -759,6 +823,356 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      UserPermission: {
+        payload: Prisma.$UserPermissionPayload<ExtArgs>
+        fields: Prisma.UserPermissionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserPermissionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserPermissionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+          }
+          findFirst: {
+            args: Prisma.UserPermissionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserPermissionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+          }
+          findMany: {
+            args: Prisma.UserPermissionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload>[]
+          }
+          create: {
+            args: Prisma.UserPermissionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+          }
+          createMany: {
+            args: Prisma.UserPermissionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserPermissionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload>[]
+          }
+          delete: {
+            args: Prisma.UserPermissionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+          }
+          update: {
+            args: Prisma.UserPermissionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+          }
+          deleteMany: {
+            args: Prisma.UserPermissionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserPermissionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.UserPermissionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPermissionPayload>
+          }
+          aggregate: {
+            args: Prisma.UserPermissionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserPermission>
+          }
+          groupBy: {
+            args: Prisma.UserPermissionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserPermissionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserPermissionCountArgs<ExtArgs>
+            result: $Utils.Optional<UserPermissionCountAggregateOutputType> | number
+          }
+        }
+      }
+      PermissionTemplate: {
+        payload: Prisma.$PermissionTemplatePayload<ExtArgs>
+        fields: Prisma.PermissionTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PermissionTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PermissionTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.PermissionTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PermissionTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.PermissionTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.PermissionTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.PermissionTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PermissionTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.PermissionTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload>
+          }
+          update: {
+            args: Prisma.PermissionTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.PermissionTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PermissionTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PermissionTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.PermissionTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePermissionTemplate>
+          }
+          groupBy: {
+            args: Prisma.PermissionTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PermissionTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PermissionTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<PermissionTemplateCountAggregateOutputType> | number
+          }
+        }
+      }
+      TemplatePermission: {
+        payload: Prisma.$TemplatePermissionPayload<ExtArgs>
+        fields: Prisma.TemplatePermissionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TemplatePermissionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TemplatePermissionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload>
+          }
+          findFirst: {
+            args: Prisma.TemplatePermissionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TemplatePermissionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload>
+          }
+          findMany: {
+            args: Prisma.TemplatePermissionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload>[]
+          }
+          create: {
+            args: Prisma.TemplatePermissionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload>
+          }
+          createMany: {
+            args: Prisma.TemplatePermissionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TemplatePermissionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload>[]
+          }
+          delete: {
+            args: Prisma.TemplatePermissionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload>
+          }
+          update: {
+            args: Prisma.TemplatePermissionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload>
+          }
+          deleteMany: {
+            args: Prisma.TemplatePermissionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TemplatePermissionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TemplatePermissionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplatePermissionPayload>
+          }
+          aggregate: {
+            args: Prisma.TemplatePermissionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTemplatePermission>
+          }
+          groupBy: {
+            args: Prisma.TemplatePermissionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TemplatePermissionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TemplatePermissionCountArgs<ExtArgs>
+            result: $Utils.Optional<TemplatePermissionCountAggregateOutputType> | number
+          }
+        }
+      }
+      UserTemplateAssignment: {
+        payload: Prisma.$UserTemplateAssignmentPayload<ExtArgs>
+        fields: Prisma.UserTemplateAssignmentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserTemplateAssignmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserTemplateAssignmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload>
+          }
+          findFirst: {
+            args: Prisma.UserTemplateAssignmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserTemplateAssignmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload>
+          }
+          findMany: {
+            args: Prisma.UserTemplateAssignmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload>[]
+          }
+          create: {
+            args: Prisma.UserTemplateAssignmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload>
+          }
+          createMany: {
+            args: Prisma.UserTemplateAssignmentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserTemplateAssignmentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload>[]
+          }
+          delete: {
+            args: Prisma.UserTemplateAssignmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload>
+          }
+          update: {
+            args: Prisma.UserTemplateAssignmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload>
+          }
+          deleteMany: {
+            args: Prisma.UserTemplateAssignmentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserTemplateAssignmentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.UserTemplateAssignmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTemplateAssignmentPayload>
+          }
+          aggregate: {
+            args: Prisma.UserTemplateAssignmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserTemplateAssignment>
+          }
+          groupBy: {
+            args: Prisma.UserTemplateAssignmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserTemplateAssignmentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserTemplateAssignmentCountArgs<ExtArgs>
+            result: $Utils.Optional<UserTemplateAssignmentCountAggregateOutputType> | number
+          }
+        }
+      }
+      PermissionAuditLog: {
+        payload: Prisma.$PermissionAuditLogPayload<ExtArgs>
+        fields: Prisma.PermissionAuditLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PermissionAuditLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PermissionAuditLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+          }
+          findFirst: {
+            args: Prisma.PermissionAuditLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PermissionAuditLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+          }
+          findMany: {
+            args: Prisma.PermissionAuditLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>[]
+          }
+          create: {
+            args: Prisma.PermissionAuditLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+          }
+          createMany: {
+            args: Prisma.PermissionAuditLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PermissionAuditLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>[]
+          }
+          delete: {
+            args: Prisma.PermissionAuditLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+          }
+          update: {
+            args: Prisma.PermissionAuditLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.PermissionAuditLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PermissionAuditLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PermissionAuditLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PermissionAuditLogPayload>
+          }
+          aggregate: {
+            args: Prisma.PermissionAuditLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePermissionAuditLog>
+          }
+          groupBy: {
+            args: Prisma.PermissionAuditLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PermissionAuditLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PermissionAuditLogCountArgs<ExtArgs>
+            result: $Utils.Optional<PermissionAuditLogCountAggregateOutputType> | number
           }
         }
       }
@@ -1042,76 +1456,6 @@ export namespace Prisma {
           }
         }
       }
-      AuditLog: {
-        payload: Prisma.$AuditLogPayload<ExtArgs>
-        fields: Prisma.AuditLogFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.AuditLogFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.AuditLogFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
-          }
-          findFirst: {
-            args: Prisma.AuditLogFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.AuditLogFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
-          }
-          findMany: {
-            args: Prisma.AuditLogFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
-          }
-          create: {
-            args: Prisma.AuditLogCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
-          }
-          createMany: {
-            args: Prisma.AuditLogCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.AuditLogCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
-          }
-          delete: {
-            args: Prisma.AuditLogDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
-          }
-          update: {
-            args: Prisma.AuditLogUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
-          }
-          deleteMany: {
-            args: Prisma.AuditLogDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.AuditLogUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.AuditLogUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
-          }
-          aggregate: {
-            args: Prisma.AuditLogAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateAuditLog>
-          }
-          groupBy: {
-            args: Prisma.AuditLogGroupByArgs<ExtArgs>
-            result: $Utils.Optional<AuditLogGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.AuditLogCountArgs<ExtArgs>
-            result: $Utils.Optional<AuditLogCountAggregateOutputType> | number
-          }
-        }
-      }
     }
   } & {
     other: {
@@ -1267,6 +1611,85 @@ export namespace Prisma {
    * Count Types
    */
 
+
+  /**
+   * Count Type UserCountOutputType
+   */
+
+  export type UserCountOutputType = {
+    userPermissions: number
+    userTemplateAssignments: number
+  }
+
+  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    userPermissions?: boolean | UserCountOutputTypeCountUserPermissionsArgs
+    userTemplateAssignments?: boolean | UserCountOutputTypeCountUserTemplateAssignmentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserCountOutputType
+     */
+    select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountUserPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserPermissionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountUserTemplateAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTemplateAssignmentWhereInput
+  }
+
+
+  /**
+   * Count Type PermissionTemplateCountOutputType
+   */
+
+  export type PermissionTemplateCountOutputType = {
+    templatePermissions: number
+    userTemplateAssignments: number
+  }
+
+  export type PermissionTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    templatePermissions?: boolean | PermissionTemplateCountOutputTypeCountTemplatePermissionsArgs
+    userTemplateAssignments?: boolean | PermissionTemplateCountOutputTypeCountUserTemplateAssignmentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PermissionTemplateCountOutputType without action
+   */
+  export type PermissionTemplateCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplateCountOutputType
+     */
+    select?: PermissionTemplateCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PermissionTemplateCountOutputType without action
+   */
+  export type PermissionTemplateCountOutputTypeCountTemplatePermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TemplatePermissionWhereInput
+  }
+
+  /**
+   * PermissionTemplateCountOutputType without action
+   */
+  export type PermissionTemplateCountOutputTypeCountUserTemplateAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTemplateAssignmentWhereInput
+  }
 
 
   /**
@@ -1477,6 +1900,9 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    userPermissions?: boolean | User$userPermissionsArgs<ExtArgs>
+    userTemplateAssignments?: boolean | User$userTemplateAssignmentsArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1505,10 +1931,19 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
+  export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    userPermissions?: boolean | User$userPermissionsArgs<ExtArgs>
+    userTemplateAssignments?: boolean | User$userTemplateAssignmentsArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
-    objects: {}
+    objects: {
+      userPermissions: Prisma.$UserPermissionPayload<ExtArgs>[]
+      userTemplateAssignments: Prisma.$UserTemplateAssignmentPayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       tenantId: string
@@ -1884,6 +2319,8 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    userPermissions<T extends User$userPermissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$userPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findMany"> | Null>
+    userTemplateAssignments<T extends User$userTemplateAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$userTemplateAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1936,6 +2373,10 @@ export namespace Prisma {
      */
     select?: UserSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1950,6 +2391,10 @@ export namespace Prisma {
      */
     select?: UserSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1963,6 +2408,10 @@ export namespace Prisma {
      * Select specific fields to fetch from the User
      */
     select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * Filter, which User to fetch.
      */
@@ -2008,6 +2457,10 @@ export namespace Prisma {
      */
     select?: UserSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where?: UserWhereInput
@@ -2052,6 +2505,10 @@ export namespace Prisma {
      */
     select?: UserSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which Users to fetch.
      */
     where?: UserWhereInput
@@ -2090,6 +2547,10 @@ export namespace Prisma {
      * Select specific fields to fetch from the User
      */
     select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * The data needed to create a User.
      */
@@ -2131,6 +2592,10 @@ export namespace Prisma {
      */
     select?: UserSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * The data needed to update a User.
      */
     data: XOR<UserUpdateInput, UserUncheckedUpdateInput>
@@ -2163,6 +2628,10 @@ export namespace Prisma {
      */
     select?: UserSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * The filter to search for the User to update in case it exists.
      */
     where: UserWhereUniqueInput
@@ -2185,6 +2654,10 @@ export namespace Prisma {
      */
     select?: UserSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter which User to delete.
      */
     where: UserWhereUniqueInput
@@ -2201,6 +2674,46 @@ export namespace Prisma {
   }
 
   /**
+   * User.userPermissions
+   */
+  export type User$userPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    where?: UserPermissionWhereInput
+    orderBy?: UserPermissionOrderByWithRelationInput | UserPermissionOrderByWithRelationInput[]
+    cursor?: UserPermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserPermissionScalarFieldEnum | UserPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * User.userTemplateAssignments
+   */
+  export type User$userTemplateAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    where?: UserTemplateAssignmentWhereInput
+    orderBy?: UserTemplateAssignmentOrderByWithRelationInput | UserTemplateAssignmentOrderByWithRelationInput[]
+    cursor?: UserTemplateAssignmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserTemplateAssignmentScalarFieldEnum | UserTemplateAssignmentScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2208,6 +2721,4849 @@ export namespace Prisma {
      * Select specific fields to fetch from the User
      */
     select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model UserPermission
+   */
+
+  export type AggregateUserPermission = {
+    _count: UserPermissionCountAggregateOutputType | null
+    _min: UserPermissionMinAggregateOutputType | null
+    _max: UserPermissionMaxAggregateOutputType | null
+  }
+
+  export type UserPermissionMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    userId: string | null
+    permissionKey: string | null
+    isGranted: boolean | null
+    scope: string | null
+    grantedAt: Date | null
+    expiresAt: Date | null
+    grantedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserPermissionMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    userId: string | null
+    permissionKey: string | null
+    isGranted: boolean | null
+    scope: string | null
+    grantedAt: Date | null
+    expiresAt: Date | null
+    grantedBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserPermissionCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    userId: number
+    permissionKey: number
+    isGranted: number
+    scope: number
+    allowedShopIds: number
+    grantedAt: number
+    expiresAt: number
+    grantedBy: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type UserPermissionMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    permissionKey?: true
+    isGranted?: true
+    scope?: true
+    grantedAt?: true
+    expiresAt?: true
+    grantedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserPermissionMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    permissionKey?: true
+    isGranted?: true
+    scope?: true
+    grantedAt?: true
+    expiresAt?: true
+    grantedBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserPermissionCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    userId?: true
+    permissionKey?: true
+    isGranted?: true
+    scope?: true
+    allowedShopIds?: true
+    grantedAt?: true
+    expiresAt?: true
+    grantedBy?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type UserPermissionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserPermission to aggregate.
+     */
+    where?: UserPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserPermissions to fetch.
+     */
+    orderBy?: UserPermissionOrderByWithRelationInput | UserPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserPermissions
+    **/
+    _count?: true | UserPermissionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserPermissionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserPermissionMaxAggregateInputType
+  }
+
+  export type GetUserPermissionAggregateType<T extends UserPermissionAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserPermission]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserPermission[P]>
+      : GetScalarType<T[P], AggregateUserPermission[P]>
+  }
+
+
+
+
+  export type UserPermissionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserPermissionWhereInput
+    orderBy?: UserPermissionOrderByWithAggregationInput | UserPermissionOrderByWithAggregationInput[]
+    by: UserPermissionScalarFieldEnum[] | UserPermissionScalarFieldEnum
+    having?: UserPermissionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserPermissionCountAggregateInputType | true
+    _min?: UserPermissionMinAggregateInputType
+    _max?: UserPermissionMaxAggregateInputType
+  }
+
+  export type UserPermissionGroupByOutputType = {
+    id: string
+    tenantId: string
+    userId: string
+    permissionKey: string
+    isGranted: boolean
+    scope: string
+    allowedShopIds: string[]
+    grantedAt: Date
+    expiresAt: Date | null
+    grantedBy: string
+    createdAt: Date
+    updatedAt: Date
+    _count: UserPermissionCountAggregateOutputType | null
+    _min: UserPermissionMinAggregateOutputType | null
+    _max: UserPermissionMaxAggregateOutputType | null
+  }
+
+  type GetUserPermissionGroupByPayload<T extends UserPermissionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserPermissionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserPermissionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserPermissionGroupByOutputType[P]>
+            : GetScalarType<T[P], UserPermissionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserPermissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    permissionKey?: boolean
+    isGranted?: boolean
+    scope?: boolean
+    allowedShopIds?: boolean
+    grantedAt?: boolean
+    expiresAt?: boolean
+    grantedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userPermission"]>
+
+  export type UserPermissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    permissionKey?: boolean
+    isGranted?: boolean
+    scope?: boolean
+    allowedShopIds?: boolean
+    grantedAt?: boolean
+    expiresAt?: boolean
+    grantedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userPermission"]>
+
+  export type UserPermissionSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    userId?: boolean
+    permissionKey?: boolean
+    isGranted?: boolean
+    scope?: boolean
+    allowedShopIds?: boolean
+    grantedAt?: boolean
+    expiresAt?: boolean
+    grantedBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type UserPermissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type UserPermissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $UserPermissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserPermission"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      userId: string
+      permissionKey: string
+      isGranted: boolean
+      scope: string
+      allowedShopIds: string[]
+      grantedAt: Date
+      expiresAt: Date | null
+      grantedBy: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["userPermission"]>
+    composites: {}
+  }
+
+  type UserPermissionGetPayload<S extends boolean | null | undefined | UserPermissionDefaultArgs> = $Result.GetResult<Prisma.$UserPermissionPayload, S>
+
+  type UserPermissionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<UserPermissionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: UserPermissionCountAggregateInputType | true
+    }
+
+  export interface UserPermissionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserPermission'], meta: { name: 'UserPermission' } }
+    /**
+     * Find zero or one UserPermission that matches the filter.
+     * @param {UserPermissionFindUniqueArgs} args - Arguments to find a UserPermission
+     * @example
+     * // Get one UserPermission
+     * const userPermission = await prisma.userPermission.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserPermissionFindUniqueArgs>(args: SelectSubset<T, UserPermissionFindUniqueArgs<ExtArgs>>): Prisma__UserPermissionClient<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one UserPermission that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {UserPermissionFindUniqueOrThrowArgs} args - Arguments to find a UserPermission
+     * @example
+     * // Get one UserPermission
+     * const userPermission = await prisma.userPermission.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserPermissionFindUniqueOrThrowArgs>(args: SelectSubset<T, UserPermissionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserPermissionClient<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first UserPermission that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPermissionFindFirstArgs} args - Arguments to find a UserPermission
+     * @example
+     * // Get one UserPermission
+     * const userPermission = await prisma.userPermission.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserPermissionFindFirstArgs>(args?: SelectSubset<T, UserPermissionFindFirstArgs<ExtArgs>>): Prisma__UserPermissionClient<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first UserPermission that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPermissionFindFirstOrThrowArgs} args - Arguments to find a UserPermission
+     * @example
+     * // Get one UserPermission
+     * const userPermission = await prisma.userPermission.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserPermissionFindFirstOrThrowArgs>(args?: SelectSubset<T, UserPermissionFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserPermissionClient<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more UserPermissions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPermissionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserPermissions
+     * const userPermissions = await prisma.userPermission.findMany()
+     * 
+     * // Get first 10 UserPermissions
+     * const userPermissions = await prisma.userPermission.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userPermissionWithIdOnly = await prisma.userPermission.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserPermissionFindManyArgs>(args?: SelectSubset<T, UserPermissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a UserPermission.
+     * @param {UserPermissionCreateArgs} args - Arguments to create a UserPermission.
+     * @example
+     * // Create one UserPermission
+     * const UserPermission = await prisma.userPermission.create({
+     *   data: {
+     *     // ... data to create a UserPermission
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserPermissionCreateArgs>(args: SelectSubset<T, UserPermissionCreateArgs<ExtArgs>>): Prisma__UserPermissionClient<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many UserPermissions.
+     * @param {UserPermissionCreateManyArgs} args - Arguments to create many UserPermissions.
+     * @example
+     * // Create many UserPermissions
+     * const userPermission = await prisma.userPermission.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserPermissionCreateManyArgs>(args?: SelectSubset<T, UserPermissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserPermissions and returns the data saved in the database.
+     * @param {UserPermissionCreateManyAndReturnArgs} args - Arguments to create many UserPermissions.
+     * @example
+     * // Create many UserPermissions
+     * const userPermission = await prisma.userPermission.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserPermissions and only return the `id`
+     * const userPermissionWithIdOnly = await prisma.userPermission.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserPermissionCreateManyAndReturnArgs>(args?: SelectSubset<T, UserPermissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a UserPermission.
+     * @param {UserPermissionDeleteArgs} args - Arguments to delete one UserPermission.
+     * @example
+     * // Delete one UserPermission
+     * const UserPermission = await prisma.userPermission.delete({
+     *   where: {
+     *     // ... filter to delete one UserPermission
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserPermissionDeleteArgs>(args: SelectSubset<T, UserPermissionDeleteArgs<ExtArgs>>): Prisma__UserPermissionClient<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one UserPermission.
+     * @param {UserPermissionUpdateArgs} args - Arguments to update one UserPermission.
+     * @example
+     * // Update one UserPermission
+     * const userPermission = await prisma.userPermission.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserPermissionUpdateArgs>(args: SelectSubset<T, UserPermissionUpdateArgs<ExtArgs>>): Prisma__UserPermissionClient<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more UserPermissions.
+     * @param {UserPermissionDeleteManyArgs} args - Arguments to filter UserPermissions to delete.
+     * @example
+     * // Delete a few UserPermissions
+     * const { count } = await prisma.userPermission.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserPermissionDeleteManyArgs>(args?: SelectSubset<T, UserPermissionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserPermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPermissionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserPermissions
+     * const userPermission = await prisma.userPermission.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserPermissionUpdateManyArgs>(args: SelectSubset<T, UserPermissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one UserPermission.
+     * @param {UserPermissionUpsertArgs} args - Arguments to update or create a UserPermission.
+     * @example
+     * // Update or create a UserPermission
+     * const userPermission = await prisma.userPermission.upsert({
+     *   create: {
+     *     // ... data to create a UserPermission
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserPermission we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserPermissionUpsertArgs>(args: SelectSubset<T, UserPermissionUpsertArgs<ExtArgs>>): Prisma__UserPermissionClient<$Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of UserPermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPermissionCountArgs} args - Arguments to filter UserPermissions to count.
+     * @example
+     * // Count the number of UserPermissions
+     * const count = await prisma.userPermission.count({
+     *   where: {
+     *     // ... the filter for the UserPermissions we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserPermissionCountArgs>(
+      args?: Subset<T, UserPermissionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserPermissionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserPermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPermissionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserPermissionAggregateArgs>(args: Subset<T, UserPermissionAggregateArgs>): Prisma.PrismaPromise<GetUserPermissionAggregateType<T>>
+
+    /**
+     * Group by UserPermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPermissionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserPermissionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserPermissionGroupByArgs['orderBy'] }
+        : { orderBy?: UserPermissionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserPermissionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserPermissionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserPermission model
+   */
+  readonly fields: UserPermissionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserPermission.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserPermissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserPermission model
+   */ 
+  interface UserPermissionFieldRefs {
+    readonly id: FieldRef<"UserPermission", 'String'>
+    readonly tenantId: FieldRef<"UserPermission", 'String'>
+    readonly userId: FieldRef<"UserPermission", 'String'>
+    readonly permissionKey: FieldRef<"UserPermission", 'String'>
+    readonly isGranted: FieldRef<"UserPermission", 'Boolean'>
+    readonly scope: FieldRef<"UserPermission", 'String'>
+    readonly allowedShopIds: FieldRef<"UserPermission", 'String[]'>
+    readonly grantedAt: FieldRef<"UserPermission", 'DateTime'>
+    readonly expiresAt: FieldRef<"UserPermission", 'DateTime'>
+    readonly grantedBy: FieldRef<"UserPermission", 'String'>
+    readonly createdAt: FieldRef<"UserPermission", 'DateTime'>
+    readonly updatedAt: FieldRef<"UserPermission", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserPermission findUnique
+   */
+  export type UserPermissionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPermission to fetch.
+     */
+    where: UserPermissionWhereUniqueInput
+  }
+
+  /**
+   * UserPermission findUniqueOrThrow
+   */
+  export type UserPermissionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPermission to fetch.
+     */
+    where: UserPermissionWhereUniqueInput
+  }
+
+  /**
+   * UserPermission findFirst
+   */
+  export type UserPermissionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPermission to fetch.
+     */
+    where?: UserPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserPermissions to fetch.
+     */
+    orderBy?: UserPermissionOrderByWithRelationInput | UserPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserPermissions.
+     */
+    cursor?: UserPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserPermissions.
+     */
+    distinct?: UserPermissionScalarFieldEnum | UserPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * UserPermission findFirstOrThrow
+   */
+  export type UserPermissionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPermission to fetch.
+     */
+    where?: UserPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserPermissions to fetch.
+     */
+    orderBy?: UserPermissionOrderByWithRelationInput | UserPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserPermissions.
+     */
+    cursor?: UserPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserPermissions.
+     */
+    distinct?: UserPermissionScalarFieldEnum | UserPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * UserPermission findMany
+   */
+  export type UserPermissionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPermissions to fetch.
+     */
+    where?: UserPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserPermissions to fetch.
+     */
+    orderBy?: UserPermissionOrderByWithRelationInput | UserPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserPermissions.
+     */
+    cursor?: UserPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserPermissions.
+     */
+    skip?: number
+    distinct?: UserPermissionScalarFieldEnum | UserPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * UserPermission create
+   */
+  export type UserPermissionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserPermission.
+     */
+    data: XOR<UserPermissionCreateInput, UserPermissionUncheckedCreateInput>
+  }
+
+  /**
+   * UserPermission createMany
+   */
+  export type UserPermissionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserPermissions.
+     */
+    data: UserPermissionCreateManyInput | UserPermissionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserPermission createManyAndReturn
+   */
+  export type UserPermissionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many UserPermissions.
+     */
+    data: UserPermissionCreateManyInput | UserPermissionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserPermission update
+   */
+  export type UserPermissionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserPermission.
+     */
+    data: XOR<UserPermissionUpdateInput, UserPermissionUncheckedUpdateInput>
+    /**
+     * Choose, which UserPermission to update.
+     */
+    where: UserPermissionWhereUniqueInput
+  }
+
+  /**
+   * UserPermission updateMany
+   */
+  export type UserPermissionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserPermissions.
+     */
+    data: XOR<UserPermissionUpdateManyMutationInput, UserPermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which UserPermissions to update
+     */
+    where?: UserPermissionWhereInput
+  }
+
+  /**
+   * UserPermission upsert
+   */
+  export type UserPermissionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserPermission to update in case it exists.
+     */
+    where: UserPermissionWhereUniqueInput
+    /**
+     * In case the UserPermission found by the `where` argument doesn't exist, create a new UserPermission with this data.
+     */
+    create: XOR<UserPermissionCreateInput, UserPermissionUncheckedCreateInput>
+    /**
+     * In case the UserPermission was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserPermissionUpdateInput, UserPermissionUncheckedUpdateInput>
+  }
+
+  /**
+   * UserPermission delete
+   */
+  export type UserPermissionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+    /**
+     * Filter which UserPermission to delete.
+     */
+    where: UserPermissionWhereUniqueInput
+  }
+
+  /**
+   * UserPermission deleteMany
+   */
+  export type UserPermissionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserPermissions to delete
+     */
+    where?: UserPermissionWhereInput
+  }
+
+  /**
+   * UserPermission without action
+   */
+  export type UserPermissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPermission
+     */
+    select?: UserPermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPermissionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PermissionTemplate
+   */
+
+  export type AggregatePermissionTemplate = {
+    _count: PermissionTemplateCountAggregateOutputType | null
+    _min: PermissionTemplateMinAggregateOutputType | null
+    _max: PermissionTemplateMaxAggregateOutputType | null
+  }
+
+  export type PermissionTemplateMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    name: string | null
+    description: string | null
+    isSystem: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PermissionTemplateMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    name: string | null
+    description: string | null
+    isSystem: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PermissionTemplateCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    name: number
+    description: number
+    isSystem: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PermissionTemplateMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    description?: true
+    isSystem?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PermissionTemplateMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    description?: true
+    isSystem?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PermissionTemplateCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    description?: true
+    isSystem?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PermissionTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PermissionTemplate to aggregate.
+     */
+    where?: PermissionTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PermissionTemplates to fetch.
+     */
+    orderBy?: PermissionTemplateOrderByWithRelationInput | PermissionTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PermissionTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PermissionTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PermissionTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PermissionTemplates
+    **/
+    _count?: true | PermissionTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PermissionTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PermissionTemplateMaxAggregateInputType
+  }
+
+  export type GetPermissionTemplateAggregateType<T extends PermissionTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregatePermissionTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePermissionTemplate[P]>
+      : GetScalarType<T[P], AggregatePermissionTemplate[P]>
+  }
+
+
+
+
+  export type PermissionTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PermissionTemplateWhereInput
+    orderBy?: PermissionTemplateOrderByWithAggregationInput | PermissionTemplateOrderByWithAggregationInput[]
+    by: PermissionTemplateScalarFieldEnum[] | PermissionTemplateScalarFieldEnum
+    having?: PermissionTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PermissionTemplateCountAggregateInputType | true
+    _min?: PermissionTemplateMinAggregateInputType
+    _max?: PermissionTemplateMaxAggregateInputType
+  }
+
+  export type PermissionTemplateGroupByOutputType = {
+    id: string
+    tenantId: string
+    name: string
+    description: string | null
+    isSystem: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: PermissionTemplateCountAggregateOutputType | null
+    _min: PermissionTemplateMinAggregateOutputType | null
+    _max: PermissionTemplateMaxAggregateOutputType | null
+  }
+
+  type GetPermissionTemplateGroupByPayload<T extends PermissionTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PermissionTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PermissionTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PermissionTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], PermissionTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PermissionTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    isSystem?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    templatePermissions?: boolean | PermissionTemplate$templatePermissionsArgs<ExtArgs>
+    userTemplateAssignments?: boolean | PermissionTemplate$userTemplateAssignmentsArgs<ExtArgs>
+    _count?: boolean | PermissionTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["permissionTemplate"]>
+
+  export type PermissionTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    isSystem?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["permissionTemplate"]>
+
+  export type PermissionTemplateSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    isSystem?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PermissionTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    templatePermissions?: boolean | PermissionTemplate$templatePermissionsArgs<ExtArgs>
+    userTemplateAssignments?: boolean | PermissionTemplate$userTemplateAssignmentsArgs<ExtArgs>
+    _count?: boolean | PermissionTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PermissionTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $PermissionTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PermissionTemplate"
+    objects: {
+      templatePermissions: Prisma.$TemplatePermissionPayload<ExtArgs>[]
+      userTemplateAssignments: Prisma.$UserTemplateAssignmentPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      name: string
+      description: string | null
+      isSystem: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["permissionTemplate"]>
+    composites: {}
+  }
+
+  type PermissionTemplateGetPayload<S extends boolean | null | undefined | PermissionTemplateDefaultArgs> = $Result.GetResult<Prisma.$PermissionTemplatePayload, S>
+
+  type PermissionTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PermissionTemplateFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PermissionTemplateCountAggregateInputType | true
+    }
+
+  export interface PermissionTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PermissionTemplate'], meta: { name: 'PermissionTemplate' } }
+    /**
+     * Find zero or one PermissionTemplate that matches the filter.
+     * @param {PermissionTemplateFindUniqueArgs} args - Arguments to find a PermissionTemplate
+     * @example
+     * // Get one PermissionTemplate
+     * const permissionTemplate = await prisma.permissionTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PermissionTemplateFindUniqueArgs>(args: SelectSubset<T, PermissionTemplateFindUniqueArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PermissionTemplate that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PermissionTemplateFindUniqueOrThrowArgs} args - Arguments to find a PermissionTemplate
+     * @example
+     * // Get one PermissionTemplate
+     * const permissionTemplate = await prisma.permissionTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PermissionTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, PermissionTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PermissionTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionTemplateFindFirstArgs} args - Arguments to find a PermissionTemplate
+     * @example
+     * // Get one PermissionTemplate
+     * const permissionTemplate = await prisma.permissionTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PermissionTemplateFindFirstArgs>(args?: SelectSubset<T, PermissionTemplateFindFirstArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PermissionTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionTemplateFindFirstOrThrowArgs} args - Arguments to find a PermissionTemplate
+     * @example
+     * // Get one PermissionTemplate
+     * const permissionTemplate = await prisma.permissionTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PermissionTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, PermissionTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PermissionTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PermissionTemplates
+     * const permissionTemplates = await prisma.permissionTemplate.findMany()
+     * 
+     * // Get first 10 PermissionTemplates
+     * const permissionTemplates = await prisma.permissionTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const permissionTemplateWithIdOnly = await prisma.permissionTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PermissionTemplateFindManyArgs>(args?: SelectSubset<T, PermissionTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PermissionTemplate.
+     * @param {PermissionTemplateCreateArgs} args - Arguments to create a PermissionTemplate.
+     * @example
+     * // Create one PermissionTemplate
+     * const PermissionTemplate = await prisma.permissionTemplate.create({
+     *   data: {
+     *     // ... data to create a PermissionTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends PermissionTemplateCreateArgs>(args: SelectSubset<T, PermissionTemplateCreateArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PermissionTemplates.
+     * @param {PermissionTemplateCreateManyArgs} args - Arguments to create many PermissionTemplates.
+     * @example
+     * // Create many PermissionTemplates
+     * const permissionTemplate = await prisma.permissionTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PermissionTemplateCreateManyArgs>(args?: SelectSubset<T, PermissionTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PermissionTemplates and returns the data saved in the database.
+     * @param {PermissionTemplateCreateManyAndReturnArgs} args - Arguments to create many PermissionTemplates.
+     * @example
+     * // Create many PermissionTemplates
+     * const permissionTemplate = await prisma.permissionTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PermissionTemplates and only return the `id`
+     * const permissionTemplateWithIdOnly = await prisma.permissionTemplate.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PermissionTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, PermissionTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PermissionTemplate.
+     * @param {PermissionTemplateDeleteArgs} args - Arguments to delete one PermissionTemplate.
+     * @example
+     * // Delete one PermissionTemplate
+     * const PermissionTemplate = await prisma.permissionTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one PermissionTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PermissionTemplateDeleteArgs>(args: SelectSubset<T, PermissionTemplateDeleteArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PermissionTemplate.
+     * @param {PermissionTemplateUpdateArgs} args - Arguments to update one PermissionTemplate.
+     * @example
+     * // Update one PermissionTemplate
+     * const permissionTemplate = await prisma.permissionTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PermissionTemplateUpdateArgs>(args: SelectSubset<T, PermissionTemplateUpdateArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PermissionTemplates.
+     * @param {PermissionTemplateDeleteManyArgs} args - Arguments to filter PermissionTemplates to delete.
+     * @example
+     * // Delete a few PermissionTemplates
+     * const { count } = await prisma.permissionTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PermissionTemplateDeleteManyArgs>(args?: SelectSubset<T, PermissionTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PermissionTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PermissionTemplates
+     * const permissionTemplate = await prisma.permissionTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PermissionTemplateUpdateManyArgs>(args: SelectSubset<T, PermissionTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PermissionTemplate.
+     * @param {PermissionTemplateUpsertArgs} args - Arguments to update or create a PermissionTemplate.
+     * @example
+     * // Update or create a PermissionTemplate
+     * const permissionTemplate = await prisma.permissionTemplate.upsert({
+     *   create: {
+     *     // ... data to create a PermissionTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PermissionTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PermissionTemplateUpsertArgs>(args: SelectSubset<T, PermissionTemplateUpsertArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PermissionTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionTemplateCountArgs} args - Arguments to filter PermissionTemplates to count.
+     * @example
+     * // Count the number of PermissionTemplates
+     * const count = await prisma.permissionTemplate.count({
+     *   where: {
+     *     // ... the filter for the PermissionTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends PermissionTemplateCountArgs>(
+      args?: Subset<T, PermissionTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PermissionTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PermissionTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PermissionTemplateAggregateArgs>(args: Subset<T, PermissionTemplateAggregateArgs>): Prisma.PrismaPromise<GetPermissionTemplateAggregateType<T>>
+
+    /**
+     * Group by PermissionTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PermissionTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PermissionTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: PermissionTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PermissionTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPermissionTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PermissionTemplate model
+   */
+  readonly fields: PermissionTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PermissionTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PermissionTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    templatePermissions<T extends PermissionTemplate$templatePermissionsArgs<ExtArgs> = {}>(args?: Subset<T, PermissionTemplate$templatePermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "findMany"> | Null>
+    userTemplateAssignments<T extends PermissionTemplate$userTemplateAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, PermissionTemplate$userTemplateAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PermissionTemplate model
+   */ 
+  interface PermissionTemplateFieldRefs {
+    readonly id: FieldRef<"PermissionTemplate", 'String'>
+    readonly tenantId: FieldRef<"PermissionTemplate", 'String'>
+    readonly name: FieldRef<"PermissionTemplate", 'String'>
+    readonly description: FieldRef<"PermissionTemplate", 'String'>
+    readonly isSystem: FieldRef<"PermissionTemplate", 'Boolean'>
+    readonly createdAt: FieldRef<"PermissionTemplate", 'DateTime'>
+    readonly updatedAt: FieldRef<"PermissionTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PermissionTemplate findUnique
+   */
+  export type PermissionTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PermissionTemplate to fetch.
+     */
+    where: PermissionTemplateWhereUniqueInput
+  }
+
+  /**
+   * PermissionTemplate findUniqueOrThrow
+   */
+  export type PermissionTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PermissionTemplate to fetch.
+     */
+    where: PermissionTemplateWhereUniqueInput
+  }
+
+  /**
+   * PermissionTemplate findFirst
+   */
+  export type PermissionTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PermissionTemplate to fetch.
+     */
+    where?: PermissionTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PermissionTemplates to fetch.
+     */
+    orderBy?: PermissionTemplateOrderByWithRelationInput | PermissionTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PermissionTemplates.
+     */
+    cursor?: PermissionTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PermissionTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PermissionTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PermissionTemplates.
+     */
+    distinct?: PermissionTemplateScalarFieldEnum | PermissionTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * PermissionTemplate findFirstOrThrow
+   */
+  export type PermissionTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PermissionTemplate to fetch.
+     */
+    where?: PermissionTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PermissionTemplates to fetch.
+     */
+    orderBy?: PermissionTemplateOrderByWithRelationInput | PermissionTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PermissionTemplates.
+     */
+    cursor?: PermissionTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PermissionTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PermissionTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PermissionTemplates.
+     */
+    distinct?: PermissionTemplateScalarFieldEnum | PermissionTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * PermissionTemplate findMany
+   */
+  export type PermissionTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which PermissionTemplates to fetch.
+     */
+    where?: PermissionTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PermissionTemplates to fetch.
+     */
+    orderBy?: PermissionTemplateOrderByWithRelationInput | PermissionTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PermissionTemplates.
+     */
+    cursor?: PermissionTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PermissionTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PermissionTemplates.
+     */
+    skip?: number
+    distinct?: PermissionTemplateScalarFieldEnum | PermissionTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * PermissionTemplate create
+   */
+  export type PermissionTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PermissionTemplate.
+     */
+    data: XOR<PermissionTemplateCreateInput, PermissionTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * PermissionTemplate createMany
+   */
+  export type PermissionTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PermissionTemplates.
+     */
+    data: PermissionTemplateCreateManyInput | PermissionTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PermissionTemplate createManyAndReturn
+   */
+  export type PermissionTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PermissionTemplates.
+     */
+    data: PermissionTemplateCreateManyInput | PermissionTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PermissionTemplate update
+   */
+  export type PermissionTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PermissionTemplate.
+     */
+    data: XOR<PermissionTemplateUpdateInput, PermissionTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which PermissionTemplate to update.
+     */
+    where: PermissionTemplateWhereUniqueInput
+  }
+
+  /**
+   * PermissionTemplate updateMany
+   */
+  export type PermissionTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PermissionTemplates.
+     */
+    data: XOR<PermissionTemplateUpdateManyMutationInput, PermissionTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which PermissionTemplates to update
+     */
+    where?: PermissionTemplateWhereInput
+  }
+
+  /**
+   * PermissionTemplate upsert
+   */
+  export type PermissionTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PermissionTemplate to update in case it exists.
+     */
+    where: PermissionTemplateWhereUniqueInput
+    /**
+     * In case the PermissionTemplate found by the `where` argument doesn't exist, create a new PermissionTemplate with this data.
+     */
+    create: XOR<PermissionTemplateCreateInput, PermissionTemplateUncheckedCreateInput>
+    /**
+     * In case the PermissionTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PermissionTemplateUpdateInput, PermissionTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * PermissionTemplate delete
+   */
+  export type PermissionTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+    /**
+     * Filter which PermissionTemplate to delete.
+     */
+    where: PermissionTemplateWhereUniqueInput
+  }
+
+  /**
+   * PermissionTemplate deleteMany
+   */
+  export type PermissionTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PermissionTemplates to delete
+     */
+    where?: PermissionTemplateWhereInput
+  }
+
+  /**
+   * PermissionTemplate.templatePermissions
+   */
+  export type PermissionTemplate$templatePermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    where?: TemplatePermissionWhereInput
+    orderBy?: TemplatePermissionOrderByWithRelationInput | TemplatePermissionOrderByWithRelationInput[]
+    cursor?: TemplatePermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TemplatePermissionScalarFieldEnum | TemplatePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * PermissionTemplate.userTemplateAssignments
+   */
+  export type PermissionTemplate$userTemplateAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    where?: UserTemplateAssignmentWhereInput
+    orderBy?: UserTemplateAssignmentOrderByWithRelationInput | UserTemplateAssignmentOrderByWithRelationInput[]
+    cursor?: UserTemplateAssignmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserTemplateAssignmentScalarFieldEnum | UserTemplateAssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * PermissionTemplate without action
+   */
+  export type PermissionTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionTemplate
+     */
+    select?: PermissionTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PermissionTemplateInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TemplatePermission
+   */
+
+  export type AggregateTemplatePermission = {
+    _count: TemplatePermissionCountAggregateOutputType | null
+    _min: TemplatePermissionMinAggregateOutputType | null
+    _max: TemplatePermissionMaxAggregateOutputType | null
+  }
+
+  export type TemplatePermissionMinAggregateOutputType = {
+    id: string | null
+    templateId: string | null
+    permissionKey: string | null
+    scope: string | null
+    createdAt: Date | null
+  }
+
+  export type TemplatePermissionMaxAggregateOutputType = {
+    id: string | null
+    templateId: string | null
+    permissionKey: string | null
+    scope: string | null
+    createdAt: Date | null
+  }
+
+  export type TemplatePermissionCountAggregateOutputType = {
+    id: number
+    templateId: number
+    permissionKey: number
+    scope: number
+    allowedShopIds: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type TemplatePermissionMinAggregateInputType = {
+    id?: true
+    templateId?: true
+    permissionKey?: true
+    scope?: true
+    createdAt?: true
+  }
+
+  export type TemplatePermissionMaxAggregateInputType = {
+    id?: true
+    templateId?: true
+    permissionKey?: true
+    scope?: true
+    createdAt?: true
+  }
+
+  export type TemplatePermissionCountAggregateInputType = {
+    id?: true
+    templateId?: true
+    permissionKey?: true
+    scope?: true
+    allowedShopIds?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type TemplatePermissionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TemplatePermission to aggregate.
+     */
+    where?: TemplatePermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TemplatePermissions to fetch.
+     */
+    orderBy?: TemplatePermissionOrderByWithRelationInput | TemplatePermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TemplatePermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TemplatePermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TemplatePermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TemplatePermissions
+    **/
+    _count?: true | TemplatePermissionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TemplatePermissionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TemplatePermissionMaxAggregateInputType
+  }
+
+  export type GetTemplatePermissionAggregateType<T extends TemplatePermissionAggregateArgs> = {
+        [P in keyof T & keyof AggregateTemplatePermission]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTemplatePermission[P]>
+      : GetScalarType<T[P], AggregateTemplatePermission[P]>
+  }
+
+
+
+
+  export type TemplatePermissionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TemplatePermissionWhereInput
+    orderBy?: TemplatePermissionOrderByWithAggregationInput | TemplatePermissionOrderByWithAggregationInput[]
+    by: TemplatePermissionScalarFieldEnum[] | TemplatePermissionScalarFieldEnum
+    having?: TemplatePermissionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TemplatePermissionCountAggregateInputType | true
+    _min?: TemplatePermissionMinAggregateInputType
+    _max?: TemplatePermissionMaxAggregateInputType
+  }
+
+  export type TemplatePermissionGroupByOutputType = {
+    id: string
+    templateId: string
+    permissionKey: string
+    scope: string
+    allowedShopIds: string[]
+    createdAt: Date
+    _count: TemplatePermissionCountAggregateOutputType | null
+    _min: TemplatePermissionMinAggregateOutputType | null
+    _max: TemplatePermissionMaxAggregateOutputType | null
+  }
+
+  type GetTemplatePermissionGroupByPayload<T extends TemplatePermissionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TemplatePermissionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TemplatePermissionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TemplatePermissionGroupByOutputType[P]>
+            : GetScalarType<T[P], TemplatePermissionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TemplatePermissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    templateId?: boolean
+    permissionKey?: boolean
+    scope?: boolean
+    allowedShopIds?: boolean
+    createdAt?: boolean
+    template?: boolean | PermissionTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["templatePermission"]>
+
+  export type TemplatePermissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    templateId?: boolean
+    permissionKey?: boolean
+    scope?: boolean
+    allowedShopIds?: boolean
+    createdAt?: boolean
+    template?: boolean | PermissionTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["templatePermission"]>
+
+  export type TemplatePermissionSelectScalar = {
+    id?: boolean
+    templateId?: boolean
+    permissionKey?: boolean
+    scope?: boolean
+    allowedShopIds?: boolean
+    createdAt?: boolean
+  }
+
+  export type TemplatePermissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    template?: boolean | PermissionTemplateDefaultArgs<ExtArgs>
+  }
+  export type TemplatePermissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    template?: boolean | PermissionTemplateDefaultArgs<ExtArgs>
+  }
+
+  export type $TemplatePermissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TemplatePermission"
+    objects: {
+      template: Prisma.$PermissionTemplatePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      templateId: string
+      permissionKey: string
+      scope: string
+      allowedShopIds: string[]
+      createdAt: Date
+    }, ExtArgs["result"]["templatePermission"]>
+    composites: {}
+  }
+
+  type TemplatePermissionGetPayload<S extends boolean | null | undefined | TemplatePermissionDefaultArgs> = $Result.GetResult<Prisma.$TemplatePermissionPayload, S>
+
+  type TemplatePermissionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TemplatePermissionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TemplatePermissionCountAggregateInputType | true
+    }
+
+  export interface TemplatePermissionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TemplatePermission'], meta: { name: 'TemplatePermission' } }
+    /**
+     * Find zero or one TemplatePermission that matches the filter.
+     * @param {TemplatePermissionFindUniqueArgs} args - Arguments to find a TemplatePermission
+     * @example
+     * // Get one TemplatePermission
+     * const templatePermission = await prisma.templatePermission.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TemplatePermissionFindUniqueArgs>(args: SelectSubset<T, TemplatePermissionFindUniqueArgs<ExtArgs>>): Prisma__TemplatePermissionClient<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TemplatePermission that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TemplatePermissionFindUniqueOrThrowArgs} args - Arguments to find a TemplatePermission
+     * @example
+     * // Get one TemplatePermission
+     * const templatePermission = await prisma.templatePermission.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TemplatePermissionFindUniqueOrThrowArgs>(args: SelectSubset<T, TemplatePermissionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TemplatePermissionClient<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TemplatePermission that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplatePermissionFindFirstArgs} args - Arguments to find a TemplatePermission
+     * @example
+     * // Get one TemplatePermission
+     * const templatePermission = await prisma.templatePermission.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TemplatePermissionFindFirstArgs>(args?: SelectSubset<T, TemplatePermissionFindFirstArgs<ExtArgs>>): Prisma__TemplatePermissionClient<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TemplatePermission that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplatePermissionFindFirstOrThrowArgs} args - Arguments to find a TemplatePermission
+     * @example
+     * // Get one TemplatePermission
+     * const templatePermission = await prisma.templatePermission.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TemplatePermissionFindFirstOrThrowArgs>(args?: SelectSubset<T, TemplatePermissionFindFirstOrThrowArgs<ExtArgs>>): Prisma__TemplatePermissionClient<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TemplatePermissions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplatePermissionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TemplatePermissions
+     * const templatePermissions = await prisma.templatePermission.findMany()
+     * 
+     * // Get first 10 TemplatePermissions
+     * const templatePermissions = await prisma.templatePermission.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const templatePermissionWithIdOnly = await prisma.templatePermission.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TemplatePermissionFindManyArgs>(args?: SelectSubset<T, TemplatePermissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TemplatePermission.
+     * @param {TemplatePermissionCreateArgs} args - Arguments to create a TemplatePermission.
+     * @example
+     * // Create one TemplatePermission
+     * const TemplatePermission = await prisma.templatePermission.create({
+     *   data: {
+     *     // ... data to create a TemplatePermission
+     *   }
+     * })
+     * 
+     */
+    create<T extends TemplatePermissionCreateArgs>(args: SelectSubset<T, TemplatePermissionCreateArgs<ExtArgs>>): Prisma__TemplatePermissionClient<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TemplatePermissions.
+     * @param {TemplatePermissionCreateManyArgs} args - Arguments to create many TemplatePermissions.
+     * @example
+     * // Create many TemplatePermissions
+     * const templatePermission = await prisma.templatePermission.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TemplatePermissionCreateManyArgs>(args?: SelectSubset<T, TemplatePermissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TemplatePermissions and returns the data saved in the database.
+     * @param {TemplatePermissionCreateManyAndReturnArgs} args - Arguments to create many TemplatePermissions.
+     * @example
+     * // Create many TemplatePermissions
+     * const templatePermission = await prisma.templatePermission.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TemplatePermissions and only return the `id`
+     * const templatePermissionWithIdOnly = await prisma.templatePermission.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TemplatePermissionCreateManyAndReturnArgs>(args?: SelectSubset<T, TemplatePermissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a TemplatePermission.
+     * @param {TemplatePermissionDeleteArgs} args - Arguments to delete one TemplatePermission.
+     * @example
+     * // Delete one TemplatePermission
+     * const TemplatePermission = await prisma.templatePermission.delete({
+     *   where: {
+     *     // ... filter to delete one TemplatePermission
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TemplatePermissionDeleteArgs>(args: SelectSubset<T, TemplatePermissionDeleteArgs<ExtArgs>>): Prisma__TemplatePermissionClient<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TemplatePermission.
+     * @param {TemplatePermissionUpdateArgs} args - Arguments to update one TemplatePermission.
+     * @example
+     * // Update one TemplatePermission
+     * const templatePermission = await prisma.templatePermission.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TemplatePermissionUpdateArgs>(args: SelectSubset<T, TemplatePermissionUpdateArgs<ExtArgs>>): Prisma__TemplatePermissionClient<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TemplatePermissions.
+     * @param {TemplatePermissionDeleteManyArgs} args - Arguments to filter TemplatePermissions to delete.
+     * @example
+     * // Delete a few TemplatePermissions
+     * const { count } = await prisma.templatePermission.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TemplatePermissionDeleteManyArgs>(args?: SelectSubset<T, TemplatePermissionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TemplatePermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplatePermissionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TemplatePermissions
+     * const templatePermission = await prisma.templatePermission.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TemplatePermissionUpdateManyArgs>(args: SelectSubset<T, TemplatePermissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TemplatePermission.
+     * @param {TemplatePermissionUpsertArgs} args - Arguments to update or create a TemplatePermission.
+     * @example
+     * // Update or create a TemplatePermission
+     * const templatePermission = await prisma.templatePermission.upsert({
+     *   create: {
+     *     // ... data to create a TemplatePermission
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TemplatePermission we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TemplatePermissionUpsertArgs>(args: SelectSubset<T, TemplatePermissionUpsertArgs<ExtArgs>>): Prisma__TemplatePermissionClient<$Result.GetResult<Prisma.$TemplatePermissionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TemplatePermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplatePermissionCountArgs} args - Arguments to filter TemplatePermissions to count.
+     * @example
+     * // Count the number of TemplatePermissions
+     * const count = await prisma.templatePermission.count({
+     *   where: {
+     *     // ... the filter for the TemplatePermissions we want to count
+     *   }
+     * })
+    **/
+    count<T extends TemplatePermissionCountArgs>(
+      args?: Subset<T, TemplatePermissionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TemplatePermissionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TemplatePermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplatePermissionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TemplatePermissionAggregateArgs>(args: Subset<T, TemplatePermissionAggregateArgs>): Prisma.PrismaPromise<GetTemplatePermissionAggregateType<T>>
+
+    /**
+     * Group by TemplatePermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplatePermissionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TemplatePermissionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TemplatePermissionGroupByArgs['orderBy'] }
+        : { orderBy?: TemplatePermissionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TemplatePermissionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTemplatePermissionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TemplatePermission model
+   */
+  readonly fields: TemplatePermissionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TemplatePermission.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TemplatePermissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    template<T extends PermissionTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PermissionTemplateDefaultArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TemplatePermission model
+   */ 
+  interface TemplatePermissionFieldRefs {
+    readonly id: FieldRef<"TemplatePermission", 'String'>
+    readonly templateId: FieldRef<"TemplatePermission", 'String'>
+    readonly permissionKey: FieldRef<"TemplatePermission", 'String'>
+    readonly scope: FieldRef<"TemplatePermission", 'String'>
+    readonly allowedShopIds: FieldRef<"TemplatePermission", 'String[]'>
+    readonly createdAt: FieldRef<"TemplatePermission", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TemplatePermission findUnique
+   */
+  export type TemplatePermissionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplatePermission to fetch.
+     */
+    where: TemplatePermissionWhereUniqueInput
+  }
+
+  /**
+   * TemplatePermission findUniqueOrThrow
+   */
+  export type TemplatePermissionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplatePermission to fetch.
+     */
+    where: TemplatePermissionWhereUniqueInput
+  }
+
+  /**
+   * TemplatePermission findFirst
+   */
+  export type TemplatePermissionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplatePermission to fetch.
+     */
+    where?: TemplatePermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TemplatePermissions to fetch.
+     */
+    orderBy?: TemplatePermissionOrderByWithRelationInput | TemplatePermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TemplatePermissions.
+     */
+    cursor?: TemplatePermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TemplatePermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TemplatePermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TemplatePermissions.
+     */
+    distinct?: TemplatePermissionScalarFieldEnum | TemplatePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * TemplatePermission findFirstOrThrow
+   */
+  export type TemplatePermissionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplatePermission to fetch.
+     */
+    where?: TemplatePermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TemplatePermissions to fetch.
+     */
+    orderBy?: TemplatePermissionOrderByWithRelationInput | TemplatePermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TemplatePermissions.
+     */
+    cursor?: TemplatePermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TemplatePermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TemplatePermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TemplatePermissions.
+     */
+    distinct?: TemplatePermissionScalarFieldEnum | TemplatePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * TemplatePermission findMany
+   */
+  export type TemplatePermissionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplatePermissions to fetch.
+     */
+    where?: TemplatePermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TemplatePermissions to fetch.
+     */
+    orderBy?: TemplatePermissionOrderByWithRelationInput | TemplatePermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TemplatePermissions.
+     */
+    cursor?: TemplatePermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TemplatePermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TemplatePermissions.
+     */
+    skip?: number
+    distinct?: TemplatePermissionScalarFieldEnum | TemplatePermissionScalarFieldEnum[]
+  }
+
+  /**
+   * TemplatePermission create
+   */
+  export type TemplatePermissionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TemplatePermission.
+     */
+    data: XOR<TemplatePermissionCreateInput, TemplatePermissionUncheckedCreateInput>
+  }
+
+  /**
+   * TemplatePermission createMany
+   */
+  export type TemplatePermissionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TemplatePermissions.
+     */
+    data: TemplatePermissionCreateManyInput | TemplatePermissionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TemplatePermission createManyAndReturn
+   */
+  export type TemplatePermissionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many TemplatePermissions.
+     */
+    data: TemplatePermissionCreateManyInput | TemplatePermissionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TemplatePermission update
+   */
+  export type TemplatePermissionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TemplatePermission.
+     */
+    data: XOR<TemplatePermissionUpdateInput, TemplatePermissionUncheckedUpdateInput>
+    /**
+     * Choose, which TemplatePermission to update.
+     */
+    where: TemplatePermissionWhereUniqueInput
+  }
+
+  /**
+   * TemplatePermission updateMany
+   */
+  export type TemplatePermissionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TemplatePermissions.
+     */
+    data: XOR<TemplatePermissionUpdateManyMutationInput, TemplatePermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which TemplatePermissions to update
+     */
+    where?: TemplatePermissionWhereInput
+  }
+
+  /**
+   * TemplatePermission upsert
+   */
+  export type TemplatePermissionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TemplatePermission to update in case it exists.
+     */
+    where: TemplatePermissionWhereUniqueInput
+    /**
+     * In case the TemplatePermission found by the `where` argument doesn't exist, create a new TemplatePermission with this data.
+     */
+    create: XOR<TemplatePermissionCreateInput, TemplatePermissionUncheckedCreateInput>
+    /**
+     * In case the TemplatePermission was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TemplatePermissionUpdateInput, TemplatePermissionUncheckedUpdateInput>
+  }
+
+  /**
+   * TemplatePermission delete
+   */
+  export type TemplatePermissionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+    /**
+     * Filter which TemplatePermission to delete.
+     */
+    where: TemplatePermissionWhereUniqueInput
+  }
+
+  /**
+   * TemplatePermission deleteMany
+   */
+  export type TemplatePermissionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TemplatePermissions to delete
+     */
+    where?: TemplatePermissionWhereInput
+  }
+
+  /**
+   * TemplatePermission without action
+   */
+  export type TemplatePermissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplatePermission
+     */
+    select?: TemplatePermissionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplatePermissionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model UserTemplateAssignment
+   */
+
+  export type AggregateUserTemplateAssignment = {
+    _count: UserTemplateAssignmentCountAggregateOutputType | null
+    _min: UserTemplateAssignmentMinAggregateOutputType | null
+    _max: UserTemplateAssignmentMaxAggregateOutputType | null
+  }
+
+  export type UserTemplateAssignmentMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    templateId: string | null
+    assignedAt: Date | null
+    assignedBy: string | null
+  }
+
+  export type UserTemplateAssignmentMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    templateId: string | null
+    assignedAt: Date | null
+    assignedBy: string | null
+  }
+
+  export type UserTemplateAssignmentCountAggregateOutputType = {
+    id: number
+    userId: number
+    templateId: number
+    assignedAt: number
+    assignedBy: number
+    _all: number
+  }
+
+
+  export type UserTemplateAssignmentMinAggregateInputType = {
+    id?: true
+    userId?: true
+    templateId?: true
+    assignedAt?: true
+    assignedBy?: true
+  }
+
+  export type UserTemplateAssignmentMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    templateId?: true
+    assignedAt?: true
+    assignedBy?: true
+  }
+
+  export type UserTemplateAssignmentCountAggregateInputType = {
+    id?: true
+    userId?: true
+    templateId?: true
+    assignedAt?: true
+    assignedBy?: true
+    _all?: true
+  }
+
+  export type UserTemplateAssignmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserTemplateAssignment to aggregate.
+     */
+    where?: UserTemplateAssignmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTemplateAssignments to fetch.
+     */
+    orderBy?: UserTemplateAssignmentOrderByWithRelationInput | UserTemplateAssignmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserTemplateAssignmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTemplateAssignments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTemplateAssignments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserTemplateAssignments
+    **/
+    _count?: true | UserTemplateAssignmentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserTemplateAssignmentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserTemplateAssignmentMaxAggregateInputType
+  }
+
+  export type GetUserTemplateAssignmentAggregateType<T extends UserTemplateAssignmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserTemplateAssignment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserTemplateAssignment[P]>
+      : GetScalarType<T[P], AggregateUserTemplateAssignment[P]>
+  }
+
+
+
+
+  export type UserTemplateAssignmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTemplateAssignmentWhereInput
+    orderBy?: UserTemplateAssignmentOrderByWithAggregationInput | UserTemplateAssignmentOrderByWithAggregationInput[]
+    by: UserTemplateAssignmentScalarFieldEnum[] | UserTemplateAssignmentScalarFieldEnum
+    having?: UserTemplateAssignmentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserTemplateAssignmentCountAggregateInputType | true
+    _min?: UserTemplateAssignmentMinAggregateInputType
+    _max?: UserTemplateAssignmentMaxAggregateInputType
+  }
+
+  export type UserTemplateAssignmentGroupByOutputType = {
+    id: string
+    userId: string
+    templateId: string
+    assignedAt: Date
+    assignedBy: string
+    _count: UserTemplateAssignmentCountAggregateOutputType | null
+    _min: UserTemplateAssignmentMinAggregateOutputType | null
+    _max: UserTemplateAssignmentMaxAggregateOutputType | null
+  }
+
+  type GetUserTemplateAssignmentGroupByPayload<T extends UserTemplateAssignmentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserTemplateAssignmentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserTemplateAssignmentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserTemplateAssignmentGroupByOutputType[P]>
+            : GetScalarType<T[P], UserTemplateAssignmentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserTemplateAssignmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    templateId?: boolean
+    assignedAt?: boolean
+    assignedBy?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | PermissionTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userTemplateAssignment"]>
+
+  export type UserTemplateAssignmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    templateId?: boolean
+    assignedAt?: boolean
+    assignedBy?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | PermissionTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userTemplateAssignment"]>
+
+  export type UserTemplateAssignmentSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    templateId?: boolean
+    assignedAt?: boolean
+    assignedBy?: boolean
+  }
+
+  export type UserTemplateAssignmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | PermissionTemplateDefaultArgs<ExtArgs>
+  }
+  export type UserTemplateAssignmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    template?: boolean | PermissionTemplateDefaultArgs<ExtArgs>
+  }
+
+  export type $UserTemplateAssignmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserTemplateAssignment"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      template: Prisma.$PermissionTemplatePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      templateId: string
+      assignedAt: Date
+      assignedBy: string
+    }, ExtArgs["result"]["userTemplateAssignment"]>
+    composites: {}
+  }
+
+  type UserTemplateAssignmentGetPayload<S extends boolean | null | undefined | UserTemplateAssignmentDefaultArgs> = $Result.GetResult<Prisma.$UserTemplateAssignmentPayload, S>
+
+  type UserTemplateAssignmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<UserTemplateAssignmentFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: UserTemplateAssignmentCountAggregateInputType | true
+    }
+
+  export interface UserTemplateAssignmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserTemplateAssignment'], meta: { name: 'UserTemplateAssignment' } }
+    /**
+     * Find zero or one UserTemplateAssignment that matches the filter.
+     * @param {UserTemplateAssignmentFindUniqueArgs} args - Arguments to find a UserTemplateAssignment
+     * @example
+     * // Get one UserTemplateAssignment
+     * const userTemplateAssignment = await prisma.userTemplateAssignment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserTemplateAssignmentFindUniqueArgs>(args: SelectSubset<T, UserTemplateAssignmentFindUniqueArgs<ExtArgs>>): Prisma__UserTemplateAssignmentClient<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one UserTemplateAssignment that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {UserTemplateAssignmentFindUniqueOrThrowArgs} args - Arguments to find a UserTemplateAssignment
+     * @example
+     * // Get one UserTemplateAssignment
+     * const userTemplateAssignment = await prisma.userTemplateAssignment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserTemplateAssignmentFindUniqueOrThrowArgs>(args: SelectSubset<T, UserTemplateAssignmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserTemplateAssignmentClient<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first UserTemplateAssignment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateAssignmentFindFirstArgs} args - Arguments to find a UserTemplateAssignment
+     * @example
+     * // Get one UserTemplateAssignment
+     * const userTemplateAssignment = await prisma.userTemplateAssignment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserTemplateAssignmentFindFirstArgs>(args?: SelectSubset<T, UserTemplateAssignmentFindFirstArgs<ExtArgs>>): Prisma__UserTemplateAssignmentClient<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first UserTemplateAssignment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateAssignmentFindFirstOrThrowArgs} args - Arguments to find a UserTemplateAssignment
+     * @example
+     * // Get one UserTemplateAssignment
+     * const userTemplateAssignment = await prisma.userTemplateAssignment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserTemplateAssignmentFindFirstOrThrowArgs>(args?: SelectSubset<T, UserTemplateAssignmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserTemplateAssignmentClient<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more UserTemplateAssignments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateAssignmentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserTemplateAssignments
+     * const userTemplateAssignments = await prisma.userTemplateAssignment.findMany()
+     * 
+     * // Get first 10 UserTemplateAssignments
+     * const userTemplateAssignments = await prisma.userTemplateAssignment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userTemplateAssignmentWithIdOnly = await prisma.userTemplateAssignment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserTemplateAssignmentFindManyArgs>(args?: SelectSubset<T, UserTemplateAssignmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a UserTemplateAssignment.
+     * @param {UserTemplateAssignmentCreateArgs} args - Arguments to create a UserTemplateAssignment.
+     * @example
+     * // Create one UserTemplateAssignment
+     * const UserTemplateAssignment = await prisma.userTemplateAssignment.create({
+     *   data: {
+     *     // ... data to create a UserTemplateAssignment
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserTemplateAssignmentCreateArgs>(args: SelectSubset<T, UserTemplateAssignmentCreateArgs<ExtArgs>>): Prisma__UserTemplateAssignmentClient<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many UserTemplateAssignments.
+     * @param {UserTemplateAssignmentCreateManyArgs} args - Arguments to create many UserTemplateAssignments.
+     * @example
+     * // Create many UserTemplateAssignments
+     * const userTemplateAssignment = await prisma.userTemplateAssignment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserTemplateAssignmentCreateManyArgs>(args?: SelectSubset<T, UserTemplateAssignmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserTemplateAssignments and returns the data saved in the database.
+     * @param {UserTemplateAssignmentCreateManyAndReturnArgs} args - Arguments to create many UserTemplateAssignments.
+     * @example
+     * // Create many UserTemplateAssignments
+     * const userTemplateAssignment = await prisma.userTemplateAssignment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserTemplateAssignments and only return the `id`
+     * const userTemplateAssignmentWithIdOnly = await prisma.userTemplateAssignment.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserTemplateAssignmentCreateManyAndReturnArgs>(args?: SelectSubset<T, UserTemplateAssignmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a UserTemplateAssignment.
+     * @param {UserTemplateAssignmentDeleteArgs} args - Arguments to delete one UserTemplateAssignment.
+     * @example
+     * // Delete one UserTemplateAssignment
+     * const UserTemplateAssignment = await prisma.userTemplateAssignment.delete({
+     *   where: {
+     *     // ... filter to delete one UserTemplateAssignment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserTemplateAssignmentDeleteArgs>(args: SelectSubset<T, UserTemplateAssignmentDeleteArgs<ExtArgs>>): Prisma__UserTemplateAssignmentClient<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one UserTemplateAssignment.
+     * @param {UserTemplateAssignmentUpdateArgs} args - Arguments to update one UserTemplateAssignment.
+     * @example
+     * // Update one UserTemplateAssignment
+     * const userTemplateAssignment = await prisma.userTemplateAssignment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserTemplateAssignmentUpdateArgs>(args: SelectSubset<T, UserTemplateAssignmentUpdateArgs<ExtArgs>>): Prisma__UserTemplateAssignmentClient<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more UserTemplateAssignments.
+     * @param {UserTemplateAssignmentDeleteManyArgs} args - Arguments to filter UserTemplateAssignments to delete.
+     * @example
+     * // Delete a few UserTemplateAssignments
+     * const { count } = await prisma.userTemplateAssignment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserTemplateAssignmentDeleteManyArgs>(args?: SelectSubset<T, UserTemplateAssignmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserTemplateAssignments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateAssignmentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserTemplateAssignments
+     * const userTemplateAssignment = await prisma.userTemplateAssignment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserTemplateAssignmentUpdateManyArgs>(args: SelectSubset<T, UserTemplateAssignmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one UserTemplateAssignment.
+     * @param {UserTemplateAssignmentUpsertArgs} args - Arguments to update or create a UserTemplateAssignment.
+     * @example
+     * // Update or create a UserTemplateAssignment
+     * const userTemplateAssignment = await prisma.userTemplateAssignment.upsert({
+     *   create: {
+     *     // ... data to create a UserTemplateAssignment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserTemplateAssignment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserTemplateAssignmentUpsertArgs>(args: SelectSubset<T, UserTemplateAssignmentUpsertArgs<ExtArgs>>): Prisma__UserTemplateAssignmentClient<$Result.GetResult<Prisma.$UserTemplateAssignmentPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of UserTemplateAssignments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateAssignmentCountArgs} args - Arguments to filter UserTemplateAssignments to count.
+     * @example
+     * // Count the number of UserTemplateAssignments
+     * const count = await prisma.userTemplateAssignment.count({
+     *   where: {
+     *     // ... the filter for the UserTemplateAssignments we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserTemplateAssignmentCountArgs>(
+      args?: Subset<T, UserTemplateAssignmentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserTemplateAssignmentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserTemplateAssignment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateAssignmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserTemplateAssignmentAggregateArgs>(args: Subset<T, UserTemplateAssignmentAggregateArgs>): Prisma.PrismaPromise<GetUserTemplateAssignmentAggregateType<T>>
+
+    /**
+     * Group by UserTemplateAssignment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTemplateAssignmentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserTemplateAssignmentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserTemplateAssignmentGroupByArgs['orderBy'] }
+        : { orderBy?: UserTemplateAssignmentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserTemplateAssignmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserTemplateAssignmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserTemplateAssignment model
+   */
+  readonly fields: UserTemplateAssignmentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserTemplateAssignment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserTemplateAssignmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    template<T extends PermissionTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PermissionTemplateDefaultArgs<ExtArgs>>): Prisma__PermissionTemplateClient<$Result.GetResult<Prisma.$PermissionTemplatePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserTemplateAssignment model
+   */ 
+  interface UserTemplateAssignmentFieldRefs {
+    readonly id: FieldRef<"UserTemplateAssignment", 'String'>
+    readonly userId: FieldRef<"UserTemplateAssignment", 'String'>
+    readonly templateId: FieldRef<"UserTemplateAssignment", 'String'>
+    readonly assignedAt: FieldRef<"UserTemplateAssignment", 'DateTime'>
+    readonly assignedBy: FieldRef<"UserTemplateAssignment", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserTemplateAssignment findUnique
+   */
+  export type UserTemplateAssignmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateAssignment to fetch.
+     */
+    where: UserTemplateAssignmentWhereUniqueInput
+  }
+
+  /**
+   * UserTemplateAssignment findUniqueOrThrow
+   */
+  export type UserTemplateAssignmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateAssignment to fetch.
+     */
+    where: UserTemplateAssignmentWhereUniqueInput
+  }
+
+  /**
+   * UserTemplateAssignment findFirst
+   */
+  export type UserTemplateAssignmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateAssignment to fetch.
+     */
+    where?: UserTemplateAssignmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTemplateAssignments to fetch.
+     */
+    orderBy?: UserTemplateAssignmentOrderByWithRelationInput | UserTemplateAssignmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserTemplateAssignments.
+     */
+    cursor?: UserTemplateAssignmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTemplateAssignments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTemplateAssignments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserTemplateAssignments.
+     */
+    distinct?: UserTemplateAssignmentScalarFieldEnum | UserTemplateAssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * UserTemplateAssignment findFirstOrThrow
+   */
+  export type UserTemplateAssignmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateAssignment to fetch.
+     */
+    where?: UserTemplateAssignmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTemplateAssignments to fetch.
+     */
+    orderBy?: UserTemplateAssignmentOrderByWithRelationInput | UserTemplateAssignmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserTemplateAssignments.
+     */
+    cursor?: UserTemplateAssignmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTemplateAssignments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTemplateAssignments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserTemplateAssignments.
+     */
+    distinct?: UserTemplateAssignmentScalarFieldEnum | UserTemplateAssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * UserTemplateAssignment findMany
+   */
+  export type UserTemplateAssignmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTemplateAssignments to fetch.
+     */
+    where?: UserTemplateAssignmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTemplateAssignments to fetch.
+     */
+    orderBy?: UserTemplateAssignmentOrderByWithRelationInput | UserTemplateAssignmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserTemplateAssignments.
+     */
+    cursor?: UserTemplateAssignmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTemplateAssignments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTemplateAssignments.
+     */
+    skip?: number
+    distinct?: UserTemplateAssignmentScalarFieldEnum | UserTemplateAssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * UserTemplateAssignment create
+   */
+  export type UserTemplateAssignmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserTemplateAssignment.
+     */
+    data: XOR<UserTemplateAssignmentCreateInput, UserTemplateAssignmentUncheckedCreateInput>
+  }
+
+  /**
+   * UserTemplateAssignment createMany
+   */
+  export type UserTemplateAssignmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserTemplateAssignments.
+     */
+    data: UserTemplateAssignmentCreateManyInput | UserTemplateAssignmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserTemplateAssignment createManyAndReturn
+   */
+  export type UserTemplateAssignmentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many UserTemplateAssignments.
+     */
+    data: UserTemplateAssignmentCreateManyInput | UserTemplateAssignmentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserTemplateAssignment update
+   */
+  export type UserTemplateAssignmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserTemplateAssignment.
+     */
+    data: XOR<UserTemplateAssignmentUpdateInput, UserTemplateAssignmentUncheckedUpdateInput>
+    /**
+     * Choose, which UserTemplateAssignment to update.
+     */
+    where: UserTemplateAssignmentWhereUniqueInput
+  }
+
+  /**
+   * UserTemplateAssignment updateMany
+   */
+  export type UserTemplateAssignmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserTemplateAssignments.
+     */
+    data: XOR<UserTemplateAssignmentUpdateManyMutationInput, UserTemplateAssignmentUncheckedUpdateManyInput>
+    /**
+     * Filter which UserTemplateAssignments to update
+     */
+    where?: UserTemplateAssignmentWhereInput
+  }
+
+  /**
+   * UserTemplateAssignment upsert
+   */
+  export type UserTemplateAssignmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserTemplateAssignment to update in case it exists.
+     */
+    where: UserTemplateAssignmentWhereUniqueInput
+    /**
+     * In case the UserTemplateAssignment found by the `where` argument doesn't exist, create a new UserTemplateAssignment with this data.
+     */
+    create: XOR<UserTemplateAssignmentCreateInput, UserTemplateAssignmentUncheckedCreateInput>
+    /**
+     * In case the UserTemplateAssignment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserTemplateAssignmentUpdateInput, UserTemplateAssignmentUncheckedUpdateInput>
+  }
+
+  /**
+   * UserTemplateAssignment delete
+   */
+  export type UserTemplateAssignmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+    /**
+     * Filter which UserTemplateAssignment to delete.
+     */
+    where: UserTemplateAssignmentWhereUniqueInput
+  }
+
+  /**
+   * UserTemplateAssignment deleteMany
+   */
+  export type UserTemplateAssignmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserTemplateAssignments to delete
+     */
+    where?: UserTemplateAssignmentWhereInput
+  }
+
+  /**
+   * UserTemplateAssignment without action
+   */
+  export type UserTemplateAssignmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTemplateAssignment
+     */
+    select?: UserTemplateAssignmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTemplateAssignmentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PermissionAuditLog
+   */
+
+  export type AggregatePermissionAuditLog = {
+    _count: PermissionAuditLogCountAggregateOutputType | null
+    _min: PermissionAuditLogMinAggregateOutputType | null
+    _max: PermissionAuditLogMaxAggregateOutputType | null
+  }
+
+  export type PermissionAuditLogMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    actorId: string | null
+    targetUserId: string | null
+    action: string | null
+    permissionKey: string | null
+    oldValue: string | null
+    newValue: string | null
+    reason: string | null
+    traceId: string | null
+    createdAt: Date | null
+  }
+
+  export type PermissionAuditLogMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    actorId: string | null
+    targetUserId: string | null
+    action: string | null
+    permissionKey: string | null
+    oldValue: string | null
+    newValue: string | null
+    reason: string | null
+    traceId: string | null
+    createdAt: Date | null
+  }
+
+  export type PermissionAuditLogCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    actorId: number
+    targetUserId: number
+    action: number
+    permissionKey: number
+    oldValue: number
+    newValue: number
+    reason: number
+    traceId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PermissionAuditLogMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    actorId?: true
+    targetUserId?: true
+    action?: true
+    permissionKey?: true
+    oldValue?: true
+    newValue?: true
+    reason?: true
+    traceId?: true
+    createdAt?: true
+  }
+
+  export type PermissionAuditLogMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    actorId?: true
+    targetUserId?: true
+    action?: true
+    permissionKey?: true
+    oldValue?: true
+    newValue?: true
+    reason?: true
+    traceId?: true
+    createdAt?: true
+  }
+
+  export type PermissionAuditLogCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    actorId?: true
+    targetUserId?: true
+    action?: true
+    permissionKey?: true
+    oldValue?: true
+    newValue?: true
+    reason?: true
+    traceId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PermissionAuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PermissionAuditLog to aggregate.
+     */
+    where?: PermissionAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PermissionAuditLogs to fetch.
+     */
+    orderBy?: PermissionAuditLogOrderByWithRelationInput | PermissionAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PermissionAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PermissionAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PermissionAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PermissionAuditLogs
+    **/
+    _count?: true | PermissionAuditLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PermissionAuditLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PermissionAuditLogMaxAggregateInputType
+  }
+
+  export type GetPermissionAuditLogAggregateType<T extends PermissionAuditLogAggregateArgs> = {
+        [P in keyof T & keyof AggregatePermissionAuditLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePermissionAuditLog[P]>
+      : GetScalarType<T[P], AggregatePermissionAuditLog[P]>
+  }
+
+
+
+
+  export type PermissionAuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PermissionAuditLogWhereInput
+    orderBy?: PermissionAuditLogOrderByWithAggregationInput | PermissionAuditLogOrderByWithAggregationInput[]
+    by: PermissionAuditLogScalarFieldEnum[] | PermissionAuditLogScalarFieldEnum
+    having?: PermissionAuditLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PermissionAuditLogCountAggregateInputType | true
+    _min?: PermissionAuditLogMinAggregateInputType
+    _max?: PermissionAuditLogMaxAggregateInputType
+  }
+
+  export type PermissionAuditLogGroupByOutputType = {
+    id: string
+    tenantId: string
+    actorId: string
+    targetUserId: string
+    action: string
+    permissionKey: string | null
+    oldValue: string | null
+    newValue: string | null
+    reason: string | null
+    traceId: string | null
+    createdAt: Date
+    _count: PermissionAuditLogCountAggregateOutputType | null
+    _min: PermissionAuditLogMinAggregateOutputType | null
+    _max: PermissionAuditLogMaxAggregateOutputType | null
+  }
+
+  type GetPermissionAuditLogGroupByPayload<T extends PermissionAuditLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PermissionAuditLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PermissionAuditLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PermissionAuditLogGroupByOutputType[P]>
+            : GetScalarType<T[P], PermissionAuditLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PermissionAuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    actorId?: boolean
+    targetUserId?: boolean
+    action?: boolean
+    permissionKey?: boolean
+    oldValue?: boolean
+    newValue?: boolean
+    reason?: boolean
+    traceId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["permissionAuditLog"]>
+
+  export type PermissionAuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    actorId?: boolean
+    targetUserId?: boolean
+    action?: boolean
+    permissionKey?: boolean
+    oldValue?: boolean
+    newValue?: boolean
+    reason?: boolean
+    traceId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["permissionAuditLog"]>
+
+  export type PermissionAuditLogSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    actorId?: boolean
+    targetUserId?: boolean
+    action?: boolean
+    permissionKey?: boolean
+    oldValue?: boolean
+    newValue?: boolean
+    reason?: boolean
+    traceId?: boolean
+    createdAt?: boolean
+  }
+
+
+  export type $PermissionAuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PermissionAuditLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      actorId: string
+      targetUserId: string
+      action: string
+      permissionKey: string | null
+      oldValue: string | null
+      newValue: string | null
+      reason: string | null
+      traceId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["permissionAuditLog"]>
+    composites: {}
+  }
+
+  type PermissionAuditLogGetPayload<S extends boolean | null | undefined | PermissionAuditLogDefaultArgs> = $Result.GetResult<Prisma.$PermissionAuditLogPayload, S>
+
+  type PermissionAuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PermissionAuditLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PermissionAuditLogCountAggregateInputType | true
+    }
+
+  export interface PermissionAuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PermissionAuditLog'], meta: { name: 'PermissionAuditLog' } }
+    /**
+     * Find zero or one PermissionAuditLog that matches the filter.
+     * @param {PermissionAuditLogFindUniqueArgs} args - Arguments to find a PermissionAuditLog
+     * @example
+     * // Get one PermissionAuditLog
+     * const permissionAuditLog = await prisma.permissionAuditLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PermissionAuditLogFindUniqueArgs>(args: SelectSubset<T, PermissionAuditLogFindUniqueArgs<ExtArgs>>): Prisma__PermissionAuditLogClient<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PermissionAuditLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PermissionAuditLogFindUniqueOrThrowArgs} args - Arguments to find a PermissionAuditLog
+     * @example
+     * // Get one PermissionAuditLog
+     * const permissionAuditLog = await prisma.permissionAuditLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PermissionAuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, PermissionAuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PermissionAuditLogClient<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PermissionAuditLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionAuditLogFindFirstArgs} args - Arguments to find a PermissionAuditLog
+     * @example
+     * // Get one PermissionAuditLog
+     * const permissionAuditLog = await prisma.permissionAuditLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PermissionAuditLogFindFirstArgs>(args?: SelectSubset<T, PermissionAuditLogFindFirstArgs<ExtArgs>>): Prisma__PermissionAuditLogClient<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PermissionAuditLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionAuditLogFindFirstOrThrowArgs} args - Arguments to find a PermissionAuditLog
+     * @example
+     * // Get one PermissionAuditLog
+     * const permissionAuditLog = await prisma.permissionAuditLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PermissionAuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, PermissionAuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__PermissionAuditLogClient<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PermissionAuditLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionAuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PermissionAuditLogs
+     * const permissionAuditLogs = await prisma.permissionAuditLog.findMany()
+     * 
+     * // Get first 10 PermissionAuditLogs
+     * const permissionAuditLogs = await prisma.permissionAuditLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const permissionAuditLogWithIdOnly = await prisma.permissionAuditLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PermissionAuditLogFindManyArgs>(args?: SelectSubset<T, PermissionAuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PermissionAuditLog.
+     * @param {PermissionAuditLogCreateArgs} args - Arguments to create a PermissionAuditLog.
+     * @example
+     * // Create one PermissionAuditLog
+     * const PermissionAuditLog = await prisma.permissionAuditLog.create({
+     *   data: {
+     *     // ... data to create a PermissionAuditLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends PermissionAuditLogCreateArgs>(args: SelectSubset<T, PermissionAuditLogCreateArgs<ExtArgs>>): Prisma__PermissionAuditLogClient<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PermissionAuditLogs.
+     * @param {PermissionAuditLogCreateManyArgs} args - Arguments to create many PermissionAuditLogs.
+     * @example
+     * // Create many PermissionAuditLogs
+     * const permissionAuditLog = await prisma.permissionAuditLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PermissionAuditLogCreateManyArgs>(args?: SelectSubset<T, PermissionAuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PermissionAuditLogs and returns the data saved in the database.
+     * @param {PermissionAuditLogCreateManyAndReturnArgs} args - Arguments to create many PermissionAuditLogs.
+     * @example
+     * // Create many PermissionAuditLogs
+     * const permissionAuditLog = await prisma.permissionAuditLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PermissionAuditLogs and only return the `id`
+     * const permissionAuditLogWithIdOnly = await prisma.permissionAuditLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PermissionAuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, PermissionAuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PermissionAuditLog.
+     * @param {PermissionAuditLogDeleteArgs} args - Arguments to delete one PermissionAuditLog.
+     * @example
+     * // Delete one PermissionAuditLog
+     * const PermissionAuditLog = await prisma.permissionAuditLog.delete({
+     *   where: {
+     *     // ... filter to delete one PermissionAuditLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PermissionAuditLogDeleteArgs>(args: SelectSubset<T, PermissionAuditLogDeleteArgs<ExtArgs>>): Prisma__PermissionAuditLogClient<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PermissionAuditLog.
+     * @param {PermissionAuditLogUpdateArgs} args - Arguments to update one PermissionAuditLog.
+     * @example
+     * // Update one PermissionAuditLog
+     * const permissionAuditLog = await prisma.permissionAuditLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PermissionAuditLogUpdateArgs>(args: SelectSubset<T, PermissionAuditLogUpdateArgs<ExtArgs>>): Prisma__PermissionAuditLogClient<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PermissionAuditLogs.
+     * @param {PermissionAuditLogDeleteManyArgs} args - Arguments to filter PermissionAuditLogs to delete.
+     * @example
+     * // Delete a few PermissionAuditLogs
+     * const { count } = await prisma.permissionAuditLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PermissionAuditLogDeleteManyArgs>(args?: SelectSubset<T, PermissionAuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PermissionAuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionAuditLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PermissionAuditLogs
+     * const permissionAuditLog = await prisma.permissionAuditLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PermissionAuditLogUpdateManyArgs>(args: SelectSubset<T, PermissionAuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PermissionAuditLog.
+     * @param {PermissionAuditLogUpsertArgs} args - Arguments to update or create a PermissionAuditLog.
+     * @example
+     * // Update or create a PermissionAuditLog
+     * const permissionAuditLog = await prisma.permissionAuditLog.upsert({
+     *   create: {
+     *     // ... data to create a PermissionAuditLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PermissionAuditLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PermissionAuditLogUpsertArgs>(args: SelectSubset<T, PermissionAuditLogUpsertArgs<ExtArgs>>): Prisma__PermissionAuditLogClient<$Result.GetResult<Prisma.$PermissionAuditLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PermissionAuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionAuditLogCountArgs} args - Arguments to filter PermissionAuditLogs to count.
+     * @example
+     * // Count the number of PermissionAuditLogs
+     * const count = await prisma.permissionAuditLog.count({
+     *   where: {
+     *     // ... the filter for the PermissionAuditLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends PermissionAuditLogCountArgs>(
+      args?: Subset<T, PermissionAuditLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PermissionAuditLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PermissionAuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionAuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PermissionAuditLogAggregateArgs>(args: Subset<T, PermissionAuditLogAggregateArgs>): Prisma.PrismaPromise<GetPermissionAuditLogAggregateType<T>>
+
+    /**
+     * Group by PermissionAuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PermissionAuditLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PermissionAuditLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PermissionAuditLogGroupByArgs['orderBy'] }
+        : { orderBy?: PermissionAuditLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PermissionAuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPermissionAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PermissionAuditLog model
+   */
+  readonly fields: PermissionAuditLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PermissionAuditLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PermissionAuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PermissionAuditLog model
+   */ 
+  interface PermissionAuditLogFieldRefs {
+    readonly id: FieldRef<"PermissionAuditLog", 'String'>
+    readonly tenantId: FieldRef<"PermissionAuditLog", 'String'>
+    readonly actorId: FieldRef<"PermissionAuditLog", 'String'>
+    readonly targetUserId: FieldRef<"PermissionAuditLog", 'String'>
+    readonly action: FieldRef<"PermissionAuditLog", 'String'>
+    readonly permissionKey: FieldRef<"PermissionAuditLog", 'String'>
+    readonly oldValue: FieldRef<"PermissionAuditLog", 'String'>
+    readonly newValue: FieldRef<"PermissionAuditLog", 'String'>
+    readonly reason: FieldRef<"PermissionAuditLog", 'String'>
+    readonly traceId: FieldRef<"PermissionAuditLog", 'String'>
+    readonly createdAt: FieldRef<"PermissionAuditLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PermissionAuditLog findUnique
+   */
+  export type PermissionAuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
+    /**
+     * Filter, which PermissionAuditLog to fetch.
+     */
+    where: PermissionAuditLogWhereUniqueInput
+  }
+
+  /**
+   * PermissionAuditLog findUniqueOrThrow
+   */
+  export type PermissionAuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
+    /**
+     * Filter, which PermissionAuditLog to fetch.
+     */
+    where: PermissionAuditLogWhereUniqueInput
+  }
+
+  /**
+   * PermissionAuditLog findFirst
+   */
+  export type PermissionAuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
+    /**
+     * Filter, which PermissionAuditLog to fetch.
+     */
+    where?: PermissionAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PermissionAuditLogs to fetch.
+     */
+    orderBy?: PermissionAuditLogOrderByWithRelationInput | PermissionAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PermissionAuditLogs.
+     */
+    cursor?: PermissionAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PermissionAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PermissionAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PermissionAuditLogs.
+     */
+    distinct?: PermissionAuditLogScalarFieldEnum | PermissionAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * PermissionAuditLog findFirstOrThrow
+   */
+  export type PermissionAuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
+    /**
+     * Filter, which PermissionAuditLog to fetch.
+     */
+    where?: PermissionAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PermissionAuditLogs to fetch.
+     */
+    orderBy?: PermissionAuditLogOrderByWithRelationInput | PermissionAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PermissionAuditLogs.
+     */
+    cursor?: PermissionAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PermissionAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PermissionAuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PermissionAuditLogs.
+     */
+    distinct?: PermissionAuditLogScalarFieldEnum | PermissionAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * PermissionAuditLog findMany
+   */
+  export type PermissionAuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
+    /**
+     * Filter, which PermissionAuditLogs to fetch.
+     */
+    where?: PermissionAuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PermissionAuditLogs to fetch.
+     */
+    orderBy?: PermissionAuditLogOrderByWithRelationInput | PermissionAuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PermissionAuditLogs.
+     */
+    cursor?: PermissionAuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PermissionAuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PermissionAuditLogs.
+     */
+    skip?: number
+    distinct?: PermissionAuditLogScalarFieldEnum | PermissionAuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * PermissionAuditLog create
+   */
+  export type PermissionAuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
+    /**
+     * The data needed to create a PermissionAuditLog.
+     */
+    data: XOR<PermissionAuditLogCreateInput, PermissionAuditLogUncheckedCreateInput>
+  }
+
+  /**
+   * PermissionAuditLog createMany
+   */
+  export type PermissionAuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PermissionAuditLogs.
+     */
+    data: PermissionAuditLogCreateManyInput | PermissionAuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PermissionAuditLog createManyAndReturn
+   */
+  export type PermissionAuditLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PermissionAuditLogs.
+     */
+    data: PermissionAuditLogCreateManyInput | PermissionAuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PermissionAuditLog update
+   */
+  export type PermissionAuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
+    /**
+     * The data needed to update a PermissionAuditLog.
+     */
+    data: XOR<PermissionAuditLogUpdateInput, PermissionAuditLogUncheckedUpdateInput>
+    /**
+     * Choose, which PermissionAuditLog to update.
+     */
+    where: PermissionAuditLogWhereUniqueInput
+  }
+
+  /**
+   * PermissionAuditLog updateMany
+   */
+  export type PermissionAuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PermissionAuditLogs.
+     */
+    data: XOR<PermissionAuditLogUpdateManyMutationInput, PermissionAuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which PermissionAuditLogs to update
+     */
+    where?: PermissionAuditLogWhereInput
+  }
+
+  /**
+   * PermissionAuditLog upsert
+   */
+  export type PermissionAuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
+    /**
+     * The filter to search for the PermissionAuditLog to update in case it exists.
+     */
+    where: PermissionAuditLogWhereUniqueInput
+    /**
+     * In case the PermissionAuditLog found by the `where` argument doesn't exist, create a new PermissionAuditLog with this data.
+     */
+    create: XOR<PermissionAuditLogCreateInput, PermissionAuditLogUncheckedCreateInput>
+    /**
+     * In case the PermissionAuditLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PermissionAuditLogUpdateInput, PermissionAuditLogUncheckedUpdateInput>
+  }
+
+  /**
+   * PermissionAuditLog delete
+   */
+  export type PermissionAuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
+    /**
+     * Filter which PermissionAuditLog to delete.
+     */
+    where: PermissionAuditLogWhereUniqueInput
+  }
+
+  /**
+   * PermissionAuditLog deleteMany
+   */
+  export type PermissionAuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PermissionAuditLogs to delete
+     */
+    where?: PermissionAuditLogWhereInput
+  }
+
+  /**
+   * PermissionAuditLog without action
+   */
+  export type PermissionAuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PermissionAuditLog
+     */
+    select?: PermissionAuditLogSelect<ExtArgs> | null
   }
 
 
@@ -5792,944 +11148,6 @@ export namespace Prisma {
 
 
   /**
-   * Model AuditLog
-   */
-
-  export type AggregateAuditLog = {
-    _count: AuditLogCountAggregateOutputType | null
-    _min: AuditLogMinAggregateOutputType | null
-    _max: AuditLogMaxAggregateOutputType | null
-  }
-
-  export type AuditLogMinAggregateOutputType = {
-    id: string | null
-    tenantId: string | null
-    shopId: string | null
-    userId: string | null
-    action: string | null
-    resource: string | null
-    resourceId: string | null
-    traceId: string | null
-    details: string | null
-    createdAt: Date | null
-  }
-
-  export type AuditLogMaxAggregateOutputType = {
-    id: string | null
-    tenantId: string | null
-    shopId: string | null
-    userId: string | null
-    action: string | null
-    resource: string | null
-    resourceId: string | null
-    traceId: string | null
-    details: string | null
-    createdAt: Date | null
-  }
-
-  export type AuditLogCountAggregateOutputType = {
-    id: number
-    tenantId: number
-    shopId: number
-    userId: number
-    action: number
-    resource: number
-    resourceId: number
-    traceId: number
-    details: number
-    createdAt: number
-    _all: number
-  }
-
-
-  export type AuditLogMinAggregateInputType = {
-    id?: true
-    tenantId?: true
-    shopId?: true
-    userId?: true
-    action?: true
-    resource?: true
-    resourceId?: true
-    traceId?: true
-    details?: true
-    createdAt?: true
-  }
-
-  export type AuditLogMaxAggregateInputType = {
-    id?: true
-    tenantId?: true
-    shopId?: true
-    userId?: true
-    action?: true
-    resource?: true
-    resourceId?: true
-    traceId?: true
-    details?: true
-    createdAt?: true
-  }
-
-  export type AuditLogCountAggregateInputType = {
-    id?: true
-    tenantId?: true
-    shopId?: true
-    userId?: true
-    action?: true
-    resource?: true
-    resourceId?: true
-    traceId?: true
-    details?: true
-    createdAt?: true
-    _all?: true
-  }
-
-  export type AuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which AuditLog to aggregate.
-     */
-    where?: AuditLogWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of AuditLogs to fetch.
-     */
-    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: AuditLogWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` AuditLogs from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` AuditLogs.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned AuditLogs
-    **/
-    _count?: true | AuditLogCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: AuditLogMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: AuditLogMaxAggregateInputType
-  }
-
-  export type GetAuditLogAggregateType<T extends AuditLogAggregateArgs> = {
-        [P in keyof T & keyof AggregateAuditLog]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateAuditLog[P]>
-      : GetScalarType<T[P], AggregateAuditLog[P]>
-  }
-
-
-
-
-  export type AuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AuditLogWhereInput
-    orderBy?: AuditLogOrderByWithAggregationInput | AuditLogOrderByWithAggregationInput[]
-    by: AuditLogScalarFieldEnum[] | AuditLogScalarFieldEnum
-    having?: AuditLogScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: AuditLogCountAggregateInputType | true
-    _min?: AuditLogMinAggregateInputType
-    _max?: AuditLogMaxAggregateInputType
-  }
-
-  export type AuditLogGroupByOutputType = {
-    id: string
-    tenantId: string
-    shopId: string | null
-    userId: string | null
-    action: string
-    resource: string
-    resourceId: string | null
-    traceId: string | null
-    details: string | null
-    createdAt: Date
-    _count: AuditLogCountAggregateOutputType | null
-    _min: AuditLogMinAggregateOutputType | null
-    _max: AuditLogMaxAggregateOutputType | null
-  }
-
-  type GetAuditLogGroupByPayload<T extends AuditLogGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<AuditLogGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof AuditLogGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
-            : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type AuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    tenantId?: boolean
-    shopId?: boolean
-    userId?: boolean
-    action?: boolean
-    resource?: boolean
-    resourceId?: boolean
-    traceId?: boolean
-    details?: boolean
-    createdAt?: boolean
-  }, ExtArgs["result"]["auditLog"]>
-
-  export type AuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    tenantId?: boolean
-    shopId?: boolean
-    userId?: boolean
-    action?: boolean
-    resource?: boolean
-    resourceId?: boolean
-    traceId?: boolean
-    details?: boolean
-    createdAt?: boolean
-  }, ExtArgs["result"]["auditLog"]>
-
-  export type AuditLogSelectScalar = {
-    id?: boolean
-    tenantId?: boolean
-    shopId?: boolean
-    userId?: boolean
-    action?: boolean
-    resource?: boolean
-    resourceId?: boolean
-    traceId?: boolean
-    details?: boolean
-    createdAt?: boolean
-  }
-
-
-  export type $AuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "AuditLog"
-    objects: {}
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      tenantId: string
-      shopId: string | null
-      userId: string | null
-      action: string
-      resource: string
-      resourceId: string | null
-      traceId: string | null
-      details: string | null
-      createdAt: Date
-    }, ExtArgs["result"]["auditLog"]>
-    composites: {}
-  }
-
-  type AuditLogGetPayload<S extends boolean | null | undefined | AuditLogDefaultArgs> = $Result.GetResult<Prisma.$AuditLogPayload, S>
-
-  type AuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<AuditLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: AuditLogCountAggregateInputType | true
-    }
-
-  export interface AuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuditLog'], meta: { name: 'AuditLog' } }
-    /**
-     * Find zero or one AuditLog that matches the filter.
-     * @param {AuditLogFindUniqueArgs} args - Arguments to find a AuditLog
-     * @example
-     * // Get one AuditLog
-     * const auditLog = await prisma.auditLog.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends AuditLogFindUniqueArgs>(args: SelectSubset<T, AuditLogFindUniqueArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one AuditLog that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {AuditLogFindUniqueOrThrowArgs} args - Arguments to find a AuditLog
-     * @example
-     * // Get one AuditLog
-     * const auditLog = await prisma.auditLog.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends AuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first AuditLog that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AuditLogFindFirstArgs} args - Arguments to find a AuditLog
-     * @example
-     * // Get one AuditLog
-     * const auditLog = await prisma.auditLog.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends AuditLogFindFirstArgs>(args?: SelectSubset<T, AuditLogFindFirstArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first AuditLog that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AuditLogFindFirstOrThrowArgs} args - Arguments to find a AuditLog
-     * @example
-     * // Get one AuditLog
-     * const auditLog = await prisma.auditLog.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends AuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more AuditLogs that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all AuditLogs
-     * const auditLogs = await prisma.auditLog.findMany()
-     * 
-     * // Get first 10 AuditLogs
-     * const auditLogs = await prisma.auditLog.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const auditLogWithIdOnly = await prisma.auditLog.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends AuditLogFindManyArgs>(args?: SelectSubset<T, AuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a AuditLog.
-     * @param {AuditLogCreateArgs} args - Arguments to create a AuditLog.
-     * @example
-     * // Create one AuditLog
-     * const AuditLog = await prisma.auditLog.create({
-     *   data: {
-     *     // ... data to create a AuditLog
-     *   }
-     * })
-     * 
-     */
-    create<T extends AuditLogCreateArgs>(args: SelectSubset<T, AuditLogCreateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many AuditLogs.
-     * @param {AuditLogCreateManyArgs} args - Arguments to create many AuditLogs.
-     * @example
-     * // Create many AuditLogs
-     * const auditLog = await prisma.auditLog.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends AuditLogCreateManyArgs>(args?: SelectSubset<T, AuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many AuditLogs and returns the data saved in the database.
-     * @param {AuditLogCreateManyAndReturnArgs} args - Arguments to create many AuditLogs.
-     * @example
-     * // Create many AuditLogs
-     * const auditLog = await prisma.auditLog.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many AuditLogs and only return the `id`
-     * const auditLogWithIdOnly = await prisma.auditLog.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends AuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a AuditLog.
-     * @param {AuditLogDeleteArgs} args - Arguments to delete one AuditLog.
-     * @example
-     * // Delete one AuditLog
-     * const AuditLog = await prisma.auditLog.delete({
-     *   where: {
-     *     // ... filter to delete one AuditLog
-     *   }
-     * })
-     * 
-     */
-    delete<T extends AuditLogDeleteArgs>(args: SelectSubset<T, AuditLogDeleteArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one AuditLog.
-     * @param {AuditLogUpdateArgs} args - Arguments to update one AuditLog.
-     * @example
-     * // Update one AuditLog
-     * const auditLog = await prisma.auditLog.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends AuditLogUpdateArgs>(args: SelectSubset<T, AuditLogUpdateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more AuditLogs.
-     * @param {AuditLogDeleteManyArgs} args - Arguments to filter AuditLogs to delete.
-     * @example
-     * // Delete a few AuditLogs
-     * const { count } = await prisma.auditLog.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends AuditLogDeleteManyArgs>(args?: SelectSubset<T, AuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more AuditLogs.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AuditLogUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many AuditLogs
-     * const auditLog = await prisma.auditLog.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends AuditLogUpdateManyArgs>(args: SelectSubset<T, AuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one AuditLog.
-     * @param {AuditLogUpsertArgs} args - Arguments to update or create a AuditLog.
-     * @example
-     * // Update or create a AuditLog
-     * const auditLog = await prisma.auditLog.upsert({
-     *   create: {
-     *     // ... data to create a AuditLog
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the AuditLog we want to update
-     *   }
-     * })
-     */
-    upsert<T extends AuditLogUpsertArgs>(args: SelectSubset<T, AuditLogUpsertArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of AuditLogs.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AuditLogCountArgs} args - Arguments to filter AuditLogs to count.
-     * @example
-     * // Count the number of AuditLogs
-     * const count = await prisma.auditLog.count({
-     *   where: {
-     *     // ... the filter for the AuditLogs we want to count
-     *   }
-     * })
-    **/
-    count<T extends AuditLogCountArgs>(
-      args?: Subset<T, AuditLogCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], AuditLogCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a AuditLog.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends AuditLogAggregateArgs>(args: Subset<T, AuditLogAggregateArgs>): Prisma.PrismaPromise<GetAuditLogAggregateType<T>>
-
-    /**
-     * Group by AuditLog.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {AuditLogGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends AuditLogGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: AuditLogGroupByArgs['orderBy'] }
-        : { orderBy?: AuditLogGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, AuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the AuditLog model
-   */
-  readonly fields: AuditLogFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for AuditLog.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the AuditLog model
-   */ 
-  interface AuditLogFieldRefs {
-    readonly id: FieldRef<"AuditLog", 'String'>
-    readonly tenantId: FieldRef<"AuditLog", 'String'>
-    readonly shopId: FieldRef<"AuditLog", 'String'>
-    readonly userId: FieldRef<"AuditLog", 'String'>
-    readonly action: FieldRef<"AuditLog", 'String'>
-    readonly resource: FieldRef<"AuditLog", 'String'>
-    readonly resourceId: FieldRef<"AuditLog", 'String'>
-    readonly traceId: FieldRef<"AuditLog", 'String'>
-    readonly details: FieldRef<"AuditLog", 'String'>
-    readonly createdAt: FieldRef<"AuditLog", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * AuditLog findUnique
-   */
-  export type AuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Filter, which AuditLog to fetch.
-     */
-    where: AuditLogWhereUniqueInput
-  }
-
-  /**
-   * AuditLog findUniqueOrThrow
-   */
-  export type AuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Filter, which AuditLog to fetch.
-     */
-    where: AuditLogWhereUniqueInput
-  }
-
-  /**
-   * AuditLog findFirst
-   */
-  export type AuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Filter, which AuditLog to fetch.
-     */
-    where?: AuditLogWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of AuditLogs to fetch.
-     */
-    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for AuditLogs.
-     */
-    cursor?: AuditLogWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` AuditLogs from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` AuditLogs.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of AuditLogs.
-     */
-    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
-  }
-
-  /**
-   * AuditLog findFirstOrThrow
-   */
-  export type AuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Filter, which AuditLog to fetch.
-     */
-    where?: AuditLogWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of AuditLogs to fetch.
-     */
-    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for AuditLogs.
-     */
-    cursor?: AuditLogWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` AuditLogs from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` AuditLogs.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of AuditLogs.
-     */
-    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
-  }
-
-  /**
-   * AuditLog findMany
-   */
-  export type AuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Filter, which AuditLogs to fetch.
-     */
-    where?: AuditLogWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of AuditLogs to fetch.
-     */
-    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing AuditLogs.
-     */
-    cursor?: AuditLogWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` AuditLogs from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` AuditLogs.
-     */
-    skip?: number
-    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
-  }
-
-  /**
-   * AuditLog create
-   */
-  export type AuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * The data needed to create a AuditLog.
-     */
-    data: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
-  }
-
-  /**
-   * AuditLog createMany
-   */
-  export type AuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many AuditLogs.
-     */
-    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * AuditLog createManyAndReturn
-   */
-  export type AuditLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many AuditLogs.
-     */
-    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * AuditLog update
-   */
-  export type AuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * The data needed to update a AuditLog.
-     */
-    data: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
-    /**
-     * Choose, which AuditLog to update.
-     */
-    where: AuditLogWhereUniqueInput
-  }
-
-  /**
-   * AuditLog updateMany
-   */
-  export type AuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update AuditLogs.
-     */
-    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
-    /**
-     * Filter which AuditLogs to update
-     */
-    where?: AuditLogWhereInput
-  }
-
-  /**
-   * AuditLog upsert
-   */
-  export type AuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * The filter to search for the AuditLog to update in case it exists.
-     */
-    where: AuditLogWhereUniqueInput
-    /**
-     * In case the AuditLog found by the `where` argument doesn't exist, create a new AuditLog with this data.
-     */
-    create: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
-    /**
-     * In case the AuditLog was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
-  }
-
-  /**
-   * AuditLog delete
-   */
-  export type AuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Filter which AuditLog to delete.
-     */
-    where: AuditLogWhereUniqueInput
-  }
-
-  /**
-   * AuditLog deleteMany
-   */
-  export type AuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which AuditLogs to delete
-     */
-    where?: AuditLogWhereInput
-  }
-
-  /**
-   * AuditLog without action
-   */
-  export type AuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-  }
-
-
-  /**
    * Enums
    */
 
@@ -6757,6 +11175,77 @@ export namespace Prisma {
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+  export const UserPermissionScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    userId: 'userId',
+    permissionKey: 'permissionKey',
+    isGranted: 'isGranted',
+    scope: 'scope',
+    allowedShopIds: 'allowedShopIds',
+    grantedAt: 'grantedAt',
+    expiresAt: 'expiresAt',
+    grantedBy: 'grantedBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type UserPermissionScalarFieldEnum = (typeof UserPermissionScalarFieldEnum)[keyof typeof UserPermissionScalarFieldEnum]
+
+
+  export const PermissionTemplateScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    name: 'name',
+    description: 'description',
+    isSystem: 'isSystem',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PermissionTemplateScalarFieldEnum = (typeof PermissionTemplateScalarFieldEnum)[keyof typeof PermissionTemplateScalarFieldEnum]
+
+
+  export const TemplatePermissionScalarFieldEnum: {
+    id: 'id',
+    templateId: 'templateId',
+    permissionKey: 'permissionKey',
+    scope: 'scope',
+    allowedShopIds: 'allowedShopIds',
+    createdAt: 'createdAt'
+  };
+
+  export type TemplatePermissionScalarFieldEnum = (typeof TemplatePermissionScalarFieldEnum)[keyof typeof TemplatePermissionScalarFieldEnum]
+
+
+  export const UserTemplateAssignmentScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    templateId: 'templateId',
+    assignedAt: 'assignedAt',
+    assignedBy: 'assignedBy'
+  };
+
+  export type UserTemplateAssignmentScalarFieldEnum = (typeof UserTemplateAssignmentScalarFieldEnum)[keyof typeof UserTemplateAssignmentScalarFieldEnum]
+
+
+  export const PermissionAuditLogScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    actorId: 'actorId',
+    targetUserId: 'targetUserId',
+    action: 'action',
+    permissionKey: 'permissionKey',
+    oldValue: 'oldValue',
+    newValue: 'newValue',
+    reason: 'reason',
+    traceId: 'traceId',
+    createdAt: 'createdAt'
+  };
+
+  export type PermissionAuditLogScalarFieldEnum = (typeof PermissionAuditLogScalarFieldEnum)[keyof typeof PermissionAuditLogScalarFieldEnum]
 
 
   export const CredentialScalarFieldEnum: {
@@ -6807,22 +11296,6 @@ export namespace Prisma {
   };
 
   export type MfaSecretScalarFieldEnum = (typeof MfaSecretScalarFieldEnum)[keyof typeof MfaSecretScalarFieldEnum]
-
-
-  export const AuditLogScalarFieldEnum: {
-    id: 'id',
-    tenantId: 'tenantId',
-    shopId: 'shopId',
-    userId: 'userId',
-    action: 'action',
-    resource: 'resource',
-    resourceId: 'resourceId',
-    traceId: 'traceId',
-    details: 'details',
-    createdAt: 'createdAt'
-  };
-
-  export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -6920,6 +11393,8 @@ export namespace Prisma {
     status?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    userPermissions?: UserPermissionListRelationFilter
+    userTemplateAssignments?: UserTemplateAssignmentListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -6933,6 +11408,8 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    userPermissions?: UserPermissionOrderByRelationAggregateInput
+    userTemplateAssignments?: UserTemplateAssignmentOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -6949,6 +11426,8 @@ export namespace Prisma {
     status?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    userPermissions?: UserPermissionListRelationFilter
+    userTemplateAssignments?: UserTemplateAssignmentListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -6981,6 +11460,368 @@ export namespace Prisma {
     status?: StringWithAggregatesFilter<"User"> | string
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+  }
+
+  export type UserPermissionWhereInput = {
+    AND?: UserPermissionWhereInput | UserPermissionWhereInput[]
+    OR?: UserPermissionWhereInput[]
+    NOT?: UserPermissionWhereInput | UserPermissionWhereInput[]
+    id?: StringFilter<"UserPermission"> | string
+    tenantId?: StringFilter<"UserPermission"> | string
+    userId?: StringFilter<"UserPermission"> | string
+    permissionKey?: StringFilter<"UserPermission"> | string
+    isGranted?: BoolFilter<"UserPermission"> | boolean
+    scope?: StringFilter<"UserPermission"> | string
+    allowedShopIds?: StringNullableListFilter<"UserPermission">
+    grantedAt?: DateTimeFilter<"UserPermission"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"UserPermission"> | Date | string | null
+    grantedBy?: StringFilter<"UserPermission"> | string
+    createdAt?: DateTimeFilter<"UserPermission"> | Date | string
+    updatedAt?: DateTimeFilter<"UserPermission"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type UserPermissionOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    permissionKey?: SortOrder
+    isGranted?: SortOrder
+    scope?: SortOrder
+    allowedShopIds?: SortOrder
+    grantedAt?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    grantedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type UserPermissionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_permissionKey?: UserPermissionUserIdPermissionKeyCompoundUniqueInput
+    AND?: UserPermissionWhereInput | UserPermissionWhereInput[]
+    OR?: UserPermissionWhereInput[]
+    NOT?: UserPermissionWhereInput | UserPermissionWhereInput[]
+    tenantId?: StringFilter<"UserPermission"> | string
+    userId?: StringFilter<"UserPermission"> | string
+    permissionKey?: StringFilter<"UserPermission"> | string
+    isGranted?: BoolFilter<"UserPermission"> | boolean
+    scope?: StringFilter<"UserPermission"> | string
+    allowedShopIds?: StringNullableListFilter<"UserPermission">
+    grantedAt?: DateTimeFilter<"UserPermission"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"UserPermission"> | Date | string | null
+    grantedBy?: StringFilter<"UserPermission"> | string
+    createdAt?: DateTimeFilter<"UserPermission"> | Date | string
+    updatedAt?: DateTimeFilter<"UserPermission"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "userId_permissionKey">
+
+  export type UserPermissionOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    permissionKey?: SortOrder
+    isGranted?: SortOrder
+    scope?: SortOrder
+    allowedShopIds?: SortOrder
+    grantedAt?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    grantedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: UserPermissionCountOrderByAggregateInput
+    _max?: UserPermissionMaxOrderByAggregateInput
+    _min?: UserPermissionMinOrderByAggregateInput
+  }
+
+  export type UserPermissionScalarWhereWithAggregatesInput = {
+    AND?: UserPermissionScalarWhereWithAggregatesInput | UserPermissionScalarWhereWithAggregatesInput[]
+    OR?: UserPermissionScalarWhereWithAggregatesInput[]
+    NOT?: UserPermissionScalarWhereWithAggregatesInput | UserPermissionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"UserPermission"> | string
+    tenantId?: StringWithAggregatesFilter<"UserPermission"> | string
+    userId?: StringWithAggregatesFilter<"UserPermission"> | string
+    permissionKey?: StringWithAggregatesFilter<"UserPermission"> | string
+    isGranted?: BoolWithAggregatesFilter<"UserPermission"> | boolean
+    scope?: StringWithAggregatesFilter<"UserPermission"> | string
+    allowedShopIds?: StringNullableListFilter<"UserPermission">
+    grantedAt?: DateTimeWithAggregatesFilter<"UserPermission"> | Date | string
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"UserPermission"> | Date | string | null
+    grantedBy?: StringWithAggregatesFilter<"UserPermission"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"UserPermission"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"UserPermission"> | Date | string
+  }
+
+  export type PermissionTemplateWhereInput = {
+    AND?: PermissionTemplateWhereInput | PermissionTemplateWhereInput[]
+    OR?: PermissionTemplateWhereInput[]
+    NOT?: PermissionTemplateWhereInput | PermissionTemplateWhereInput[]
+    id?: StringFilter<"PermissionTemplate"> | string
+    tenantId?: StringFilter<"PermissionTemplate"> | string
+    name?: StringFilter<"PermissionTemplate"> | string
+    description?: StringNullableFilter<"PermissionTemplate"> | string | null
+    isSystem?: BoolFilter<"PermissionTemplate"> | boolean
+    createdAt?: DateTimeFilter<"PermissionTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"PermissionTemplate"> | Date | string
+    templatePermissions?: TemplatePermissionListRelationFilter
+    userTemplateAssignments?: UserTemplateAssignmentListRelationFilter
+  }
+
+  export type PermissionTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    isSystem?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    templatePermissions?: TemplatePermissionOrderByRelationAggregateInput
+    userTemplateAssignments?: UserTemplateAssignmentOrderByRelationAggregateInput
+  }
+
+  export type PermissionTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_name?: PermissionTemplateTenantIdNameCompoundUniqueInput
+    AND?: PermissionTemplateWhereInput | PermissionTemplateWhereInput[]
+    OR?: PermissionTemplateWhereInput[]
+    NOT?: PermissionTemplateWhereInput | PermissionTemplateWhereInput[]
+    tenantId?: StringFilter<"PermissionTemplate"> | string
+    name?: StringFilter<"PermissionTemplate"> | string
+    description?: StringNullableFilter<"PermissionTemplate"> | string | null
+    isSystem?: BoolFilter<"PermissionTemplate"> | boolean
+    createdAt?: DateTimeFilter<"PermissionTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"PermissionTemplate"> | Date | string
+    templatePermissions?: TemplatePermissionListRelationFilter
+    userTemplateAssignments?: UserTemplateAssignmentListRelationFilter
+  }, "id" | "tenantId_name">
+
+  export type PermissionTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    isSystem?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PermissionTemplateCountOrderByAggregateInput
+    _max?: PermissionTemplateMaxOrderByAggregateInput
+    _min?: PermissionTemplateMinOrderByAggregateInput
+  }
+
+  export type PermissionTemplateScalarWhereWithAggregatesInput = {
+    AND?: PermissionTemplateScalarWhereWithAggregatesInput | PermissionTemplateScalarWhereWithAggregatesInput[]
+    OR?: PermissionTemplateScalarWhereWithAggregatesInput[]
+    NOT?: PermissionTemplateScalarWhereWithAggregatesInput | PermissionTemplateScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PermissionTemplate"> | string
+    tenantId?: StringWithAggregatesFilter<"PermissionTemplate"> | string
+    name?: StringWithAggregatesFilter<"PermissionTemplate"> | string
+    description?: StringNullableWithAggregatesFilter<"PermissionTemplate"> | string | null
+    isSystem?: BoolWithAggregatesFilter<"PermissionTemplate"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"PermissionTemplate"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PermissionTemplate"> | Date | string
+  }
+
+  export type TemplatePermissionWhereInput = {
+    AND?: TemplatePermissionWhereInput | TemplatePermissionWhereInput[]
+    OR?: TemplatePermissionWhereInput[]
+    NOT?: TemplatePermissionWhereInput | TemplatePermissionWhereInput[]
+    id?: StringFilter<"TemplatePermission"> | string
+    templateId?: StringFilter<"TemplatePermission"> | string
+    permissionKey?: StringFilter<"TemplatePermission"> | string
+    scope?: StringFilter<"TemplatePermission"> | string
+    allowedShopIds?: StringNullableListFilter<"TemplatePermission">
+    createdAt?: DateTimeFilter<"TemplatePermission"> | Date | string
+    template?: XOR<PermissionTemplateRelationFilter, PermissionTemplateWhereInput>
+  }
+
+  export type TemplatePermissionOrderByWithRelationInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    permissionKey?: SortOrder
+    scope?: SortOrder
+    allowedShopIds?: SortOrder
+    createdAt?: SortOrder
+    template?: PermissionTemplateOrderByWithRelationInput
+  }
+
+  export type TemplatePermissionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    templateId_permissionKey?: TemplatePermissionTemplateIdPermissionKeyCompoundUniqueInput
+    AND?: TemplatePermissionWhereInput | TemplatePermissionWhereInput[]
+    OR?: TemplatePermissionWhereInput[]
+    NOT?: TemplatePermissionWhereInput | TemplatePermissionWhereInput[]
+    templateId?: StringFilter<"TemplatePermission"> | string
+    permissionKey?: StringFilter<"TemplatePermission"> | string
+    scope?: StringFilter<"TemplatePermission"> | string
+    allowedShopIds?: StringNullableListFilter<"TemplatePermission">
+    createdAt?: DateTimeFilter<"TemplatePermission"> | Date | string
+    template?: XOR<PermissionTemplateRelationFilter, PermissionTemplateWhereInput>
+  }, "id" | "templateId_permissionKey">
+
+  export type TemplatePermissionOrderByWithAggregationInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    permissionKey?: SortOrder
+    scope?: SortOrder
+    allowedShopIds?: SortOrder
+    createdAt?: SortOrder
+    _count?: TemplatePermissionCountOrderByAggregateInput
+    _max?: TemplatePermissionMaxOrderByAggregateInput
+    _min?: TemplatePermissionMinOrderByAggregateInput
+  }
+
+  export type TemplatePermissionScalarWhereWithAggregatesInput = {
+    AND?: TemplatePermissionScalarWhereWithAggregatesInput | TemplatePermissionScalarWhereWithAggregatesInput[]
+    OR?: TemplatePermissionScalarWhereWithAggregatesInput[]
+    NOT?: TemplatePermissionScalarWhereWithAggregatesInput | TemplatePermissionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TemplatePermission"> | string
+    templateId?: StringWithAggregatesFilter<"TemplatePermission"> | string
+    permissionKey?: StringWithAggregatesFilter<"TemplatePermission"> | string
+    scope?: StringWithAggregatesFilter<"TemplatePermission"> | string
+    allowedShopIds?: StringNullableListFilter<"TemplatePermission">
+    createdAt?: DateTimeWithAggregatesFilter<"TemplatePermission"> | Date | string
+  }
+
+  export type UserTemplateAssignmentWhereInput = {
+    AND?: UserTemplateAssignmentWhereInput | UserTemplateAssignmentWhereInput[]
+    OR?: UserTemplateAssignmentWhereInput[]
+    NOT?: UserTemplateAssignmentWhereInput | UserTemplateAssignmentWhereInput[]
+    id?: StringFilter<"UserTemplateAssignment"> | string
+    userId?: StringFilter<"UserTemplateAssignment"> | string
+    templateId?: StringFilter<"UserTemplateAssignment"> | string
+    assignedAt?: DateTimeFilter<"UserTemplateAssignment"> | Date | string
+    assignedBy?: StringFilter<"UserTemplateAssignment"> | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    template?: XOR<PermissionTemplateRelationFilter, PermissionTemplateWhereInput>
+  }
+
+  export type UserTemplateAssignmentOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    assignedAt?: SortOrder
+    assignedBy?: SortOrder
+    user?: UserOrderByWithRelationInput
+    template?: PermissionTemplateOrderByWithRelationInput
+  }
+
+  export type UserTemplateAssignmentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_templateId?: UserTemplateAssignmentUserIdTemplateIdCompoundUniqueInput
+    AND?: UserTemplateAssignmentWhereInput | UserTemplateAssignmentWhereInput[]
+    OR?: UserTemplateAssignmentWhereInput[]
+    NOT?: UserTemplateAssignmentWhereInput | UserTemplateAssignmentWhereInput[]
+    userId?: StringFilter<"UserTemplateAssignment"> | string
+    templateId?: StringFilter<"UserTemplateAssignment"> | string
+    assignedAt?: DateTimeFilter<"UserTemplateAssignment"> | Date | string
+    assignedBy?: StringFilter<"UserTemplateAssignment"> | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    template?: XOR<PermissionTemplateRelationFilter, PermissionTemplateWhereInput>
+  }, "id" | "userId_templateId">
+
+  export type UserTemplateAssignmentOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    assignedAt?: SortOrder
+    assignedBy?: SortOrder
+    _count?: UserTemplateAssignmentCountOrderByAggregateInput
+    _max?: UserTemplateAssignmentMaxOrderByAggregateInput
+    _min?: UserTemplateAssignmentMinOrderByAggregateInput
+  }
+
+  export type UserTemplateAssignmentScalarWhereWithAggregatesInput = {
+    AND?: UserTemplateAssignmentScalarWhereWithAggregatesInput | UserTemplateAssignmentScalarWhereWithAggregatesInput[]
+    OR?: UserTemplateAssignmentScalarWhereWithAggregatesInput[]
+    NOT?: UserTemplateAssignmentScalarWhereWithAggregatesInput | UserTemplateAssignmentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"UserTemplateAssignment"> | string
+    userId?: StringWithAggregatesFilter<"UserTemplateAssignment"> | string
+    templateId?: StringWithAggregatesFilter<"UserTemplateAssignment"> | string
+    assignedAt?: DateTimeWithAggregatesFilter<"UserTemplateAssignment"> | Date | string
+    assignedBy?: StringWithAggregatesFilter<"UserTemplateAssignment"> | string
+  }
+
+  export type PermissionAuditLogWhereInput = {
+    AND?: PermissionAuditLogWhereInput | PermissionAuditLogWhereInput[]
+    OR?: PermissionAuditLogWhereInput[]
+    NOT?: PermissionAuditLogWhereInput | PermissionAuditLogWhereInput[]
+    id?: StringFilter<"PermissionAuditLog"> | string
+    tenantId?: StringFilter<"PermissionAuditLog"> | string
+    actorId?: StringFilter<"PermissionAuditLog"> | string
+    targetUserId?: StringFilter<"PermissionAuditLog"> | string
+    action?: StringFilter<"PermissionAuditLog"> | string
+    permissionKey?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    oldValue?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    newValue?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    reason?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    traceId?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    createdAt?: DateTimeFilter<"PermissionAuditLog"> | Date | string
+  }
+
+  export type PermissionAuditLogOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    permissionKey?: SortOrderInput | SortOrder
+    oldValue?: SortOrderInput | SortOrder
+    newValue?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    traceId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PermissionAuditLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PermissionAuditLogWhereInput | PermissionAuditLogWhereInput[]
+    OR?: PermissionAuditLogWhereInput[]
+    NOT?: PermissionAuditLogWhereInput | PermissionAuditLogWhereInput[]
+    tenantId?: StringFilter<"PermissionAuditLog"> | string
+    actorId?: StringFilter<"PermissionAuditLog"> | string
+    targetUserId?: StringFilter<"PermissionAuditLog"> | string
+    action?: StringFilter<"PermissionAuditLog"> | string
+    permissionKey?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    oldValue?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    newValue?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    reason?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    traceId?: StringNullableFilter<"PermissionAuditLog"> | string | null
+    createdAt?: DateTimeFilter<"PermissionAuditLog"> | Date | string
+  }, "id">
+
+  export type PermissionAuditLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    permissionKey?: SortOrderInput | SortOrder
+    oldValue?: SortOrderInput | SortOrder
+    newValue?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    traceId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: PermissionAuditLogCountOrderByAggregateInput
+    _max?: PermissionAuditLogMaxOrderByAggregateInput
+    _min?: PermissionAuditLogMinOrderByAggregateInput
+  }
+
+  export type PermissionAuditLogScalarWhereWithAggregatesInput = {
+    AND?: PermissionAuditLogScalarWhereWithAggregatesInput | PermissionAuditLogScalarWhereWithAggregatesInput[]
+    OR?: PermissionAuditLogScalarWhereWithAggregatesInput[]
+    NOT?: PermissionAuditLogScalarWhereWithAggregatesInput | PermissionAuditLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PermissionAuditLog"> | string
+    tenantId?: StringWithAggregatesFilter<"PermissionAuditLog"> | string
+    actorId?: StringWithAggregatesFilter<"PermissionAuditLog"> | string
+    targetUserId?: StringWithAggregatesFilter<"PermissionAuditLog"> | string
+    action?: StringWithAggregatesFilter<"PermissionAuditLog"> | string
+    permissionKey?: StringNullableWithAggregatesFilter<"PermissionAuditLog"> | string | null
+    oldValue?: StringNullableWithAggregatesFilter<"PermissionAuditLog"> | string | null
+    newValue?: StringNullableWithAggregatesFilter<"PermissionAuditLog"> | string | null
+    reason?: StringNullableWithAggregatesFilter<"PermissionAuditLog"> | string | null
+    traceId?: StringNullableWithAggregatesFilter<"PermissionAuditLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PermissionAuditLog"> | Date | string
   }
 
   export type CredentialWhereInput = {
@@ -7221,83 +12062,6 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"MfaSecret"> | Date | string
   }
 
-  export type AuditLogWhereInput = {
-    AND?: AuditLogWhereInput | AuditLogWhereInput[]
-    OR?: AuditLogWhereInput[]
-    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
-    id?: StringFilter<"AuditLog"> | string
-    tenantId?: StringFilter<"AuditLog"> | string
-    shopId?: StringNullableFilter<"AuditLog"> | string | null
-    userId?: StringNullableFilter<"AuditLog"> | string | null
-    action?: StringFilter<"AuditLog"> | string
-    resource?: StringFilter<"AuditLog"> | string
-    resourceId?: StringNullableFilter<"AuditLog"> | string | null
-    traceId?: StringNullableFilter<"AuditLog"> | string | null
-    details?: StringNullableFilter<"AuditLog"> | string | null
-    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
-  }
-
-  export type AuditLogOrderByWithRelationInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    shopId?: SortOrderInput | SortOrder
-    userId?: SortOrderInput | SortOrder
-    action?: SortOrder
-    resource?: SortOrder
-    resourceId?: SortOrderInput | SortOrder
-    traceId?: SortOrderInput | SortOrder
-    details?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: AuditLogWhereInput | AuditLogWhereInput[]
-    OR?: AuditLogWhereInput[]
-    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
-    tenantId?: StringFilter<"AuditLog"> | string
-    shopId?: StringNullableFilter<"AuditLog"> | string | null
-    userId?: StringNullableFilter<"AuditLog"> | string | null
-    action?: StringFilter<"AuditLog"> | string
-    resource?: StringFilter<"AuditLog"> | string
-    resourceId?: StringNullableFilter<"AuditLog"> | string | null
-    traceId?: StringNullableFilter<"AuditLog"> | string | null
-    details?: StringNullableFilter<"AuditLog"> | string | null
-    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
-  }, "id">
-
-  export type AuditLogOrderByWithAggregationInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    shopId?: SortOrderInput | SortOrder
-    userId?: SortOrderInput | SortOrder
-    action?: SortOrder
-    resource?: SortOrder
-    resourceId?: SortOrderInput | SortOrder
-    traceId?: SortOrderInput | SortOrder
-    details?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    _count?: AuditLogCountOrderByAggregateInput
-    _max?: AuditLogMaxOrderByAggregateInput
-    _min?: AuditLogMinOrderByAggregateInput
-  }
-
-  export type AuditLogScalarWhereWithAggregatesInput = {
-    AND?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
-    OR?: AuditLogScalarWhereWithAggregatesInput[]
-    NOT?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"AuditLog"> | string
-    tenantId?: StringWithAggregatesFilter<"AuditLog"> | string
-    shopId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
-    userId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
-    action?: StringWithAggregatesFilter<"AuditLog"> | string
-    resource?: StringWithAggregatesFilter<"AuditLog"> | string
-    resourceId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
-    traceId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
-    details?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
-  }
-
   export type UserCreateInput = {
     id?: string
     tenantId: string
@@ -7309,6 +12073,8 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    userPermissions?: UserPermissionCreateNestedManyWithoutUserInput
+    userTemplateAssignments?: UserTemplateAssignmentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -7322,6 +12088,8 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    userPermissions?: UserPermissionUncheckedCreateNestedManyWithoutUserInput
+    userTemplateAssignments?: UserTemplateAssignmentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -7335,6 +12103,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userPermissions?: UserPermissionUpdateManyWithoutUserNestedInput
+    userTemplateAssignments?: UserTemplateAssignmentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -7348,6 +12118,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userPermissions?: UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+    userTemplateAssignments?: UserTemplateAssignmentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -7387,6 +12159,402 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserPermissionCreateInput = {
+    id?: string
+    tenantId: string
+    permissionKey: string
+    isGranted?: boolean
+    scope?: string
+    allowedShopIds?: UserPermissionCreateallowedShopIdsInput | string[]
+    grantedAt?: Date | string
+    expiresAt?: Date | string | null
+    grantedBy: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutUserPermissionsInput
+  }
+
+  export type UserPermissionUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    userId: string
+    permissionKey: string
+    isGranted?: boolean
+    scope?: string
+    allowedShopIds?: UserPermissionCreateallowedShopIdsInput | string[]
+    grantedAt?: Date | string
+    expiresAt?: Date | string | null
+    grantedBy: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserPermissionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    isGranted?: BoolFieldUpdateOperationsInput | boolean
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: UserPermissionUpdateallowedShopIdsInput | string[]
+    grantedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutUserPermissionsNestedInput
+  }
+
+  export type UserPermissionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    isGranted?: BoolFieldUpdateOperationsInput | boolean
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: UserPermissionUpdateallowedShopIdsInput | string[]
+    grantedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserPermissionCreateManyInput = {
+    id?: string
+    tenantId: string
+    userId: string
+    permissionKey: string
+    isGranted?: boolean
+    scope?: string
+    allowedShopIds?: UserPermissionCreateallowedShopIdsInput | string[]
+    grantedAt?: Date | string
+    expiresAt?: Date | string | null
+    grantedBy: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserPermissionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    isGranted?: BoolFieldUpdateOperationsInput | boolean
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: UserPermissionUpdateallowedShopIdsInput | string[]
+    grantedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserPermissionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    isGranted?: BoolFieldUpdateOperationsInput | boolean
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: UserPermissionUpdateallowedShopIdsInput | string[]
+    grantedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PermissionTemplateCreateInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    isSystem?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    templatePermissions?: TemplatePermissionCreateNestedManyWithoutTemplateInput
+    userTemplateAssignments?: UserTemplateAssignmentCreateNestedManyWithoutTemplateInput
+  }
+
+  export type PermissionTemplateUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    isSystem?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    templatePermissions?: TemplatePermissionUncheckedCreateNestedManyWithoutTemplateInput
+    userTemplateAssignments?: UserTemplateAssignmentUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type PermissionTemplateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templatePermissions?: TemplatePermissionUpdateManyWithoutTemplateNestedInput
+    userTemplateAssignments?: UserTemplateAssignmentUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type PermissionTemplateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templatePermissions?: TemplatePermissionUncheckedUpdateManyWithoutTemplateNestedInput
+    userTemplateAssignments?: UserTemplateAssignmentUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type PermissionTemplateCreateManyInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    isSystem?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PermissionTemplateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PermissionTemplateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplatePermissionCreateInput = {
+    id?: string
+    permissionKey: string
+    scope?: string
+    allowedShopIds?: TemplatePermissionCreateallowedShopIdsInput | string[]
+    createdAt?: Date | string
+    template: PermissionTemplateCreateNestedOneWithoutTemplatePermissionsInput
+  }
+
+  export type TemplatePermissionUncheckedCreateInput = {
+    id?: string
+    templateId: string
+    permissionKey: string
+    scope?: string
+    allowedShopIds?: TemplatePermissionCreateallowedShopIdsInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type TemplatePermissionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: TemplatePermissionUpdateallowedShopIdsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    template?: PermissionTemplateUpdateOneRequiredWithoutTemplatePermissionsNestedInput
+  }
+
+  export type TemplatePermissionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: TemplatePermissionUpdateallowedShopIdsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplatePermissionCreateManyInput = {
+    id?: string
+    templateId: string
+    permissionKey: string
+    scope?: string
+    allowedShopIds?: TemplatePermissionCreateallowedShopIdsInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type TemplatePermissionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: TemplatePermissionUpdateallowedShopIdsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplatePermissionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: TemplatePermissionUpdateallowedShopIdsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTemplateAssignmentCreateInput = {
+    id?: string
+    assignedAt?: Date | string
+    assignedBy: string
+    user: UserCreateNestedOneWithoutUserTemplateAssignmentsInput
+    template: PermissionTemplateCreateNestedOneWithoutUserTemplateAssignmentsInput
+  }
+
+  export type UserTemplateAssignmentUncheckedCreateInput = {
+    id?: string
+    userId: string
+    templateId: string
+    assignedAt?: Date | string
+    assignedBy: string
+  }
+
+  export type UserTemplateAssignmentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
+    user?: UserUpdateOneRequiredWithoutUserTemplateAssignmentsNestedInput
+    template?: PermissionTemplateUpdateOneRequiredWithoutUserTemplateAssignmentsNestedInput
+  }
+
+  export type UserTemplateAssignmentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserTemplateAssignmentCreateManyInput = {
+    id?: string
+    userId: string
+    templateId: string
+    assignedAt?: Date | string
+    assignedBy: string
+  }
+
+  export type UserTemplateAssignmentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserTemplateAssignmentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PermissionAuditLogCreateInput = {
+    id?: string
+    tenantId: string
+    actorId: string
+    targetUserId: string
+    action: string
+    permissionKey?: string | null
+    oldValue?: string | null
+    newValue?: string | null
+    reason?: string | null
+    traceId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PermissionAuditLogUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    actorId: string
+    targetUserId: string
+    action: string
+    permissionKey?: string | null
+    oldValue?: string | null
+    newValue?: string | null
+    reason?: string | null
+    traceId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PermissionAuditLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    permissionKey?: NullableStringFieldUpdateOperationsInput | string | null
+    oldValue?: NullableStringFieldUpdateOperationsInput | string | null
+    newValue?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    traceId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PermissionAuditLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    permissionKey?: NullableStringFieldUpdateOperationsInput | string | null
+    oldValue?: NullableStringFieldUpdateOperationsInput | string | null
+    newValue?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    traceId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PermissionAuditLogCreateManyInput = {
+    id?: string
+    tenantId: string
+    actorId: string
+    targetUserId: string
+    action: string
+    permissionKey?: string | null
+    oldValue?: string | null
+    newValue?: string | null
+    reason?: string | null
+    traceId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PermissionAuditLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    permissionKey?: NullableStringFieldUpdateOperationsInput | string | null
+    oldValue?: NullableStringFieldUpdateOperationsInput | string | null
+    newValue?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    traceId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PermissionAuditLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    permissionKey?: NullableStringFieldUpdateOperationsInput | string | null
+    oldValue?: NullableStringFieldUpdateOperationsInput | string | null
+    newValue?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    traceId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CredentialCreateInput = {
@@ -7655,97 +12823,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type AuditLogCreateInput = {
-    id?: string
-    tenantId: string
-    shopId?: string | null
-    userId?: string | null
-    action: string
-    resource: string
-    resourceId?: string | null
-    traceId?: string | null
-    details?: string | null
-    createdAt?: Date | string
-  }
-
-  export type AuditLogUncheckedCreateInput = {
-    id?: string
-    tenantId: string
-    shopId?: string | null
-    userId?: string | null
-    action: string
-    resource: string
-    resourceId?: string | null
-    traceId?: string | null
-    details?: string | null
-    createdAt?: Date | string
-  }
-
-  export type AuditLogUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-    shopId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    action?: StringFieldUpdateOperationsInput | string
-    resource?: StringFieldUpdateOperationsInput | string
-    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
-    traceId?: NullableStringFieldUpdateOperationsInput | string | null
-    details?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type AuditLogUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-    shopId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    action?: StringFieldUpdateOperationsInput | string
-    resource?: StringFieldUpdateOperationsInput | string
-    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
-    traceId?: NullableStringFieldUpdateOperationsInput | string | null
-    details?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type AuditLogCreateManyInput = {
-    id?: string
-    tenantId: string
-    shopId?: string | null
-    userId?: string | null
-    action: string
-    resource: string
-    resourceId?: string | null
-    traceId?: string | null
-    details?: string | null
-    createdAt?: Date | string
-  }
-
-  export type AuditLogUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-    shopId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    action?: StringFieldUpdateOperationsInput | string
-    resource?: StringFieldUpdateOperationsInput | string
-    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
-    traceId?: NullableStringFieldUpdateOperationsInput | string | null
-    details?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type AuditLogUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-    shopId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    action?: StringFieldUpdateOperationsInput | string
-    resource?: StringFieldUpdateOperationsInput | string
-    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
-    traceId?: NullableStringFieldUpdateOperationsInput | string | null
-    details?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -7770,6 +12847,26 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type UserPermissionListRelationFilter = {
+    every?: UserPermissionWhereInput
+    some?: UserPermissionWhereInput
+    none?: UserPermissionWhereInput
+  }
+
+  export type UserTemplateAssignmentListRelationFilter = {
+    every?: UserTemplateAssignmentWhereInput
+    some?: UserTemplateAssignmentWhereInput
+    none?: UserTemplateAssignmentWhereInput
+  }
+
+  export type UserPermissionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserTemplateAssignmentOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type UserCountOrderByAggregateInput = {
@@ -7843,6 +12940,294 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type UserRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type UserPermissionUserIdPermissionKeyCompoundUniqueInput = {
+    userId: string
+    permissionKey: string
+  }
+
+  export type UserPermissionCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    permissionKey?: SortOrder
+    isGranted?: SortOrder
+    scope?: SortOrder
+    allowedShopIds?: SortOrder
+    grantedAt?: SortOrder
+    expiresAt?: SortOrder
+    grantedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserPermissionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    permissionKey?: SortOrder
+    isGranted?: SortOrder
+    scope?: SortOrder
+    grantedAt?: SortOrder
+    expiresAt?: SortOrder
+    grantedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserPermissionMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    userId?: SortOrder
+    permissionKey?: SortOrder
+    isGranted?: SortOrder
+    scope?: SortOrder
+    grantedAt?: SortOrder
+    expiresAt?: SortOrder
+    grantedBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type TemplatePermissionListRelationFilter = {
+    every?: TemplatePermissionWhereInput
+    some?: TemplatePermissionWhereInput
+    none?: TemplatePermissionWhereInput
+  }
+
+  export type TemplatePermissionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PermissionTemplateTenantIdNameCompoundUniqueInput = {
+    tenantId: string
+    name: string
+  }
+
+  export type PermissionTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    isSystem?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PermissionTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    isSystem?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PermissionTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    isSystem?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type PermissionTemplateRelationFilter = {
+    is?: PermissionTemplateWhereInput
+    isNot?: PermissionTemplateWhereInput
+  }
+
+  export type TemplatePermissionTemplateIdPermissionKeyCompoundUniqueInput = {
+    templateId: string
+    permissionKey: string
+  }
+
+  export type TemplatePermissionCountOrderByAggregateInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    permissionKey?: SortOrder
+    scope?: SortOrder
+    allowedShopIds?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TemplatePermissionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    permissionKey?: SortOrder
+    scope?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TemplatePermissionMinOrderByAggregateInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    permissionKey?: SortOrder
+    scope?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserTemplateAssignmentUserIdTemplateIdCompoundUniqueInput = {
+    userId: string
+    templateId: string
+  }
+
+  export type UserTemplateAssignmentCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    assignedAt?: SortOrder
+    assignedBy?: SortOrder
+  }
+
+  export type UserTemplateAssignmentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    assignedAt?: SortOrder
+    assignedBy?: SortOrder
+  }
+
+  export type UserTemplateAssignmentMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    templateId?: SortOrder
+    assignedAt?: SortOrder
+    assignedBy?: SortOrder
+  }
+
+  export type PermissionAuditLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    permissionKey?: SortOrder
+    oldValue?: SortOrder
+    newValue?: SortOrder
+    reason?: SortOrder
+    traceId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PermissionAuditLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    permissionKey?: SortOrder
+    oldValue?: SortOrder
+    newValue?: SortOrder
+    reason?: SortOrder
+    traceId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PermissionAuditLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    permissionKey?: SortOrder
+    oldValue?: SortOrder
+    newValue?: SortOrder
+    reason?: SortOrder
+    traceId?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type CredentialCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -7897,11 +13282,6 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type TokenCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -7932,22 +13312,6 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type StringNullableListFilter<$PrismaModel = never> = {
-    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    has?: string | StringFieldRefInput<$PrismaModel> | null
-    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
-    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
-    isEmpty?: boolean
-  }
-
   export type MfaSecretCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -7976,81 +13340,32 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  export type UserPermissionCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserPermissionCreateWithoutUserInput, UserPermissionUncheckedCreateWithoutUserInput> | UserPermissionCreateWithoutUserInput[] | UserPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserPermissionCreateOrConnectWithoutUserInput | UserPermissionCreateOrConnectWithoutUserInput[]
+    createMany?: UserPermissionCreateManyUserInputEnvelope
+    connect?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
+  export type UserTemplateAssignmentCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserTemplateAssignmentCreateWithoutUserInput, UserTemplateAssignmentUncheckedCreateWithoutUserInput> | UserTemplateAssignmentCreateWithoutUserInput[] | UserTemplateAssignmentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTemplateAssignmentCreateOrConnectWithoutUserInput | UserTemplateAssignmentCreateOrConnectWithoutUserInput[]
+    createMany?: UserTemplateAssignmentCreateManyUserInputEnvelope
+    connect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
   }
 
-  export type AuditLogCountOrderByAggregateInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    shopId?: SortOrder
-    userId?: SortOrder
-    action?: SortOrder
-    resource?: SortOrder
-    resourceId?: SortOrder
-    traceId?: SortOrder
-    details?: SortOrder
-    createdAt?: SortOrder
+  export type UserPermissionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserPermissionCreateWithoutUserInput, UserPermissionUncheckedCreateWithoutUserInput> | UserPermissionCreateWithoutUserInput[] | UserPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserPermissionCreateOrConnectWithoutUserInput | UserPermissionCreateOrConnectWithoutUserInput[]
+    createMany?: UserPermissionCreateManyUserInputEnvelope
+    connect?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
   }
 
-  export type AuditLogMaxOrderByAggregateInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    shopId?: SortOrder
-    userId?: SortOrder
-    action?: SortOrder
-    resource?: SortOrder
-    resourceId?: SortOrder
-    traceId?: SortOrder
-    details?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type AuditLogMinOrderByAggregateInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    shopId?: SortOrder
-    userId?: SortOrder
-    action?: SortOrder
-    resource?: SortOrder
-    resourceId?: SortOrder
-    traceId?: SortOrder
-    details?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
+  export type UserTemplateAssignmentUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserTemplateAssignmentCreateWithoutUserInput, UserTemplateAssignmentUncheckedCreateWithoutUserInput> | UserTemplateAssignmentCreateWithoutUserInput[] | UserTemplateAssignmentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTemplateAssignmentCreateOrConnectWithoutUserInput | UserTemplateAssignmentCreateOrConnectWithoutUserInput[]
+    createMany?: UserTemplateAssignmentCreateManyUserInputEnvelope
+    connect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -8061,8 +13376,230 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type UserPermissionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserPermissionCreateWithoutUserInput, UserPermissionUncheckedCreateWithoutUserInput> | UserPermissionCreateWithoutUserInput[] | UserPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserPermissionCreateOrConnectWithoutUserInput | UserPermissionCreateOrConnectWithoutUserInput[]
+    upsert?: UserPermissionUpsertWithWhereUniqueWithoutUserInput | UserPermissionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserPermissionCreateManyUserInputEnvelope
+    set?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
+    disconnect?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
+    delete?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
+    connect?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
+    update?: UserPermissionUpdateWithWhereUniqueWithoutUserInput | UserPermissionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserPermissionUpdateManyWithWhereWithoutUserInput | UserPermissionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserPermissionScalarWhereInput | UserPermissionScalarWhereInput[]
+  }
+
+  export type UserTemplateAssignmentUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserTemplateAssignmentCreateWithoutUserInput, UserTemplateAssignmentUncheckedCreateWithoutUserInput> | UserTemplateAssignmentCreateWithoutUserInput[] | UserTemplateAssignmentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTemplateAssignmentCreateOrConnectWithoutUserInput | UserTemplateAssignmentCreateOrConnectWithoutUserInput[]
+    upsert?: UserTemplateAssignmentUpsertWithWhereUniqueWithoutUserInput | UserTemplateAssignmentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserTemplateAssignmentCreateManyUserInputEnvelope
+    set?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    disconnect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    delete?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    connect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    update?: UserTemplateAssignmentUpdateWithWhereUniqueWithoutUserInput | UserTemplateAssignmentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserTemplateAssignmentUpdateManyWithWhereWithoutUserInput | UserTemplateAssignmentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserTemplateAssignmentScalarWhereInput | UserTemplateAssignmentScalarWhereInput[]
+  }
+
+  export type UserPermissionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserPermissionCreateWithoutUserInput, UserPermissionUncheckedCreateWithoutUserInput> | UserPermissionCreateWithoutUserInput[] | UserPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserPermissionCreateOrConnectWithoutUserInput | UserPermissionCreateOrConnectWithoutUserInput[]
+    upsert?: UserPermissionUpsertWithWhereUniqueWithoutUserInput | UserPermissionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserPermissionCreateManyUserInputEnvelope
+    set?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
+    disconnect?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
+    delete?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
+    connect?: UserPermissionWhereUniqueInput | UserPermissionWhereUniqueInput[]
+    update?: UserPermissionUpdateWithWhereUniqueWithoutUserInput | UserPermissionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserPermissionUpdateManyWithWhereWithoutUserInput | UserPermissionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserPermissionScalarWhereInput | UserPermissionScalarWhereInput[]
+  }
+
+  export type UserTemplateAssignmentUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserTemplateAssignmentCreateWithoutUserInput, UserTemplateAssignmentUncheckedCreateWithoutUserInput> | UserTemplateAssignmentCreateWithoutUserInput[] | UserTemplateAssignmentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTemplateAssignmentCreateOrConnectWithoutUserInput | UserTemplateAssignmentCreateOrConnectWithoutUserInput[]
+    upsert?: UserTemplateAssignmentUpsertWithWhereUniqueWithoutUserInput | UserTemplateAssignmentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserTemplateAssignmentCreateManyUserInputEnvelope
+    set?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    disconnect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    delete?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    connect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    update?: UserTemplateAssignmentUpdateWithWhereUniqueWithoutUserInput | UserTemplateAssignmentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserTemplateAssignmentUpdateManyWithWhereWithoutUserInput | UserTemplateAssignmentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserTemplateAssignmentScalarWhereInput | UserTemplateAssignmentScalarWhereInput[]
+  }
+
+  export type UserPermissionCreateallowedShopIdsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutUserPermissionsInput = {
+    create?: XOR<UserCreateWithoutUserPermissionsInput, UserUncheckedCreateWithoutUserPermissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserPermissionsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
+  }
+
+  export type UserPermissionUpdateallowedShopIdsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type UserUpdateOneRequiredWithoutUserPermissionsNestedInput = {
+    create?: XOR<UserCreateWithoutUserPermissionsInput, UserUncheckedCreateWithoutUserPermissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserPermissionsInput
+    upsert?: UserUpsertWithoutUserPermissionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserPermissionsInput, UserUpdateWithoutUserPermissionsInput>, UserUncheckedUpdateWithoutUserPermissionsInput>
+  }
+
+  export type TemplatePermissionCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<TemplatePermissionCreateWithoutTemplateInput, TemplatePermissionUncheckedCreateWithoutTemplateInput> | TemplatePermissionCreateWithoutTemplateInput[] | TemplatePermissionUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: TemplatePermissionCreateOrConnectWithoutTemplateInput | TemplatePermissionCreateOrConnectWithoutTemplateInput[]
+    createMany?: TemplatePermissionCreateManyTemplateInputEnvelope
+    connect?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+  }
+
+  export type UserTemplateAssignmentCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<UserTemplateAssignmentCreateWithoutTemplateInput, UserTemplateAssignmentUncheckedCreateWithoutTemplateInput> | UserTemplateAssignmentCreateWithoutTemplateInput[] | UserTemplateAssignmentUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateAssignmentCreateOrConnectWithoutTemplateInput | UserTemplateAssignmentCreateOrConnectWithoutTemplateInput[]
+    createMany?: UserTemplateAssignmentCreateManyTemplateInputEnvelope
+    connect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+  }
+
+  export type TemplatePermissionUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<TemplatePermissionCreateWithoutTemplateInput, TemplatePermissionUncheckedCreateWithoutTemplateInput> | TemplatePermissionCreateWithoutTemplateInput[] | TemplatePermissionUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: TemplatePermissionCreateOrConnectWithoutTemplateInput | TemplatePermissionCreateOrConnectWithoutTemplateInput[]
+    createMany?: TemplatePermissionCreateManyTemplateInputEnvelope
+    connect?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+  }
+
+  export type UserTemplateAssignmentUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<UserTemplateAssignmentCreateWithoutTemplateInput, UserTemplateAssignmentUncheckedCreateWithoutTemplateInput> | UserTemplateAssignmentCreateWithoutTemplateInput[] | UserTemplateAssignmentUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateAssignmentCreateOrConnectWithoutTemplateInput | UserTemplateAssignmentCreateOrConnectWithoutTemplateInput[]
+    createMany?: UserTemplateAssignmentCreateManyTemplateInputEnvelope
+    connect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type TemplatePermissionUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<TemplatePermissionCreateWithoutTemplateInput, TemplatePermissionUncheckedCreateWithoutTemplateInput> | TemplatePermissionCreateWithoutTemplateInput[] | TemplatePermissionUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: TemplatePermissionCreateOrConnectWithoutTemplateInput | TemplatePermissionCreateOrConnectWithoutTemplateInput[]
+    upsert?: TemplatePermissionUpsertWithWhereUniqueWithoutTemplateInput | TemplatePermissionUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: TemplatePermissionCreateManyTemplateInputEnvelope
+    set?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+    disconnect?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+    delete?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+    connect?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+    update?: TemplatePermissionUpdateWithWhereUniqueWithoutTemplateInput | TemplatePermissionUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: TemplatePermissionUpdateManyWithWhereWithoutTemplateInput | TemplatePermissionUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: TemplatePermissionScalarWhereInput | TemplatePermissionScalarWhereInput[]
+  }
+
+  export type UserTemplateAssignmentUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<UserTemplateAssignmentCreateWithoutTemplateInput, UserTemplateAssignmentUncheckedCreateWithoutTemplateInput> | UserTemplateAssignmentCreateWithoutTemplateInput[] | UserTemplateAssignmentUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateAssignmentCreateOrConnectWithoutTemplateInput | UserTemplateAssignmentCreateOrConnectWithoutTemplateInput[]
+    upsert?: UserTemplateAssignmentUpsertWithWhereUniqueWithoutTemplateInput | UserTemplateAssignmentUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: UserTemplateAssignmentCreateManyTemplateInputEnvelope
+    set?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    disconnect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    delete?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    connect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    update?: UserTemplateAssignmentUpdateWithWhereUniqueWithoutTemplateInput | UserTemplateAssignmentUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: UserTemplateAssignmentUpdateManyWithWhereWithoutTemplateInput | UserTemplateAssignmentUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: UserTemplateAssignmentScalarWhereInput | UserTemplateAssignmentScalarWhereInput[]
+  }
+
+  export type TemplatePermissionUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<TemplatePermissionCreateWithoutTemplateInput, TemplatePermissionUncheckedCreateWithoutTemplateInput> | TemplatePermissionCreateWithoutTemplateInput[] | TemplatePermissionUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: TemplatePermissionCreateOrConnectWithoutTemplateInput | TemplatePermissionCreateOrConnectWithoutTemplateInput[]
+    upsert?: TemplatePermissionUpsertWithWhereUniqueWithoutTemplateInput | TemplatePermissionUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: TemplatePermissionCreateManyTemplateInputEnvelope
+    set?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+    disconnect?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+    delete?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+    connect?: TemplatePermissionWhereUniqueInput | TemplatePermissionWhereUniqueInput[]
+    update?: TemplatePermissionUpdateWithWhereUniqueWithoutTemplateInput | TemplatePermissionUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: TemplatePermissionUpdateManyWithWhereWithoutTemplateInput | TemplatePermissionUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: TemplatePermissionScalarWhereInput | TemplatePermissionScalarWhereInput[]
+  }
+
+  export type UserTemplateAssignmentUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<UserTemplateAssignmentCreateWithoutTemplateInput, UserTemplateAssignmentUncheckedCreateWithoutTemplateInput> | UserTemplateAssignmentCreateWithoutTemplateInput[] | UserTemplateAssignmentUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: UserTemplateAssignmentCreateOrConnectWithoutTemplateInput | UserTemplateAssignmentCreateOrConnectWithoutTemplateInput[]
+    upsert?: UserTemplateAssignmentUpsertWithWhereUniqueWithoutTemplateInput | UserTemplateAssignmentUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: UserTemplateAssignmentCreateManyTemplateInputEnvelope
+    set?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    disconnect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    delete?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    connect?: UserTemplateAssignmentWhereUniqueInput | UserTemplateAssignmentWhereUniqueInput[]
+    update?: UserTemplateAssignmentUpdateWithWhereUniqueWithoutTemplateInput | UserTemplateAssignmentUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: UserTemplateAssignmentUpdateManyWithWhereWithoutTemplateInput | UserTemplateAssignmentUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: UserTemplateAssignmentScalarWhereInput | UserTemplateAssignmentScalarWhereInput[]
+  }
+
+  export type TemplatePermissionCreateallowedShopIdsInput = {
+    set: string[]
+  }
+
+  export type PermissionTemplateCreateNestedOneWithoutTemplatePermissionsInput = {
+    create?: XOR<PermissionTemplateCreateWithoutTemplatePermissionsInput, PermissionTemplateUncheckedCreateWithoutTemplatePermissionsInput>
+    connectOrCreate?: PermissionTemplateCreateOrConnectWithoutTemplatePermissionsInput
+    connect?: PermissionTemplateWhereUniqueInput
+  }
+
+  export type TemplatePermissionUpdateallowedShopIdsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type PermissionTemplateUpdateOneRequiredWithoutTemplatePermissionsNestedInput = {
+    create?: XOR<PermissionTemplateCreateWithoutTemplatePermissionsInput, PermissionTemplateUncheckedCreateWithoutTemplatePermissionsInput>
+    connectOrCreate?: PermissionTemplateCreateOrConnectWithoutTemplatePermissionsInput
+    upsert?: PermissionTemplateUpsertWithoutTemplatePermissionsInput
+    connect?: PermissionTemplateWhereUniqueInput
+    update?: XOR<XOR<PermissionTemplateUpdateToOneWithWhereWithoutTemplatePermissionsInput, PermissionTemplateUpdateWithoutTemplatePermissionsInput>, PermissionTemplateUncheckedUpdateWithoutTemplatePermissionsInput>
+  }
+
+  export type UserCreateNestedOneWithoutUserTemplateAssignmentsInput = {
+    create?: XOR<UserCreateWithoutUserTemplateAssignmentsInput, UserUncheckedCreateWithoutUserTemplateAssignmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserTemplateAssignmentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type PermissionTemplateCreateNestedOneWithoutUserTemplateAssignmentsInput = {
+    create?: XOR<PermissionTemplateCreateWithoutUserTemplateAssignmentsInput, PermissionTemplateUncheckedCreateWithoutUserTemplateAssignmentsInput>
+    connectOrCreate?: PermissionTemplateCreateOrConnectWithoutUserTemplateAssignmentsInput
+    connect?: PermissionTemplateWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutUserTemplateAssignmentsNestedInput = {
+    create?: XOR<UserCreateWithoutUserTemplateAssignmentsInput, UserUncheckedCreateWithoutUserTemplateAssignmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUserTemplateAssignmentsInput
+    upsert?: UserUpsertWithoutUserTemplateAssignmentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserTemplateAssignmentsInput, UserUpdateWithoutUserTemplateAssignmentsInput>, UserUncheckedUpdateWithoutUserTemplateAssignmentsInput>
+  }
+
+  export type PermissionTemplateUpdateOneRequiredWithoutUserTemplateAssignmentsNestedInput = {
+    create?: XOR<PermissionTemplateCreateWithoutUserTemplateAssignmentsInput, PermissionTemplateUncheckedCreateWithoutUserTemplateAssignmentsInput>
+    connectOrCreate?: PermissionTemplateCreateOrConnectWithoutUserTemplateAssignmentsInput
+    upsert?: PermissionTemplateUpsertWithoutUserTemplateAssignmentsInput
+    connect?: PermissionTemplateWhereUniqueInput
+    update?: XOR<XOR<PermissionTemplateUpdateToOneWithWhereWithoutUserTemplateAssignmentsInput, PermissionTemplateUpdateWithoutUserTemplateAssignmentsInput>, PermissionTemplateUncheckedUpdateWithoutUserTemplateAssignmentsInput>
   }
 
   export type MfaSecretCreatebackupCodesInput = {
@@ -8072,10 +13609,6 @@ export namespace Prisma {
   export type MfaSecretUpdatebackupCodesInput = {
     set?: string[]
     push?: string | string[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -8150,12 +13683,48 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedStringNullableFilter<$PrismaModel = never> = {
@@ -8189,15 +13758,629 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  export type UserPermissionCreateWithoutUserInput = {
+    id?: string
+    tenantId: string
+    permissionKey: string
+    isGranted?: boolean
+    scope?: string
+    allowedShopIds?: UserPermissionCreateallowedShopIdsInput | string[]
+    grantedAt?: Date | string
+    expiresAt?: Date | string | null
+    grantedBy: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserPermissionUncheckedCreateWithoutUserInput = {
+    id?: string
+    tenantId: string
+    permissionKey: string
+    isGranted?: boolean
+    scope?: string
+    allowedShopIds?: UserPermissionCreateallowedShopIdsInput | string[]
+    grantedAt?: Date | string
+    expiresAt?: Date | string | null
+    grantedBy: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserPermissionCreateOrConnectWithoutUserInput = {
+    where: UserPermissionWhereUniqueInput
+    create: XOR<UserPermissionCreateWithoutUserInput, UserPermissionUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserPermissionCreateManyUserInputEnvelope = {
+    data: UserPermissionCreateManyUserInput | UserPermissionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserTemplateAssignmentCreateWithoutUserInput = {
+    id?: string
+    assignedAt?: Date | string
+    assignedBy: string
+    template: PermissionTemplateCreateNestedOneWithoutUserTemplateAssignmentsInput
+  }
+
+  export type UserTemplateAssignmentUncheckedCreateWithoutUserInput = {
+    id?: string
+    templateId: string
+    assignedAt?: Date | string
+    assignedBy: string
+  }
+
+  export type UserTemplateAssignmentCreateOrConnectWithoutUserInput = {
+    where: UserTemplateAssignmentWhereUniqueInput
+    create: XOR<UserTemplateAssignmentCreateWithoutUserInput, UserTemplateAssignmentUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserTemplateAssignmentCreateManyUserInputEnvelope = {
+    data: UserTemplateAssignmentCreateManyUserInput | UserTemplateAssignmentCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserPermissionUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserPermissionWhereUniqueInput
+    update: XOR<UserPermissionUpdateWithoutUserInput, UserPermissionUncheckedUpdateWithoutUserInput>
+    create: XOR<UserPermissionCreateWithoutUserInput, UserPermissionUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserPermissionUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserPermissionWhereUniqueInput
+    data: XOR<UserPermissionUpdateWithoutUserInput, UserPermissionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserPermissionUpdateManyWithWhereWithoutUserInput = {
+    where: UserPermissionScalarWhereInput
+    data: XOR<UserPermissionUpdateManyMutationInput, UserPermissionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserPermissionScalarWhereInput = {
+    AND?: UserPermissionScalarWhereInput | UserPermissionScalarWhereInput[]
+    OR?: UserPermissionScalarWhereInput[]
+    NOT?: UserPermissionScalarWhereInput | UserPermissionScalarWhereInput[]
+    id?: StringFilter<"UserPermission"> | string
+    tenantId?: StringFilter<"UserPermission"> | string
+    userId?: StringFilter<"UserPermission"> | string
+    permissionKey?: StringFilter<"UserPermission"> | string
+    isGranted?: BoolFilter<"UserPermission"> | boolean
+    scope?: StringFilter<"UserPermission"> | string
+    allowedShopIds?: StringNullableListFilter<"UserPermission">
+    grantedAt?: DateTimeFilter<"UserPermission"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"UserPermission"> | Date | string | null
+    grantedBy?: StringFilter<"UserPermission"> | string
+    createdAt?: DateTimeFilter<"UserPermission"> | Date | string
+    updatedAt?: DateTimeFilter<"UserPermission"> | Date | string
+  }
+
+  export type UserTemplateAssignmentUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserTemplateAssignmentWhereUniqueInput
+    update: XOR<UserTemplateAssignmentUpdateWithoutUserInput, UserTemplateAssignmentUncheckedUpdateWithoutUserInput>
+    create: XOR<UserTemplateAssignmentCreateWithoutUserInput, UserTemplateAssignmentUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserTemplateAssignmentUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserTemplateAssignmentWhereUniqueInput
+    data: XOR<UserTemplateAssignmentUpdateWithoutUserInput, UserTemplateAssignmentUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserTemplateAssignmentUpdateManyWithWhereWithoutUserInput = {
+    where: UserTemplateAssignmentScalarWhereInput
+    data: XOR<UserTemplateAssignmentUpdateManyMutationInput, UserTemplateAssignmentUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserTemplateAssignmentScalarWhereInput = {
+    AND?: UserTemplateAssignmentScalarWhereInput | UserTemplateAssignmentScalarWhereInput[]
+    OR?: UserTemplateAssignmentScalarWhereInput[]
+    NOT?: UserTemplateAssignmentScalarWhereInput | UserTemplateAssignmentScalarWhereInput[]
+    id?: StringFilter<"UserTemplateAssignment"> | string
+    userId?: StringFilter<"UserTemplateAssignment"> | string
+    templateId?: StringFilter<"UserTemplateAssignment"> | string
+    assignedAt?: DateTimeFilter<"UserTemplateAssignment"> | Date | string
+    assignedBy?: StringFilter<"UserTemplateAssignment"> | string
+  }
+
+  export type UserCreateWithoutUserPermissionsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    password: string
+    firstName: string
+    lastName: string
+    role?: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userTemplateAssignments?: UserTemplateAssignmentCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutUserPermissionsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    password: string
+    firstName: string
+    lastName: string
+    role?: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userTemplateAssignments?: UserTemplateAssignmentUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutUserPermissionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutUserPermissionsInput, UserUncheckedCreateWithoutUserPermissionsInput>
+  }
+
+  export type UserUpsertWithoutUserPermissionsInput = {
+    update: XOR<UserUpdateWithoutUserPermissionsInput, UserUncheckedUpdateWithoutUserPermissionsInput>
+    create: XOR<UserCreateWithoutUserPermissionsInput, UserUncheckedCreateWithoutUserPermissionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutUserPermissionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutUserPermissionsInput, UserUncheckedUpdateWithoutUserPermissionsInput>
+  }
+
+  export type UserUpdateWithoutUserPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userTemplateAssignments?: UserTemplateAssignmentUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUserPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userTemplateAssignments?: UserTemplateAssignmentUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type TemplatePermissionCreateWithoutTemplateInput = {
+    id?: string
+    permissionKey: string
+    scope?: string
+    allowedShopIds?: TemplatePermissionCreateallowedShopIdsInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type TemplatePermissionUncheckedCreateWithoutTemplateInput = {
+    id?: string
+    permissionKey: string
+    scope?: string
+    allowedShopIds?: TemplatePermissionCreateallowedShopIdsInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type TemplatePermissionCreateOrConnectWithoutTemplateInput = {
+    where: TemplatePermissionWhereUniqueInput
+    create: XOR<TemplatePermissionCreateWithoutTemplateInput, TemplatePermissionUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type TemplatePermissionCreateManyTemplateInputEnvelope = {
+    data: TemplatePermissionCreateManyTemplateInput | TemplatePermissionCreateManyTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserTemplateAssignmentCreateWithoutTemplateInput = {
+    id?: string
+    assignedAt?: Date | string
+    assignedBy: string
+    user: UserCreateNestedOneWithoutUserTemplateAssignmentsInput
+  }
+
+  export type UserTemplateAssignmentUncheckedCreateWithoutTemplateInput = {
+    id?: string
+    userId: string
+    assignedAt?: Date | string
+    assignedBy: string
+  }
+
+  export type UserTemplateAssignmentCreateOrConnectWithoutTemplateInput = {
+    where: UserTemplateAssignmentWhereUniqueInput
+    create: XOR<UserTemplateAssignmentCreateWithoutTemplateInput, UserTemplateAssignmentUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type UserTemplateAssignmentCreateManyTemplateInputEnvelope = {
+    data: UserTemplateAssignmentCreateManyTemplateInput | UserTemplateAssignmentCreateManyTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TemplatePermissionUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: TemplatePermissionWhereUniqueInput
+    update: XOR<TemplatePermissionUpdateWithoutTemplateInput, TemplatePermissionUncheckedUpdateWithoutTemplateInput>
+    create: XOR<TemplatePermissionCreateWithoutTemplateInput, TemplatePermissionUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type TemplatePermissionUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: TemplatePermissionWhereUniqueInput
+    data: XOR<TemplatePermissionUpdateWithoutTemplateInput, TemplatePermissionUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type TemplatePermissionUpdateManyWithWhereWithoutTemplateInput = {
+    where: TemplatePermissionScalarWhereInput
+    data: XOR<TemplatePermissionUpdateManyMutationInput, TemplatePermissionUncheckedUpdateManyWithoutTemplateInput>
+  }
+
+  export type TemplatePermissionScalarWhereInput = {
+    AND?: TemplatePermissionScalarWhereInput | TemplatePermissionScalarWhereInput[]
+    OR?: TemplatePermissionScalarWhereInput[]
+    NOT?: TemplatePermissionScalarWhereInput | TemplatePermissionScalarWhereInput[]
+    id?: StringFilter<"TemplatePermission"> | string
+    templateId?: StringFilter<"TemplatePermission"> | string
+    permissionKey?: StringFilter<"TemplatePermission"> | string
+    scope?: StringFilter<"TemplatePermission"> | string
+    allowedShopIds?: StringNullableListFilter<"TemplatePermission">
+    createdAt?: DateTimeFilter<"TemplatePermission"> | Date | string
+  }
+
+  export type UserTemplateAssignmentUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: UserTemplateAssignmentWhereUniqueInput
+    update: XOR<UserTemplateAssignmentUpdateWithoutTemplateInput, UserTemplateAssignmentUncheckedUpdateWithoutTemplateInput>
+    create: XOR<UserTemplateAssignmentCreateWithoutTemplateInput, UserTemplateAssignmentUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type UserTemplateAssignmentUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: UserTemplateAssignmentWhereUniqueInput
+    data: XOR<UserTemplateAssignmentUpdateWithoutTemplateInput, UserTemplateAssignmentUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type UserTemplateAssignmentUpdateManyWithWhereWithoutTemplateInput = {
+    where: UserTemplateAssignmentScalarWhereInput
+    data: XOR<UserTemplateAssignmentUpdateManyMutationInput, UserTemplateAssignmentUncheckedUpdateManyWithoutTemplateInput>
+  }
+
+  export type PermissionTemplateCreateWithoutTemplatePermissionsInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    isSystem?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userTemplateAssignments?: UserTemplateAssignmentCreateNestedManyWithoutTemplateInput
+  }
+
+  export type PermissionTemplateUncheckedCreateWithoutTemplatePermissionsInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    isSystem?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userTemplateAssignments?: UserTemplateAssignmentUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type PermissionTemplateCreateOrConnectWithoutTemplatePermissionsInput = {
+    where: PermissionTemplateWhereUniqueInput
+    create: XOR<PermissionTemplateCreateWithoutTemplatePermissionsInput, PermissionTemplateUncheckedCreateWithoutTemplatePermissionsInput>
+  }
+
+  export type PermissionTemplateUpsertWithoutTemplatePermissionsInput = {
+    update: XOR<PermissionTemplateUpdateWithoutTemplatePermissionsInput, PermissionTemplateUncheckedUpdateWithoutTemplatePermissionsInput>
+    create: XOR<PermissionTemplateCreateWithoutTemplatePermissionsInput, PermissionTemplateUncheckedCreateWithoutTemplatePermissionsInput>
+    where?: PermissionTemplateWhereInput
+  }
+
+  export type PermissionTemplateUpdateToOneWithWhereWithoutTemplatePermissionsInput = {
+    where?: PermissionTemplateWhereInput
+    data: XOR<PermissionTemplateUpdateWithoutTemplatePermissionsInput, PermissionTemplateUncheckedUpdateWithoutTemplatePermissionsInput>
+  }
+
+  export type PermissionTemplateUpdateWithoutTemplatePermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userTemplateAssignments?: UserTemplateAssignmentUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type PermissionTemplateUncheckedUpdateWithoutTemplatePermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userTemplateAssignments?: UserTemplateAssignmentUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type UserCreateWithoutUserTemplateAssignmentsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    password: string
+    firstName: string
+    lastName: string
+    role?: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userPermissions?: UserPermissionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutUserTemplateAssignmentsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    password: string
+    firstName: string
+    lastName: string
+    role?: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userPermissions?: UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutUserTemplateAssignmentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutUserTemplateAssignmentsInput, UserUncheckedCreateWithoutUserTemplateAssignmentsInput>
+  }
+
+  export type PermissionTemplateCreateWithoutUserTemplateAssignmentsInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    isSystem?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    templatePermissions?: TemplatePermissionCreateNestedManyWithoutTemplateInput
+  }
+
+  export type PermissionTemplateUncheckedCreateWithoutUserTemplateAssignmentsInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    isSystem?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    templatePermissions?: TemplatePermissionUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type PermissionTemplateCreateOrConnectWithoutUserTemplateAssignmentsInput = {
+    where: PermissionTemplateWhereUniqueInput
+    create: XOR<PermissionTemplateCreateWithoutUserTemplateAssignmentsInput, PermissionTemplateUncheckedCreateWithoutUserTemplateAssignmentsInput>
+  }
+
+  export type UserUpsertWithoutUserTemplateAssignmentsInput = {
+    update: XOR<UserUpdateWithoutUserTemplateAssignmentsInput, UserUncheckedUpdateWithoutUserTemplateAssignmentsInput>
+    create: XOR<UserCreateWithoutUserTemplateAssignmentsInput, UserUncheckedCreateWithoutUserTemplateAssignmentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutUserTemplateAssignmentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutUserTemplateAssignmentsInput, UserUncheckedUpdateWithoutUserTemplateAssignmentsInput>
+  }
+
+  export type UserUpdateWithoutUserTemplateAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userPermissions?: UserPermissionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutUserTemplateAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userPermissions?: UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type PermissionTemplateUpsertWithoutUserTemplateAssignmentsInput = {
+    update: XOR<PermissionTemplateUpdateWithoutUserTemplateAssignmentsInput, PermissionTemplateUncheckedUpdateWithoutUserTemplateAssignmentsInput>
+    create: XOR<PermissionTemplateCreateWithoutUserTemplateAssignmentsInput, PermissionTemplateUncheckedCreateWithoutUserTemplateAssignmentsInput>
+    where?: PermissionTemplateWhereInput
+  }
+
+  export type PermissionTemplateUpdateToOneWithWhereWithoutUserTemplateAssignmentsInput = {
+    where?: PermissionTemplateWhereInput
+    data: XOR<PermissionTemplateUpdateWithoutUserTemplateAssignmentsInput, PermissionTemplateUncheckedUpdateWithoutUserTemplateAssignmentsInput>
+  }
+
+  export type PermissionTemplateUpdateWithoutUserTemplateAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templatePermissions?: TemplatePermissionUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type PermissionTemplateUncheckedUpdateWithoutUserTemplateAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    templatePermissions?: TemplatePermissionUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type UserPermissionCreateManyUserInput = {
+    id?: string
+    tenantId: string
+    permissionKey: string
+    isGranted?: boolean
+    scope?: string
+    allowedShopIds?: UserPermissionCreateallowedShopIdsInput | string[]
+    grantedAt?: Date | string
+    expiresAt?: Date | string | null
+    grantedBy: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserTemplateAssignmentCreateManyUserInput = {
+    id?: string
+    templateId: string
+    assignedAt?: Date | string
+    assignedBy: string
+  }
+
+  export type UserPermissionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    isGranted?: BoolFieldUpdateOperationsInput | boolean
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: UserPermissionUpdateallowedShopIdsInput | string[]
+    grantedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserPermissionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    isGranted?: BoolFieldUpdateOperationsInput | boolean
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: UserPermissionUpdateallowedShopIdsInput | string[]
+    grantedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserPermissionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    isGranted?: BoolFieldUpdateOperationsInput | boolean
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: UserPermissionUpdateallowedShopIdsInput | string[]
+    grantedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedBy?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTemplateAssignmentUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
+    template?: PermissionTemplateUpdateOneRequiredWithoutUserTemplateAssignmentsNestedInput
+  }
+
+  export type UserTemplateAssignmentUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserTemplateAssignmentUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TemplatePermissionCreateManyTemplateInput = {
+    id?: string
+    permissionKey: string
+    scope?: string
+    allowedShopIds?: TemplatePermissionCreateallowedShopIdsInput | string[]
+    createdAt?: Date | string
+  }
+
+  export type UserTemplateAssignmentCreateManyTemplateInput = {
+    id?: string
+    userId: string
+    assignedAt?: Date | string
+    assignedBy: string
+  }
+
+  export type TemplatePermissionUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: TemplatePermissionUpdateallowedShopIdsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplatePermissionUncheckedUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: TemplatePermissionUpdateallowedShopIdsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplatePermissionUncheckedUpdateManyWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    permissionKey?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
+    allowedShopIds?: TemplatePermissionUpdateallowedShopIdsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTemplateAssignmentUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
+    user?: UserUpdateOneRequiredWithoutUserTemplateAssignmentsNestedInput
+  }
+
+  export type UserTemplateAssignmentUncheckedUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserTemplateAssignmentUncheckedUpdateManyWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedBy?: StringFieldUpdateOperationsInput | string
   }
 
 
@@ -8206,9 +14389,37 @@ export namespace Prisma {
    * Aliases for legacy arg types
    */
     /**
+     * @deprecated Use UserCountOutputTypeDefaultArgs instead
+     */
+    export type UserCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PermissionTemplateCountOutputTypeDefaultArgs instead
+     */
+    export type PermissionTemplateCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PermissionTemplateCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use UserDefaultArgs instead
      */
     export type UserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use UserPermissionDefaultArgs instead
+     */
+    export type UserPermissionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserPermissionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PermissionTemplateDefaultArgs instead
+     */
+    export type PermissionTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PermissionTemplateDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TemplatePermissionDefaultArgs instead
+     */
+    export type TemplatePermissionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TemplatePermissionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use UserTemplateAssignmentDefaultArgs instead
+     */
+    export type UserTemplateAssignmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserTemplateAssignmentDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PermissionAuditLogDefaultArgs instead
+     */
+    export type PermissionAuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PermissionAuditLogDefaultArgs<ExtArgs>
     /**
      * @deprecated Use CredentialDefaultArgs instead
      */
@@ -8225,10 +14436,6 @@ export namespace Prisma {
      * @deprecated Use MfaSecretDefaultArgs instead
      */
     export type MfaSecretArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = MfaSecretDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use AuditLogDefaultArgs instead
-     */
-    export type AuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AuditLogDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

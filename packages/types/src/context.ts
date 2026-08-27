@@ -7,6 +7,9 @@ export interface IRequestContext {
   role?: string;
   roles?: string[];
   permissions?: string[];
+  actionKey?: string;
+  scope?: 'OWN' | 'ALL';
+  allowedShopIds?: string[];
   ipAddress?: string;
   userAgent?: string;
   // Enriched by the gateway from the verified JWT so downstream services can
@@ -14,6 +17,16 @@ export interface IRequestContext {
   firstName?: string;
   lastName?: string;
   email?: string;
+}
+
+export interface MicroserviceAuthContext {
+  userId: string;
+  tenantId: string;
+  role: 'ADMIN' | 'STAFF' | string;
+  actionKey: string;
+  scope: 'OWN' | 'ALL';
+  allowedShopIds: string[];
+  traceId: string;
 }
 
 export interface ITenantContext {
