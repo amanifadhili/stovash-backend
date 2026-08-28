@@ -191,6 +191,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetFinancialStructure': [],
   'CreatePhysicalAccount': [],
   'CreateTreasuryMovement': [],
+  'SeedTreasuryOpeningBalances': [],
   'GetFundBalances': [],
   'GetTreasuryMovements': [],
   'GetTreasuryLoans': [],
@@ -364,6 +365,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetFinancialStructure': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'CreatePhysicalAccount': ['ADMIN', 'MANAGER'],
   'CreateTreasuryMovement': ['ADMIN', 'MANAGER'],
+  'SeedTreasuryOpeningBalances': ['ADMIN', 'MANAGER'],
   'GetFundBalances': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetTreasuryMovements': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetTreasuryLoans': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
@@ -625,7 +627,7 @@ export class AppController {
         return result;
       }
 
-      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetMonthlyPosition', 'GetFinancialOverview', 'GetDashboardCashFlowAnalytics', 'GetDashboardLoanAnalytics'].includes(cmd)) {
+      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'SeedTreasuryOpeningBalances', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetMonthlyPosition', 'GetFinancialOverview', 'GetDashboardCashFlowAnalytics', 'GetDashboardLoanAnalytics'].includes(cmd)) {
         const result = await firstValueFrom(this.treasuryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
