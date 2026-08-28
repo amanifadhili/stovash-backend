@@ -40,8 +40,6 @@ export class GetProductByIdHandler implements IQueryHandler<GetProductByIdQuery>
           deletedAt: null
         },
         include: {
-          brand: true,
-          category: true,
           prices: {
             where: { validTo: null },
             take: 1
@@ -90,14 +88,6 @@ export class GetProductByIdHandler implements IQueryHandler<GetProductByIdQuery>
           specifications: product.specifications,
           imageUrl: product.imageUrl || (Array.isArray(product.images) && product.images[0]) || null,
           lastUnitCost,
-          brand: product.brand ? {
-            id: product.brand.id,
-            name: product.brand.name
-          } : null,
-          category: product.category ? {
-            id: product.category.id,
-            name: product.category.name
-          } : null,
           currentPrice: product.prices[0] ? {
             id: product.prices[0].id,
             sellingPrice: product.prices[0].sellingPrice,

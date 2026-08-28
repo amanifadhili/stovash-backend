@@ -97,8 +97,6 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
                 shopId,
                 name: item.name.trim(),
                 sku: generatedSku,
-                brandId: isAccessory ? null : (item.brandId || null),
-                categoryId: isAccessory ? null : (item.categoryId || null),
                 type: isAccessory ? 'ACCESSORY' : 'DEVICE',
                 productType: 'PHYSICAL_GOOD',
                 trackingMethod: isAccessory ? 'NON_SERIALIZED' : 'SERIALIZED',
@@ -179,7 +177,7 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
 
             createdItems.push(updatedProduct);
           } else {
-            // Device (Serialized) — stock row owns its own name/brand/price/images
+            // Device (Serialized) — stock row owns its own name/price/images
             const serial = item.serialNumber || `SN-${Date.now()}-${Math.floor(Math.random()*1000)}`;
             const imageList = Array.isArray(item.images) ? item.images.slice(0, 5) : [];
 
@@ -189,8 +187,6 @@ export class ReceiveGoodsHandler extends BaseCommandHandler<ReceiveGoodsCommand>
                 shopId,
                 productId,
                 name: item.name?.trim() || null,
-                brandId: item.brandId || null,
-                categoryId: item.categoryId || null,
                 sellingPrice: item.sellingPrice != null ? Number(item.sellingPrice) : null,
                 specifications: item.specifications ?? undefined,
                 imei1: item.imei1 || null,

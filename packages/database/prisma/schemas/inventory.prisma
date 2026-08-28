@@ -35,9 +35,6 @@ model Product {
   name             String
   description      String?
   sku              String
-  brandId          String?
-  model            String?
-  categoryId       String?
   status           String   @default("ACTIVE") // ACTIVE, DISCONTINUED
   createdAt        DateTime @default(now())
   createdBy        String?
@@ -60,8 +57,6 @@ model Product {
   @@unique([tenantId, sku])
   @@index([tenantId])
   @@index([sku])
-  @@index([categoryId])
-  @@index([brandId])
   @@index([status])
   @@index([shopId])
   @@map("products")
@@ -113,40 +108,7 @@ model InventoryItem {
   @@map("inventory_items")
 }
 
-model InventoryCategory {
-  id            String   @id @default(uuid())
-  tenantId      String
-  name          String
-  parentId      String?
-  createdAt     DateTime @default(now())
-  createdBy     String?
-  shopId        String?
-  sharedShopIds String[] @default([])
 
-  parent        InventoryCategory? @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children      InventoryCategory[] @relation("CategoryHierarchy")
-
-  @@index([tenantId])
-  @@index([parentId])
-  @@index([shopId])
-  @@map("categories")
-}
-
-model InventoryBrand {
-  id            String   @id @default(uuid())
-  tenantId      String
-  name          String
-  description   String?
-  createdAt     DateTime @default(now())
-  createdBy     String?
-  shopId        String?
-  sharedShopIds String[] @default([])
-
-  @@unique([tenantId, name])
-  @@index([tenantId])
-  @@index([shopId])
-  @@map("brands")
-}
 
 model InventoryMovement {
   id               String   @id @default(uuid())

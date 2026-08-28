@@ -103,10 +103,6 @@ export class UpdateProductStatusHandler extends BaseCommandHandler<UpdateProduct
           status: payload.status,
           updatedBy: context.userId || 'system',
           version: { increment: 1 }
-        },
-        include: {
-          brand: true,
-          category: true
         }
       });
 

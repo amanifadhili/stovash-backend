@@ -76,37 +76,6 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
         sku = `${sku}-${Math.floor(Math.random() * 1000)}`;
       }
 
-      const brandId = payload.brandId || null;
-      const categoryId = payload.categoryId || null;
-
-      if (brandId) {
-        const brand = await prisma.brand.findFirst({
-          where: { ...visibleToShopFilter(context.tenantId, shopId), id: brandId }
-        });
-        if (!brand) {
-          return {
-            status: 'error',
-            traceId,
-            message: 'Brand not found',
-            errorCode: ErrorCode.NOT_FOUND
-          };
-        }
-      }
-
-      if (categoryId) {
-        const category = await prisma.category.findFirst({
-          where: { ...visibleToShopFilter(context.tenantId, shopId), id: categoryId }
-        });
-        if (!category) {
-          return {
-            status: 'error',
-            traceId,
-            message: 'Category not found',
-            errorCode: ErrorCode.NOT_FOUND
-          };
-        }
-      }
-
       const rawSpecs = payload.specifications;
       const specObj = (rawSpecs && typeof rawSpecs === 'object' && !Array.isArray(rawSpecs)) ? rawSpecs : {};
       const specifications = { ...specObj, deviceType };
@@ -122,8 +91,6 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
           sku,
           name: payload.name.trim(),
           description: payload.description?.trim() || null,
-          brandId,
-          categoryId,
           productType: payload.productType || 'PHYSICAL_GOOD',
           trackingMethod,
           status: 'ACTIVE',
@@ -131,10 +98,6 @@ export class AddProductHandler extends BaseCommandHandler<AddProductCommand> {
           images: imageList,
           imageUrl: payload.imageUrl || imageList[0] || null,
           createdBy: context.userId || 'system'
-        },
-        include: {
-          brand: true,
-          category: true
         }
       });
 

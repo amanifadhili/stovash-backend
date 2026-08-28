@@ -145,8 +145,6 @@ exports.Prisma.ProductScalarFieldEnum = {
   sku: 'sku',
   name: 'name',
   description: 'description',
-  brandId: 'brandId',
-  categoryId: 'categoryId',
   productType: 'productType',
   trackingMethod: 'trackingMethod',
   status: 'status',
@@ -180,8 +178,6 @@ exports.Prisma.InventoryItemScalarFieldEnum = {
   shopId: 'shopId',
   productId: 'productId',
   name: 'name',
-  brandId: 'brandId',
-  categoryId: 'categoryId',
   sellingPrice: 'sellingPrice',
   specifications: 'specifications',
   imei1: 'imei1',
@@ -242,28 +238,6 @@ exports.Prisma.WarrantyClaimScalarFieldEnum = {
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.CategoryScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  shopId: 'shopId',
-  sharedShopIds: 'sharedShopIds',
-  name: 'name',
-  parentId: 'parentId',
-  createdAt: 'createdAt',
-  createdBy: 'createdBy'
-};
-
-exports.Prisma.BrandScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  shopId: 'shopId',
-  sharedShopIds: 'sharedShopIds',
-  name: 'name',
-  description: 'description',
-  createdAt: 'createdAt',
-  createdBy: 'createdBy'
 };
 
 exports.Prisma.ProductPriceScalarFieldEnum = {
@@ -382,8 +356,6 @@ exports.Prisma.ModelName = {
   InventoryUpgrade: 'InventoryUpgrade',
   InventoryTransfer: 'InventoryTransfer',
   WarrantyClaim: 'WarrantyClaim',
-  Category: 'Category',
-  Brand: 'Brand',
   ProductPrice: 'ProductPrice',
   InventoryMovement: 'InventoryMovement',
   InventoryAdjustment: 'InventoryAdjustment',

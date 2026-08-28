@@ -12,12 +12,7 @@ import { CreateWarrantyClaimHandler } from './create-warranty-claim.handler.js';
 import { TransferInventoryHandler } from './transfer-inventory.handler.js';
 import { RecordInventoryUpgradeHandler } from './record-inventory-upgrade.handler.js';
 import { RecordInventoryIncidentHandler } from './record-inventory-incident.handler.js';
-import { CreateBrandHandler } from './create-brand.handler.js';
-import { UpdateBrandHandler } from './update-brand.handler.js';
-import { DeleteBrandHandler } from './delete-brand.handler.js';
-import { CreateCategoryHandler } from './create-category.handler.js';
-import { UpdateCategoryHandler } from './update-category.handler.js';
-import { DeleteCategoryHandler } from './delete-category.handler.js';
+
 import { CreateRentalHandler } from './create-rental.handler.js';
 import { UpdateRentalStatusHandler } from './update-rental-status.handler.js';
 import { CreateContactHandler } from './create-contact.handler.js';
@@ -43,12 +38,7 @@ export const CommandHandlers = [
   TransferInventoryHandler,
   RecordInventoryUpgradeHandler,
   RecordInventoryIncidentHandler,
-  CreateBrandHandler,
-  UpdateBrandHandler,
-  DeleteBrandHandler,
-  CreateCategoryHandler,
-  UpdateCategoryHandler,
-  DeleteCategoryHandler,
+
   CreateRentalHandler,
   UpdateRentalStatusHandler,
   CreateContactHandler
