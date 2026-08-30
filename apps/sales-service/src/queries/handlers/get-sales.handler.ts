@@ -31,11 +31,16 @@ export class GetSalesHandler implements IQueryHandler<GetSalesQuery> {
 
       const tenantId = context?.tenantId || payloadTenantId;
       const where: any = { tenantId };
-      if (Array.isArray(ids) && ids.length > 0) {
-        where.id = { in: ids.filter((id: unknown) => typeof id === 'string' && id.trim()) };
+      if (context?.scope === 'OWN' && context?.role !== 'ADMIN' && context?.userId) {
+        where.createdById = context.userId;
       }
-      if (context?.shopId) where.shopId = context.shopId;
-      else if (payloadShopId) where.shopId = payloadShopId;
+      if (context?.allowedShopIds && context.allowedShopIds.length > 0) {
+        where.shopId = { in: context.allowedShopIds };
+      } else if (context?.shopId) {
+        where.shopId = context.shopId;
+      } else if (payloadShopId) {
+        where.shopId = payloadShopId;
+      }
       if (customerId) where.customerId = customerId;
       if (sellerId) where.sellerId = sellerId;
       if (commercialStatus) where.commercialStatus = commercialStatus;

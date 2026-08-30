@@ -28,7 +28,17 @@ function makeController() {
   return { controller, inventory, sales };
 }
 
-describe('Phase 5 — JWT permission lists do not 403 allowed roles', () => {
+describe('Phase 5 — JWT permission lists do not 403 allowed roles (Legacy Fallback Mode)', () => {
+  const originalEnv = process.env.ENABLE_DYNAMIC_RBAC;
+
+  beforeEach(() => {
+    process.env.ENABLE_DYNAMIC_RBAC = 'false';
+  });
+
+  afterEach(() => {
+    process.env.ENABLE_DYNAMIC_RBAC = originalEnv;
+  });
+
   it('every COMMAND_PERMISSIONS entry is empty (role-only, same as money)', () => {
     const nonempty = Object.entries(COMMAND_PERMISSIONS).filter(([, perms]) => perms.length > 0);
     expect(nonempty).toEqual([]);

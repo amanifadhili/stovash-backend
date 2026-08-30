@@ -25,6 +25,7 @@ import { GetMonthlyPositionQuery } from './queries/impl/get-monthly-position.que
 import { GetFinancialOverviewQuery } from './queries/impl/get-financial-overview.query.js';
 import { GetDashboardCashFlowAnalyticsQuery } from './queries/impl/get-dashboard-cash-flow-analytics.query.js';
 import { GetDashboardLoanAnalyticsQuery } from './queries/impl/get-dashboard-loan-analytics.query.js';
+import { SeedTreasuryOpeningBalancesCommand } from './commands/impl/seed-treasury-opening-balances.command.js';
 
 @Controller()
 export class TreasuryServiceController {
@@ -154,6 +155,13 @@ export class TreasuryServiceController {
   async handleGetDashboardLoanAnalytics(@Payload() data: { payload: any; context: any }) {
     return this.queryBus.execute(
       new GetDashboardLoanAnalyticsQuery(data.payload || {}, data.context),
+    );
+  }
+
+  @MessagePattern({ cmd: 'SeedTreasuryOpeningBalances' })
+  async handleSeedTreasuryOpeningBalances(@Payload() data: { payload: any; context: any }) {
+    return this.commandBus.execute(
+      new SeedTreasuryOpeningBalancesCommand(data.payload, data.context),
     );
   }
 }

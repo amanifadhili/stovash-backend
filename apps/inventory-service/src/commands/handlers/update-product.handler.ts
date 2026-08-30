@@ -70,34 +70,6 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
         };
       }
 
-      if (payload.brandId) {
-        const brand = await prisma.brand.findFirst({
-          where: { ...visibleToShopFilter(context.tenantId, activeShopId), id: payload.brandId }
-        });
-        if (!brand) {
-          return {
-            status: 'error',
-            traceId,
-            message: 'Brand not found',
-            errorCode: ErrorCode.NOT_FOUND
-          };
-        }
-      }
-
-      if (payload.categoryId) {
-        const category = await prisma.category.findFirst({
-          where: { ...visibleToShopFilter(context.tenantId, activeShopId), id: payload.categoryId }
-        });
-        if (!category) {
-          return {
-            status: 'error',
-            traceId,
-            message: 'Category not found',
-            errorCode: ErrorCode.NOT_FOUND
-          };
-        }
-      }
-
       const currentSpecs = (product.specifications && typeof product.specifications === 'object' && !Array.isArray(product.specifications))
         ? product.specifications
         : {};
@@ -116,12 +88,8 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
       if (payload.name !== undefined) updateData.name = payload.name.trim();
       if (payload.description !== undefined) updateData.description = payload.description?.trim() || null;
       if (isAccessory) {
-        updateData.brandId = null;
-        updateData.categoryId = null;
         updateData.trackingMethod = 'NON_SERIALIZED';
       } else {
-        if (payload.brandId !== undefined) updateData.brandId = payload.brandId || null;
-        if (payload.categoryId !== undefined) updateData.categoryId = payload.categoryId || null;
         if (payload.trackingMethod !== undefined) updateData.trackingMethod = payload.trackingMethod;
       }
       if (payload.productType !== undefined) updateData.productType = payload.productType;
@@ -138,11 +106,7 @@ export class UpdateProductHandler extends BaseCommandHandler<UpdateProductComman
 
       const updated = await prisma.product.update({
         where: { id: payload.productId },
-        data: updateData,
-        include: {
-          brand: true,
-          category: true
-        }
+        data: updateData
       });
 
       return {

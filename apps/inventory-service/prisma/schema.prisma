@@ -40,8 +40,6 @@ model Product {
   sku            String
   name           String
   description    String?
-  brandId        String?
-  categoryId     String?
   productType    String   @default("PHYSICAL_GOOD") // PHYSICAL_GOOD, SERVICE
   trackingMethod String   @default("SERIALIZED")    // SERIALIZED, NON_SERIALIZED
   status         String   @default("ACTIVE")        // DRAFT, ACTIVE, INACTIVE, DISCONTINUED, ARCHIVED
@@ -57,8 +55,6 @@ model Product {
   deletedBy      String?
   version        Int      @default(1)
 
-  brand    Brand?        @relation(fields: [brandId], references: [id])
-  category Category?     @relation(fields: [categoryId], references: [id])
   items    InventoryItem[]
   prices   ProductPrice[]
   shopBalances ShopProductBalance[]
@@ -66,8 +62,6 @@ model Product {
   @@unique([tenantId, sku])
   @@index([tenantId])
   @@index([shopId])
-  @@index([brandId])
-  @@index([categoryId])
   @@index([status])
   @@map("products")
 }
@@ -99,8 +93,6 @@ model InventoryItem {
   productId       String
   /// Stock-owned display fields (not shared catalog). Prefer these over Product.*.
   name            String?
-  brandId         String?
-  categoryId      String?
   sellingPrice    Float?
   specifications  Json?
   imei1           String?
@@ -122,16 +114,12 @@ model InventoryItem {
   version         Int      @default(1)
 
   product  Product           @relation(fields: [productId], references: [id])
-  brand    Brand?            @relation(fields: [brandId], references: [id])
-  category Category?         @relation(fields: [categoryId], references: [id])
   upgrades InventoryUpgrade[]
 
   @@unique([tenantId, serialNumber])
   @@index([tenantId])
   @@index([shopId])
   @@index([productId])
-  @@index([brandId])
-  @@index([categoryId])
   @@index([status])
   @@map("inventory_items")
 }
@@ -197,45 +185,7 @@ model WarrantyClaim {
   @@map("warranty_claims")
 }
 
-model Category {
-  id            String   @id @default(uuid())
-  tenantId      String
-  shopId        String?  // null = shared with ALL shops; set = owner shop
-  sharedShopIds String[] @default([]) // additional shops chosen to share with
-  name          String
-  parentId      String?
-  createdAt     DateTime @default(now())
-  createdBy     String?
 
-  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryHierarchy")
-  products Product[]
-  stockItems InventoryItem[]
-
-  @@index([tenantId])
-  @@index([shopId])
-  @@index([parentId])
-  @@map("categories")
-}
-
-model Brand {
-  id            String   @id @default(uuid())
-  tenantId      String
-  shopId        String?  // null = shared with ALL shops; set = owner shop
-  sharedShopIds String[] @default([]) // additional shops chosen to share with
-  name          String
-  description   String?
-  createdAt     DateTime @default(now())
-  createdBy     String?
-
-  products Product[]
-  stockItems InventoryItem[]
-
-  @@unique([tenantId, name])
-  @@index([tenantId])
-  @@index([shopId])
-  @@map("brands")
-}
 
 model ProductPrice {
   id           String   @id @default(uuid())

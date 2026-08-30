@@ -59,16 +59,14 @@ export class CreateTenantHandler extends BaseCommandHandler<CreateTenantCommand>
       });
 
       try {
-        await prisma.auditLog.create({
+        await prisma.permissionAuditLog.create({
           data: {
             tenantId,
-            shopId: null,
-            userId: user.id,
+            actorId: user.id,
+            targetUserId: user.id,
             action: 'CreateTenant',
-            resource: 'Tenant',
-            resourceId: tenantId,
             traceId: traceId || null,
-            details: JSON.stringify({ name: payload.name, email: payload.adminEmail })
+            reason: JSON.stringify({ name: payload.name, email: payload.adminEmail })
           }
         });
       } catch (auditError) {

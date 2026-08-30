@@ -64,8 +64,6 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
       const products = await prisma.product.findMany({
         where: productWhere,
         include: {
-          brand: true,
-          category: true,
           prices: {
             where: { validTo: null },
             take: 1
@@ -132,8 +130,6 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
             status: p.status,
             specifications: p.specifications,
             imageUrl: p.imageUrl || (Array.isArray(p.images) && p.images[0]) || null,
-            brand: p.brand ? { id: p.brand.id, name: p.brand.name } : null,
-            category: p.category ? { id: p.category.id, name: p.category.name } : null,
             currentPrice: p.prices[0] ? {
               sellingPrice: p.prices[0].sellingPrice,
               validFrom: p.prices[0].validFrom
@@ -175,8 +171,6 @@ export class GetProductsHandler implements IQueryHandler<GetProductsQuery> {
           status: p.status,
           specifications: p.specifications,
           imageUrl: p.imageUrl || (Array.isArray(p.images) && p.images[0]) || null,
-          brand: p.brand ? { id: p.brand.id, name: p.brand.name } : null,
-          category: p.category ? { id: p.category.id, name: p.category.name } : null,
           currentPrice: p.prices[0] ? {
             sellingPrice: p.prices[0].sellingPrice,
             validFrom: p.prices[0].validFrom

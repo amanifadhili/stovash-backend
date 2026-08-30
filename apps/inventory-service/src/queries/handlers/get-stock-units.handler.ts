@@ -23,17 +23,7 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
       };
       if (shopId) where.shopId = shopId;
       if (payload.productId) where.productId = payload.productId;
-      if (payload.categoryId) where.OR = [
-        ...(where.OR || []),
-        { categoryId: payload.categoryId },
-        { product: { categoryId: payload.categoryId } },
-      ];
-      if (payload.brandId) {
-        where.AND = [
-          ...(where.AND || []),
-          { OR: [{ brandId: payload.brandId }, { product: { brandId: payload.brandId } }] },
-        ];
-      }
+
       if (payload.status && payload.status.length) {
         where.status = { in: payload.status };
       } else {
@@ -55,12 +45,8 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
         orderBy: [{ createdAt: 'desc' }],
         take: payload.limit && payload.limit > 0 ? payload.limit : undefined,
         include: {
-          brand: { select: { id: true, name: true } },
-          category: { select: { id: true, name: true } },
           product: {
             include: {
-              brand: { select: { id: true, name: true } },
-              category: { select: { id: true, name: true } },
               prices: { select: { sellingPrice: true, validFrom: true }, orderBy: { validFrom: 'desc' }, take: 1 },
             },
           },
@@ -70,16 +56,6 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
 
       const data = items.map((item) => {
         const totalCost = inventoryBookCost(item);
-        const brand = item.brand
-          ? { id: item.brand.id, name: item.brand.name }
-          : item.product?.brand
-            ? { id: item.product.brand.id, name: item.product.brand.name }
-            : null;
-        const category = item.category
-          ? { id: item.category.id, name: item.category.name }
-          : item.product?.category
-            ? { id: item.product.category.id, name: item.product.category.name }
-            : null;
         const productSpecs = (item.product?.specifications && typeof item.product.specifications === 'object')
           ? (item.product.specifications as Record<string, unknown>)
           : null;
@@ -113,21 +89,10 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
             (Array.isArray((item.product as any)?.images) && (item.product as any).images[0]) ||
             undefined,
           images: [],
-          brand,
-          category,
           sellingPrice: item.sellingPrice ?? item.product?.prices?.[0]?.sellingPrice ?? 0,
           specifications: item.specifications ?? item.product?.specifications ?? null,
         };
       });
-
-      // Group by category (preserving category order) for easy rendering.
-      const groups = new Map<string, { id: string; name: string; units: any[] }>();
-      for (const unit of data) {
-        const cat = unit.category || { id: 'uncategorized', name: 'Uncategorized' };
-        const key = cat.id;
-        if (!groups.has(key)) groups.set(key, { id: cat.id, name: cat.name, units: [] });
-        groups.get(key)!.units.push(unit);
-      }
 
       const deviceCountRows = await prisma.inventoryItem.groupBy({
         by: ['status'],
@@ -148,7 +113,7 @@ export class GetStockUnitsHandler implements IQueryHandler<GetStockUnitsQuery> {
         status: 'success',
         traceId,
         data: {
-          groups: Array.from(groups.values()),
+          groups: [{ id: 'all', name: 'All Items', units: data }],
           units: data,
           count: data.length,
           deviceStatusCounts,

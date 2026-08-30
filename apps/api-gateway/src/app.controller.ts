@@ -17,6 +17,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { getMetrics, recordCommandExecution, recordFinancialPostLatency } from '@electronic-shop/metrics';
 import { ErrorCode } from '@electronic-shop/types';
+import { prisma, authorizeUserAction, isPublicCommand } from '@electronic-shop/database';
 
 // JWT issues `*` for ADMIN and `[]` for every other role. Non-empty permission
 // lists 403 MANAGER/ACCOUNTANT/STAFF even when COMMAND_ROLES allows them.
@@ -32,10 +33,19 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetStaff': [],
   'CreateStaff': [],
 
-  // User commands
+  // User & Permission commands
   'CreateUser': [],
   'GetUsers': [],
   'LoginUser': [], // Public endpoint
+  'GetPermissionTemplates': [],
+  'CreatePermissionTemplate': [],
+  'UpdatePermissionTemplate': [],
+  'DeletePermissionTemplate': [],
+  'AssignTemplateToUser': [],
+  'SetUserPermissionOverride': [],
+  'RemoveUserPermissionOverride': [],
+  'GetUserEffectivePermissions': [],
+  'GetPermissionAuditLogs': [],
   
   // Accounting commands
   'PostJournalEntry': [],
@@ -79,16 +89,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetProducts': [],
   'GetProductById': [],
   'GetProductBySku': [],
-  'CreateBrand': [],
-  'UpdateBrand': [],
-  'DeleteBrand': [],
-  'GetBrands': [],
-  'GetBrandById': [],
-  'CreateCategory': [],
-  'UpdateCategory': [],
-  'DeleteCategory': [],
-  'GetCategories': [],
-  'GetCategoryById': [],
+
   'AddInventoryItem': [],
   'GetStockUnits': [],
   'GetOwnedUnsoldStockPosition': [],
@@ -181,6 +182,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetFinancialStructure': [],
   'CreatePhysicalAccount': [],
   'CreateTreasuryMovement': [],
+  'SeedTreasuryOpeningBalances': [],
   'GetFundBalances': [],
   'GetTreasuryMovements': [],
   'GetTreasuryLoans': [],
@@ -250,16 +252,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetProducts': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetProductById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetProductBySku': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
-  'CreateBrand': ['ADMIN', 'MANAGER'],
-  'UpdateBrand': ['ADMIN', 'MANAGER'],
-  'DeleteBrand': ['ADMIN'],
-  'GetBrands': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
-  'GetBrandById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
-  'CreateCategory': ['ADMIN', 'MANAGER'],
-  'UpdateCategory': ['ADMIN', 'MANAGER'],
-  'DeleteCategory': ['ADMIN'],
-  'GetCategories': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
-  'GetCategoryById': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
+
   'AddInventoryItem': ['ADMIN', 'MANAGER', 'STAFF'],
   'GetStockUnits': ['ADMIN', 'MANAGER', 'STAFF'],
   'GetOwnedUnsoldStockPosition': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
@@ -354,6 +347,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'GetFinancialStructure': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'CreatePhysicalAccount': ['ADMIN', 'MANAGER'],
   'CreateTreasuryMovement': ['ADMIN', 'MANAGER'],
+  'SeedTreasuryOpeningBalances': ['ADMIN', 'MANAGER'],
   'GetFundBalances': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetTreasuryMovements': ['ADMIN', 'MANAGER', 'STAFF', 'ACCOUNTANT'],
   'GetTreasuryLoans': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
@@ -502,47 +496,78 @@ export class AppController {
       );
     }
 
-    // Public commands (e.g. self-registration) bypass role/permission checks.
-    const isPublic = PUBLIC_COMMANDS.includes(cmd);
+    // Public commands (e.g. self-registration, login) bypass role/permission checks.
+    const isPublic = isPublicCommand(cmd);
 
-    // Check role-based access control
-    const requiredRoles = COMMAND_ROLES[cmd];
-    if (!isPublic && requiredRoles && requiredRoles.length > 0) {
-      const userRole = req.user?.role;
-      if (!userRole || !requiredRoles.includes(userRole)) {
-        observeGatewayCommand(cmd, 'forbidden', started);
-        throw new HttpException(
-          {
-            status: 'error',
-            message: `Insufficient role privileges. Required: ${requiredRoles.join(', ')}`,
-            errorCode: 'FORBIDDEN'
-          },
-          HttpStatus.FORBIDDEN
-        );
-      }
-    }
+    if (!isPublic) {
+      if (process.env.ENABLE_DYNAMIC_RBAC !== 'false') {
+        const targetShopId = payload?.shopId || payload?.allowedShopIds || payload?.targetShopId || payload?.fromShopId;
+        const targetShopIds = targetShopId ? (Array.isArray(targetShopId) ? targetShopId : [targetShopId]) : undefined;
 
-    // Check permissions for the command
-    const requiredPermissions = COMMAND_PERMISSIONS[cmd];
-    if (!isPublic && requiredPermissions && requiredPermissions.length > 0) {
-      const userPermissions = req.user?.permissions || [];
-      const hasPermission = userPermissions.includes('*') || requiredPermissions.some(p => userPermissions.includes(p));
-      
-      if (!hasPermission) {
-        observeGatewayCommand(cmd, 'forbidden', started);
-        throw new HttpException(
+        const authResult = await authorizeUserAction(
+          prisma,
           {
-            status: 'error',
-            message: `Insufficient permissions. Required: ${requiredPermissions.join(', ')}`,
-            errorCode: 'FORBIDDEN'
+            userId: req.user?.id,
+            tenantId: req.user?.tenantId,
+            role: req.user?.role || 'STAFF',
           },
-          HttpStatus.FORBIDDEN
+          cmd,
+          targetShopIds
         );
+
+        if (!authResult.allowed) {
+          observeGatewayCommand(cmd, 'forbidden', started);
+          throw new HttpException(
+            {
+              status: 'error',
+              message: `Access denied: ${authResult.reason}`,
+              errorCode: 'FORBIDDEN',
+              actionKey: cmd,
+              reason: authResult.reason,
+              source: authResult.source,
+              traceId: context?.traceId,
+            },
+            HttpStatus.FORBIDDEN
+          );
+        }
+
+        // Sanitize payload: strip any client-injected authorization fields
+        if (payload && typeof payload === 'object') {
+          delete payload.scope;
+          delete payload.allowedShopIds;
+        }
+
+        if (req.context) {
+          req.context.actionKey = cmd;
+          req.context.scope = authResult.scope;
+          req.context.allowedShopIds = authResult.allowedShopIds;
+          req.context.role = req.user?.role || 'STAFF';
+        }
+      } else {
+        const requiredRoles = COMMAND_ROLES[cmd];
+        if (requiredRoles && requiredRoles.length > 0) {
+          const userRole = req.user?.role;
+          if (!userRole || !requiredRoles.includes(userRole)) {
+            observeGatewayCommand(cmd, 'forbidden', started);
+            throw new HttpException(
+              {
+                status: 'error',
+                message: `Insufficient role privileges. Required: ${requiredRoles.join(', ')}`,
+                errorCode: 'FORBIDDEN',
+                actionKey: cmd,
+                reason: `Role '${userRole}' not in required roles [${requiredRoles.join(', ')}]`,
+                source: 'LEGACY_ROLE_GUARD',
+                traceId: context?.traceId,
+              },
+              HttpStatus.FORBIDDEN
+            );
+          }
+        }
       }
     }
 
     try {
-      if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers'].includes(cmd)) {
+      if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers', 'GetPermissionTemplates', 'CreatePermissionTemplate', 'UpdatePermissionTemplate', 'DeletePermissionTemplate', 'AssignTemplateToUser', 'SetUserPermissionOverride', 'RemoveUserPermissionOverride', 'GetUserEffectivePermissions', 'GetPermissionAuditLogs'].includes(cmd)) {
         const result = await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
@@ -560,7 +585,7 @@ export class AppController {
         return result;
       }
 
-      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'CreateBrand', 'UpdateBrand', 'DeleteBrand', 'GetBrands', 'GetBrandById', 'CreateCategory', 'UpdateCategory', 'DeleteCategory', 'GetCategories', 'GetCategoryById', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetOwnedUnsoldStockPosition', 'GetDeviceLife', 'GetStockMovements', 'GetDashboardInventoryAnalytics', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ApplyReturnedItemAssessment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
+      if (['AddProduct', 'UpdateProduct', 'DeleteProduct', 'UpdateProductStatus', 'SetProductPrice', 'GetProducts', 'GetProductById', 'GetProductBySku', 'AddInventoryItem', 'GetAvailableInventoryItems', 'GetStockUnits', 'GetOwnedUnsoldStockPosition', 'GetDeviceLife', 'GetStockMovements', 'GetDashboardInventoryAnalytics', 'ProcessPosSale', 'ApplySaleFulfillment', 'ApplySaleReturn', 'ApplyReturnedItemAssessment', 'ReceiveGoods', 'ProcessSalesReturn', 'CreateWarrantyClaim', 'TransferInventory', 'RecordInventoryUpgrade', 'RecordInventoryIncident', 'CreateRental', 'UpdateRentalStatus', 'GetRentals', 'CreateContact', 'GetContacts'].includes(cmd)) {
         const result = await firstValueFrom(this.inventoryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;
@@ -584,7 +609,7 @@ export class AppController {
         return result;
       }
 
-      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetMonthlyPosition', 'GetFinancialOverview', 'GetDashboardCashFlowAnalytics', 'GetDashboardLoanAnalytics'].includes(cmd)) {
+      if (['GetFinancialStructure', 'CreatePhysicalAccount', 'CreateTreasuryMovement', 'SeedTreasuryOpeningBalances', 'GetFundBalances', 'GetTreasuryMovements', 'GetTreasuryLoans', 'GetProfitTransferPosition', 'RecordReconciliation', 'ApproveReconciliationAdjustment', 'GetReconciliations', 'GetDailyPosition', 'GetMonthlyPosition', 'GetFinancialOverview', 'GetDashboardCashFlowAnalytics', 'GetDashboardLoanAnalytics'].includes(cmd)) {
         const result = await firstValueFrom(this.treasuryClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;

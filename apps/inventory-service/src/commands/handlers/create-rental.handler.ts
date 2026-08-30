@@ -105,8 +105,6 @@ export class CreateRentalHandler extends BaseCommandHandler<CreateRentalCommand>
               shopId,
               productId: product.id,
               name: inv.name?.trim() || product.name || null,
-              brandId: inv.brandId || product.brandId || null,
-              categoryId: inv.categoryId || product.categoryId || null,
               sellingPrice: inv.sellingPrice != null ? Number(inv.sellingPrice) : null,
               specifications: mergedSpecs,
               condition: inv.condition || null,
