@@ -26,12 +26,8 @@ export class GetDeviceLifeHandler implements IQueryHandler<GetDeviceLifeQuery> {
       const item = await prisma.inventoryItem.findFirst({
         where,
         include: {
-          brand: { select: { id: true, name: true } },
-          category: { select: { id: true, name: true } },
           product: {
             include: {
-              brand: { select: { id: true, name: true } },
-              category: { select: { id: true, name: true } },
               prices: { select: { sellingPrice: true, validFrom: true }, orderBy: { validFrom: 'desc' }, take: 1 },
             },
           },
@@ -69,16 +65,6 @@ export class GetDeviceLifeHandler implements IQueryHandler<GetDeviceLifeQuery> {
       const purchaseCost = Number(item.purchaseCost || 0);
       const extrasCost = inventoryExtrasCost(item);
       const totalCost = inventoryBookCost(item);
-      const brand = item.brand
-        ? { id: item.brand.id, name: item.brand.name }
-        : item.product?.brand
-          ? { id: item.product.brand.id, name: item.product.brand.name }
-          : null;
-      const category = item.category
-        ? { id: item.category.id, name: item.category.name }
-        : item.product?.category
-          ? { id: item.product.category.id, name: item.product.category.name }
-          : null;
 
       return {
         status: 'success',
@@ -96,10 +82,8 @@ export class GetDeviceLifeHandler implements IQueryHandler<GetDeviceLifeQuery> {
             notes: item.notes || null,
             status: item.status,
             shopId: item.shopId,
-            imageUrl: item.imageUrl || item.images?.[0] || item.product?.imageUrl || item.product?.images?.[0] || null,
+            imageUrl: item.imageUrl || item.images?.[0] || item.product?.imageUrl || (item.product as any)?.images?.[0] || null,
             images: item.images || [],
-            brand,
-            category,
             sellingPrice: item.sellingPrice ?? item.product?.prices?.[0]?.sellingPrice ?? 0,
             specifications: item.specifications ?? item.product?.specifications ?? null,
             awaitingAssess: item.status === 'RETURNED',

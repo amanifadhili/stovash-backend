@@ -6,7 +6,17 @@ interface RateLimitStore {
   resetTime: number;
 }
 
-const LOGIN_EXEMPT_COMMANDS = ['LoginUser', 'CreateTenant'];
+const LOGIN_EXEMPT_COMMANDS = [
+  'LoginUser',
+  'CreateTenant',
+  'SeedTreasuryOpeningBalances',
+  'AddProduct',
+  'SetProductPrice',
+  'CreatePurchase',
+  'ConfirmPurchase',
+  'ReceivePurchaseUnit',
+  'ConfirmPurchaseUnit',
+];
 
 @Injectable()
 export class RateLimitMiddleware implements NestMiddleware {

@@ -9,6 +9,7 @@ import { CreatePhysicalAccountHandler } from './create-physical-account.handler.
 import { CreateTreasuryMovementHandler } from './create-treasury-movement.handler.js';
 import { RecordReconciliationHandler } from './record-reconciliation.handler.js';
 import { ApproveReconciliationAdjustmentHandler } from './approve-reconciliation-adjustment.handler.js';
+import { SeedTreasuryOpeningBalancesHandler } from './seed-treasury-opening-balances.handler.js';
 
 export const CommandHandlers = [
   CreatePaymentMethodHandler,
@@ -22,4 +23,5 @@ export const CommandHandlers = [
   CreateTreasuryMovementHandler,
   RecordReconciliationHandler,
   ApproveReconciliationAdjustmentHandler,
+  SeedTreasuryOpeningBalancesHandler,
 ];

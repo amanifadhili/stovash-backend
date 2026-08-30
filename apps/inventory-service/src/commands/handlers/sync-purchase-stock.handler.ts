@@ -148,8 +148,6 @@ export class SyncPurchaseStockHandler extends BaseCommandHandler<SyncPurchaseSto
           shopId,
           productId: product.id,
           name: payload.name?.trim() || product.name || null,
-          brandId: payload.brandId || product.brandId || null,
-          categoryId: payload.categoryId || product.categoryId || null,
           sellingPrice: payload.sellingPrice != null ? Number(payload.sellingPrice) : null,
           specifications: mergedSpecs,
           imei1: payload.imei1 || null,
