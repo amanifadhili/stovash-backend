@@ -12,7 +12,7 @@ TAG="${2:?tag required (e.g. e1e2102)}"
 KEEP="${KEEP_RELEASES:-3}"
 COMPOSE_PROJECT="${STOVASH_COMPOSE_PROJECT:-stovash-backend}"
 CONTAINER="${STOVASH_CONTAINER:-stovash-backend}"
-ENV_FILE="${ROOT/shared/.env}"
+ENV_FILE="${ROOT}/shared/.env"
 PORT="${STOVASH_PORT:-5051}"
 
 # --- Ensure Docker is available ---
@@ -21,9 +21,13 @@ if [[ -f "$SCRIPT_DIR/ensure-docker.sh" ]]; then
   bash "$SCRIPT_DIR/ensure-docker.sh"
 fi
 
+# --- Ensure directory structure exists ---
+mkdir -p "$ROOT/shared" "$ROOT/releases"
+
 # --- Preflight ---
 if [[ ! -f "$ENV_FILE" ]]; then
-  echo "ERROR: Missing $ENV_FILE — copy production env before deploy."
+  echo "ERROR: Missing $ENV_FILE"
+  echo "Copy your production .env to $ROOT/shared/.env before deploying."
   exit 1
 fi
 
