@@ -63,6 +63,14 @@ function journalLines(
     ];
   }
 
+  if (type === 'OPENING_BALANCE_IN') {
+    if (!toChart) return { error: 'OPENING_BALANCE_IN requires a destination physical account' };
+    return [
+      { accountCode: toChart, side: 'DEBIT', amountMinor: amount },
+      { accountCode: ACCOUNT_OWNER_EQUITY, side: 'CREDIT', amountMinor: amount },
+    ];
+  }
+
   if (
     type === 'INTERNAL_TRANSFER' ||
     type === 'INTERNAL_LOAN' ||

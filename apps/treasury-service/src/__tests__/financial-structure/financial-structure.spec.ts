@@ -38,12 +38,30 @@ describe('Financial structure (Phase 3)', () => {
     expect(second.data!.funds.flatMap((f) => f.accounts)).toHaveLength(6);
   });
 
-  it('places Petty Cash under Capital', async () => {
+  it('places Petty Cash under Profit Reserve', async () => {
     const result = await getFinancialStructure(context);
     const petty = result.data!.funds
       .flatMap((f) => f.accounts)
       .find((a) => a.kind === 'PETTY_CASH');
-    expect(petty?.fundCode).toBe('CAPITAL');
+    expect(petty?.fundCode).toBe('PROFIT_RESERVE');
+  });
+
+  it('self-heals a legacy Petty Cash account incorrectly attached to Capital fund in database', async () => {
+    await getFinancialStructure(context);
+    const capitalFund = await prisma.logicalFund.findFirst({ where: { tenantId, shopId, code: 'CAPITAL' } });
+    const profitFund = await prisma.logicalFund.findFirst({ where: { tenantId, shopId, code: 'PROFIT_RESERVE' } });
+    const pettyAccount = await prisma.physicalAccount.findFirst({ where: { tenantId, shopId, kind: 'PETTY_CASH' } });
+
+    await prisma.physicalAccount.update({
+      where: { id: pettyAccount!.id },
+      data: { fundId: capitalFund!.id },
+    });
+
+    const healed = await getFinancialStructure(context);
+    expect(healed.status).toBe('success');
+    const pettyHealed = healed.data!.funds.flatMap((f) => f.accounts).find((a) => a.kind === 'PETTY_CASH');
+    expect(pettyHealed?.fundCode).toBe('PROFIT_RESERVE');
+    expect(pettyHealed?.fundId).toBe(profitFund!.id);
   });
 
   it('cannot attach Petty Cash to Operational', async () => {
@@ -54,7 +72,7 @@ describe('Financial structure (Phase 3)', () => {
     );
     expect(result.status).toBe('error');
     expect(result.errorCode).toBe(ErrorCode.BUSINESS_RULE_VIOLATION);
-    expect(result.message).toMatch(/Petty Cash belongs to Capital/);
+    expect(result.message).toMatch(/Petty Cash belongs to Profit Reserve/);
   });
 
   it('fund total equals the sum of children (all zero)', async () => {

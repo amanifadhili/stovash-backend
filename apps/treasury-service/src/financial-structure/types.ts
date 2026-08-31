@@ -23,7 +23,7 @@ export const MANDATORY_ACCOUNT_KINDS = [
 
 export const KIND_TO_FUND: Record<Exclude<PhysicalAccountKind, 'OPS_OTHER_BANK'>, LogicalFundCode> = {
   CAPITAL_BANK: 'CAPITAL',
-  PETTY_CASH: 'CAPITAL',
+  PETTY_CASH: 'PROFIT_RESERVE',
   OPS_MAIN_BANK: 'OPERATIONAL',
   OPS_CASH: 'OPERATIONAL',
   OPS_MOMO: 'OPERATIONAL',
@@ -40,7 +40,6 @@ export const FUND_TREE: Array<{
     name: 'Capital',
     accounts: [
       { kind: 'CAPITAL_BANK', code: 'CAPITAL_BANK', name: 'Capital Bank' },
-      { kind: 'PETTY_CASH', code: 'PETTY_CASH', name: 'Petty Cash' },
     ],
   },
   {
@@ -55,7 +54,10 @@ export const FUND_TREE: Array<{
   {
     code: 'PROFIT_RESERVE',
     name: 'Profit Reserve',
-    accounts: [{ kind: 'PROFIT_BANK', code: 'PROFIT_BANK', name: 'Profit Reserve Bank' }],
+    accounts: [
+      { kind: 'PROFIT_BANK', code: 'PROFIT_BANK', name: 'Profit Reserve Bank' },
+      { kind: 'PETTY_CASH', code: 'PETTY_CASH', name: 'Petty Cash' },
+    ],
   },
 ];
 

@@ -30,7 +30,15 @@ export async function ensureFinancialStructure(
         const existing = await tx.physicalAccount.findUnique({
           where: { tenantId_shopId_code: { tenantId, shopId, code: accountDef.code } },
         });
-        if (existing) continue;
+        if (existing) {
+          if (existing.fundId !== fund.id) {
+            await tx.physicalAccount.update({
+              where: { id: existing.id },
+              data: { fundId: fund.id },
+            });
+          }
+          continue;
+        }
         await tx.physicalAccount.create({
           data: {
             tenantId,

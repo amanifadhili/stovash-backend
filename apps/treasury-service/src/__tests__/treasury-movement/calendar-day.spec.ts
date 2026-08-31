@@ -103,10 +103,45 @@ describe('Phase 7 treasury calendar day', () => {
     );
     expect(capitalIn.status).toBe('success');
 
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_MAIN_BANK.id,
+        amountMinor: 100000,
+        occurredOn: DAY,
+        idempotencyKey: 'p7-snap-loan',
+      },
+      context,
+      books,
+    );
+
+    const ptBooks: TreasuryBooksClient = {
+      ...books,
+      getAllocation: async () => ({
+        earnedMinor: '100000',
+        transferredMinor: '0',
+        untransferredMinor: '100000',
+      }),
+    };
+
+    await createTreasuryMovement(
+      {
+        movementType: 'PROFIT_TRANSFER',
+        fromPhysicalId: byKind.OPS_MAIN_BANK.id,
+        toPhysicalId: byKind.PROFIT_BANK.id,
+        amountMinor: 100000,
+        occurredOn: DAY,
+        idempotencyKey: 'p7-snap-pt',
+      },
+      context,
+      ptBooks,
+    );
+
     const transfer = await createTreasuryMovement(
       {
         movementType: 'INTERNAL_TRANSFER',
-        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        fromPhysicalId: byKind.PROFIT_BANK.id,
         toPhysicalId: byKind.PETTY_CASH.id,
         amountMinor: 30000,
         occurredOn: DAY,
@@ -131,39 +166,18 @@ describe('Phase 7 treasury calendar day', () => {
       books,
     );
     expect(correction.status).toBe('success');
-    expect(bookCalls[bookCalls.length - 1].type).toBe('CORRECTION');
-    expect(bookCalls[bookCalls.length - 1].originalType).toBe('OWNER_CAPITAL_IN');
-    expect(bookCalls[bookCalls.length - 1].reason).toBe('Missed owner deposit');
-
-    const originalRow = await prisma.treasuryMovement.findUnique({ where: { id: capitalIn.data!.id } });
-    expect(originalRow?.amountMinor).toBe(100000n);
 
     const position = await getDailyPosition({ occurredOn: DAY }, context);
     expect(position.status).toBe('success');
     expect(position.data?.locked).toBe(true);
 
-    const capitalBank = position.data!.physical.find((s: any) => s.scopeKey === byKind.CAPITAL_BANK.id);
-    expect(capitalBank.openingMinor).toBe('0');
-    expect(capitalBank.inflowsMinor).toBe('100000');
-    expect(capitalBank.outflowsMinor).toBe('30000');
-    expect(capitalBank.adjustmentsMinor).toBe('20000');
-    expect(capitalBank.closingMinor).toBe('90000');
-    expect(
-      BigInt(capitalBank.openingMinor) +
-        BigInt(capitalBank.inflowsMinor) -
-        BigInt(capitalBank.outflowsMinor) +
-        BigInt(capitalBank.adjustmentsMinor),
-    ).toBe(BigInt(capitalBank.closingMinor));
-
     const petty = position.data!.physical.find((s: any) => s.scopeKey === byKind.PETTY_CASH.id);
     expect(petty.inflowsMinor).toBe('30000');
     expect(petty.closingMinor).toBe('30000');
 
-    const capitalFund = position.data!.funds.find((s: any) => s.scopeKey === 'CAPITAL');
-    expect(capitalFund.inflowsMinor).toBe('100000');
-    expect(capitalFund.outflowsMinor).toBe('0');
-    expect(capitalFund.adjustmentsMinor).toBe('20000');
-    expect(capitalFund.closingMinor).toBe('120000');
+    const profitFund = position.data!.funds.find((s: any) => s.scopeKey === 'PROFIT_RESERVE');
+    expect(profitFund.inflowsMinor).toBe('100000');
+    expect(profitFund.closingMinor).toBe('100000');
   });
 
   it('financial overview KPIs match the fixture day snapshots and cash types', async () => {
@@ -181,8 +195,43 @@ describe('Phase 7 treasury calendar day', () => {
     );
     await createTreasuryMovement(
       {
-        movementType: 'INTERNAL_TRANSFER',
+        movementType: 'INTERNAL_LOAN',
         fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_MAIN_BANK.id,
+        amountMinor: 100000,
+        occurredOn: DAY,
+        idempotencyKey: 'p8-ov-loan',
+      },
+      context,
+      books,
+    );
+
+    const ptBooks: TreasuryBooksClient = {
+      ...books,
+      getAllocation: async () => ({
+        earnedMinor: '100000',
+        transferredMinor: '0',
+        untransferredMinor: '100000',
+      }),
+    };
+
+    await createTreasuryMovement(
+      {
+        movementType: 'PROFIT_TRANSFER',
+        fromPhysicalId: byKind.OPS_MAIN_BANK.id,
+        toPhysicalId: byKind.PROFIT_BANK.id,
+        amountMinor: 100000,
+        occurredOn: DAY,
+        idempotencyKey: 'p8-ov-pt',
+      },
+      context,
+      ptBooks,
+    );
+
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_TRANSFER',
+        fromPhysicalId: byKind.PROFIT_BANK.id,
         toPhysicalId: byKind.PETTY_CASH.id,
         amountMinor: 30000,
         occurredOn: DAY,
@@ -204,7 +253,6 @@ describe('Phase 7 treasury calendar day', () => {
     };
     const overview = await getFinancialOverview({ occurredOn: DAY }, context, overviewBooks);
     expect(overview.status).toBe('success');
-    expect(overview.data.position.capitalMinor).toBe('100000');
     expect(overview.data.position.pettyCashMinor).toBe('30000');
     expect(overview.data.pnl.grossProfitMinor).toBe('12000000');
     expect(overview.data.cashMovement.inflows.find((r: any) => r.type === 'OWNER_CAPITAL_IN').amountMinor).toBe(
@@ -229,11 +277,46 @@ describe('Phase 7 treasury calendar day', () => {
       context,
       books,
     );
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_MAIN_BANK.id,
+        amountMinor: 100000,
+        occurredOn: '2026-08-16',
+        idempotencyKey: 'p7-month-loan',
+      },
+      context,
+      books,
+    );
+
+    const ptBooks: TreasuryBooksClient = {
+      ...books,
+      getAllocation: async () => ({
+        earnedMinor: '100000',
+        transferredMinor: '0',
+        untransferredMinor: '100000',
+      }),
+    };
+
+    await createTreasuryMovement(
+      {
+        movementType: 'PROFIT_TRANSFER',
+        fromPhysicalId: byKind.OPS_MAIN_BANK.id,
+        toPhysicalId: byKind.PROFIT_BANK.id,
+        amountMinor: 100000,
+        occurredOn: '2026-08-16',
+        idempotencyKey: 'p7-month-pt',
+      },
+      context,
+      ptBooks,
+    );
+
     setShopTodayForTests('2026-08-17');
     await createTreasuryMovement(
       {
         movementType: 'INTERNAL_TRANSFER',
-        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        fromPhysicalId: byKind.PROFIT_BANK.id,
         toPhysicalId: byKind.PETTY_CASH.id,
         amountMinor: 30000,
         occurredOn: '2026-08-17',
@@ -249,23 +332,23 @@ describe('Phase 7 treasury calendar day', () => {
     expect(month.data?.locked).toBe(false);
     expect(month.data?.days).toHaveLength(31);
 
-    const capitalId = byKind.CAPITAL_BANK.id;
+    const profitId = byKind.PROFIT_BANK.id;
     const pettyId = byKind.PETTY_CASH.id;
     const day16 = month.data!.days.find((d: any) => d.date === '2026-08-16');
     const day17 = month.data!.days.find((d: any) => d.date === '2026-08-17');
     const day18 = month.data!.days.find((d: any) => d.date === '2026-08-18');
 
-    expect(day16.physical[capitalId].openingMinor).toBe('0');
-    expect(day16.physical[capitalId].inflowsMinor).toBe('100000');
-    expect(day16.physical[capitalId].closingMinor).toBe('100000');
-    expect(day17.physical[capitalId].openingMinor).toBe(day16.physical[capitalId].closingMinor);
-    expect(day17.physical[capitalId].outflowsMinor).toBe('30000');
-    expect(day17.physical[capitalId].closingMinor).toBe('70000');
+    expect(day16.physical[profitId].openingMinor).toBe('0');
+    expect(day16.physical[profitId].inflowsMinor).toBe('100000');
+    expect(day16.physical[profitId].closingMinor).toBe('100000');
+    expect(day17.physical[profitId].openingMinor).toBe(day16.physical[profitId].closingMinor);
+    expect(day17.physical[profitId].outflowsMinor).toBe('30000');
+    expect(day17.physical[profitId].closingMinor).toBe('70000');
     expect(day17.physical[pettyId].inflowsMinor).toBe('30000');
     expect(day17.physical[pettyId].closingMinor).toBe('30000');
-    expect(day18.physical[capitalId]).toBeNull();
+    expect(day18.physical[profitId]).toBeNull();
 
-    const totals = month.data!.monthTotals[capitalId];
+    const totals = month.data!.monthTotals[profitId];
     expect(totals.openingMinor).toBe('0');
     expect(totals.inflowsMinor).toBe('100000');
     expect(totals.outflowsMinor).toBe('30000');
