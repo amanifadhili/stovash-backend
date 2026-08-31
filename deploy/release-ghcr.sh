@@ -80,6 +80,20 @@ EOF
 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
 
+# --- Wait for API to be healthy (max 90s) ---
+echo "Waiting for API to be ready on port ${PORT}..."
+for i in $(seq 1 18); do
+  sleep 5
+  if curl -sf "http://127.0.0.1:${PORT}/docs" >/dev/null 2>&1; then
+    echo "API is up on port ${PORT}"
+    break
+  fi
+  if [[ $i -eq 18 ]]; then
+    echo "WARNING: API not responding on port ${PORT} after 90s"
+    docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" logs --tail=30
+  fi
+done
+
 # --- Schema sync ---
 echo "Syncing Prisma schemas..."
 for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
