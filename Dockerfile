@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 ARG NODE_VERSION=22-bookworm-slim
 
 FROM node:${NODE_VERSION} AS builder
@@ -21,9 +20,9 @@ ENV REPORT_DATABASE_URL=$DATABASE_URL
 RUN npm ci
 # Only real service schemas — skip copies under src/generated/prisma.
 RUN for schema in apps/*/prisma/schema.prisma; do \
-      echo "prisma generate $schema"; \
-      npx --yes prisma@5.22.0 generate --schema="$schema"; \
-    done
+  echo "prisma generate $schema"; \
+  npx --yes prisma@5.22.0 generate --schema="$schema"; \
+  done
 RUN npm run build
 
 FROM node:${NODE_VERSION}
