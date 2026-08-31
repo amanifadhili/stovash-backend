@@ -171,14 +171,11 @@ describe('Phase 9 treasury invariants', () => {
     expect(loans.data.loans.filter((l: any) => l.kind === 'INTERNAL_LOAN')).toHaveLength(1);
   });
 
-  it('6/7 — Petty Cash is Capital; Cash/MoMo/ops banks are Operational', async () => {
-    const structure = await getFinancialStructure(context);
-    const petty = structure.data!.funds.flatMap((f) => f.accounts).find((a) => a.kind === 'PETTY_CASH');
-    const cash = structure.data!.funds.flatMap((f) => f.accounts).find((a) => a.kind === 'OPS_CASH');
-    const momo = structure.data!.funds.flatMap((f) => f.accounts).find((a) => a.kind === 'OPS_MOMO');
-    expect(petty?.fundCode).toBe('CAPITAL');
-    expect(cash?.fundCode).toBe('OPERATIONAL');
-    expect(momo?.fundCode).toBe('OPERATIONAL');
+  it('6/7 — Petty Cash is Profit Reserve; Cash/MoMo/ops banks are Operational', async () => {
+    const byKind = await accounts();
+    expect(byKind.PETTY_CASH?.fundCode).toBe('PROFIT_RESERVE');
+    expect(byKind.OPS_CASH?.fundCode).toBe('OPERATIONAL');
+    expect(byKind.OPS_MOMO?.fundCode).toBe('OPERATIONAL');
   });
 
   it('8 — sale payments credit Operational', async () => {
@@ -214,10 +211,35 @@ describe('Phase 9 treasury invariants', () => {
       context,
       books,
     );
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_LOAN',
+        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_MAIN_BANK.id,
+        amountMinor: 1_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'inv12-loan',
+      },
+      context,
+      books,
+    );
+    earned = 1_000_000n;
+    await createTreasuryMovement(
+      {
+        movementType: 'PROFIT_TRANSFER',
+        fromPhysicalId: byKind.OPS_MAIN_BANK.id,
+        toPhysicalId: byKind.PROFIT_BANK.id,
+        amountMinor: 1_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'inv12-pt',
+      },
+      context,
+      books,
+    );
     const xfer = await createTreasuryMovement(
       {
         movementType: 'INTERNAL_TRANSFER',
-        fromPhysicalId: byKind.CAPITAL_BANK.id,
+        fromPhysicalId: byKind.PROFIT_BANK.id,
         toPhysicalId: byKind.PETTY_CASH.id,
         amountMinor: 300000,
         occurredOn: DAY,
@@ -228,7 +250,7 @@ describe('Phase 9 treasury invariants', () => {
     );
     expect(xfer.data.amountMinor).toBe('300000');
     const balances = await derivedBalances(tenantId, shopId);
-    expect(balanceOf(balances, byKind.CAPITAL_BANK.id)).toBe(700000n);
+    expect(balanceOf(balances, byKind.PROFIT_BANK.id)).toBe(700000n);
     expect(balanceOf(balances, byKind.PETTY_CASH.id)).toBe(300000n);
   });
 
@@ -345,8 +367,33 @@ describe('Phase 9 treasury invariants', () => {
     );
     await createTreasuryMovement(
       {
-        movementType: 'INTERNAL_TRANSFER',
+        movementType: 'INTERNAL_LOAN',
         fromPhysicalId: byKind.CAPITAL_BANK.id,
+        toPhysicalId: byKind.OPS_MAIN_BANK.id,
+        amountMinor: 8_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'id-eq-loan',
+      },
+      context,
+      books,
+    );
+    earned = 8_000_000n;
+    await createTreasuryMovement(
+      {
+        movementType: 'PROFIT_TRANSFER',
+        fromPhysicalId: byKind.OPS_MAIN_BANK.id,
+        toPhysicalId: byKind.PROFIT_BANK.id,
+        amountMinor: 8_000_000,
+        occurredOn: DAY,
+        idempotencyKey: 'id-eq-pt',
+      },
+      context,
+      books,
+    );
+    await createTreasuryMovement(
+      {
+        movementType: 'INTERNAL_TRANSFER',
+        fromPhysicalId: byKind.PROFIT_BANK.id,
         toPhysicalId: byKind.PETTY_CASH.id,
         amountMinor: 1_000_000,
         occurredOn: DAY,

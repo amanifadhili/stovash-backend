@@ -329,6 +329,9 @@ function validateType(
     case 'OWNER_CAPITAL_IN':
       if (from || to?.kind !== 'CAPITAL_BANK') return 'OWNER_CAPITAL_IN credits Capital Bank only';
       return null;
+    case 'OPENING_BALANCE_IN':
+      if (from || !to) return 'OPENING_BALANCE_IN requires a destination physical account and no source account';
+      return null;
     case 'INTERNAL_TRANSFER':
       if (!from || !to || from.id === to.id) return 'Internal transfer needs two different accounts';
       if (fromFund !== toFund) return 'INTERNAL_TRANSFER only moves money within the same fund';
@@ -444,6 +447,7 @@ function descriptionFor(
 ): string {
   if (type === 'SALE_REFUND') return `Sale refund from ${fromName || 'Operational'}`;
   if (type === 'OWNER_CAPITAL_IN') return `Owner capital in → ${toName || 'Capital Bank'}`;
+  if (type === 'OPENING_BALANCE_IN') return `Opening balance in → ${toName || 'Physical Account'}`;
   if (type === 'GENERAL_EXPENSE_FUNDING') return `General expense funding: ${fromName} → ${toName}`;
   if (type === 'GENERAL_EXPENSE_PAYOUT') return `General expense payout from ${fromName || 'Operational'}`;
   if (type === 'WORKER_ADVANCE') return `Worker advance from Petty Cash`;

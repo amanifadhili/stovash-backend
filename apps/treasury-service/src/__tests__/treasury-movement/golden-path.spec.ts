@@ -96,22 +96,14 @@ describe('Phase 10 treasury golden path', () => {
 
   it('closing = opening + inflows − outflows ± approved adjustments', async () => {
     const byKind = await accountsByKind();
+    const opsPool = OPEN_OPS_BANK + OPEN_CASH + OPEN_MOMO + OPEN_PROFIT + OPEN_PETTY;
     await move('owner capital', {
       movementType: 'OWNER_CAPITAL_IN',
       toKind: 'CAPITAL_BANK',
-      amountMinor: OPEN_TOTAL,
+      amountMinor: OPEN_CAPITAL + opsPool,
       occurredOn: DAY,
       idempotencyKey: 't-cap',
     });
-    await move('petty', {
-      movementType: 'INTERNAL_TRANSFER',
-      fromKind: 'CAPITAL_BANK',
-      toKind: 'PETTY_CASH',
-      amountMinor: OPEN_PETTY,
-      occurredOn: DAY,
-      idempotencyKey: 't-petty',
-    });
-    const opsPool = OPEN_OPS_BANK + OPEN_CASH + OPEN_MOMO + OPEN_PROFIT;
     await move('ops loan', {
       movementType: 'INTERNAL_LOAN',
       fromKind: 'CAPITAL_BANK',
@@ -119,6 +111,23 @@ describe('Phase 10 treasury golden path', () => {
       amountMinor: opsPool,
       occurredOn: DAY,
       idempotencyKey: 't-ops-loan',
+    });
+    earned = BigInt(OPEN_PROFIT + OPEN_PETTY);
+    await move('opening profit transfer', {
+      movementType: 'PROFIT_TRANSFER',
+      fromKind: 'OPS_MAIN_BANK',
+      toKind: 'PROFIT_BANK',
+      amountMinor: OPEN_PROFIT + OPEN_PETTY,
+      occurredOn: DAY,
+      idempotencyKey: 't-pr',
+    });
+    await move('petty', {
+      movementType: 'INTERNAL_TRANSFER',
+      fromKind: 'PROFIT_BANK',
+      toKind: 'PETTY_CASH',
+      amountMinor: OPEN_PETTY,
+      occurredOn: DAY,
+      idempotencyKey: 't-petty',
     });
     await move('split cash', {
       movementType: 'INTERNAL_TRANSFER',
@@ -135,15 +144,6 @@ describe('Phase 10 treasury golden path', () => {
       amountMinor: OPEN_MOMO,
       occurredOn: DAY,
       idempotencyKey: 't-momo',
-    });
-    earned = BigInt(OPEN_PROFIT);
-    await move('opening profit transfer', {
-      movementType: 'PROFIT_TRANSFER',
-      fromKind: 'OPS_MAIN_BANK',
-      toKind: 'PROFIT_BANK',
-      amountMinor: OPEN_PROFIT,
-      occurredOn: DAY,
-      idempotencyKey: 't-pr',
     });
 
     const openingBalances = await derivedBalances(tenantId, shopId);
@@ -324,6 +324,6 @@ describe('Phase 10 treasury golden path', () => {
     expect(balanceOf(closing, byKind.CAPITAL_BANK.id)).toBe(BigInt(OPEN_CAPITAL + GROWTH));
     expect(balanceOf(closing, byKind.PETTY_CASH.id)).toBe(BigInt(OPEN_PETTY - ADVANCE - PETTY_EXPENSE));
     expect(balanceOf(closing, byKind.OPS_CASH.id)).toBe(BigInt(OPEN_CASH + MIX_CASH - SHORTAGE));
-    expect(byKind.PETTY_CASH.fundCode).toBe('CAPITAL');
+    expect(byKind.PETTY_CASH.fundCode).toBe('PROFIT_RESERVE');
   });
 });
