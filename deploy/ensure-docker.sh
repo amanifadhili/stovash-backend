@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install Docker Engine + docker-compose (standalone binary) if missing.
-# Configure Docker to prefer IPv4 (fixes GHCR pull failures on broken IPv6).
+# Fix broken IPv6 that causes GHCR pull failures.
 set -euo pipefail
 
 if ! command -v docker >/dev/null 2>&1; then
@@ -19,31 +19,24 @@ if ! command -v docker-compose >/dev/null 2>&1; then
   ln -sfn /usr/local/bin/docker-compose /usr/bin/docker-compose
 fi
 
-# Force Docker to prefer IPv4 (fixes GHCR connection reset on broken IPv6)
-DOCKER_DAEMON_JSON="/etc/docker/daemon.json"
-if [[ -f "$DOCKER_DAEMON_JSON" ]]; then
-  if ! grep -q '"ip"' "$DOCKER_DAEMON_JSON"; then
-    # Add ip binding if not already set
-    python3 -c "
-import json
-with open('$DOCKER_DAEMON_JSON') as f:
-    cfg = json.load(f)
-cfg.setdefault('ip', '0.0.0.0')
-with open('$DOCKER_DAEMON_JSON', 'w') as f:
-    json.dump(cfg, f, indent=2)
-" 2>/dev/null || {
-      # Fallback: use jq if python3 not available
-      cp "$DOCKER_DAEMON_JSON" "${DOCKER_DAEMON_JSON}.bak"
-      cat "$DOCKER_DAEMON_JSON" | sed 's/{/{\n  "ip": "0.0.0.0",/' > "${DOCKER_DAEMON_JSON}.tmp"
-      mv "${DOCKER_DAEMON_JSON}.tmp" "$DOCKER_DAEMON_JSON"
-    }
-    systemctl restart docker 2>/dev/null || true
-    sleep 3
+# Fix broken IPv6 on VPS — force all traffic through IPv4.
+# sysctl is immediate + persistent, no Docker restart needed.
+sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null 2>&1 || true
+sysctl -w net.ipv6.conf.default.disable_ipv6=1 >/dev/null 2>&1 || true
+
+# Persist across reboots
+for f in /etc/sysctl.conf /etc/sysctl.d/99-disable-ipv6.conf; do
+  if [[ "$f" == *.conf ]] && [[ ! -f "$f" ]]; then
+    mkdir -p "$(dirname "$f")"
   fi
-else
-  echo '{"ip": "0.0.0.0"}' > "$DOCKER_DAEMON_JSON"
-  systemctl restart docker 2>/dev/null || true
-  sleep 3
+done
+if ! grep -q 'disable_ipv6' /etc/sysctl.conf 2>/dev/null; then
+  cat >> /etc/sysctl.conf <<'EOF'
+
+# Disable broken IPv6 (fixes GHCR pull failures)
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+EOF
 fi
 
 docker --version
