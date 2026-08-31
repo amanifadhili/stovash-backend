@@ -91,7 +91,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > "$SSH_KEY"
           chmod 600 "$SSH_KEY"
 
-          SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $SSH_KEY -p $VPS_PORT"
+          SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ServerAliveInterval=30 -o ServerAliveCountMax=10 -i $SSH_KEY -p $VPS_PORT"
 
           # Extract deploy scripts on VPS
           ssh $SSH_OPTS "${VPS_USER}@${VPS_HOST}" \
@@ -103,11 +103,32 @@ jobs:
              tar xzf /tmp/stovash-backend-deploy.tgz -C \$REL && \
              chmod +x \$REL/deploy/release-ghcr.sh \$REL/deploy/ensure-docker.sh"
 
-          # Run the release script with GHCR credentials
+          # Run the release script detached with nohup so SSH doesn't timeout
           ssh $SSH_OPTS "${VPS_USER}@${VPS_HOST}" \
-            "export GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' IMAGE_TAG='$IMAGE_TAG' && \
-             ROOT=/home/deploy/stovash/backend && \
-             LATEST=\$(ls -1dt \$ROOT/releases/*_${IMAGE_TAG}* 2>/dev/null | head -n1) && \
-             \$LATEST/deploy/release-ghcr.sh ${IMAGE} $IMAGE_TAG"
+            "nohup bash -c '
+              export GHCR_USER=\"$GHCR_USER\" GHCR_TOKEN=\"$GHCR_TOKEN\" IMAGE_TAG=\"$IMAGE_TAG\"
+              ROOT=/home/deploy/stovash/backend
+              LATEST=\$(ls -1dt \$ROOT/releases/*_${IMAGE_TAG}* 2>/dev/null | head -n1)
+              \$LATEST/deploy/release-ghcr.sh ${IMAGE} $IMAGE_TAG
+            ' > /tmp/stovash-deploy.log 2>&1 &"
 
+          echo "Deployment started on VPS. Polling for completion..."
+
+          # Poll until deploy finishes (max 10 min)
+          for i in $(seq 1 60); do
+            sleep 10
+            STATUS=$(ssh $SSH_OPTS "${VPS_USER}@${VPS_HOST}" \
+              "if [ -f /tmp/stovash-deploy.log ] && grep -q 'deployed successfully' /tmp/stovash-deploy.log 2>/dev/null; then echo done; elif pgrep -f release-ghcr.sh >/dev/null 2>&1; then echo running; else echo done; fi" 2>/dev/null || echo running)
+            if [ "$STATUS" = "done" ]; then
+              echo "✅ Deployment complete"
+              ssh $SSH_OPTS "${VPS_USER}@${VPS_HOST}" "cat /tmp/stovash-deploy.log"
+              rm -f "$SSH_KEY"
+              exit 0
+            fi
+            echo "Still deploying... ($((i*10))s elapsed)"
+          done
+
+          echo "⚠️ Timed out waiting for deploy. Check VPS logs:"
+          ssh $SSH_OPTS "${VPS_USER}@${VPS_HOST}" "tail -50 /tmp/stovash-deploy.log" || true
           rm -f "$SSH_KEY"
+          exit 1
