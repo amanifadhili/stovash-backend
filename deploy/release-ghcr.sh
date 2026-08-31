@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# Deploy a pre-built GHCR image to production.
+# Called by GitHub Actions via native SSH.
+#
+# Usage: release-ghcr.sh <image> <tag>
+# Example: release-ghcr.sh ghcr.io/amanifadhili/stovash-backend e1e2102
+set -euo pipefail
+
+ROOT="${STOVASH_ROOT:-/home/deploy/stovash/backend}"
+IMAGE="${1:?image required (e.g. ghcr.io/amanifadhili/stovash-backend)}"
+TAG="${2:?tag required (e.g. e1e2102)}"
+KEEP="${KEEP_RELEASES:-3}"
+COMPOSE_PROJECT="${STOVASH_COMPOSE_PROJECT:-stovash-backend}"
+CONTAINER="${STOVASH_CONTAINER:-stovash-backend}"
+ENV_FILE="${ROOT/shared/.env}"
+PORT="${STOVASH_PORT:-5051}"
+
+# --- Ensure Docker is available ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -f "$SCRIPT_DIR/ensure-docker.sh" ]]; then
+  bash "$SCRIPT_DIR/ensure-docker.sh"
+fi
+
+# --- Preflight ---
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "ERROR: Missing $ENV_FILE — copy production env before deploy."
+  exit 1
+fi
+
+# --- Authenticate to GHCR ---
+# GHCR_USER and GHCR_TOKEN are passed as env vars from GitHub Actions
+if [[ -n "${GHCR_USER:-}" && -n "${GHCR_TOKEN:-}" ]]; then
+  echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+else
+  echo "WARNING: GHCR_USER/GHCR_TOKEN not set, assuming already authenticated."
+fi
+
+# --- Pull the exact image ---
+FULL_IMAGE="${IMAGE}:${TAG}"
+echo "Pulling ${FULL_IMAGE}..."
+for i in 1 2 3; do
+  docker pull "$FULL_IMAGE" && break || { echo "Pull failed, retrying in 10s..."; sleep 10; }
+done
+
+# --- Create release directory ---
+REL="$ROOT/releases/$(date -u +%Y%m%d%H%M%S)_${TAG}"
+mkdir -p "$REL" "$ROOT/shared"
+
+# --- Write docker-compose.yml ---
+cat > "$ROOT/docker-compose.yml" <<EOF
+services:
+  api:
+    image: ${FULL_IMAGE}
+    container_name: ${CONTAINER}
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - ${ENV_FILE}
+    environment:
+      NODE_ENV: production
+      PORT: "${PORT}"
+EOF
+
+# --- Stop old container, start new one ---
+docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
+docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
+
+# --- Schema sync ---
+echo "Syncing Prisma schemas..."
+for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
+  echo "  prisma db push ${svc}-service"
+  docker exec "$CONTAINER" bash -lc \
+    "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma" || true
+done
+
+# --- Symlink current ---
+ln -sfn "$REL" "$ROOT/current"
+echo "$FULL_IMAGE" > "$ROOT/shared/deployed-image"
+echo "Deployed ${FULL_IMAGE}"
+
+# --- Cleanup old images (keep last $KEEP) ---
+docker images "$IMAGE" --format '{{.Tag}}' \
+  | grep -v latest \
+  | sort -r \
+  | tail -n +"$((KEEP + 1))" \
+  | xargs -I{} docker rmi "${IMAGE}:{}" 2>/dev/null || true
+
+# --- Cleanup old releases ---
+mapfile -t old < <(ls -1dt "$ROOT/releases"/* 2>/dev/null | tail -n +"$((KEEP + 1))")
+if ((${#old[@]})); then rm -rf "${old[@]}"; fi
+
+# --- Status ---
+docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" ps
+echo "✅ ${FULL_IMAGE} deployed successfully"

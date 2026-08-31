@@ -61,7 +61,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Pack deploy scripts only
+      - name: Pack deploy scripts
         run: |
           tar czf /tmp/stovash-backend-deploy.tgz deploy/
           mv /tmp/stovash-backend-deploy.tgz .
@@ -77,74 +77,37 @@ jobs:
           target: /tmp
 
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.2
         env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT || '22' }}
           IMAGE_TAG: ${{ needs.build.outputs.sha }}
-          REGISTRY: ${{ env.REGISTRY }}
+          GHCR_USER: ${{ secrets.GHCR_USER }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           IMAGE: ${{ env.IMAGE }}
-          GITHUB_SHA: ${{ github.sha }}
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT != '' && secrets.VPS_PORT || 22 }}
-          command_timeout: 10m
-          envs: IMAGE_TAG,REGISTRY,IMAGE,GITHUB_SHA
-          script: |
-            set -euo pipefail
-            ROOT="/home/deploy/stovash/backend"
-            mkdir -p "$ROOT/releases" "$ROOT/shared"
+        run: |
+          SSH_KEY=$(mktemp)
+          echo "$SSH_PRIVATE_KEY" > "$SSH_KEY"
+          chmod 600 "$SSH_KEY"
 
-            # Extract deploy scripts for this release
-            REL="$ROOT/releases/$(date -u +%Y%m%d%H%M%S)_${GITHUB_SHA:0:7}"
-            mkdir -p "$REL"
-            tar xzf /tmp/stovash-backend-deploy.tgz -C "$REL"
+          SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $SSH_KEY -p $VPS_PORT"
 
-            # Authenticate to GHCR
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USER }}" --password-stdin
+          # Extract deploy scripts on VPS
+          ssh $SSH_OPTS "${VPS_USER}@${VPS_HOST}" \
+            "set -euo pipefail && \
+             ROOT=/home/deploy/stovash/backend && \
+             mkdir -p \$ROOT/releases \$ROOT/shared && \
+             REL=\$ROOT/releases/\$(date -u +%Y%m%d%H%M%S)_${IMAGE_TAG} && \
+             mkdir -p \$REL && \
+             tar xzf /tmp/stovash-backend-deploy.tgz -C \$REL && \
+             chmod +x \$REL/deploy/release-ghcr.sh \$REL/deploy/ensure-docker.sh"
 
-            # Pull the exact SHA-tagged image built in CI
-            docker pull "${IMAGE}:${IMAGE_TAG}"
+          # Run the release script with GHCR credentials
+          ssh $SSH_OPTS "${VPS_USER}@${VPS_HOST}" \
+            "export GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' IMAGE_TAG='$IMAGE_TAG' && \
+             ROOT=/home/deploy/stovash/backend && \
+             LATEST=\$(ls -1dt \$ROOT/releases/*_${IMAGE_TAG}* 2>/dev/null | head -n1) && \
+             \$LATEST/deploy/release-ghcr.sh ${IMAGE} $IMAGE_TAG"
 
-            # Write docker-compose with the exact image tag
-            cat > "$ROOT/docker-compose.yml" <<EOF
-            services:
-              api:
-                image: ${IMAGE}:${IMAGE_TAG}
-                container_name: stovash-backend
-                restart: unless-stopped
-                network_mode: host
-                env_file:
-                  - $ROOT/shared/.env
-                environment:
-                  NODE_ENV: production
-                  PORT: "5051"
-            EOF
-
-            docker rm -f stovash-backend >/dev/null 2>&1 || true
-            docker-compose -f "$ROOT/docker-compose.yml" -p stovash-backend up -d --no-build --force-recreate
-
-            # Schema sync after container starts
-            echo "Syncing Prisma schemas..."
-            for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
-              echo "  prisma db push ${svc}-service"
-              docker exec stovash-backend bash -lc \
-                "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma"
-            done
-
-            ln -sfn "$REL" "$ROOT/current"
-            echo "${IMAGE}:${IMAGE_TAG}" > "$ROOT/shared/deployed-image"
-            echo "Deployed ${IMAGE}:${IMAGE_TAG}"
-
-            # Keep only last 5 images
-            docker images "${IMAGE}" --format '{{.Tag}}' \
-              | grep -v latest \
-              | sort -r \
-              | tail -n +6 \
-              | xargs -I{} docker rmi "${IMAGE}:{}" 2>/dev/null || true
-
-            # Keep last 3 releases
-            mapfile -t old < <(ls -1dt "$ROOT/releases"/* 2>/dev/null | tail -n +4)
-            if ((${#old[@]})); then rm -rf "${old[@]}"; fi
-
-            docker-compose -f "$ROOT/docker-compose.yml" -p stovash-backend ps
+          rm -f "$SSH_KEY"
