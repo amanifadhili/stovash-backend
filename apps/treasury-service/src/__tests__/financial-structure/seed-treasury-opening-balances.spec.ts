@@ -15,14 +15,14 @@ describe('Seed Treasury Opening Balances Engine', () => {
         { code: '1130', name: 'Operational Main Bank', fundCode: 'OPERATIONAL', amountMinor: '1500000000', currency: 'RWF' },
         { code: '1135', name: 'Other Operational Banks', fundCode: 'OPERATIONAL', amountMinor: '0', currency: 'RWF' },
         { code: '1140', name: 'Capital Bank', fundCode: 'CAPITAL', amountMinor: '5000000000', currency: 'RWF' },
-        { code: '1150', name: 'Petty Cash', fundCode: 'CAPITAL', amountMinor: '100000000', currency: 'RWF' },
+        { code: '1150', name: 'Petty Cash', fundCode: 'PROFIT_RESERVE', amountMinor: '100000000', currency: 'RWF' },
       ],
     };
 
     const result = await seedTreasuryOpeningBalances(payload, context);
     expect(result.status).toBe('success');
     expect(result.data?.seededCount).toBe(7);
-    expect(result.data?.totalCapitalMinor).toBe('9350000000');
+    expect(result.data?.totalCapitalMinor).toBe('8350000000');
   });
 
   it('fails gracefully when tenantId or shopId is missing', async () => {

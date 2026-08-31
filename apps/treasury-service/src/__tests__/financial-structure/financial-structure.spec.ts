@@ -38,12 +38,12 @@ describe('Financial structure (Phase 3)', () => {
     expect(second.data!.funds.flatMap((f) => f.accounts)).toHaveLength(6);
   });
 
-  it('places Petty Cash under Capital', async () => {
+  it('places Petty Cash under Profit Reserve', async () => {
     const result = await getFinancialStructure(context);
     const petty = result.data!.funds
       .flatMap((f) => f.accounts)
       .find((a) => a.kind === 'PETTY_CASH');
-    expect(petty?.fundCode).toBe('CAPITAL');
+    expect(petty?.fundCode).toBe('PROFIT_RESERVE');
   });
 
   it('cannot attach Petty Cash to Operational', async () => {
@@ -54,7 +54,7 @@ describe('Financial structure (Phase 3)', () => {
     );
     expect(result.status).toBe('error');
     expect(result.errorCode).toBe(ErrorCode.BUSINESS_RULE_VIOLATION);
-    expect(result.message).toMatch(/Petty Cash belongs to Capital/);
+    expect(result.message).toMatch(/Petty Cash belongs to Profit Reserve/);
   });
 
   it('fund total equals the sum of children (all zero)', async () => {

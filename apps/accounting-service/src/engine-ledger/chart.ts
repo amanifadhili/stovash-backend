@@ -5,7 +5,7 @@ export const ENGINE_CHART_ACCOUNTS: Array<{
   fundCode?: 'CAPITAL' | 'OPERATIONAL' | 'PROFIT_RESERVE';
 }> = [
   { code: '1140', name: 'Capital Bank', type: 'ASSET', fundCode: 'CAPITAL' },
-  { code: '1150', name: 'Petty Cash', type: 'ASSET', fundCode: 'CAPITAL' },
+  { code: '1150', name: 'Petty Cash', type: 'ASSET', fundCode: 'PROFIT_RESERVE' },
   { code: '1110', name: 'Operational Cash', type: 'ASSET', fundCode: 'OPERATIONAL' },
   { code: '1120', name: 'Operational MoMo', type: 'ASSET', fundCode: 'OPERATIONAL' },
   { code: '1130', name: 'Operational Main Bank', type: 'ASSET', fundCode: 'OPERATIONAL' },

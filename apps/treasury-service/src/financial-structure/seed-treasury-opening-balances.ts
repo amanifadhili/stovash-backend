@@ -53,9 +53,9 @@ export async function seedTreasuryOpeningBalances(
 
         // Map code to fund code
         let fundCode = 'OPERATIONAL';
-        if (code === '1100' || item.fundCode === 'PROFIT_RESERVE' || item.name?.includes('Profit Reserve')) {
+        if (code === '1100' || code === '1150' || item.fundCode === 'PROFIT_RESERVE' || item.name?.includes('Profit Reserve') || item.name?.includes('Petty Cash')) {
           fundCode = 'PROFIT_RESERVE';
-        } else if (code === '1140' || code === '1150' || item.fundCode === 'CAPITAL' || item.name?.includes('Capital')) {
+        } else if (code === '1140' || item.fundCode === 'CAPITAL' || item.name?.includes('Capital')) {
           fundCode = 'CAPITAL';
         }
 

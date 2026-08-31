@@ -54,7 +54,7 @@ export async function createPhysicalAccount(
     return {
       status: 'error',
       traceId,
-      message: 'Petty Cash belongs to Capital. It cannot sit under Operational.',
+      message: 'Petty Cash belongs to Profit Reserve. It cannot sit under Operational.',
       errorCode: ErrorCode.BUSINESS_RULE_VIOLATION,
     };
   }
@@ -63,7 +63,7 @@ export async function createPhysicalAccount(
     return {
       status: 'error',
       traceId,
-      message: 'Petty Cash is a mandatory Capital account and is created on shop bootstrap.',
+      message: 'Petty Cash is a mandatory Profit Reserve account and is created on shop bootstrap.',
       errorCode: ErrorCode.BUSINESS_RULE_VIOLATION,
     };
   }
