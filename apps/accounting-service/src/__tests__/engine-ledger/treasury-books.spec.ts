@@ -44,6 +44,22 @@ describe('Treasury books journals (Phase 5)', () => {
     expect(codes).toEqual([`DEBIT:${ACCOUNT_CAPITAL_BANK}`, `CREDIT:${ACCOUNT_OWNER_EQUITY}`]);
   });
 
+  it('OPENING_BALANCE_IN debits the chosen physical account and credits Owner Capital equity', async () => {
+    const result = await postTreasuryBooks(
+      {
+        type: 'OPENING_BALANCE_IN',
+        amountMinor: 50000,
+        occurredOn: '2026-08-17',
+        toKind: 'OPS_MAIN_BANK',
+        idempotencyKey: 'open-bal-1',
+      },
+      context,
+    );
+    expect(result.status).toBe('success');
+    const codes = result.data.journal.lines.map((l: any) => `${l.side}:${l.accountCode}`);
+    expect(codes).toEqual(['DEBIT:1130', `CREDIT:${ACCOUNT_OWNER_EQUITY}`]);
+  });
+
   it('INTERNAL_TRANSFER / loan / growth journals are asset reclass only (no P&L)', async () => {
     for (const [type, fromKind, toKind, key] of [
       ['INTERNAL_TRANSFER', 'OPS_CASH', 'OPS_MAIN_BANK', 'xfer'],

@@ -98,12 +98,15 @@ export async function seedTreasuryOpeningBalances(
 
         if (amountMinor > 0n) {
           const idempotencyKey = `seed-opening-${tenantId}-${shopId}-${code}`;
+          const isCapitalBank = code === '1140' || item.kind === 'CAPITAL_BANK';
+          const movementType = isCapitalBank ? 'OWNER_CAPITAL_IN' : 'OPENING_BALANCE_IN';
+
           await tx.treasuryMovement.upsert({
             where: { tenantId_idempotencyKey: { tenantId, idempotencyKey } },
             create: {
               tenantId,
               shopId,
-              movementType: 'OWNER_CAPITAL_IN',
+              movementType,
               fromPhysicalId: null,
               toPhysicalId: accountId,
               amountMinor,
