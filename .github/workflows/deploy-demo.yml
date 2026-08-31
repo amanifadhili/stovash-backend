@@ -9,61 +9,103 @@ concurrency:
   group: backend-demo-deploy
   cancel-in-progress: false
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE: ghcr.io/${{ github.repository_owner }}/stovash-backend-demo
+
 jobs:
+  # ── 1. Build & push Docker image to ghcr.io ───────────────────────────────
+  build:
+    name: Build & push demo image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      sha: ${{ steps.meta.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract short SHA
+        id: meta
+        run: echo "sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.meta.outputs.sha }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE }}:latest
+          cache-to: type=inline
+
+  # ── 2. Deploy to VPS ───────────────────────────────────────────────────────
   deploy:
     name: Release to /home/deploy/stovash-demo/backend
-    if: github.ref == 'refs/heads/main'
+    needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 160
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Pack source
-        run: |
-          tar czf /tmp/stovash-backend-demo.tgz \
-            --exclude .git \
-            --exclude node_modules \
-            --exclude dist \
-            --exclude coverage \
-            --exclude '**/src/generated/prisma' \
-            .
-          mv /tmp/stovash-backend-demo.tgz .
-
-      - name: Upload release archive
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT != '' && secrets.VPS_PORT || 22 }}
-          source: stovash-backend-demo.tgz
-          target: /tmp
-
-      - name: Activate demo release
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.2
         env:
-          GITHUB_SHA: ${{ github.sha }}
+          IMAGE_TAG: ${{ needs.build.outputs.sha }}
+          IMAGE: ${{ env.IMAGE }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT != '' && secrets.VPS_PORT || 22 }}
-          command_timeout: 150m
-          envs: GITHUB_SHA
+          command_timeout: 10m
+          envs: IMAGE_TAG,IMAGE
           script: |
             set -euo pipefail
-            export STOVASH_ROOT=/home/deploy/stovash-demo/backend
-            export STOVASH_COMPOSE_PROJECT=stovash-demo-backend
-            export STOVASH_IMAGE=stovash-demo-backend
-            export STOVASH_CONTAINER=stovash-demo-backend
-            export STOVASH_ENV_FILE=/home/deploy/stovash-demo/backend/shared/.env
-            export STOVASH_PORT=5061
-            mkdir -p "$STOVASH_ROOT/releases" "$STOVASH_ROOT/shared"
-            REL="$STOVASH_ROOT/releases/$(date -u +%Y%m%d%H%M%S)_${GITHUB_SHA:0:7}"
-            mkdir -p "$REL"
-            tar xzf /tmp/stovash-backend-demo.tgz -C "$REL"
-            chmod +x "$REL/deploy/release.sh" "$REL/deploy/ensure-docker.sh"
-            "$REL/deploy/release.sh" "$REL"
-            chown -R deploy:deploy /home/deploy/stovash-demo 2>/dev/null || true
-            docker-compose -p stovash-demo-backend ps
+            ROOT="/home/deploy/stovash-demo/backend"
+            mkdir -p "$ROOT/shared"
+
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USER }}" --password-stdin
+            docker pull "${IMAGE}:${IMAGE_TAG}"
+
+            cat > "$ROOT/docker-compose.yml" <<EOF
+            services:
+              api:
+                image: ${IMAGE}:${IMAGE_TAG}
+                container_name: stovash-demo-backend
+                restart: unless-stopped
+                network_mode: host
+                env_file:
+                  - $ROOT/shared/.env
+                environment:
+                  NODE_ENV: production
+                  PORT: "5061"
+            EOF
+
+            docker rm -f stovash-demo-backend >/dev/null 2>&1 || true
+            docker-compose -f "$ROOT/docker-compose.yml" -p stovash-demo-backend up -d --no-build --force-recreate
+
+            # Schema sync
+            echo "Syncing Prisma schemas..."
+            for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
+              docker exec stovash-demo-backend bash -lc \
+                "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma"
+            done
+
+            echo "${IMAGE}:${IMAGE_TAG}" > "$ROOT/shared/deployed-image"
+            echo "Deployed ${IMAGE}:${IMAGE_TAG}"
+
+            docker images "${IMAGE}" --format '{{.Tag}}' \
+              | grep -v latest | sort -r | tail -n +6 \
+              | xargs -I{} docker rmi "${IMAGE}:{}" 2>/dev/null || true
