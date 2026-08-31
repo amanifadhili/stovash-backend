@@ -39,11 +39,22 @@ else
   echo "WARNING: GHCR_USER/GHCR_TOKEN not set, assuming already authenticated."
 fi
 
-# --- Pull the exact image ---
+# --- Pull the exact image with retry ---
 FULL_IMAGE="${IMAGE}:${TAG}"
 echo "Pulling ${FULL_IMAGE}..."
-for i in 1 2 3; do
-  docker pull "$FULL_IMAGE" && break || { echo "Pull failed, retrying in 10s..."; sleep 10; }
+
+for i in 1 2 3 4 5; do
+  if docker pull "$FULL_IMAGE" 2>&1; then
+    echo "Pull succeeded on attempt $i"
+    break
+  fi
+  if [[ $i -eq 5 ]]; then
+    echo "ERROR: Failed to pull $FULL_IMAGE after 5 attempts"
+    exit 1
+  fi
+  WAIT=$((i * 15))
+  echo "Pull failed, retrying in ${WAIT}s... (attempt $i/5)"
+  sleep "$WAIT"
 done
 
 # --- Create release directory ---
