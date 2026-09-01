@@ -95,12 +95,12 @@ for i in $(seq 1 18); do
   fi
 done
 
-# --- Schema sync (with per-service timeout to avoid hanging deploy) ---
+# --- Schema sync (with per-service hard timeout to avoid hanging deploy) ---
 echo "Syncing Prisma schemas..."
 for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
   echo "  prisma db push ${svc}-service"
-  timeout 60 docker exec "$CONTAINER" bash -lc \
-    "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma" || echo "  (skip/timeout for $svc)"
+  timeout --kill-after=10 90 docker exec "$CONTAINER" bash -lc \
+    "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma" >/dev/null 2>&1 || echo "  (skip/timeout for $svc)"
 done
 
 # --- Symlink current ---
