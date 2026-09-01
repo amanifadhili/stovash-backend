@@ -62,10 +62,12 @@ echo "=== DEBUG: Full image to pull: ${FULL_IMAGE}"
 echo "=== DEBUG: Container name: ${CONTAINER}"
 echo "=== DEBUG: Port: ${PORT}"
 echo "=== DEBUG: Compose project: ${COMPOSE_PROJECT}"
+echo "=== TIMING: Starting image pull at $(date '+%Y-%m-%d %H:%M:%S')"
 echo "Pulling ${FULL_IMAGE}..."
 
 for i in 1 2 3 4 5; do
   if docker pull "$FULL_IMAGE" 2>&1; then
+    echo "=== TIMING: Image pull completed at $(date '+%Y-%m-%d %H:%M:%S')"
     echo "Pull succeeded on attempt $i"
     break
   fi
@@ -100,21 +102,25 @@ echo "=== DEBUG: docker-compose.yml written with image: ${FULL_IMAGE}"
 echo "=== DEBUG: docker-compose.yml written with container: ${CONTAINER}"
 
 # --- Stop old container, start new one ---
+echo "=== TIMING: Starting container operations at $(date '+%Y-%m-%d %H:%M:%S')"
 echo "Removing old container ${CONTAINER}..."
 timeout 30 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 echo "=== DEBUG: About to start container with image: ${FULL_IMAGE}"
 echo "=== DEBUG: Container name will be: ${CONTAINER}"
 echo "Starting new container..."
 timeout 60 docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
+echo "=== TIMING: Container started at $(date '+%Y-%m-%d %H:%M:%S')"
 sleep 2
 echo "Container status:"
 docker ps -a --filter "name=${CONTAINER}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 # --- Wait for API to be healthy (max 90s) ---
+echo "=== TIMING: Starting health check at $(date '+%Y-%m-%d %H:%M:%S')"
 echo "Waiting for API to be ready on port ${PORT}..."
 for i in $(seq 1 18); do
   sleep 5
   if curl -sf --connect-timeout 3 --max-time 5 "http://127.0.0.1:${PORT}/docs" >/dev/null 2>&1; then
+    echo "=== TIMING: Health check passed at $(date '+%Y-%m-%d %H:%M:%S')"
     echo "API is up on port ${PORT}"
     break
   fi
@@ -126,12 +132,14 @@ for i in $(seq 1 18); do
 done
 
 # --- Schema sync (with per-service hard timeout to avoid hanging deploy) ---
+echo "=== TIMING: Starting Prisma schema sync at $(date '+%Y-%m-%d %H:%M:%S')"
 echo "Syncing Prisma schemas..."
 for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
   echo "  prisma db push ${svc}-service"
   timeout --kill-after=10 90 docker exec "$CONTAINER" bash -lc \
     "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma" >/dev/null 2>&1 || echo "  (skip/timeout for $svc)"
 done
+echo "=== TIMING: Prisma schema sync completed at $(date '+%Y-%m-%d %H:%M:%S')"
 
 # --- Symlink current ---
 ln -sfn "$REL" "$ROOT/current"

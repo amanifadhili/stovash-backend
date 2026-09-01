@@ -57,7 +57,7 @@ jobs:
     name: Release to /home/deploy/stovash/backend
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
 
@@ -110,7 +110,7 @@ jobs:
              rm -f ~/stovash-backend-deploy.tgz"
 
           # Run deployment — all output logged to /tmp/deploy.log so we can see exactly where it hangs
-          # Timeout 1500s (25m) max: pull ~1m + health ~2m + prisma ~9m
+          # Timeout 1800s (30m) max: pull ~1m + health ~2m + prisma ~15m
           ssh -F "$SSH_CFG" vps \
             "export GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' IMAGE_TAG='$IMAGE_TAG' && \
              export STOVASH_ROOT=/home/deploy/stovash/backend && \
@@ -125,6 +125,6 @@ jobs:
              echo '=== DEBUG: Image tag:' ${IMAGE_TAG} && \
              echo '=== DEBUG: STOVASH_CONTAINER:' \$STOVASH_CONTAINER && \
              echo '=== DEBUG: STOVASH_PORT:' \$STOVASH_PORT && \
-             timeout 1500 \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG} > /tmp/deploy.log 2>&1; echo \"EXIT_CODE=\$?\" >> /tmp/deploy.log; cat /tmp/deploy.log"
+             timeout 1800 \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG} > /tmp/deploy.log 2>&1; echo \"EXIT_CODE=\$?\" >> /tmp/deploy.log; cat /tmp/deploy.log"
 
           rm -f "$SSH_KEY" "$SSH_CFG"
