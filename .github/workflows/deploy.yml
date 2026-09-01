@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy PM2
 
 on:
   push:
@@ -6,65 +6,58 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: backend-deploy
+  group: backend-deploy-pm2
   cancel-in-progress: false
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE: ghcr.io/${{ github.repository_owner }}/stovash-backend
-
 jobs:
-  # ── 1. Build & push Docker image to ghcr.io ───────────────────────────────
+  # ── 1. Build application ───────────────────────────────────────────────────────
   build:
-    name: Build & push image
+    name: Build application
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    permissions:
-      contents: read
-      packages: write
     outputs:
       sha: ${{ steps.meta.outputs.sha }}
     steps:
       - uses: actions/checkout@v5
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          node-version-file: .nvmrc
+          cache: npm
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Create deployment artifact
+        run: |
+          tar czf /tmp/stovash-backend-dist.tgz dist/ package.json package-lock.json
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stovash-backend-dist
+          path: /tmp/stovash-backend-dist.tgz
+          retention-days: 7
 
       - name: Extract short SHA
         id: meta
         run: echo "sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE }}:${{ steps.meta.outputs.sha }}
-            ${{ env.IMAGE }}:latest
-          cache-from: type=registry,ref=${{ env.IMAGE }}:latest
-          cache-to: type=inline
-
-  # ── 2. Deploy to VPS ───────────────────────────────────────────────────────
+  # ── 2. Deploy to VPS via PM2 ─────────────────────────────────────────────────
   deploy:
-    name: Release to /home/deploy/stovash/backend
+    name: Deploy to VPS via PM2
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 65
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Pack deploy scripts
-        run: |
-          tar czf /tmp/stovash-backend-deploy.tgz deploy/
-          mv /tmp/stovash-backend-deploy.tgz .
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: stovash-backend-dist
 
       - name: Deploy via SSH
         env:
@@ -72,66 +65,38 @@ jobs:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_PORT: ${{ secrets.VPS_PORT || '22' }}
-          IMAGE_TAG: ${{ needs.build.outputs.sha }}
-          GHCR_USER: ${{ secrets.GHCR_USER }}
-          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
-          IMAGE: ${{ env.IMAGE }}
+          SHA: ${{ needs.build.outputs.sha }}
         run: |
-          # Safety check: Ensure we're deploying backend image
-          if [[ "$IMAGE" == *"frontend"* ]]; then
-            echo "CRITICAL ERROR: Backend workflow is attempting to deploy frontend image: $IMAGE"
-            exit 1
-          fi
-          echo "=== SAFETY CHECK: Deploying backend image: $IMAGE"
-
           SSH_KEY=$(mktemp)
           echo "$SSH_PRIVATE_KEY" > "$SSH_KEY"
           chmod 600 "$SSH_KEY"
 
-          # Write SSH config to avoid -p vs -P mismatch between ssh and scp
+          # Write SSH config
           SSH_CFG=$(mktemp)
           printf 'Host vps\n  HostName %s\n  User %s\n  Port %s\n  IdentityFile %s\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  ServerAliveInterval 15\n  ServerAliveCountMax 20\n  AddressFamily inet\n' \
             "$VPS_HOST" "$VPS_USER" "$VPS_PORT" "$SSH_KEY" > "$SSH_CFG"
 
-          # Upload deploy scripts via native SCP (uses SSH config, forces IPv4)
-          scp -F "$SSH_CFG" stovash-backend-deploy.tgz "vps:~/stovash-backend-deploy.tgz"
+          # Upload artifact
+          scp -F "$SSH_CFG" stovash-backend-dist.tgz "vps:~/stovash-backend-dist.tgz"
 
-          # Extract deploy scripts on VPS
+          # Deploy on VPS
           ssh -F "$SSH_CFG" vps \
             "set -euo pipefail && \
              ROOT=/home/deploy/stovash/backend && \
-             mkdir -p \$ROOT/releases \$ROOT/shared && \
-             REL=\$ROOT/releases/\$(date -u +%Y%m%d%H%M%S)_${IMAGE_TAG} && \
+             REL=\$ROOT/releases/\$(date -u +%Y%m%d%H%M%S)_${SHA} && \
              mkdir -p \$REL && \
-             tar xzf ~/stovash-backend-deploy.tgz -C \$REL && \
-             chmod +x \$REL/deploy/release-ghcr.sh \$REL/deploy/ensure-docker.sh && \
-             echo '=== DEBUG: Verifying uploaded script ===' && \
-             head -n 5 \$REL/deploy/release-ghcr.sh && \
-             rm -f ~/stovash-backend-deploy.tgz"
-
-          # Run deployment — all output logged to /tmp/deploy.log so we can see exactly where it hangs
-          # Timeout 3600s (60m) max: pull ~28m + health ~2m + prisma ~15m + buffer
-          ssh -F "$SSH_CFG" vps \
-            "export GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' IMAGE_TAG='$IMAGE_TAG' && \
-             export STOVASH_ROOT=/home/deploy/stovash/backend && \
-             export STOVASH_COMPOSE_PROJECT=stovash-backend && \
-             export STOVASH_CONTAINER=stovash-backend && \
-             export STOVASH_PORT=5051 && \
-             ROOT=/home/deploy/stovash/backend && \
-             LATEST=\$(ls -1dt \$ROOT/releases/*_${IMAGE_TAG}* 2>/dev/null | head -n1) && \
-             export ROOT LATEST && \
-             echo '=== DEBUG: Script path:' \$LATEST/deploy/release-ghcr.sh && \
-             echo '=== DEBUG: Image to deploy:' ${IMAGE} && \
-             echo '=== DEBUG: Image tag:' ${IMAGE_TAG} && \
-             echo '=== DEBUG: STOVASH_CONTAINER:' \$STOVASH_CONTAINER && \
-             echo '=== DEBUG: STOVASH_PORT:' \$STOVASH_PORT && \
-             timeout 3600 \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG} > /tmp/deploy.log 2>&1; echo \"EXIT_CODE=\$?\" >> /tmp/deploy.log; cat /tmp/deploy.log"
-
-          # Check container status even if deployment timed out
-          echo "=== POST-DEPLOYMENT CHECK: Verifying container status ==="
-          ssh -F "$SSH_CFG" vps \
-            "docker ps -a --filter 'name=stovash-backend' --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' && \
-             echo '=== Checking if backend is responding ===' && \
+             tar xzf ~/stovash-backend-dist.tgz -C \$REL && \
+             rm -f ~/stovash-backend-dist.tgz && \
+             cd \$REL && \
+             npm ci --omit=dev && \
+             pm2 stop stovash-backend || true && \
+             pm2 delete stovash-backend || true && \
+             pm2 start dist/server.js --name stovash-backend --env \$ROOT/shared/.env && \
+             pm2 save && \
+             ln -sfn \$REL \$ROOT/current && \
+             echo '=== PM2 Deployment Complete ===' && \
+             pm2 status && \
+             echo '=== Testing Backend ===' && \
              curl -sf --connect-timeout 3 --max-time 5 'http://127.0.0.1:5051/docs' && echo ' Backend is responding' || echo ' Backend not responding yet'"
 
           rm -f "$SSH_KEY" "$SSH_CFG"
