@@ -64,5 +64,17 @@ if [[ "$NEED_RESTART" == true ]]; then
   sleep 3
 fi
 
+# Nuclear option: block ALL IPv6 at the firewall level.
+# daemon.json "ipv6: false" only controls Docker's internal networks —
+# it does NOT prevent Docker from making outbound IPv6 connections
+# during image pulls. ip6tables drops ALL IPv6 packets at kernel level.
+if command -v ip6tables >/dev/null 2>&1; then
+  # Only add rules if not already present
+  if ! ip6tables -C OUTPUT -j DROP 2>/dev/null; then
+    echo "Blocking IPv6 via ip6tables..."
+    ip6tables -A OUTPUT -j DROP 2>/dev/null || true
+  fi
+fi
+
 docker --version
 docker-compose version
