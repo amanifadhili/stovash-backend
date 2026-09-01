@@ -108,8 +108,10 @@ timeout 30 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 echo "=== DEBUG: About to start container with image: ${FULL_IMAGE}"
 echo "=== DEBUG: Container name will be: ${CONTAINER}"
 echo "Starting new container..."
-timeout 60 docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
+timeout 120 docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
 echo "=== TIMING: Container started at $(date '+%Y-%m-%d %H:%M:%S')"
+echo "=== DEBUG: Container status after start:"
+docker ps -a --filter "name=${CONTAINER}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 sleep 2
 echo "Container status:"
 docker ps -a --filter "name=${CONTAINER}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"

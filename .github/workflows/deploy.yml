@@ -57,7 +57,7 @@ jobs:
     name: Release to /home/deploy/stovash/backend
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 65
     steps:
       - uses: actions/checkout@v5
 
@@ -110,7 +110,7 @@ jobs:
              rm -f ~/stovash-backend-deploy.tgz"
 
           # Run deployment — all output logged to /tmp/deploy.log so we can see exactly where it hangs
-          # Timeout 1800s (30m) max: pull ~1m + health ~2m + prisma ~15m
+          # Timeout 3600s (60m) max: pull ~28m + health ~2m + prisma ~15m + buffer
           ssh -F "$SSH_CFG" vps \
             "export GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' IMAGE_TAG='$IMAGE_TAG' && \
              export STOVASH_ROOT=/home/deploy/stovash/backend && \
@@ -125,6 +125,13 @@ jobs:
              echo '=== DEBUG: Image tag:' ${IMAGE_TAG} && \
              echo '=== DEBUG: STOVASH_CONTAINER:' \$STOVASH_CONTAINER && \
              echo '=== DEBUG: STOVASH_PORT:' \$STOVASH_PORT && \
-             timeout 1800 \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG} > /tmp/deploy.log 2>&1; echo \"EXIT_CODE=\$?\" >> /tmp/deploy.log; cat /tmp/deploy.log"
+             timeout 3600 \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG} > /tmp/deploy.log 2>&1; echo \"EXIT_CODE=\$?\" >> /tmp/deploy.log; cat /tmp/deploy.log"
+
+          # Check container status even if deployment timed out
+          echo "=== POST-DEPLOYMENT CHECK: Verifying container status ==="
+          ssh -F "$SSH_CFG" vps \
+            "docker ps -a --filter 'name=stovash-backend' --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' && \
+             echo '=== Checking if backend is responding ===' && \
+             curl -sf --connect-timeout 3 --max-time 5 'http://127.0.0.1:5051/docs' && echo ' Backend is responding' || echo ' Backend not responding yet'"
 
           rm -f "$SSH_KEY" "$SSH_CFG"
