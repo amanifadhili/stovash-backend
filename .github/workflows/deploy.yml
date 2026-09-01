@@ -106,6 +106,7 @@ jobs:
             "export GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' IMAGE_TAG='$IMAGE_TAG' && \
              ROOT=/home/deploy/stovash/backend && \
              LATEST=\$(ls -1dt \$ROOT/releases/*_${IMAGE_TAG}* 2>/dev/null | head -n1) && \
-             bash -c 'timeout 800 \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG}' > /tmp/deploy.log 2>&1; echo \"EXIT_CODE=\$?\" >> /tmp/deploy.log; cat /tmp/deploy.log"
+             export ROOT LATEST && \
+             timeout 800 \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG} > /tmp/deploy.log 2>&1; echo \"EXIT_CODE=\$?\" >> /tmp/deploy.log; cat /tmp/deploy.log"
 
           rm -f "$SSH_KEY" "$SSH_CFG"
