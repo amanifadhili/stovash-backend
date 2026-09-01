@@ -20,16 +20,11 @@ if ! command -v docker-compose >/dev/null 2>&1; then
 fi
 
 # Fix broken IPv6 on VPS — force all traffic through IPv4.
-# sysctl is immediate + persistent, no Docker restart needed.
+# sysctl disables IPv6 at kernel level.
 sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null 2>&1 || true
 sysctl -w net.ipv6.conf.default.disable_ipv6=1 >/dev/null 2>&1 || true
 
 # Persist across reboots
-for f in /etc/sysctl.conf /etc/sysctl.d/99-disable-ipv6.conf; do
-  if [[ "$f" == *.conf ]] && [[ ! -f "$f" ]]; then
-    mkdir -p "$(dirname "$f")"
-  fi
-done
 if ! grep -q 'disable_ipv6' /etc/sysctl.conf 2>/dev/null; then
   cat >> /etc/sysctl.conf <<'EOF'
 
@@ -37,6 +32,36 @@ if ! grep -q 'disable_ipv6' /etc/sysctl.conf 2>/dev/null; then
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 EOF
+fi
+
+# Also disable IPv6 at Docker daemon level — Docker has its own
+# network stack and DNS resolver that still tries IPv6 even when
+# the kernel sysctl is set. This is the critical fix for GHCR pulls.
+DOCKER_DAEMON_JSON="/etc/docker/daemon.json"
+NEED_RESTART=false
+
+mkdir -p /etc/docker
+if [[ -f "$DOCKER_DAEMON_JSON" ]]; then
+  if ! grep -q '"ipv6"' "$DOCKER_DAEMON_JSON" 2>/dev/null; then
+    python3 -c "
+import json, sys
+with open('$DOCKER_DAEMON_JSON') as f:
+    cfg = json.load(f)
+cfg['ipv6'] = False
+with open('$DOCKER_DAEMON_JSON', 'w') as f:
+    json.dump(cfg, f, indent=2)
+"
+    NEED_RESTART=true
+  fi
+else
+  echo '{ "ipv6": false }' > "$DOCKER_DAEMON_JSON"
+  NEED_RESTART=true
+fi
+
+if [[ "$NEED_RESTART" == true ]]; then
+  echo "Restarting Docker daemon to apply IPv6 fix..."
+  systemctl restart docker || service docker restart
+  sleep 3
 fi
 
 docker --version
