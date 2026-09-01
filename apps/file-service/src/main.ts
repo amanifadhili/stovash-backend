@@ -9,12 +9,12 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: '127.0.0.1',
-        port: 3011,
+        port: parseInt(process.env.FILE_SERVICE_PORT || '5062', 10),
       },
     },
   );
 
   await app.listen();
-  console.log('File Service is listening on port 3011');
+  console.log('File Service is listening on port', process.env.FILE_SERVICE_PORT || '5062');
 }
 bootstrap();

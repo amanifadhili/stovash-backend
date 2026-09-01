@@ -9,13 +9,13 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: process.env.SUPPLIER_SERVICE_HOST || '0.0.0.0',
-        port: parseInt(process.env.SUPPLIER_SERVICE_PORT || '3004', 10),
+        port: parseInt(process.env.SUPPLIER_SERVICE_PORT || '5064', 10),
       },
     },
   );
 
   await app.listen();
-  console.log('Supplier Service is listening on TCP port', process.env.SUPPLIER_SERVICE_PORT || '3004');
+  console.log('Supplier Service is listening on TCP port', process.env.SUPPLIER_SERVICE_PORT || '5064');
 }
 
 bootstrap();

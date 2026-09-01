@@ -9,11 +9,11 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: '127.0.0.1',
-        port: 3003,
+        port: parseInt(process.env.ACCOUNTING_SERVICE_PORT || '5053', 10),
       },
     },
   );
   await app.listen();
-  console.log('Accounting Microservice is listening on TCP port 3003');
+  console.log('Accounting Microservice is listening on TCP port', process.env.ACCOUNTING_SERVICE_PORT || '5053');
 }
 bootstrap();

@@ -10,7 +10,7 @@ async function bootstrap() {
     httpServer.setMaxListeners(50);
   }
 
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3008;
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5063;
   await app.listen(port, '0.0.0.0');
   console.log(`Report Service is running on: ${await app.getUrl()}`);
 }
