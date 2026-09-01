@@ -57,7 +57,7 @@ jobs:
     name: Release to /home/deploy/stovash/backend
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
 

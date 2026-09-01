@@ -84,22 +84,23 @@ docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-bu
 echo "Waiting for API to be ready on port ${PORT}..."
 for i in $(seq 1 18); do
   sleep 5
-  if curl -sf "http://127.0.0.1:${PORT}/docs" >/dev/null 2>&1; then
+  if curl -sf --connect-timeout 3 --max-time 5 "http://127.0.0.1:${PORT}/docs" >/dev/null 2>&1; then
     echo "API is up on port ${PORT}"
     break
   fi
   if [[ $i -eq 18 ]]; then
     echo "WARNING: API not responding on port ${PORT} after 90s"
-    docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" logs --tail=30
+    docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" logs --tail=100 || true
+    docker logs --tail=50 "$CONTAINER" 2>&1 || true
   fi
 done
 
-# --- Schema sync ---
+# --- Schema sync (with per-service timeout to avoid hanging deploy) ---
 echo "Syncing Prisma schemas..."
 for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
   echo "  prisma db push ${svc}-service"
-  docker exec "$CONTAINER" bash -lc \
-    "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma" || true
+  timeout 60 docker exec "$CONTAINER" bash -lc \
+    "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma" || echo "  (skip/timeout for $svc)"
 done
 
 # --- Symlink current ---
