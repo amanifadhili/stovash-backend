@@ -87,7 +87,7 @@ jobs:
             "$VPS_HOST" "$VPS_USER" "$VPS_PORT" "$SSH_KEY" > "$SSH_CFG"
 
           # Upload deploy scripts via native SCP (uses SSH config, forces IPv4)
-          scp -F "$SSH_CFG" stovash-backend-deploy.tgz "vps:/tmp/"
+          scp -F "$SSH_CFG" stovash-backend-deploy.tgz "vps:~/stovash-backend-deploy.tgz"
 
           # Extract deploy scripts on VPS
           ssh -F "$SSH_CFG" vps \
@@ -96,8 +96,9 @@ jobs:
              mkdir -p \$ROOT/releases \$ROOT/shared && \
              REL=\$ROOT/releases/\$(date -u +%Y%m%d%H%M%S)_${IMAGE_TAG} && \
              mkdir -p \$REL && \
-             tar xzf /tmp/stovash-backend-deploy.tgz -C \$REL && \
-             chmod +x \$REL/deploy/release-ghcr.sh \$REL/deploy/ensure-docker.sh"
+             tar xzf ~/stovash-backend-deploy.tgz -C \$REL && \
+             chmod +x \$REL/deploy/release-ghcr.sh \$REL/deploy/ensure-docker.sh && \
+             rm -f ~/stovash-backend-deploy.tgz"
 
           # Run deployment synchronously — keepalive prevents SSH timeout
           ssh -F "$SSH_CFG" vps \
