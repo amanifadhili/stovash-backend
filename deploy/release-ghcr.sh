@@ -77,8 +77,13 @@ services:
 EOF
 
 # --- Stop old container, start new one ---
+echo "Removing old container ${CONTAINER}..."
 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
+echo "Starting new container..."
 docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
+echo "Container started. Checking status..."
+sleep 2
+docker ps -a --filter "name=${CONTAINER}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 # --- Wait for API to be healthy (max 90s) ---
 echo "Waiting for API to be ready on port ${PORT}..."
