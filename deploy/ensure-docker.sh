@@ -64,15 +64,24 @@ if [[ "$NEED_RESTART" == true ]]; then
   sleep 3
 fi
 
+# Force IPv4 preference system-wide via gai.conf (affects all glibc DNS lookups, incl. Docker)
+if ! grep -q 'precedence ::ffff:0:0/96' /etc/gai.conf 2>/dev/null; then
+  echo "Forcing IPv4 preference via /etc/gai.conf..."
+  echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
+fi
+
 # Nuclear option: block ALL IPv6 at the firewall level.
 # daemon.json "ipv6: false" only controls Docker's internal networks —
 # it does NOT prevent Docker from making outbound IPv6 connections
-# during image pulls. ip6tables drops ALL IPv6 packets at kernel level.
+# during image pulls. Use REJECT (not DROP) so TCP fails fast instead of hanging.
 if command -v ip6tables >/dev/null 2>&1; then
-  # Only add rules if not already present
-  if ! ip6tables -C OUTPUT -j DROP 2>/dev/null; then
-    echo "Blocking IPv6 via ip6tables..."
-    ip6tables -A OUTPUT -j DROP 2>/dev/null || true
+  # Remove old DROP rule if present, replace with REJECT for fast failover
+  if ip6tables -C OUTPUT -j DROP 2>/dev/null; then
+    ip6tables -D OUTPUT -j DROP 2>/dev/null || true
+  fi
+  if ! ip6tables -C OUTPUT -j REJECT 2>/dev/null; then
+    echo "Blocking IPv6 via ip6tables (REJECT)..."
+    ip6tables -A OUTPUT -j REJECT --reject-with icmp6-adm-prohibited 2>/dev/null || ip6tables -A OUTPUT -j REJECT 2>/dev/null || true
   fi
 fi
 
