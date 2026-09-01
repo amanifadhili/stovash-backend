@@ -77,6 +77,13 @@ jobs:
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           IMAGE: ${{ env.IMAGE }}
         run: |
+          # Safety check: Ensure we're deploying backend image
+          if [[ "$IMAGE" == *"frontend"* ]]; then
+            echo "CRITICAL ERROR: Backend workflow is attempting to deploy frontend image: $IMAGE"
+            exit 1
+          fi
+          echo "=== SAFETY CHECK: Deploying backend image: $IMAGE"
+
           SSH_KEY=$(mktemp)
           echo "$SSH_PRIVATE_KEY" > "$SSH_KEY"
           chmod 600 "$SSH_KEY"
@@ -98,15 +105,26 @@ jobs:
              mkdir -p \$REL && \
              tar xzf ~/stovash-backend-deploy.tgz -C \$REL && \
              chmod +x \$REL/deploy/release-ghcr.sh \$REL/deploy/ensure-docker.sh && \
+             echo '=== DEBUG: Verifying uploaded script ===' && \
+             head -n 5 \$REL/deploy/release-ghcr.sh && \
              rm -f ~/stovash-backend-deploy.tgz"
 
           # Run deployment — all output logged to /tmp/deploy.log so we can see exactly where it hangs
-          # Timeout 800s (13m) max: pull ~1m + health ~2m + prisma ~9m
+          # Timeout 1500s (25m) max: pull ~1m + health ~2m + prisma ~9m
           ssh -F "$SSH_CFG" vps \
             "export GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' IMAGE_TAG='$IMAGE_TAG' && \
+             export STOVASH_ROOT=/home/deploy/stovash/backend && \
+             export STOVASH_COMPOSE_PROJECT=stovash-backend && \
+             export STOVASH_CONTAINER=stovash-backend && \
+             export STOVASH_PORT=5051 && \
              ROOT=/home/deploy/stovash/backend && \
              LATEST=\$(ls -1dt \$ROOT/releases/*_${IMAGE_TAG}* 2>/dev/null | head -n1) && \
              export ROOT LATEST && \
+             echo '=== DEBUG: Script path:' \$LATEST/deploy/release-ghcr.sh && \
+             echo '=== DEBUG: Image to deploy:' ${IMAGE} && \
+             echo '=== DEBUG: Image tag:' ${IMAGE_TAG} && \
+             echo '=== DEBUG: STOVASH_CONTAINER:' \$STOVASH_CONTAINER && \
+             echo '=== DEBUG: STOVASH_PORT:' \$STOVASH_PORT && \
              timeout 1500 \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG} > /tmp/deploy.log 2>&1; echo \"EXIT_CODE=\$?\" >> /tmp/deploy.log; cat /tmp/deploy.log"
 
           rm -f "$SSH_KEY" "$SSH_CFG"

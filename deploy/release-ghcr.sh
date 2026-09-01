@@ -6,6 +6,7 @@
 # Example: release-ghcr.sh ghcr.io/amanifadhili/stovash-backend e1e2102
 set -euo pipefail
 
+# Explicitly set backend defaults to prevent environment conflicts
 ROOT="${STOVASH_ROOT:-/home/deploy/stovash/backend}"
 IMAGE="${1:?image required (e.g. ghcr.io/amanifadhili/stovash-backend)}"
 TAG="${2:?tag required (e.g. e1e2102)}"
@@ -14,6 +15,22 @@ COMPOSE_PROJECT="${STOVASH_COMPOSE_PROJECT:-stovash-backend}"
 CONTAINER="${STOVASH_CONTAINER:-stovash-backend}"
 ENV_FILE="${ROOT}/shared/.env"
 PORT="${STOVASH_PORT:-5051}"
+
+# Debug: Verify we're using backend configuration
+echo "=== CRITICAL DEBUG: Backend deployment script ==="
+echo "=== CRITICAL DEBUG: ROOT=$ROOT"
+echo "=== CRITICAL DEBUG: IMAGE=$IMAGE"
+echo "=== CRITICAL DEBUG: TAG=$TAG"
+echo "=== CRITICAL DEBUG: CONTAINER=$CONTAINER"
+echo "=== CRITICAL DEBUG: PORT=$PORT"
+echo "=== CRITICAL DEBUG: COMPOSE_PROJECT=$COMPOSE_PROJECT"
+
+# Safety check: Prevent deploying frontend image
+if [[ "$IMAGE" == *"frontend"* ]]; then
+  echo "=== CRITICAL ERROR: Attempting to deploy frontend image in backend script!"
+  echo "=== CRITICAL ERROR: IMAGE=$IMAGE"
+  exit 1
+fi
 
 # --- Ensure Docker is available ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -41,6 +58,10 @@ fi
 
 # --- Pull the exact image with retry ---
 FULL_IMAGE="${IMAGE}:${TAG}"
+echo "=== DEBUG: Full image to pull: ${FULL_IMAGE}"
+echo "=== DEBUG: Container name: ${CONTAINER}"
+echo "=== DEBUG: Port: ${PORT}"
+echo "=== DEBUG: Compose project: ${COMPOSE_PROJECT}"
 echo "Pulling ${FULL_IMAGE}..."
 
 for i in 1 2 3 4 5; do
@@ -75,10 +96,14 @@ services:
       NODE_ENV: production
       PORT: "${PORT}"
 EOF
+echo "=== DEBUG: docker-compose.yml written with image: ${FULL_IMAGE}"
+echo "=== DEBUG: docker-compose.yml written with container: ${CONTAINER}"
 
 # --- Stop old container, start new one ---
 echo "Removing old container ${CONTAINER}..."
 timeout 30 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
+echo "=== DEBUG: About to start container with image: ${FULL_IMAGE}"
+echo "=== DEBUG: Container name will be: ${CONTAINER}"
 echo "Starting new container..."
 timeout 60 docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
 sleep 2
