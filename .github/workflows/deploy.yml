@@ -86,9 +86,6 @@ jobs:
           printf 'Host vps\n  HostName %s\n  User %s\n  Port %s\n  IdentityFile %s\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  ServerAliveInterval 15\n  ServerAliveCountMax 20\n  AddressFamily inet\n' \
             "$VPS_HOST" "$VPS_USER" "$VPS_PORT" "$SSH_KEY" > "$SSH_CFG"
 
-          # Enable tracing to find which step hangs (secrets auto-masked by GHA)
-          set -x
-
           # Upload deploy scripts via native SCP (uses SSH config, forces IPv4)
           scp -F "$SSH_CFG" stovash-backend-deploy.tgz "vps:~/stovash-backend-deploy.tgz"
 
@@ -103,11 +100,12 @@ jobs:
              chmod +x \$REL/deploy/release-ghcr.sh \$REL/deploy/ensure-docker.sh && \
              rm -f ~/stovash-backend-deploy.tgz"
 
-          # Run deployment synchronously — keepalive prevents SSH timeout
+          # Run deployment — all output logged to /tmp/deploy.log so we can see exactly where it hangs
+          # Timeout 800s (13m) max: pull ~1m + health ~2m + prisma ~9m
           ssh -F "$SSH_CFG" vps \
             "export GHCR_USER='$GHCR_USER' GHCR_TOKEN='$GHCR_TOKEN' IMAGE_TAG='$IMAGE_TAG' && \
              ROOT=/home/deploy/stovash/backend && \
              LATEST=\$(ls -1dt \$ROOT/releases/*_${IMAGE_TAG}* 2>/dev/null | head -n1) && \
-             \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG}"
+             bash -c 'timeout 800 \$LATEST/deploy/release-ghcr.sh ${IMAGE} ${IMAGE_TAG}' > /tmp/deploy.log 2>&1; echo \"EXIT_CODE=\$?\" >> /tmp/deploy.log; cat /tmp/deploy.log"
 
           rm -f "$SSH_KEY" "$SSH_CFG"

@@ -78,11 +78,11 @@ EOF
 
 # --- Stop old container, start new one ---
 echo "Removing old container ${CONTAINER}..."
-docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
+timeout 30 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 echo "Starting new container..."
-docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
-echo "Container started. Checking status..."
+timeout 60 docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
 sleep 2
+echo "Container status:"
 docker ps -a --filter "name=${CONTAINER}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 # --- Wait for API to be healthy (max 90s) ---
@@ -114,11 +114,10 @@ echo "$FULL_IMAGE" > "$ROOT/shared/deployed-image"
 echo "Deployed ${FULL_IMAGE}"
 
 # --- Cleanup old images (keep last $KEEP) ---
-docker images "$IMAGE" --format '{{.Tag}}' \
-  | grep -v latest \
-  | sort -r \
-  | tail -n +"$((KEEP + 1))" \
-  | xargs -I{} docker rmi "${IMAGE}:{}" 2>/dev/null || true
+mapfile -t old_images < <(docker images "$IMAGE" --format '{{.Tag}}' | grep -v latest | sort -r | tail -n +"$((KEEP + 1))")
+for img in "${old_images[@]}"; do
+  timeout 60 docker rmi "${IMAGE}:${img}" 2>/dev/null || true
+done
 
 # --- Cleanup old releases ---
 mapfile -t old < <(ls -1dt "$ROOT/releases"/* 2>/dev/null | tail -n +"$((KEEP + 1))")
