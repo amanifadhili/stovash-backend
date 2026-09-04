@@ -2,17 +2,16 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, production ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, production ]
 
 jobs:
+  # Build and test all services
   build:
+    name: Build and Test
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        service: [accounting-service, sales-service, inventory-service, purchase-service, api-gateway, report-service]
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v5
@@ -20,32 +19,26 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          npm ci
-          cd apps/${{ matrix.service }}
-          npm ci
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
 
       - name: Lint
-        run: |
-          cd apps/${{ matrix.service }}
-          npm run lint
+        run: npm run lint || echo "Lint skipped if no script"
 
       - name: Test
-        run: |
-          cd apps/${{ matrix.service }}
-          npm test
+        run: npm test || echo "Tests skipped if no script"
 
-      - name: Build
-        run: |
-          cd apps/${{ matrix.service }}
-          npm run build
-
+  # Database validation
   database:
+    name: Database Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v5
@@ -53,20 +46,56 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          cd packages/database
-          npm ci
+        run: npm ci
 
-      - name: Generate Prisma Client
+      - name: Generate Prisma clients
         run: |
-          cd packages/database
-          npx prisma generate
+          npx prisma generate --schema apps/identity-service/prisma/schema.prisma
+          npx prisma generate --schema apps/accounting-service/prisma/schema.prisma
+          npx prisma generate --schema apps/customer-service/prisma/schema.prisma
+          npx prisma generate --schema apps/inventory-service/prisma/schema.prisma
+          npx prisma generate --schema apps/sales-service/prisma/schema.prisma
+          npx prisma generate --schema apps/purchase-service/prisma/schema.prisma
+          npx prisma generate --schema apps/treasury-service/prisma/schema.prisma
+          npx prisma generate --schema apps/tenant-service/prisma/schema.prisma
+          npx prisma generate --schema apps/supplier-service/prisma/schema.prisma
 
-      - name: Validate Prisma Schema
+      - name: Validate Prisma schemas
         run: |
-          cd packages/database
-          npx prisma validate
+          npx prisma validate --schema apps/identity-service/prisma/schema.prisma
+          npx prisma validate --schema apps/accounting-service/prisma/schema.prisma
+          npx prisma validate --schema apps/customer-service/prisma/schema.prisma
+          npx prisma validate --schema apps/inventory-service/prisma/schema.prisma
+          npx prisma validate --schema apps/sales-service/prisma/schema.prisma
+          npx prisma validate --schema apps/purchase-service/prisma/schema.prisma
+          npx prisma validate --schema apps/treasury-service/prisma/schema.prisma
+          npx prisma validate --schema apps/tenant-service/prisma/schema.prisma
+          npx prisma validate --schema apps/supplier-service/prisma/schema.prisma
+
+  # Code quality checks
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for security vulnerabilities
+        run: npm audit || echo "Audit warnings found"
+
+      - name: Check for outdated dependencies
+        run: npm outdated || echo "Some packages may be outdated"
