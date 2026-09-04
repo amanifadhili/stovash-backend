@@ -1,0 +1,64 @@
+name: Backend Deployment
+
+on:
+  push:
+    branches:
+      - main        # Triggers demo deployment
+      - production  # Triggers production deployment
+  workflow_dispatch:  # Allows manual triggering
+
+concurrency:
+  group: backend-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set deployment environment
+        id: env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "env_type=demo" >> $GITHUB_OUTPUT
+            echo "branch=main" >> $GITHUB_OUTPUT
+          else
+            echo "env_type=production" >> $GITHUB_OUTPUT
+            echo "branch=production" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            cd /home/deploy/stovash/backend
+            
+            # Run deployment script with appropriate environment flag
+            if [ "${{ steps.env.outputs.env_type }}" = "demo" ]; then
+              ./deploy.sh --demo
+            else
+              ./deploy.sh
+            fi
+
+      - name: Verify deployment
+        run: |
+          echo "✅ Deployment completed for ${{ steps.env.outputs.env_type }}"
+          echo "📦 Branch: ${{ steps.env.outputs.branch }}"
+          echo "🚀 Commit: ${{ github.sha }}"
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.setFailed('Deployment failed - check logs for details')
