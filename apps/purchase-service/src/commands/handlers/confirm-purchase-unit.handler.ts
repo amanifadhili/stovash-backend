@@ -39,7 +39,7 @@ export class ConfirmPurchaseUnitHandler extends BaseCommandHandler<ConfirmPurcha
         return { status: 'error', traceId, message: 'Cannot confirm a cancelled unit', errorCode: ErrorCode.VALIDATION_ERROR };
       }
       if (receivedItem.status === 'CONFIRMED') {
-        return { status: 'error', traceId, message: 'Unit is already confirmed', errorCode: ErrorCode.VALIDATION_ERROR };
+        return { status: 'success', traceId, data: receivedItem };
       }
 
       const updated = await prisma.purchaseReceivedItem.update({
