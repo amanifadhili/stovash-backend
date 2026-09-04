@@ -9,12 +9,12 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: '127.0.0.1',
-        port: 3010,
+        port: parseInt(process.env.SEARCH_SERVICE_PORT || '5061', 10),
       },
     },
   );
 
   await app.listen();
-  console.log('Search Service is listening on port 3010');
+  console.log('Search Service is listening on port', process.env.SEARCH_SERVICE_PORT || '5061');
 }
 bootstrap();

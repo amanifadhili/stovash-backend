@@ -139,7 +139,7 @@ async function bootstrap() {
     logger.info('Gateway UI proxy disabled (production). Unknown paths return Nest 404.');
   }
 
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5051;
   await app.listen(port, '0.0.0.0');
   console.log(`API Gateway is running on: ${await app.getUrl()}`);
 }

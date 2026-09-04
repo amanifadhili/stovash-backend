@@ -38,9 +38,15 @@ export NODE_VERSION="${NODE_VERSION:-22-bookworm-slim}"
 export PORT="${STOVASH_PORT:-5051}"
 
 cd "$RELEASE_DIR"
+# Pre-pull the base image with retries so BuildKit finds it locally
+# and doesn't need to TLS-handshake with Docker Hub during the build.
+for i in 1 2 3; do
+  docker pull "node:${NODE_VERSION:-22-bookworm-slim}" && break || sleep 10
+done
 # Build while the old container still serves traffic, then replace it.
 # A leftover container from a different compose project cannot be recreated by name.
-docker-compose --env-file "$ROOT/shared/.env" -p "$COMPOSE_PROJECT" build
+DOCKER_BUILDKIT=1 BUILDKIT_PROGRESS=plain \
+  docker-compose --env-file "$ROOT/shared/.env" -p "$COMPOSE_PROJECT" build
 docker rm -f "$COMPOSE_CONTAINER" >/dev/null 2>&1 || true
 docker-compose --env-file "$ROOT/shared/.env" -p "$COMPOSE_PROJECT" up -d --no-build --remove-orphans --force-recreate
 

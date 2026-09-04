@@ -9,13 +9,13 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: '127.0.0.1',
-        port: parseInt(process.env.TREASURY_SERVICE_PORT || '3006', 10),
+        port: parseInt(process.env.TREASURY_SERVICE_PORT || '5058', 10),
       },
     },
   );
 
   await app.listen();
-  console.log('Treasury Microservice is listening on TCP port', process.env.TREASURY_SERVICE_PORT || '3006');
+  console.log('Treasury Microservice is listening on TCP port', process.env.TREASURY_SERVICE_PORT || '5058');
 }
 
 bootstrap();

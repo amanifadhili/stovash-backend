@@ -9,11 +9,11 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: '127.0.0.1',
-        port: 3002,
+        port: parseInt(process.env.IDENTITY_SERVICE_PORT || '5052', 10),
       },
     },
   );
   await app.listen();
-  console.log('Identity Microservice is listening on TCP port 3002');
+  console.log('Identity Microservice is listening on TCP port', process.env.IDENTITY_SERVICE_PORT || '5052');
 }
 bootstrap();
