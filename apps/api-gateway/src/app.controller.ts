@@ -450,8 +450,8 @@ export class AppController {
   ) {}
 
   @Get('health')
-  getHealth(): { status: string; timestamp: string } {
-    return { status: 'ok', timestamp: new Date().toISOString() };
+  getHealth(): { status: string; timestamp: string; version: string } {
+    return { status: 'ok', timestamp: new Date().toISOString(), version: '2.0.0' };
   }
 
   @Get('ready')
