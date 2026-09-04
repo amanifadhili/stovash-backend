@@ -43,12 +43,8 @@ jobs:
           script: |
             cd /home/deploy/stovash/backend
             
-            # Run deployment script with appropriate environment flag
-            if [ "${{ steps.env.outputs.env_type }}" = "demo" ]; then
-              ./deploy.sh --demo
-            else
-              ./deploy.sh
-            fi
+            # Run deployment script with appropriate branch
+            ./deploy.sh deploy ${{ steps.env.outputs.branch }}
 
       - name: Verify deployment
         run: |
