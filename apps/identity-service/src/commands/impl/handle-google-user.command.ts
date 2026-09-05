@@ -6,7 +6,6 @@ export class HandleGoogleUserCommand {
   constructor(public readonly data: {
     googleSub: string;
     email: string;
-    name: string | null;
     firstName: string | null;
     lastName: string | null;
     avatarUrl: string | null;
@@ -17,7 +16,7 @@ export class HandleGoogleUserCommand {
 @CommandHandler(HandleGoogleUserCommand)
 export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoogleUserCommand> {
   async execute(command: HandleGoogleUserCommand) {
-    const { googleSub, email, name, firstName, lastName, avatarUrl, emailVerified } = command.data;
+    const { googleSub, email, firstName, lastName, avatarUrl, emailVerified } = command.data;
 
     return await prisma.$transaction(async (tx) => {
       // Check if Google account already exists
@@ -38,7 +37,6 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
         return await tx.user.update({
           where: { id: existingAccount.userId },
           data: {
-            name: name || undefined,
             firstName: firstName || undefined,
             lastName: lastName || undefined,
             avatarUrl: avatarUrl || undefined,
@@ -71,7 +69,6 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
       const newUser = await tx.user.create({
         data: {
           email,
-          name: name || null,
           firstName: firstName || null,
           lastName: lastName || null,
           avatarUrl: avatarUrl || null,

@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { createHash, randomBytes } from 'crypto';
 import { ClientProxy } from '@nestjs/microservices';
@@ -10,13 +9,12 @@ export class GoogleAuthService {
   private readonly googleClient: OAuth2Client;
 
   constructor(
-    private readonly config: ConfigService,
     @Inject('IDENTITY_SERVICE') private readonly identityClient: ClientProxy,
   ) {
     this.googleClient = new OAuth2Client(
-      this.config.getOrThrow<string>('GOOGLE_CLIENT_ID'),
-      this.config.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
-      this.config.getOrThrow<string>('GOOGLE_CALLBACK_URL'),
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_CALLBACK_URL,
     );
   }
 
@@ -38,7 +36,7 @@ export class GoogleAuthService {
 
     const ticket = await this.googleClient.verifyIdToken({
       idToken: tokens.id_token,
-      audience: this.config.getOrThrow<string>('GOOGLE_CLIENT_ID'),
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
@@ -63,7 +61,6 @@ export class GoogleAuthService {
           {
             googleSub: payload.sub,
             email: payload.email.toLowerCase(),
-            name: payload.name || null,
             firstName: payload.given_name || null,
             lastName: payload.family_name || null,
             avatarUrl: payload.picture || null,
@@ -82,7 +79,7 @@ export class GoogleAuthService {
     const rawToken = randomBytes(48).toString('base64url');
     const tokenHash = this.hashToken(rawToken);
 
-    const days = Number(this.config.get<string>('SESSION_TTL_DAYS', '30'));
+    const days = Number(process.env.SESSION_TTL_DAYS || '30');
     const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
     // Call identity service to create session
@@ -152,6 +149,7 @@ export class GoogleAuthService {
   }
 
   private hashToken(token: string) {
-    return createHash('sha256').update(token).digest('hex');
+    const secret = process.env.SESSION_SECRET || 'default-secret';
+    return createHash('sha256').update(token + secret).digest('hex');
   }
 }
