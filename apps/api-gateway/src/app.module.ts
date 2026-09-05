@@ -8,6 +8,7 @@ import { ContextMiddleware } from './common/middleware/context.middleware.js';
 import { RateLimitMiddleware } from './middleware/rate-limit.middleware.js';
 import { CircuitBreakerInterceptor } from './interceptors/circuit-breaker.interceptor.js';
 import { ReadinessService } from './common/readiness.service.js';
+import { GoogleAuthModule } from './auth/google-auth.module.js';
 
 @Module({
   imports: [
@@ -52,7 +53,18 @@ import { ReadinessService } from './common/readiness.service.js';
         transport: Transport.TCP,
         options: { host: '127.0.0.1', port: parseInt(process.env.SUPPLIER_SERVICE_PORT || '5064', 10) },
       },
+      {
+        name: 'CUSTOMER_SERVICE',
+        transport: Transport.TCP,
+        options: { host: '127.0.0.1', port: parseInt(process.env.CUSTOMER_SERVICE_PORT || '5054', 10) },
+      },
+      {
+        name: 'NOTIFICATION_SERVICE',
+        transport: Transport.TCP,
+        options: { host: '127.0.0.1', port: parseInt(process.env.NOTIFICATION_SERVICE_PORT || '5060', 10) },
+      },
     ]),
+    GoogleAuthModule,
   ],
   controllers: [AppController],
   providers: [
