@@ -6,6 +6,10 @@ import { LoginUserCommand } from './commands/impl/login-user.command.js';
 import { CreateUserCommand } from './commands/impl/create-user.command.js';
 import { VerifyUserCommand } from './commands/impl/verify-user.command.js';
 import { GetUsersCommand } from './commands/impl/get-users.command.js';
+import { HandleGoogleUserCommand } from './commands/impl/handle-google-user.command.js';
+import { CreateSessionCommand } from './commands/impl/create-session.command.js';
+import { GetUserFromSessionCommand } from './commands/impl/get-user-from-session.command.js';
+import { DeleteSessionCommand } from './commands/impl/delete-session.command.js';
 
 import { ManagePermissionsCommand } from './commands/handlers/permission-management.handler.js';
 
@@ -81,5 +85,25 @@ export class IdentityServiceController {
   @MessagePattern({ cmd: 'DeletePermissionTemplate' })
   async handleDeletePermissionTemplate(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new ManagePermissionsCommand('DeletePermissionTemplate', data.payload || {}, data.context));
+  }
+
+  @MessagePattern({ cmd: 'handle_google_user' })
+  async handleGoogleUser(@Payload() data: any) {
+    return this.commandBus.execute(new HandleGoogleUserCommand(data));
+  }
+
+  @MessagePattern({ cmd: 'create_session' })
+  async handleCreateSession(@Payload() data: any) {
+    return this.commandBus.execute(new CreateSessionCommand(data));
+  }
+
+  @MessagePattern({ cmd: 'get_user_from_session' })
+  async handleGetUserFromSession(@Payload() data: any) {
+    return this.commandBus.execute(new GetUserFromSessionCommand(data));
+  }
+
+  @MessagePattern({ cmd: 'delete_session' })
+  async handleDeleteSession(@Payload() data: any) {
+    return this.commandBus.execute(new DeleteSessionCommand(data));
   }
 }

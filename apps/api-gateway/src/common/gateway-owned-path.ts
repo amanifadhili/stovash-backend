@@ -2,6 +2,7 @@
 export function isGatewayOwnedPath(url: string): boolean {
   return (
     url.startsWith('/api') ||
+    url.startsWith('/auth') ||
     url.startsWith('/health') ||
     url.startsWith('/ready') ||
     url.startsWith('/metrics') ||

@@ -4,6 +4,7 @@ import { AppModule } from './app.module.js';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import { initializeTracing } from '@electronic-shop/tracing';
 import { logger } from '@electronic-shop/logging';
@@ -79,6 +80,8 @@ async function bootstrap() {
     credentials: true,
     maxAge: 86400,
   });
+  
+  app.use(cookieParser());
   
   // IP-level ceiling (express-rate-limit). Per-user limits also apply in
   // RateLimitMiddleware (20k/min auth, 2k/min anonymous). Keep this high enough

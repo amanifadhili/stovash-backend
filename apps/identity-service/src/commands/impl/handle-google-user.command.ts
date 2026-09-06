@@ -64,17 +64,23 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
       }
 
       // Create new user with Google account
-      // For Google users, we need to create a tenant first
-      // This is a simplified version - you might want to handle this differently
+      // Find or create a default tenant for Google-authenticated users
+      let tenant = await tx.tenant.findFirst({ where: { status: 'ACTIVE' } });
+      if (!tenant) {
+        tenant = await tx.tenant.create({
+          data: { name: 'Default Tenant', status: 'ACTIVE' },
+        });
+      }
+
       const newUser = await tx.user.create({
         data: {
           email,
-          firstName: firstName || null,
-          lastName: lastName || null,
+          firstName: firstName || 'Unknown',
+          lastName: lastName || 'User',
           avatarUrl: avatarUrl || null,
           emailVerified,
-          password: null, // Google users don't have passwords
-          tenantId: 'default-tenant', // You'll need to handle tenant creation
+          password: null,
+          tenantId: tenant.id,
           role: 'STAFF',
           status: 'ACTIVE',
           accounts: {

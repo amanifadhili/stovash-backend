@@ -9,6 +9,8 @@ describe('isGatewayOwnedPath', () => {
     expect(isGatewayOwnedPath('/metrics')).toBe(true);
     expect(isGatewayOwnedPath('/docs')).toBe(true);
     expect(isGatewayOwnedPath('/docs/swagger-ui')).toBe(true);
+    expect(isGatewayOwnedPath('/auth/google')).toBe(true);
+    expect(isGatewayOwnedPath('/auth/google/callback')).toBe(true);
   });
 
   it('does not treat UI paths as gateway-owned', () => {

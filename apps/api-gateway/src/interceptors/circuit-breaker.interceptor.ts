@@ -33,6 +33,15 @@ export class CircuitBreakerInterceptor implements NestInterceptor {
     //   }));
     // }
 
+    const request = context.switchToHttp().getRequest();
+    const url: string = request?.url || '';
+
+    // Skip circuit breaker for auth routes — they call external OAuth APIs
+    // and legitimately take longer than the requestTimeout.
+    if (url.startsWith('/auth')) {
+      return next.handle();
+    }
+
     return next.handle().pipe(
       timeout(this.requestTimeout),
       catchError(error => {

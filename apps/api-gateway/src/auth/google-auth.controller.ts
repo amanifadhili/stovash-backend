@@ -15,7 +15,7 @@ export class GoogleAuthController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/auth/google',
+      path: '/',
       maxAge: 10 * 60 * 1000, // 10 minutes
     });
 
@@ -46,16 +46,14 @@ export class GoogleAuthController {
       throw new UnauthorizedException('Invalid OAuth state');
     }
 
-    // Clear OAuth state cookie
-    res.clearCookie('oauth_state', { path: '/auth/google' });
-
     try {
       const user = await this.googleAuthService.authenticateGoogle(code);
       const session = await this.googleAuthService.createSession(user.id);
 
       const isProduction = process.env.NODE_ENV === 'production';
 
-      // Set HttpOnly session cookie
+      // Set all cookies before sending any response
+      res.clearCookie('oauth_state', { path: '/' });
       res.cookie('session', session.rawToken, {
         httpOnly: true,
         secure: isProduction,
@@ -67,6 +65,7 @@ export class GoogleAuthController {
       return res.redirect(`${process.env.FRONTEND_URL}/auth/success`);
     } catch (error) {
       console.error('Google authentication error:', error);
+      res.clearCookie('oauth_state', { path: '/' });
       return res.redirect(
         `${process.env.FRONTEND_URL}/auth/login?error=authentication_failed`,
       );
