@@ -12,19 +12,23 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  tenantId  String
-  email     String   @unique
-  password  String
-  firstName String
-  lastName  String
-  role      String   @default("STAFF") // ADMIN, MANAGER, STAFF
-  status    String   @default("ACTIVE")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  tenantId      String
+  email         String   @unique
+  password      String?
+  firstName     String
+  lastName      String
+  role          String   @default("STAFF") // ADMIN, MANAGER, STAFF
+  status        String   @default("ACTIVE")
+  emailVerified Boolean  @default(false)
+  avatarUrl     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   userPermissions          UserPermission[]
   userTemplateAssignments  UserTemplateAssignment[]
+  accounts                 Account[]
+  sessions                 Session[]
 
   @@index([tenantId])
   @@index([email])
@@ -137,15 +141,36 @@ model Credential {
 
 model Session {
   id        String   @id @default(uuid())
+  tokenHash String   @unique
   userId    String
-  token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
-  @@index([token])
+  @@index([tokenHash])
   @@map("sessions")
+}
+
+model Account {
+  id                String   @id @default(uuid())
+  userId            String
+  provider          String   // GOOGLE, EMAIL_PASSWORD
+  providerAccountId String
+  accessToken       String?
+  refreshToken      String?
+  expiresAt         DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@index([provider])
+  @@map("accounts")
 }
 
 model Token {

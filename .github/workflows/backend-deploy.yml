@@ -44,6 +44,10 @@ jobs:
             
             # Run deployment script with appropriate branch
             ./deploy.sh deploy ${{ steps.env.outputs.branch }}
+            
+            # Apply identity-service schema sync with data-loss acceptance
+            cd /home/deploy/stovash/backend/current
+            npx prisma db push --schema apps/identity-service/prisma/schema.prisma --accept-data-loss
 
       - name: Verify deployment
         run: |
