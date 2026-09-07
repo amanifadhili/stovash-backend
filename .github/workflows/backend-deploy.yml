@@ -107,11 +107,13 @@ jobs:
 
             # Restart PM2
             echo "Restarting PM2..."
-            pm2 restart stovash-backend --update-env 2>/dev/null \
-              || pm2 start "$REL/dist/server.js" \
+            export PORT=5051
+            pm2 delete stovash-backend 2>/dev/null || true
+            pm2 start "$REL/dist/server.js" \
                    --name stovash-backend \
                    --cwd "$REL" \
                    --update-env
+            pm2 save
 
             # Wait for API to be healthy (max 60s)
             echo "Waiting for API to be ready..."
