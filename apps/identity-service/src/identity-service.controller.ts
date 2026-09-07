@@ -10,6 +10,7 @@ import { HandleGoogleUserCommand } from './commands/impl/handle-google-user.comm
 import { CreateSessionCommand } from './commands/impl/create-session.command.js';
 import { GetUserFromSessionCommand } from './commands/impl/get-user-from-session.command.js';
 import { DeleteSessionCommand } from './commands/impl/delete-session.command.js';
+import { CompleteGoogleOnboardingCommand } from './commands/impl/complete-google-onboarding.command.js';
 
 import { ManagePermissionsCommand } from './commands/handlers/permission-management.handler.js';
 
@@ -105,5 +106,10 @@ export class IdentityServiceController {
   @MessagePattern({ cmd: 'delete_session' })
   async handleDeleteSession(@Payload() data: any) {
     return this.commandBus.execute(new DeleteSessionCommand(data));
+  }
+
+  @MessagePattern({ cmd: 'CompleteGoogleOnboarding' })
+  async handleCompleteGoogleOnboarding(@Payload() data: any) {
+    return this.commandBus.execute(new CompleteGoogleOnboardingCommand(data));
   }
 }

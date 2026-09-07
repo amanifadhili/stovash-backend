@@ -8,5 +8,6 @@ import { HandleGoogleUserCommandHandler } from '../impl/handle-google-user.comma
 import { CreateSessionCommandHandler } from '../impl/create-session.command.js';
 import { GetUserFromSessionCommandHandler } from '../impl/get-user-from-session.command.js';
 import { DeleteSessionCommandHandler } from '../impl/delete-session.command.js';
+import { CompleteGoogleOnboardingHandler } from '../impl/complete-google-onboarding.command.js';
 
-export const CommandHandlers = [LoginUserHandler, CreateUserHandler, CreateTenantHandler, VerifyUserHandler, GetUsersHandler, ManagePermissionsHandler, HandleGoogleUserCommandHandler, CreateSessionCommandHandler, GetUserFromSessionCommandHandler, DeleteSessionCommandHandler];
+export const CommandHandlers = [LoginUserHandler, CreateUserHandler, CreateTenantHandler, VerifyUserHandler, GetUsersHandler, ManagePermissionsHandler, HandleGoogleUserCommandHandler, CreateSessionCommandHandler, GetUserFromSessionCommandHandler, DeleteSessionCommandHandler, CompleteGoogleOnboardingHandler];

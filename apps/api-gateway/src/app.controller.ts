@@ -37,7 +37,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'CreateUser': [],
   'GetUsers': [],
   'LoginUser': [], // Public endpoint
-  'GetPermissionTemplates': [],
+  'CompleteGoogleOnboarding': [],
   'CreatePermissionTemplate': [],
   'UpdatePermissionTemplate': [],
   'DeletePermissionTemplate': [],
@@ -209,6 +209,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'CreateUser': ['ADMIN', 'MANAGER'],
   'GetUsers': ['ADMIN', 'MANAGER'],
   'LoginUser': [], // Public endpoint
+  'CompleteGoogleOnboarding': ['STAFF'],
   
   // Accounting commands
   'PostJournalEntry': ['ADMIN', 'MANAGER', 'ACCOUNTANT'],
@@ -567,7 +568,7 @@ export class AppController {
     }
 
     try {
-      if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers', 'GetPermissionTemplates', 'CreatePermissionTemplate', 'UpdatePermissionTemplate', 'DeletePermissionTemplate', 'AssignTemplateToUser', 'SetUserPermissionOverride', 'RemoveUserPermissionOverride', 'GetUserEffectivePermissions', 'GetPermissionAuditLogs'].includes(cmd)) {
+      if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers', 'GetPermissionTemplates', 'CreatePermissionTemplate', 'UpdatePermissionTemplate', 'DeletePermissionTemplate', 'AssignTemplateToUser', 'SetUserPermissionOverride', 'RemoveUserPermissionOverride', 'GetUserEffectivePermissions', 'GetPermissionAuditLogs', 'handle_google_user', 'create_session', 'get_user_from_session', 'delete_session', 'CompleteGoogleOnboarding'].includes(cmd)) {
         const result = await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;

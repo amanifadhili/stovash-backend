@@ -1,6 +1,7 @@
 import { Controller, Get, Query, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { GoogleAuthService } from './google-auth.service.js';
+import jwt from 'jsonwebtoken';
 
 @Controller('auth')
 export class GoogleAuthController {
@@ -84,7 +85,13 @@ export class GoogleAuthController {
       throw new UnauthorizedException();
     }
 
-    return { user };
+    const accessToken = jwt.sign(
+      { sub: user.id, email: user.email, role: user.role, tenantId: user.tenantId },
+      process.env.JWT_SECRET || 'dev-secret-key',
+      { expiresIn: '1d' },
+    );
+
+    return { user, accessToken };
   }
 
   @Get('logout')
