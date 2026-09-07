@@ -11,6 +11,10 @@ concurrency:
   group: backend-deploy
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-push:
     name: Build and Push Docker Image
