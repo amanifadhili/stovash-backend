@@ -55,8 +55,6 @@ jobs:
           tags: |
             ${{ steps.env.outputs.ghcr_image }}:${{ steps.env.outputs.short_sha }}
             ${{ steps.env.outputs.ghcr_image }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
     outputs:
       env_type: ${{ steps.env.outputs.env_type }}
