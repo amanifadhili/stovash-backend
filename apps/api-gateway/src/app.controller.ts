@@ -38,6 +38,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'GetUsers': [],
   'LoginUser': [], // Public endpoint
   'CompleteGoogleOnboarding': [],
+  'GetPermissionTemplates': [],
   'CreatePermissionTemplate': [],
   'UpdatePermissionTemplate': [],
   'DeletePermissionTemplate': [],
@@ -209,6 +210,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   'CreateUser': ['ADMIN', 'MANAGER'],
   'GetUsers': ['ADMIN', 'MANAGER'],
   'LoginUser': [], // Public endpoint
+  'GetPermissionTemplates': ['ADMIN'],
   'CompleteGoogleOnboarding': ['STAFF'],
   
   // Accounting commands
