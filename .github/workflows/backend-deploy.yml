@@ -73,9 +73,9 @@ jobs:
             echo "Installing dependencies..."
             npm ci
 
-            # Generate Prisma clients for all services
+            # Generate Prisma clients for all services + shared database package
             echo "Generating Prisma clients..."
-            for schema in apps/*/prisma/schema.prisma; do
+            for schema in apps/*/prisma/schema.prisma packages/database/prisma/schema.prisma; do
               if [[ -f "$schema" ]]; then
                 echo "  prisma generate $schema"
                 npx prisma@5.22.0 generate --schema="$schema" || echo "  (failed for $schema)"
