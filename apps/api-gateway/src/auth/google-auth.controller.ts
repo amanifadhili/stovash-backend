@@ -3,6 +3,23 @@ import { Request, Response } from 'express';
 import { GoogleAuthService } from './google-auth.service.js';
 import jwt from 'jsonwebtoken';
 
+function parseCookies(header: string | undefined): Record<string, string> {
+  const cookies: Record<string, string> = {};
+  if (!header) return cookies;
+  for (const pair of header.split(';')) {
+    const idx = pair.indexOf('=');
+    if (idx < 1) continue;
+    const key = pair.slice(0, idx).trim();
+    const val = decodeURIComponent(pair.slice(idx + 1).trim());
+    cookies[key] = val;
+  }
+  return cookies;
+}
+
+function getCookie(req: Request, name: string): string | undefined {
+  return req.cookies?.[name] ?? parseCookies(req.headers.cookie)?.[name];
+}
+
 @Controller('auth')
 export class GoogleAuthController {
   constructor(private readonly googleAuthService: GoogleAuthService) {}
@@ -42,7 +59,7 @@ export class GoogleAuthController {
       throw new UnauthorizedException('Missing OAuth parameters');
     }
 
-    const stateCookie = req.cookies.oauth_state;
+    const stateCookie = getCookie(req, 'oauth_state');
     if (!stateCookie || stateCookie !== state) {
       throw new UnauthorizedException('Invalid OAuth state');
     }
@@ -75,7 +92,7 @@ export class GoogleAuthController {
 
   @Get('me')
   async me(@Req() req: Request) {
-    const token = req.cookies.session;
+    const token = getCookie(req, 'session');
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -96,7 +113,7 @@ export class GoogleAuthController {
 
   @Get('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
-    const token = req.cookies.session;
+    const token = getCookie(req, 'session');
     if (token) {
       await this.googleAuthService.deleteSession(token);
     }
