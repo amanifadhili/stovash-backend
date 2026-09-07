@@ -107,6 +107,7 @@ jobs:
 
             # Restart PM2
             echo "Restarting PM2..."
+            set -a && source "$ENV_FILE" && set +a
             export PORT=5051
             pm2 delete stovash-backend 2>/dev/null || true
             pm2 start "$REL/dist/server.js" \
