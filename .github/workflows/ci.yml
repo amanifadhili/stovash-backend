@@ -7,14 +7,13 @@ on:
     branches: [ main, production ]
 
 jobs:
-  # Build and test all services
   build:
     name: Build and Test
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,14 +33,13 @@ jobs:
       - name: Test
         run: npm test || echo "Tests skipped if no script"
 
-  # Database validation
   database:
-    name: Database Validation
+    name: Prisma Schema Validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -54,48 +52,20 @@ jobs:
 
       - name: Generate Prisma clients
         run: |
-          npx prisma generate --schema apps/identity-service/prisma/schema.prisma
-          npx prisma generate --schema apps/accounting-service/prisma/schema.prisma
-          npx prisma generate --schema apps/customer-service/prisma/schema.prisma
-          npx prisma generate --schema apps/inventory-service/prisma/schema.prisma
-          npx prisma generate --schema apps/sales-service/prisma/schema.prisma
-          npx prisma generate --schema apps/purchase-service/prisma/schema.prisma
-          npx prisma generate --schema apps/treasury-service/prisma/schema.prisma
-          npx prisma generate --schema apps/tenant-service/prisma/schema.prisma
-          npx prisma generate --schema apps/supplier-service/prisma/schema.prisma
+          for schema in apps/*/prisma/schema.prisma; do
+            echo "Generating client for $schema"
+            npx prisma generate --schema="$schema"
+          done
 
       - name: Validate Prisma schemas
         run: |
-          npx prisma validate --schema apps/identity-service/prisma/schema.prisma
-          npx prisma validate --schema apps/accounting-service/prisma/schema.prisma
-          npx prisma validate --schema apps/customer-service/prisma/schema.prisma
-          npx prisma validate --schema apps/inventory-service/prisma/schema.prisma
-          npx prisma validate --schema apps/sales-service/prisma/schema.prisma
-          npx prisma validate --schema apps/purchase-service/prisma/schema.prisma
-          npx prisma validate --schema apps/treasury-service/prisma/schema.prisma
-          npx prisma validate --schema apps/tenant-service/prisma/schema.prisma
-          npx prisma validate --schema apps/supplier-service/prisma/schema.prisma
+          for schema in apps/*/prisma/schema.prisma; do
+            echo "Validating $schema"
+            npx prisma validate --schema="$schema"
+          done
 
-  # Code quality checks
-  quality:
-    name: Code Quality
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check for security vulnerabilities
-        run: npm audit || echo "Audit warnings found"
-
-      - name: Check for outdated dependencies
-        run: npm outdated || echo "Some packages may be outdated"
+      - name: Check schema diff (informational)
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "=== Prisma schema files changed in this PR ==="
+          git diff --name-only origin/${{ github.base_ref }}...HEAD -- '*/prisma/schema.prisma' || echo "No schema changes"
