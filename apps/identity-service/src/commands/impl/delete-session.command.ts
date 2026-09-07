@@ -1,6 +1,6 @@
 import { Command } from '@nestjs/cqrs';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { prisma } from '@electronic-shop/database';
+import { prisma } from '../../database/client';
 
 export class DeleteSessionCommand {
   constructor(public readonly data: { tokenHash: string }) {}
