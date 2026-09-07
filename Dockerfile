@@ -17,6 +17,7 @@ COPY apps/ ./apps/
 RUN npm ci
 
 # ── builder layer ─────────────────────────────────────────────────────────────
+ARG CACHE_BUST=1
 FROM node:${NODE_VERSION} AS builder
 WORKDIR /app
 RUN apt-get update \
