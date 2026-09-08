@@ -177,7 +177,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/mnt/Code/javascript/nextjs/stovash/electronic-shop/apps/supplier-service/src/generated/prisma",
+      "value": "/home/amani/Documents/Code/javascript/nextjs/stovash/electronic-shop/apps/supplier-service/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -191,7 +191,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/mnt/Code/javascript/nextjs/stovash/electronic-shop/apps/supplier-service/prisma/schema.prisma",
+    "sourceFilePath": "/home/amani/Documents/Code/javascript/nextjs/stovash/electronic-shop/apps/supplier-service/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
