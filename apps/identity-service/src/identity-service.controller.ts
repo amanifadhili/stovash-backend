@@ -11,6 +11,8 @@ import { CreateSessionCommand } from './commands/impl/create-session.command.js'
 import { GetUserFromSessionCommand } from './commands/impl/get-user-from-session.command.js';
 import { DeleteSessionCommand } from './commands/impl/delete-session.command.js';
 import { CompleteGoogleOnboardingCommand } from './commands/impl/complete-google-onboarding.command.js';
+import { RequestPasswordResetCommand } from './commands/impl/request-password-reset.command.js';
+import { ResetPasswordCommand } from './commands/impl/reset-password.command.js';
 
 import { ManagePermissionsCommand } from './commands/handlers/permission-management.handler.js';
 
@@ -31,6 +33,16 @@ export class IdentityServiceController {
   @MessagePattern({ cmd: 'VerifyUser' })
   async handleVerifyUser(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new VerifyUserCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'RequestPasswordReset' })
+  async handleRequestPasswordReset(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new RequestPasswordResetCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'ResetPassword' })
+  async handleResetPassword(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new ResetPasswordCommand(data.payload, data.context));
   }
 
   @MessagePattern({ cmd: 'CreateUser' })

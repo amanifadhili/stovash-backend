@@ -63,6 +63,16 @@ export class EmailNotificationProvider {
         ${d.role ? `<p><strong>Your account role:</strong> ${d.role}</p>` : ''}
         <p>Your account has been created successfully. You can now sign in and start using the platform.</p>
       `,
+      'password-reset': (d) => `
+        <h2>Password Reset Request</h2>
+        <p>Hello${d.firstName ? ', ' + d.firstName : ''}${d.lastName ? ' ' + d.lastName : ''},</p>
+        <p>We received a request to reset your password for ${process.env.APP_NAME || 'Electronic Shop'}.</p>
+        <p>
+          <a href="${d.resetUrl}" style="display:inline-block;padding:12px 18px;background:#059669;color:#fff;text-decoration:none;border-radius:8px;">Reset Password</a>
+        </p>
+        <p>This link will expire in ${d.expiresInMinutes || 60} minutes.</p>
+        <p>If you did not request this, you can ignore this email.</p>
+      `,
       'sale-confirmation': (d) => `
         <h2>Sale Confirmation</h2>
         <p>Thank you for your purchase!</p>

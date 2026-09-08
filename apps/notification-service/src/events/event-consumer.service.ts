@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { EventBus } from '@electronic-shop/framework-event';
 import { tenantCreatedConsumer } from './consumers/tenant-created.consumer.js';
+import { passwordResetRequestedConsumer } from './consumers/password-reset-requested.consumer.js';
 
 @Injectable()
 export class EventConsumerService implements OnModuleInit {
@@ -19,6 +20,13 @@ export class EventConsumerService implements OnModuleInit {
       // Create consumer BEFORE connecting
       this.eventBus.createConsumer('notification-tenant-created', 'tenant.created');
       this.eventBus.registerHandler('notification-tenant-created', 'TenantCreated', tenantCreatedConsumer);
+
+      this.eventBus.createConsumer('notification-password-reset-requested', 'password.reset.requested');
+      this.eventBus.registerHandler(
+        'notification-password-reset-requested',
+        'PasswordResetRequested',
+        passwordResetRequestedConsumer,
+      );
 
       // Now connect (will connect publisher + all consumers)
       await this.eventBus.connect();
