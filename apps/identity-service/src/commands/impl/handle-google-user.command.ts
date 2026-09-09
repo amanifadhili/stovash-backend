@@ -64,13 +64,10 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
       }
 
       // Create new user with Google account
-      // Find or create a default tenant for Google-authenticated users
-      let tenant = await tx.tenant.findFirst({ where: { status: 'ACTIVE' } });
-      if (!tenant) {
-        tenant = await tx.tenant.create({
-          data: { name: 'Default Tenant', status: 'ACTIVE' },
-        });
-      }
+      // Create a private tenant for this Google user (assigned during onboarding)
+      const tenant = await tx.tenant.create({
+        data: { name: `${firstName || 'Google'} ${lastName || 'User'}`, status: 'ACTIVE' },
+      });
 
       const newUser = await tx.user.create({
         data: {
