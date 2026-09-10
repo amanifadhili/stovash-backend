@@ -17,3 +17,22 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+
+// Identity database client for RBAC permissions
+export { identityPrisma } from './identity-client';
+
+/**
+ * Create an identity Prisma client for RBAC operations
+ * This connects to the identity database (IDENTITY_DATABASE_URL)
+ * and has the userPermission, userTemplateAssignment, templatePermission models
+ */
+export const createIdentityPrismaClient = (identityDbUrl: string) => {
+  return new PrismaClient({
+    datasources: {
+      db: {
+        url: identityDbUrl,
+      },
+    },
+    log: ['error'],
+  });
+};

@@ -17,7 +17,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { getMetrics, recordCommandExecution, recordFinancialPostLatency } from '@electronic-shop/metrics';
 import { ErrorCode } from '@electronic-shop/types';
-import { prisma, authorizeUserAction, isPublicCommand } from '@electronic-shop/database';
+import { identityPrisma, authorizeUserAction, isPublicCommand } from '@electronic-shop/database';
 
 // JWT issues `*` for ADMIN and `[]` for every other role. Non-empty permission
 // lists 403 MANAGER/ACCOUNTANT/STAFF even when COMMAND_ROLES allows them.
@@ -508,7 +508,7 @@ export class AppController {
         const targetShopIds = targetShopId ? (Array.isArray(targetShopId) ? targetShopId : [targetShopId]) : undefined;
 
         const authResult = await authorizeUserAction(
-          prisma,
+          identityPrisma,
           {
             userId: req.user?.id,
             tenantId: req.user?.tenantId,

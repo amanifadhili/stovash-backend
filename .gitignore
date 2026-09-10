@@ -93,3 +93,7 @@ Thumbs.db
 dist/
 build/
 *.md
+
+# Generated Prisma clients
+*/src/generated/prisma/
+packages/database/src/identity-rbac-client/

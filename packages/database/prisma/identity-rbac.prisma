@@ -1,0 +1,61 @@
+// Identity RBAC Schema
+// Used by API Gateway for permission resolution
+// Connects to the identity database (IDENTITY_DATABASE_URL)
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/identity-rbac-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("IDENTITY_DATABASE_URL")
+}
+
+model UserPermission {
+  id             String    @id @default(uuid())
+  tenantId       String
+  userId         String
+  permissionKey  String
+  isGranted      Boolean   @default(true)
+  scope          String    @default("ALL")
+  allowedShopIds String[]  @default([])
+  grantedAt      DateTime  @default(now())
+  expiresAt      DateTime?
+  grantedBy      String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([userId, permissionKey])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([permissionKey])
+  @@index([expiresAt])
+  @@map("user_permissions")
+}
+
+model UserTemplateAssignment {
+  id         String   @id @default(uuid())
+  userId     String
+  templateId String
+  assignedAt DateTime @default(now())
+  assignedBy String
+
+  @@unique([userId, templateId])
+  @@index([userId])
+  @@index([templateId])
+  @@map("user_template_assignments")
+}
+
+model TemplatePermission {
+  id             String   @id @default(uuid())
+  templateId     String
+  permissionKey  String
+  scope          String   @default("ALL")
+  allowedShopIds String[] @default([])
+  createdAt      DateTime @default(now())
+
+  @@unique([templateId, permissionKey])
+  @@index([templateId])
+  @@map("template_permissions")
+}
