@@ -108,6 +108,10 @@ timeout 30 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 echo "=== DEBUG: About to start container with image: ${FULL_IMAGE}"
 echo "=== DEBUG: Container name will be: ${CONTAINER}"
 echo "Starting new container..."
+if command -v pm2 >/dev/null 2>&1; then
+  echo "Stopping legacy PM2 backend before Docker handoff..."
+  pm2 delete stovash-backend >/dev/null 2>&1 || true
+fi
 timeout 120 docker compose -f "$ROOT/docker-compose.yml" -p "$COMPOSE_PROJECT" up -d --no-build --force-recreate
 echo "=== TIMING: Container started at $(date '+%Y-%m-%d %H:%M:%S')"
 echo "=== DEBUG: Container status after start:"
@@ -133,15 +137,13 @@ for i in $(seq 1 18); do
   fi
 done
 
-# --- Schema sync (with per-service hard timeout to avoid hanging deploy) ---
-echo "=== TIMING: Starting Prisma schema sync at $(date '+%Y-%m-%d %H:%M:%S')"
-echo "Syncing Prisma schemas..."
-for svc in identity tenant customer supplier accounting inventory sales purchase treasury report; do
-  echo "  prisma db push ${svc}-service"
-  timeout --kill-after=10 90 docker exec "$CONTAINER" bash -lc \
-    "cd /app/apps/${svc}-service && /app/node_modules/.bin/prisma db push --skip-generate --schema=prisma/schema.prisma" >/dev/null 2>&1 || echo "  (skip/timeout for $svc)"
-done
-echo "=== TIMING: Prisma schema sync completed at $(date '+%Y-%m-%d %H:%M:%S')"
+# Database migrations are intentionally separate from application activation.
+# Never run db push from the image deployment path.
+if [[ "${RUN_SCHEMA_PUSH:-0}" == "1" ]]; then
+  echo "ERROR: RUN_SCHEMA_PUSH=1 is disabled for production image deployment." >&2
+  echo "Run the reviewed backup/migration job separately instead." >&2
+  exit 1
+fi
 
 # --- Symlink current ---
 ln -sfn "$REL" "$ROOT/current"
