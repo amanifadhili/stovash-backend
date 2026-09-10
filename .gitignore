@@ -93,6 +93,7 @@ Thumbs.db
 dist/
 build/
 *.md
+!docs/DATABASE_MIGRATION_READINESS.md
 
 # Generated Prisma clients
 */src/generated/prisma/

@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "tsc && cp -r src/identity-rbac-client dist/identity-rbac-client",
+    "build": "tsc && rm -rf dist/identity-rbac-client && cp -a src/identity-rbac-client dist/identity-rbac-client",
     "db:generate": "node dist/migration.service.js generate-all",
     "db:generate:identity": "node dist/migration.service.js generate identity",
     "db:generate:tenant": "node dist/migration.service.js generate tenant",

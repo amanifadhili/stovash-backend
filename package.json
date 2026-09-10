@@ -16,6 +16,13 @@
     "dev": "tsx server.ts",
     "seed:demo": "tsx scripts/seed-demo.ts",
     "seed:phase9": "node scripts/seed-phase9-visual.mjs",
+    "db:migration:inventory": "node scripts/check-migration-readiness.mjs",
+    "db:migration:inventory:strict": "node scripts/check-migration-readiness.mjs --strict",
+    "db:migration:safety": "node scripts/check-production-migration-safety.mjs",
+    "db:migration:safety:strict": "node scripts/check-production-migration-safety.mjs --strict",
+    "db:backup": "bash scripts/backup-databases.sh",
+    "db:migrate:deploy": "bash scripts/deploy-migrations.sh",
+    "verify:rbac-client": "node scripts/verify-rbac-client.cjs",
     "test": "tsx ./run-tests.ts",
     "lint": "echo Linting disabled"
   },

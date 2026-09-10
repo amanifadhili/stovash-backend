@@ -41,6 +41,10 @@ RUN for schema in apps/*/prisma/schema.prisma; do \
   echo "prisma generate $schema"; \
   npx --yes prisma@5.22.0 generate --schema="$schema"; \
   done
+RUN echo "prisma generate packages/database/prisma/identity-rbac.prisma" && \
+  npx --yes prisma@5.22.0 generate \
+  --schema=packages/database/prisma/identity-rbac.prisma
+RUN node scripts/verify-rbac-client.cjs
 RUN npm run build
 
 # ── runner layer ──────────────────────────────────────────────────────────────
