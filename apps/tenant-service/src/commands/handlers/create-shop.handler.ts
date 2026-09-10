@@ -27,6 +27,13 @@ export class CreateShopHandler extends BaseCommandHandler<CreateShopCommand> {
         };
       }
 
+      // Ensure tenant exists in tenant_db (may not yet be materialized from async event)
+      await prisma.tenant.upsert({
+        where: { id: tenantId },
+        update: {},
+        create: { id: tenantId, name: payload.name || 'Shop Tenant', status: 'ACTIVE' },
+      });
+
       const shop = await prisma.shop.create({
         data: {
           tenantId,

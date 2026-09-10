@@ -18,6 +18,13 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
   async execute(command: HandleGoogleUserCommand) {
     const { googleSub, email, firstName, lastName, avatarUrl, emailVerified } = command.data;
 
+    const onboardingPermissionKeys = [
+      'CompleteGoogleOnboarding',
+      'GetTenant',
+      'GetTenantShops',
+      'GetTenantSubscription',
+    ];
+
     return await prisma.$transaction(async (tx) => {
       // Check if Google account already exists
       const existingAccount = await tx.account.findUnique({
@@ -33,6 +40,21 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
       });
 
       if (existingAccount) {
+        if (existingAccount.user.role === 'STAFF') {
+          await tx.userPermission.createMany({
+            data: onboardingPermissionKeys.map((permissionKey) => ({
+              tenantId: existingAccount.user.tenantId,
+              userId: existingAccount.userId,
+              permissionKey,
+              isGranted: true,
+              scope: 'ALL',
+              allowedShopIds: [],
+              grantedBy: existingAccount.userId,
+            })),
+            skipDuplicates: true,
+          });
+        }
+
         // Update existing user with latest Google data
         return await tx.user.update({
           where: { id: existingAccount.userId },
@@ -59,6 +81,21 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
             providerAccountId: googleSub,
           },
         });
+
+        if (existingUser.role === 'STAFF') {
+          await tx.userPermission.createMany({
+            data: onboardingPermissionKeys.map((permissionKey) => ({
+              tenantId: existingUser.tenantId,
+              userId: existingUser.id,
+              permissionKey,
+              isGranted: true,
+              scope: 'ALL',
+              allowedShopIds: [],
+              grantedBy: existingUser.id,
+            })),
+            skipDuplicates: true,
+          });
+        }
 
         return existingUser;
       }
@@ -87,6 +124,20 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
             },
           },
         },
+      });
+
+      await tx.userPermission.createMany({
+        data: [
+          ...onboardingPermissionKeys.map((permissionKey) => ({
+            tenantId: tenant.id,
+            userId: newUser.id,
+            permissionKey,
+            isGranted: true,
+            scope: 'ALL',
+            allowedShopIds: [],
+            grantedBy: newUser.id,
+          })),
+        ],
       });
 
       return newUser;
