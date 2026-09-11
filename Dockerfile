@@ -11,9 +11,32 @@ RUN apt-get update \
 # The key cache benefit: if package-lock.json hasn't changed, Docker reuses
 # the npm ci layer even when source files change.
 COPY package.json package-lock.json ./
-COPY packages/ ./packages/
-COPY frameworks/ ./frameworks/
-COPY apps/ ./apps/
+COPY packages/metrics/package.json ./packages/metrics/package.json
+COPY packages/types/package.json ./packages/types/package.json
+COPY packages/database/package.json ./packages/database/package.json
+COPY packages/logging/package.json ./packages/logging/package.json
+COPY packages/tracing/package.json ./packages/tracing/package.json
+COPY frameworks/audit/package.json ./frameworks/audit/package.json
+COPY frameworks/command/package.json ./frameworks/command/package.json
+COPY frameworks/event/package.json ./frameworks/event/package.json
+COPY frameworks/cache/package.json ./frameworks/cache/package.json
+COPY frameworks/core/package.json ./frameworks/core/package.json
+COPY frameworks/validation/package.json ./frameworks/validation/package.json
+COPY frameworks/permission/package.json ./frameworks/permission/package.json
+COPY apps/purchase-service/package.json ./apps/purchase-service/package.json
+COPY apps/customer-service/package.json ./apps/customer-service/package.json
+COPY apps/api-gateway/package.json ./apps/api-gateway/package.json
+COPY apps/notification-service/package.json ./apps/notification-service/package.json
+COPY apps/identity-service/package.json ./apps/identity-service/package.json
+COPY apps/report-service/package.json ./apps/report-service/package.json
+COPY apps/file-service/package.json ./apps/file-service/package.json
+COPY apps/treasury-service/package.json ./apps/treasury-service/package.json
+COPY apps/search-service/package.json ./apps/search-service/package.json
+COPY apps/accounting-service/package.json ./apps/accounting-service/package.json
+COPY apps/sales-service/package.json ./apps/sales-service/package.json
+COPY apps/tenant-service/package.json ./apps/tenant-service/package.json
+COPY apps/inventory-service/package.json ./apps/inventory-service/package.json
+COPY apps/supplier-service/package.json ./apps/supplier-service/package.json
 RUN npm ci
 
 # ── builder layer ─────────────────────────────────────────────────────────────
@@ -24,6 +47,9 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends openssl python3 make g++ \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages ./packages
+COPY --from=deps /app/frameworks ./frameworks
+COPY --from=deps /app/apps ./apps
 COPY . .
 ENV DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/electronic_shop
 ENV IDENTITY_DATABASE_URL=$DATABASE_URL
@@ -44,6 +70,9 @@ RUN for schema in apps/*/prisma/schema.prisma; do \
 RUN echo "prisma generate packages/database/prisma/identity-rbac.prisma" && \
   npx --yes prisma@5.22.0 generate \
   --schema=packages/database/prisma/identity-rbac.prisma
+RUN echo "prisma generate packages/database/prisma/schema.prisma" && \
+  npx --yes prisma@5.22.0 generate \
+  --schema=packages/database/prisma/schema.prisma
 RUN node scripts/verify-rbac-client.cjs
 RUN npm run build
 
