@@ -94,6 +94,8 @@ services:
     network_mode: host
     env_file:
       - ${ENV_FILE}
+    volumes:
+      - ${ENV_FILE}:/app/.env:ro
     environment:
       NODE_ENV: production
       PORT: "${PORT}"
