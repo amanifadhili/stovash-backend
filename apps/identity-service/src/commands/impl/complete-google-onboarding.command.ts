@@ -76,7 +76,18 @@ export class CompleteGoogleOnboardingHandler extends BaseCommandHandler<Complete
       }
 
       const tenantId = randomUUID();
+      const tenantName = `${user.firstName}'s Shop`;
 
+      // Create tenant FIRST (required by FK constraint on users.tenantId)
+      await prisma.tenant.create({
+        data: {
+          id: tenantId,
+          name: tenantName,
+          status: 'ACTIVE',
+        },
+      });
+
+      // Now safe to link user to tenant
       await prisma.user.update({
         where: { id: user.id },
         data: { tenantId, role: 'ADMIN' },
@@ -89,7 +100,7 @@ export class CompleteGoogleOnboardingHandler extends BaseCommandHandler<Complete
           aggregateType: 'Tenant',
           payload: {
             tenantId,
-            name: `${user.firstName}'s Shop`,
+            name: tenantName,
             userId: user.id,
             email: user.email,
             firstName: user.firstName,
