@@ -20,6 +20,7 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
 
     const onboardingPermissionKeys = [
       'CompleteGoogleOnboarding',
+      'CreateShop',
       'GetTenant',
       'GetTenantShops',
       'GetTenantSubscription',
@@ -110,7 +111,6 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
           avatarUrl: avatarUrl || null,
           emailVerified,
           password: null,
-          tenantId: null,
           role: 'STAFF',
           status: 'ACTIVE',
           accounts: {

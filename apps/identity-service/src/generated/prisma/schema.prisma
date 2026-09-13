@@ -25,7 +25,7 @@ model Tenant {
 
 model User {
   id            String   @id @default(uuid())
-  tenantId      String
+  tenantId      String?
   email         String   @unique
   password      String?
   firstName     String
@@ -50,7 +50,7 @@ model User {
 
 model UserPermission {
   id             String    @id @default(uuid())
-  tenantId       String
+  tenantId       String?
   userId         String
   permissionKey  String
   isGranted      Boolean   @default(true)
@@ -74,7 +74,7 @@ model UserPermission {
 
 model PermissionTemplate {
   id          String   @id @default(uuid())
-  tenantId    String
+  tenantId    String?
   name        String
   description String?
   isSystem    Boolean  @default(false)
