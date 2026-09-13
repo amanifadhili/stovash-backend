@@ -13,22 +13,22 @@ import { FinancialStatementsReport } from './reports/financial-statements.report
       {
         name: 'ACCOUNTING_SERVICE',
         transport: Transport.TCP,
-        options: { host: '127.0.0.1', port: 3003 },
+        options: { host: '127.0.0.1', port: parseInt(process.env.ACCOUNTING_SERVICE_PORT || '5053', 10) },
       },
       {
         name: 'INVENTORY_SERVICE',
         transport: Transport.TCP,
-        options: { host: '127.0.0.1', port: 3004 },
+        options: { host: '127.0.0.1', port: parseInt(process.env.INVENTORY_SERVICE_PORT || '5055', 10) },
       },
       {
         name: 'SALES_SERVICE',
         transport: Transport.TCP,
-        options: { host: '127.0.0.1', port: 3005 },
+        options: { host: '127.0.0.1', port: parseInt(process.env.SALES_SERVICE_PORT || '5056', 10) },
       },
       {
         name: 'PURCHASE_SERVICE',
         transport: Transport.TCP,
-        options: { host: '127.0.0.1', port: 3006 },
+        options: { host: '127.0.0.1', port: parseInt(process.env.PURCHASE_SERVICE_PORT || '5057', 10) },
       },
     ]),
   ],
