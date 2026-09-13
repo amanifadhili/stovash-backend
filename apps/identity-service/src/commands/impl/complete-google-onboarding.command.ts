@@ -13,8 +13,8 @@ export class CompleteGoogleOnboardingPayload {
 }
 
 export class CompleteGoogleOnboardingCommand extends BaseCommand<CompleteGoogleOnboardingPayload> {
-  constructor(payload: CompleteGoogleOnboardingPayload) {
-    super(payload);
+  constructor(payload: CompleteGoogleOnboardingPayload, context?: any) {
+    super(payload, context);
   }
 }
 

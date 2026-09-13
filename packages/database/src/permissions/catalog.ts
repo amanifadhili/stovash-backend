@@ -1649,7 +1649,7 @@ export const SYSTEM_PERMISSION_CATALOG: SystemPermissionDefinition[] = [
     isFinancial: false,
     supportsScope: false,
     supportsLocation: false,
-    isAdminOnly: true,
+    isAdminOnly: false,
     dependencies: []
   },
   {
@@ -1836,7 +1836,7 @@ export const PUBLIC_COMMANDS: readonly string[] = ['LoginUser', 'CreateTenant'] 
  * Commands that are admin-only by role — enforced even without explicit catalog flag.
  * Catalog-level isAdminOnly is the authoritative source for new commands.
  */
-export const ADMIN_ONLY_COMMANDS: readonly string[] = ['CreateShop', 'UpdateShop'] as const;
+export const ADMIN_ONLY_COMMANDS: readonly string[] = ['UpdateShop'] as const;
 
 /**
  * Commands that are internal microservice calls, not directly from the gateway.
