@@ -203,7 +203,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
   // Tenant commands - only ADMIN (tenant owner) can mutate tenants/shops;
   // reads are authenticated only (resolved against the JWT tenant).
   'CreateTenant': ['ADMIN'],
-  'CreateShop': ['ADMIN'],
+  'CreateShop': ['ADMIN', 'STAFF'],
   'UpdateShop': ['ADMIN'],
   'CreateStaff': ['ADMIN', 'MANAGER'],
   'GetStaff': ['ADMIN', 'MANAGER'],

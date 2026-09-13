@@ -101,11 +101,7 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
       }
 
       // Create new user with Google account
-      // Create a private tenant for this Google user (assigned during onboarding)
-      const tenant = await tx.tenant.create({
-        data: { name: `${firstName || 'Google'} ${lastName || 'User'}`, status: 'ACTIVE' },
-      });
-
+      // Tenant is created later during CompleteGoogleOnboarding
       const newUser = await tx.user.create({
         data: {
           email,
@@ -114,7 +110,7 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
           avatarUrl: avatarUrl || null,
           emailVerified,
           password: null,
-          tenantId: tenant.id,
+          tenantId: null,
           role: 'STAFF',
           status: 'ACTIVE',
           accounts: {
@@ -129,7 +125,7 @@ export class HandleGoogleUserCommandHandler implements ICommandHandler<HandleGoo
       await tx.userPermission.createMany({
         data: [
           ...onboardingPermissionKeys.map((permissionKey) => ({
-            tenantId: tenant.id,
+            tenantId: null,
             userId: newUser.id,
             permissionKey,
             isGranted: true,

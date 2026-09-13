@@ -48,6 +48,33 @@ export class CompleteGoogleOnboardingHandler extends BaseCommandHandler<Complete
         };
       }
 
+      // If user already has a tenantId, they've already been onboarded
+      if (user.tenantId) {
+        const accessToken = jwt.sign(
+          { sub: user.id, email: user.email, role: user.role, tenantId: user.tenantId },
+          process.env.JWT_SECRET || 'dev-secret-key',
+          { expiresIn: '1d' },
+        );
+
+        return {
+          status: 'success',
+          traceId,
+          data: {
+            id: user.tenantId,
+            accessToken,
+            user: {
+              id: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              role: user.role,
+              status: user.status,
+              tenantId: user.tenantId,
+            },
+          },
+        };
+      }
+
       const tenantId = randomUUID();
 
       await prisma.user.update({
