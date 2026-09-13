@@ -16,7 +16,7 @@ import { EventBus } from '@electronic-shop/framework-event';
         transport: Transport.TCP,
         options: {
           host: '127.0.0.1',
-          port: parseInt(process.env.TREASURY_SERVICE_PORT || '3006', 10),
+          port: parseInt(process.env.TREASURY_SERVICE_PORT || '5058', 10),
         },
       },
       {
@@ -24,7 +24,7 @@ import { EventBus } from '@electronic-shop/framework-event';
         transport: Transport.TCP,
         options: {
           host: '127.0.0.1',
-          port: parseInt(process.env.SALES_SERVICE_PORT || '3005', 10),
+          port: parseInt(process.env.SALES_SERVICE_PORT || '5056', 10),
         },
       },
       {
@@ -32,7 +32,7 @@ import { EventBus } from '@electronic-shop/framework-event';
         transport: Transport.TCP,
         options: {
           host: '127.0.0.1',
-          port: parseInt(process.env.PURCHASE_SERVICE_PORT || '3007', 10),
+          port: parseInt(process.env.PURCHASE_SERVICE_PORT || '5057', 10),
         },
       },
     ]),
