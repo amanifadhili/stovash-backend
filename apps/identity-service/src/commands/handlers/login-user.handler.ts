@@ -32,6 +32,15 @@ export class LoginUserHandler extends BaseCommandHandler<LoginUserCommand> {
         };
       }
 
+      if (!user.password) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'This account uses Google Sign-In. Please log in with Google.',
+          errorCode: ErrorCode.UNAUTHORIZED
+        };
+      }
+
       const isPasswordValid = await bcrypt.compare(payload.password, user.password);
       if (!isPasswordValid) {
         return {

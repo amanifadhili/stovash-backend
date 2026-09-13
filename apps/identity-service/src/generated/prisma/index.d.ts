@@ -3042,7 +3042,7 @@ export namespace Prisma {
 
   export type UserGroupByOutputType = {
     id: string
-    tenantId: string
+    tenantId: string | null
     email: string
     password: string | null
     firstName: string
@@ -3147,7 +3147,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string
+      tenantId: string | null
       email: string
       password: string | null
       firstName: string
@@ -4168,7 +4168,7 @@ export namespace Prisma {
 
   export type UserPermissionGroupByOutputType = {
     id: string
-    tenantId: string
+    tenantId: string | null
     userId: string
     permissionKey: string
     isGranted: boolean
@@ -4259,7 +4259,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string
+      tenantId: string | null
       userId: string
       permissionKey: string
       isGranted: boolean
@@ -5155,7 +5155,7 @@ export namespace Prisma {
 
   export type PermissionTemplateGroupByOutputType = {
     id: string
-    tenantId: string
+    tenantId: string | null
     name: string
     description: string | null
     isSystem: boolean
@@ -5228,7 +5228,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string
+      tenantId: string | null
       name: string
       description: string | null
       isSystem: boolean
@@ -13770,7 +13770,7 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     id?: StringFilter<"User"> | string
-    tenantId?: StringFilter<"User"> | string
+    tenantId?: StringNullableFilter<"User"> | string | null
     email?: StringFilter<"User"> | string
     password?: StringNullableFilter<"User"> | string | null
     firstName?: StringFilter<"User"> | string
@@ -13790,7 +13790,7 @@ export namespace Prisma {
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
     email?: SortOrder
     password?: SortOrderInput | SortOrder
     firstName?: SortOrder
@@ -13814,7 +13814,7 @@ export namespace Prisma {
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    tenantId?: StringFilter<"User"> | string
+    tenantId?: StringNullableFilter<"User"> | string | null
     password?: StringNullableFilter<"User"> | string | null
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
@@ -13833,7 +13833,7 @@ export namespace Prisma {
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
     email?: SortOrder
     password?: SortOrderInput | SortOrder
     firstName?: SortOrder
@@ -13854,7 +13854,7 @@ export namespace Prisma {
     OR?: UserScalarWhereWithAggregatesInput[]
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"User"> | string
-    tenantId?: StringWithAggregatesFilter<"User"> | string
+    tenantId?: StringNullableWithAggregatesFilter<"User"> | string | null
     email?: StringWithAggregatesFilter<"User"> | string
     password?: StringNullableWithAggregatesFilter<"User"> | string | null
     firstName?: StringWithAggregatesFilter<"User"> | string
@@ -13872,7 +13872,7 @@ export namespace Prisma {
     OR?: UserPermissionWhereInput[]
     NOT?: UserPermissionWhereInput | UserPermissionWhereInput[]
     id?: StringFilter<"UserPermission"> | string
-    tenantId?: StringFilter<"UserPermission"> | string
+    tenantId?: StringNullableFilter<"UserPermission"> | string | null
     userId?: StringFilter<"UserPermission"> | string
     permissionKey?: StringFilter<"UserPermission"> | string
     isGranted?: BoolFilter<"UserPermission"> | boolean
@@ -13888,7 +13888,7 @@ export namespace Prisma {
 
   export type UserPermissionOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
     userId?: SortOrder
     permissionKey?: SortOrder
     isGranted?: SortOrder
@@ -13908,7 +13908,7 @@ export namespace Prisma {
     AND?: UserPermissionWhereInput | UserPermissionWhereInput[]
     OR?: UserPermissionWhereInput[]
     NOT?: UserPermissionWhereInput | UserPermissionWhereInput[]
-    tenantId?: StringFilter<"UserPermission"> | string
+    tenantId?: StringNullableFilter<"UserPermission"> | string | null
     userId?: StringFilter<"UserPermission"> | string
     permissionKey?: StringFilter<"UserPermission"> | string
     isGranted?: BoolFilter<"UserPermission"> | boolean
@@ -13924,7 +13924,7 @@ export namespace Prisma {
 
   export type UserPermissionOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
     userId?: SortOrder
     permissionKey?: SortOrder
     isGranted?: SortOrder
@@ -13945,7 +13945,7 @@ export namespace Prisma {
     OR?: UserPermissionScalarWhereWithAggregatesInput[]
     NOT?: UserPermissionScalarWhereWithAggregatesInput | UserPermissionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"UserPermission"> | string
-    tenantId?: StringWithAggregatesFilter<"UserPermission"> | string
+    tenantId?: StringNullableWithAggregatesFilter<"UserPermission"> | string | null
     userId?: StringWithAggregatesFilter<"UserPermission"> | string
     permissionKey?: StringWithAggregatesFilter<"UserPermission"> | string
     isGranted?: BoolWithAggregatesFilter<"UserPermission"> | boolean
@@ -13963,7 +13963,7 @@ export namespace Prisma {
     OR?: PermissionTemplateWhereInput[]
     NOT?: PermissionTemplateWhereInput | PermissionTemplateWhereInput[]
     id?: StringFilter<"PermissionTemplate"> | string
-    tenantId?: StringFilter<"PermissionTemplate"> | string
+    tenantId?: StringNullableFilter<"PermissionTemplate"> | string | null
     name?: StringFilter<"PermissionTemplate"> | string
     description?: StringNullableFilter<"PermissionTemplate"> | string | null
     isSystem?: BoolFilter<"PermissionTemplate"> | boolean
@@ -13975,7 +13975,7 @@ export namespace Prisma {
 
   export type PermissionTemplateOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     isSystem?: SortOrder
@@ -13991,7 +13991,7 @@ export namespace Prisma {
     AND?: PermissionTemplateWhereInput | PermissionTemplateWhereInput[]
     OR?: PermissionTemplateWhereInput[]
     NOT?: PermissionTemplateWhereInput | PermissionTemplateWhereInput[]
-    tenantId?: StringFilter<"PermissionTemplate"> | string
+    tenantId?: StringNullableFilter<"PermissionTemplate"> | string | null
     name?: StringFilter<"PermissionTemplate"> | string
     description?: StringNullableFilter<"PermissionTemplate"> | string | null
     isSystem?: BoolFilter<"PermissionTemplate"> | boolean
@@ -14003,7 +14003,7 @@ export namespace Prisma {
 
   export type PermissionTemplateOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     isSystem?: SortOrder
@@ -14019,7 +14019,7 @@ export namespace Prisma {
     OR?: PermissionTemplateScalarWhereWithAggregatesInput[]
     NOT?: PermissionTemplateScalarWhereWithAggregatesInput | PermissionTemplateScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"PermissionTemplate"> | string
-    tenantId?: StringWithAggregatesFilter<"PermissionTemplate"> | string
+    tenantId?: StringNullableWithAggregatesFilter<"PermissionTemplate"> | string | null
     name?: StringWithAggregatesFilter<"PermissionTemplate"> | string
     description?: StringNullableWithAggregatesFilter<"PermissionTemplate"> | string | null
     isSystem?: BoolWithAggregatesFilter<"PermissionTemplate"> | boolean
@@ -14627,7 +14627,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     email: string
     password?: string | null
     firstName: string
@@ -14665,7 +14665,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
@@ -14684,7 +14684,7 @@ export namespace Prisma {
 
   export type UserCreateManyInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     email: string
     password?: string | null
     firstName: string
@@ -14713,7 +14713,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
@@ -14728,7 +14728,7 @@ export namespace Prisma {
 
   export type UserPermissionCreateInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     permissionKey: string
     isGranted?: boolean
     scope?: string
@@ -14743,7 +14743,7 @@ export namespace Prisma {
 
   export type UserPermissionUncheckedCreateInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     userId: string
     permissionKey: string
     isGranted?: boolean
@@ -14758,7 +14758,7 @@ export namespace Prisma {
 
   export type UserPermissionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     permissionKey?: StringFieldUpdateOperationsInput | string
     isGranted?: BoolFieldUpdateOperationsInput | boolean
     scope?: StringFieldUpdateOperationsInput | string
@@ -14773,7 +14773,7 @@ export namespace Prisma {
 
   export type UserPermissionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
     permissionKey?: StringFieldUpdateOperationsInput | string
     isGranted?: BoolFieldUpdateOperationsInput | boolean
@@ -14788,7 +14788,7 @@ export namespace Prisma {
 
   export type UserPermissionCreateManyInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     userId: string
     permissionKey: string
     isGranted?: boolean
@@ -14803,7 +14803,7 @@ export namespace Prisma {
 
   export type UserPermissionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     permissionKey?: StringFieldUpdateOperationsInput | string
     isGranted?: BoolFieldUpdateOperationsInput | boolean
     scope?: StringFieldUpdateOperationsInput | string
@@ -14817,7 +14817,7 @@ export namespace Prisma {
 
   export type UserPermissionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
     permissionKey?: StringFieldUpdateOperationsInput | string
     isGranted?: BoolFieldUpdateOperationsInput | boolean
@@ -14832,7 +14832,7 @@ export namespace Prisma {
 
   export type PermissionTemplateCreateInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     name: string
     description?: string | null
     isSystem?: boolean
@@ -14844,7 +14844,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUncheckedCreateInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     name: string
     description?: string | null
     isSystem?: boolean
@@ -14856,7 +14856,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
@@ -14868,7 +14868,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
@@ -14880,7 +14880,7 @@ export namespace Prisma {
 
   export type PermissionTemplateCreateManyInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     name: string
     description?: string | null
     isSystem?: boolean
@@ -14890,7 +14890,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
@@ -14900,7 +14900,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
@@ -16748,7 +16748,7 @@ export namespace Prisma {
     OR?: UserScalarWhereInput[]
     NOT?: UserScalarWhereInput | UserScalarWhereInput[]
     id?: StringFilter<"User"> | string
-    tenantId?: StringFilter<"User"> | string
+    tenantId?: StringNullableFilter<"User"> | string | null
     email?: StringFilter<"User"> | string
     password?: StringNullableFilter<"User"> | string | null
     firstName?: StringFilter<"User"> | string
@@ -16784,7 +16784,7 @@ export namespace Prisma {
 
   export type UserPermissionCreateWithoutUserInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     permissionKey: string
     isGranted?: boolean
     scope?: string
@@ -16798,7 +16798,7 @@ export namespace Prisma {
 
   export type UserPermissionUncheckedCreateWithoutUserInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     permissionKey: string
     isGranted?: boolean
     scope?: string
@@ -16950,7 +16950,7 @@ export namespace Prisma {
     OR?: UserPermissionScalarWhereInput[]
     NOT?: UserPermissionScalarWhereInput | UserPermissionScalarWhereInput[]
     id?: StringFilter<"UserPermission"> | string
-    tenantId?: StringFilter<"UserPermission"> | string
+    tenantId?: StringNullableFilter<"UserPermission"> | string | null
     userId?: StringFilter<"UserPermission"> | string
     permissionKey?: StringFilter<"UserPermission"> | string
     isGranted?: BoolFilter<"UserPermission"> | boolean
@@ -17069,7 +17069,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutUserPermissionsInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     email: string
     password?: string | null
     firstName: string
@@ -17121,7 +17121,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutUserPermissionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
@@ -17233,7 +17233,7 @@ export namespace Prisma {
 
   export type PermissionTemplateCreateWithoutTemplatePermissionsInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     name: string
     description?: string | null
     isSystem?: boolean
@@ -17244,7 +17244,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUncheckedCreateWithoutTemplatePermissionsInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     name: string
     description?: string | null
     isSystem?: boolean
@@ -17271,7 +17271,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUpdateWithoutTemplatePermissionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
@@ -17282,7 +17282,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUncheckedUpdateWithoutTemplatePermissionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
@@ -17311,7 +17311,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutUserTemplateAssignmentsInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     email: string
     password?: string | null
     firstName: string
@@ -17334,7 +17334,7 @@ export namespace Prisma {
 
   export type PermissionTemplateCreateWithoutUserTemplateAssignmentsInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     name: string
     description?: string | null
     isSystem?: boolean
@@ -17345,7 +17345,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUncheckedCreateWithoutUserTemplateAssignmentsInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     name: string
     description?: string | null
     isSystem?: boolean
@@ -17390,7 +17390,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutUserTemplateAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
@@ -17419,7 +17419,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUpdateWithoutUserTemplateAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
@@ -17430,7 +17430,7 @@ export namespace Prisma {
 
   export type PermissionTemplateUncheckedUpdateWithoutUserTemplateAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
@@ -17459,7 +17459,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutSessionsInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     email: string
     password?: string | null
     firstName: string
@@ -17511,7 +17511,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
@@ -17547,7 +17547,7 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutAccountsInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     email: string
     password?: string | null
     firstName: string
@@ -17599,7 +17599,7 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     email?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
@@ -17681,7 +17681,7 @@ export namespace Prisma {
 
   export type UserPermissionCreateManyUserInput = {
     id?: string
-    tenantId: string
+    tenantId?: string | null
     permissionKey: string
     isGranted?: boolean
     scope?: string
@@ -17721,7 +17721,7 @@ export namespace Prisma {
 
   export type UserPermissionUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     permissionKey?: StringFieldUpdateOperationsInput | string
     isGranted?: BoolFieldUpdateOperationsInput | boolean
     scope?: StringFieldUpdateOperationsInput | string
@@ -17735,7 +17735,7 @@ export namespace Prisma {
 
   export type UserPermissionUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     permissionKey?: StringFieldUpdateOperationsInput | string
     isGranted?: BoolFieldUpdateOperationsInput | boolean
     scope?: StringFieldUpdateOperationsInput | string
@@ -17749,7 +17749,7 @@ export namespace Prisma {
 
   export type UserPermissionUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     permissionKey?: StringFieldUpdateOperationsInput | string
     isGranted?: BoolFieldUpdateOperationsInput | boolean
     scope?: StringFieldUpdateOperationsInput | string

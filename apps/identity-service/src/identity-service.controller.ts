@@ -121,7 +121,7 @@ export class IdentityServiceController {
   }
 
   @MessagePattern({ cmd: 'CompleteGoogleOnboarding' })
-  async handleCompleteGoogleOnboarding(@Payload() data: any) {
-    return this.commandBus.execute(new CompleteGoogleOnboardingCommand(data));
+  async handleCompleteGoogleOnboarding(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new CompleteGoogleOnboardingCommand(data.payload, data.context));
   }
 }

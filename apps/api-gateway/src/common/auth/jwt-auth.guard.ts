@@ -9,6 +9,7 @@ export const SUBSCRIPTION_EXEMPT = [
   'LoginUser', 'CreateTenant', 'VerifyUser', 'RefreshToken',
   'GetTenant', 'GetTenantSubscription', 'GetTenantShops',
   'CreateShop', // New users must create a shop before they can subscribe
+  'CompleteGoogleOnboarding', // Google OAuth onboarding creates tenant + subscription
 ];
 
 @Injectable()

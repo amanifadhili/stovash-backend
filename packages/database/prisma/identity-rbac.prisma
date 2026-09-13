@@ -14,7 +14,7 @@ datasource db {
 
 model UserPermission {
   id             String    @id @default(uuid())
-  tenantId       String
+  tenantId       String?
   userId         String
   permissionKey  String
   isGranted      Boolean   @default(true)

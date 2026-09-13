@@ -17,7 +17,7 @@ import { AccountingBooksBridge } from './treasury-movement/accounting-books-brid
         transport: Transport.TCP,
         options: {
           host: '127.0.0.1',
-          port: parseInt(process.env.ACCOUNTING_SERVICE_PORT || '3003', 10),
+          port: parseInt(process.env.ACCOUNTING_SERVICE_PORT || '5053', 10),
         },
       },
     ]),

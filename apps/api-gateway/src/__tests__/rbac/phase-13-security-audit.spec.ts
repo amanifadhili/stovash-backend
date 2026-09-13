@@ -128,7 +128,7 @@ describe('Phase 13 — Security Hardening & Penetration Verification Audit', () 
         role: 'STAFF',
       };
 
-      const result = await authorizeUserAction(mockPrismaEmpty, userContext, 'CreateShop');
+      const result = await authorizeUserAction(mockPrismaEmpty, userContext, 'UpdateShop');
 
       expect(result.allowed).toBe(false);
       expect(result.source).toBe('ADMIN_ONLY_RESTRICTION');

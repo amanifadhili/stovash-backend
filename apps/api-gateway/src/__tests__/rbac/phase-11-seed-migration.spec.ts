@@ -26,6 +26,16 @@ describe('Phase 11 — System Role & Template Seed Migration', () => {
 
     const mockPrisma: any = {
       permissionTemplate: {
+        findFirst: jest.fn(async () => null),
+        create: jest.fn(async ({ data }) => {
+          const t = { id: `tpl-${data.name}`, ...data };
+          mockTemplates.set(data.name, t);
+          return t;
+        }),
+        update: jest.fn(async ({ where, data }) => {
+          const existing = [...mockTemplates.values()].find((t) => t.id === where.id);
+          return { ...existing, ...data };
+        }),
         upsert: jest.fn(async ({ where, create }) => {
           const t = { id: `tpl-${where.name}`, name: where.name, role: create.role };
           mockTemplates.set(where.name, t);
@@ -33,6 +43,9 @@ describe('Phase 11 — System Role & Template Seed Migration', () => {
         }),
       },
       templatePermission: {
+        findFirst: jest.fn(async () => null),
+        create: jest.fn(async () => ({ id: 'tpl-perm-1' })),
+        update: jest.fn(async () => ({ id: 'tpl-perm-1' })),
         upsert: jest.fn(async () => ({ id: 'tpl-perm-1' })),
       },
       user: {
@@ -44,6 +57,11 @@ describe('Phase 11 — System Role & Template Seed Migration', () => {
         update: jest.fn(async () => ({ id: 'updated' })),
       },
       userTemplateAssignment: {
+        findFirst: jest.fn(async () => null),
+        create: jest.fn(async ({ data }) => {
+          mockAssignments.set(data.userId, data.templateId);
+          return { id: 'asgn-1' };
+        }),
         upsert: jest.fn(async ({ create }) => {
           mockAssignments.set(create.userId, create.templateId);
           return { id: 'asgn-1' };

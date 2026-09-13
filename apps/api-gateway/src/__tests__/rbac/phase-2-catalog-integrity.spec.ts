@@ -145,7 +145,7 @@ describe('Phase 2 — Permission Catalog Integrity', () => {
   });
 
   it('isAdminOnlyCommand helper correctly identifies admin-only commands', () => {
-    expect(isAdminOnlyCommand('CreateShop')).toBe(true);
+    expect(isAdminOnlyCommand('CreateShop')).toBe(false);
     expect(isAdminOnlyCommand('UpdateShop')).toBe(true);
     expect(isAdminOnlyCommand('AssignTemplateToUser')).toBe(true);
     expect(isAdminOnlyCommand('GetUserEffectivePermissions')).toBe(true);

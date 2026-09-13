@@ -112,10 +112,18 @@ describe('Phase 3 — Resolution Engine: Rule 1 (ADMIN immunity)', () => {
 });
 
 describe('Phase 3 — Resolution Engine: Rule 1b (Admin-only restriction)', () => {
-  it('STAFF cannot access CreateShop (admin-only)', async () => {
-    const res = await authorizeUserAction(makePrisma({}), STAFF_CTX, 'CreateShop');
-    expect(res.allowed).toBe(false);
-    expect(res.source).toBe('ADMIN_ONLY_RESTRICTION');
+  it('STAFF can access CreateShop (no longer admin-only — STAFF with explicit grant allowed)', async () => {
+    const prisma = makePrisma({
+      userPermission: {
+        isGranted: true,
+        scope: 'ALL',
+        allowedShopIds: [],
+        expiresAt: null,
+      },
+    });
+    const res = await authorizeUserAction(prisma, STAFF_CTX, 'CreateShop');
+    expect(res.allowed).toBe(true);
+    expect(res.source).toBe('EXPLICIT_USER_GRANT');
   });
 
   it('STAFF cannot access UpdateShop (admin-only)', async () => {
@@ -137,7 +145,7 @@ describe('Phase 3 — Resolution Engine: Rule 1b (Admin-only restriction)', () =
   });
 
   it('MANAGER (non-admin) also cannot access admin-only commands', async () => {
-    const res = await authorizeUserAction(makePrisma({}), MANAGER_CTX, 'CreateShop');
+    const res = await authorizeUserAction(makePrisma({}), MANAGER_CTX, 'UpdateShop');
     expect(res.allowed).toBe(false);
     expect(res.source).toBe('ADMIN_ONLY_RESTRICTION');
   });

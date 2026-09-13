@@ -13,8 +13,8 @@ export class CompleteGoogleOnboardingPayload {
 }
 
 export class CompleteGoogleOnboardingCommand extends BaseCommand<CompleteGoogleOnboardingPayload> {
-  constructor(payload: CompleteGoogleOnboardingPayload) {
-    super(payload);
+  constructor(payload: CompleteGoogleOnboardingPayload, context?: any) {
+    super(payload, context);
   }
 }
 
@@ -48,8 +48,46 @@ export class CompleteGoogleOnboardingHandler extends BaseCommandHandler<Complete
         };
       }
 
-      const tenantId = randomUUID();
+      // If user already has a tenantId, they've already been onboarded
+      if (user.tenantId) {
+        const accessToken = jwt.sign(
+          { sub: user.id, email: user.email, role: user.role, tenantId: user.tenantId },
+          process.env.JWT_SECRET || 'dev-secret-key',
+          { expiresIn: '1d' },
+        );
 
+        return {
+          status: 'success',
+          traceId,
+          data: {
+            id: user.tenantId,
+            accessToken,
+            user: {
+              id: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              role: user.role,
+              status: user.status,
+              tenantId: user.tenantId,
+            },
+          },
+        };
+      }
+
+      const tenantId = randomUUID();
+      const tenantName = `${user.firstName}'s Shop`;
+
+      // Create tenant FIRST (required by FK constraint on users.tenantId)
+      await prisma.tenant.create({
+        data: {
+          id: tenantId,
+          name: tenantName,
+          status: 'ACTIVE',
+        },
+      });
+
+      // Now safe to link user to tenant
       await prisma.user.update({
         where: { id: user.id },
         data: { tenantId, role: 'ADMIN' },
@@ -62,7 +100,7 @@ export class CompleteGoogleOnboardingHandler extends BaseCommandHandler<Complete
           aggregateType: 'Tenant',
           payload: {
             tenantId,
-            name: `${user.firstName}'s Shop`,
+            name: tenantName,
             userId: user.id,
             email: user.email,
             firstName: user.firstName,
