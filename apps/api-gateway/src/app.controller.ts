@@ -29,6 +29,7 @@ export const COMMAND_PERMISSIONS: Record<string, string[]> = {
   'UpdateShop': [],
   'GetTenant': [],
   'GetTenantShops': [],
+  'GetMyShops': [],
   'GetTenantSubscription': [],
   'GetStaff': [],
   'CreateStaff': [],
@@ -576,7 +577,7 @@ export class AppController {
         return result;
       }
 
-      if (['CreateShop', 'UpdateShop', 'GetTenantShops', 'GetTenant', 'GetTenantSubscription', 'GetStaff', 'CreateStaff'].includes(cmd)) {
+      if (['CreateShop', 'UpdateShop', 'GetTenantShops', 'GetMyShops', 'GetTenant', 'GetTenantSubscription', 'GetStaff', 'CreateStaff'].includes(cmd)) {
         const result = await firstValueFrom(this.tenantClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;

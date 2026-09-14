@@ -8,6 +8,7 @@ import { GetTenantCommand } from './commands/impl/get-tenant.command.js';
 import { GetTenantSubscriptionCommand } from './commands/impl/get-tenant-subscription.command.js';
 import { GetStaffCommand } from './commands/impl/get-staff.command.js';
 import { CreateStaffCommand } from './commands/impl/create-staff.command.js';
+import { GetMyShopsCommand } from './commands/impl/get-my-shops.command.js';
 
 @Controller()
 export class TenantServiceController {
@@ -46,5 +47,10 @@ export class TenantServiceController {
   @MessagePattern({ cmd: 'CreateStaff' })
   async handleCreateStaff(@Payload() data: { payload: any, context: any }) {
     return this.commandBus.execute(new CreateStaffCommand(data.payload, data.context));
+  }
+
+  @MessagePattern({ cmd: 'GetMyShops' })
+  async handleGetMyShops(@Payload() data: { payload: any, context: any }) {
+    return this.commandBus.execute(new GetMyShopsCommand(data.payload, data.context));
   }
 }

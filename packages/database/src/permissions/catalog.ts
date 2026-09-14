@@ -1804,6 +1804,17 @@ export const SYSTEM_PERMISSION_CATALOG: SystemPermissionDefinition[] = [
     dependencies: []
   },
   {
+    key: 'GetMyShops',
+    domain: 'admin',
+    name: 'View My Shops',
+    description: 'List shops assigned to the current user',
+    isSensitive: false,
+    isFinancial: false,
+    supportsScope: false,
+    supportsLocation: false,
+    dependencies: []
+  },
+  {
     key: 'GetTenantSubscription',
     domain: 'admin',
     name: 'View Subscription Plan',
