@@ -261,7 +261,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/amani/Documents/Code/javascript/nextjs/stovash/electronic-shop/apps/identity-service/src/generated/prisma",
+      "value": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/identity-service/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -275,7 +275,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/amani/Documents/Code/javascript/nextjs/stovash/electronic-shop/apps/identity-service/prisma/schema.prisma",
+    "sourceFilePath": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/identity-service/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

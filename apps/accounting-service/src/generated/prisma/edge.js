@@ -315,7 +315,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/amani/Documents/Code/javascript/nextjs/stovash/electronic-shop/apps/accounting-service/src/generated/prisma",
+      "value": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/accounting-service/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -329,11 +329,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/amani/Documents/Code/javascript/nextjs/stovash/electronic-shop/apps/accounting-service/prisma/schema.prisma",
+    "sourceFilePath": "/home/abayo/code/node/electronic-shop/electronic-shop-api/apps/accounting-service/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../../../.env"
   },
   "relativePath": "../../../prisma",
   "clientVersion": "5.22.0",
@@ -342,7 +343,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
