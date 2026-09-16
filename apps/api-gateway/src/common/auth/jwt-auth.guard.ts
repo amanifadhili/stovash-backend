@@ -2,12 +2,12 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Forbi
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
-const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant'];
+const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant', 'RequestPasswordReset', 'ResetPassword'];
 
 // Commands that do NOT require an active subscription (auth, reads, onboarding, subscription mgmt)
 export const SUBSCRIPTION_EXEMPT = [
   'LoginUser', 'CreateTenant', 'VerifyUser', 'RefreshToken',
-  'GetTenant', 'GetTenantSubscription', 'GetTenantShops',
+  'GetTenant', 'GetTenantSubscription', 'GetTenantShops', 'GetMyShops',
   'CreateShop', // New users must create a shop before they can subscribe
   'CompleteGoogleOnboarding', // Google OAuth onboarding creates tenant + subscription
 ];

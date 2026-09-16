@@ -1804,6 +1804,17 @@ export const SYSTEM_PERMISSION_CATALOG: SystemPermissionDefinition[] = [
     dependencies: []
   },
   {
+    key: 'GetMyShops',
+    domain: 'admin',
+    name: 'View My Shops',
+    description: 'List shops assigned to the current user',
+    isSensitive: false,
+    isFinancial: false,
+    supportsScope: false,
+    supportsLocation: false,
+    dependencies: []
+  },
+  {
     key: 'GetTenantSubscription',
     domain: 'admin',
     name: 'View Subscription Plan',
@@ -1830,7 +1841,7 @@ export const SYSTEM_PERMISSION_CATALOG: SystemPermissionDefinition[] = [
 /**
  * Commands that are public (no authentication required)
  */
-export const PUBLIC_COMMANDS: readonly string[] = ['LoginUser', 'CreateTenant'] as const;
+export const PUBLIC_COMMANDS: readonly string[] = ['LoginUser', 'CreateTenant', 'RequestPasswordReset', 'ResetPassword'] as const;
 
 /**
  * Commands that are admin-only by role — enforced even without explicit catalog flag.

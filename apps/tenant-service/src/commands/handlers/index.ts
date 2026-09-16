@@ -5,6 +5,7 @@ import { CreateStaffHandler } from './create-staff.handler.js';
 import { CreateRoleHandler } from './create-role.handler.js';
 import { AssignRoleHandler } from './assign-role.handler.js';
 import { GetTenantShopsHandler } from './get-tenant-shops.handler.js';
+import { GetMyShopsHandler } from './get-my-shops.handler.js';
 import { GetTenantHandler } from './get-tenant.handler.js';
 import { GetTenantSubscriptionHandler } from './get-tenant-subscription.handler.js';
 import { GetStaffHandler } from './get-staff.handler.js';
@@ -17,6 +18,7 @@ export const CommandHandlers = [
   CreateRoleHandler,
   AssignRoleHandler,
   GetTenantShopsHandler,
+  GetMyShopsHandler,
   GetTenantHandler,
   GetTenantSubscriptionHandler,
   GetStaffHandler,

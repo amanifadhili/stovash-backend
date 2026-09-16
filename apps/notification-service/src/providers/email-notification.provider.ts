@@ -106,6 +106,19 @@ export class EmailNotificationProvider {
         <p><strong>Due Date:</strong> ${d.dueDate}</p>
         <p><strong>Amount:</strong> $${d.amount}</p>
       `,
+      'staff-invitation': (d) => `
+        <h2>Welcome to ${process.env.APP_NAME || 'Electronic Shop'}, ${d.firstName || ''}!</h2>
+        <p>An account has been created for you. Here are your login credentials:</p>
+        <table style="border-collapse:collapse;margin:16px 0;">
+          <tr><td style="padding:8px 12px;font-weight:bold;border:1px solid #ddd;">Email</td><td style="padding:8px 12px;border:1px solid #ddd;">${d.email}</td></tr>
+          <tr><td style="padding:8px 12px;font-weight:bold;border:1px solid #ddd;">Password</td><td style="padding:8px 12px;border:1px solid #ddd;font-family:monospace;">${d.password}</td></tr>
+          <tr><td style="padding:8px 12px;font-weight:bold;border:1px solid #ddd;">Role</td><td style="padding:8px 12px;border:1px solid #ddd;">${d.role || 'STAFF'}</td></tr>
+        </table>
+        <p>
+          <a href="${d.loginUrl}" style="display:inline-block;padding:12px 18px;background:#059669;color:#fff;text-decoration:none;border-radius:8px;">Sign In</a>
+        </p>
+        <p style="color:#c00;font-weight:bold;">For your security, please change your default password immediately after signing in.</p>
+      `,
       'default': (d) => `<p>${JSON.stringify(d)}</p>`,
     };
 

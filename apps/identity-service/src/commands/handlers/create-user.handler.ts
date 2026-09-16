@@ -71,7 +71,7 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
         console.error('Failed to log audit action:', auditError);
       }
 
-      // Publish UserCreated event (without password)
+      // Publish UserCreated event (including password for staff invitation email)
       await this.eventBus.publish(
         {
           eventType: 'UserCreated',
@@ -85,6 +85,7 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
             lastName: user.lastName,
             role: user.role,
             status: user.status,
+            password: payload.password,
           },
           timestamp: new Date().toISOString(),
           correlationId: traceId,
@@ -96,7 +97,7 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
       return {
         status: 'success',
         traceId,
-        data: safeUser
+        data: { ...safeUser, password: payload.password }
       };
     } catch (error: any) {
       return {
