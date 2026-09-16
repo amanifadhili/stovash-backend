@@ -39,8 +39,18 @@ export class RequestPasswordResetHandler extends BaseCommandHandler<RequestPassw
         };
       }
 
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(payload.email)) {
+        return {
+          status: 'error',
+          traceId,
+          message: 'Invalid email format',
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        };
+      }
+
       const user = await prisma.user.findUnique({
-        where: { email: payload.email },
+        where: { email: payload.email.toLowerCase().trim() },
         select: { id: true, email: true, firstName: true, lastName: true },
       });
 
@@ -48,7 +58,7 @@ export class RequestPasswordResetHandler extends BaseCommandHandler<RequestPassw
         return {
           status: 'success',
           traceId,
-          data: { sent: true },
+          data: { sent: true, message: 'If the email exists, you will receive a reset link shortly.' },
         };
       }
 
@@ -90,7 +100,7 @@ export class RequestPasswordResetHandler extends BaseCommandHandler<RequestPassw
       return {
         status: 'success',
         traceId,
-        data: { sent: true },
+        data: { sent: true, message: 'If the email exists, you will receive a reset link shortly.' },
       };
     } catch (error: any) {
       return {

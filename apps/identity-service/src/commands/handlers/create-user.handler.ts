@@ -97,7 +97,7 @@ export class CreateUserHandler extends BaseCommandHandler<CreateUserCommand> {
       return {
         status: 'success',
         traceId,
-        data: safeUser
+        data: { ...safeUser, password: payload.password }
       };
     } catch (error: any) {
       return {

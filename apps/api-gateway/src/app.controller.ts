@@ -369,7 +369,7 @@ export const COMMAND_ROLES: Record<string, string[]> = {
 // Commands that are public (no authenticated user required). Their role/permission
 // checks are skipped because there is no user context to authorize against.
 // CreateTenant is the tenant self-registration (onboarding) flow; LoginUser is public auth.
-const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant'];
+const PUBLIC_COMMANDS = ['LoginUser', 'CreateTenant', 'RequestPasswordReset', 'ResetPassword'];
 
 /**
  * Phase 10: legacy till/ledger commands are gone, not 501 forever.
@@ -571,7 +571,7 @@ export class AppController {
     }
 
     try {
-      if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers', 'GetPermissionTemplates', 'CreatePermissionTemplate', 'UpdatePermissionTemplate', 'DeletePermissionTemplate', 'AssignTemplateToUser', 'SetUserPermissionOverride', 'RemoveUserPermissionOverride', 'GetUserEffectivePermissions', 'GetPermissionAuditLogs', 'handle_google_user', 'create_session', 'get_user_from_session', 'delete_session', 'CompleteGoogleOnboarding'].includes(cmd)) {
+      if (['CreateTenant', 'CreateUser', 'LoginUser', 'GetUsers', 'GetPermissionTemplates', 'CreatePermissionTemplate', 'UpdatePermissionTemplate', 'DeletePermissionTemplate', 'AssignTemplateToUser', 'SetUserPermissionOverride', 'RemoveUserPermissionOverride', 'GetUserEffectivePermissions', 'GetPermissionAuditLogs', 'handle_google_user', 'create_session', 'get_user_from_session', 'delete_session', 'CompleteGoogleOnboarding', 'RequestPasswordReset', 'ResetPassword'].includes(cmd)) {
         const result = await firstValueFrom(this.identityClient.send({ cmd }, { payload, context }));
         observeGatewayCommand(cmd, 'success', started);
         return result;

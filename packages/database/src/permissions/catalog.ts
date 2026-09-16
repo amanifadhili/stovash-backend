@@ -1841,7 +1841,7 @@ export const SYSTEM_PERMISSION_CATALOG: SystemPermissionDefinition[] = [
 /**
  * Commands that are public (no authentication required)
  */
-export const PUBLIC_COMMANDS: readonly string[] = ['LoginUser', 'CreateTenant'] as const;
+export const PUBLIC_COMMANDS: readonly string[] = ['LoginUser', 'CreateTenant', 'RequestPasswordReset', 'ResetPassword'] as const;
 
 /**
  * Commands that are admin-only by role — enforced even without explicit catalog flag.
